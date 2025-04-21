@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ニコリヒト vs つるつる君 タイピングバトル</title>
+  <link rel="icon" type="image/png" href="http://nikorihito.com/wp-content/uploads/2024/11/ニコリヒト.png">
+  <style>
+    body {
+      background: white;
+      text-align: center;
+      font-family: sans-serif;
+      color: #333;
+      padding: 20px;
+    }
+    img { width: 120px; margin: 10px; }
+    .bar {
+      width: 300px;
+      height: 20px;
+      background: #ddd;
+      margin: 10px auto;
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .inner {
+      height: 100%;
+      background: #4caf50;
+      width: 100%;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    #word, #meaning { font-size: 24px; margin: 10px; }
+    input { font-size: 20px; padding: 10px; width: 300px; }
+    #result, #stats, #restart { margin-top: 20px; font-size: 20px; }
+    button { font-size: 18px; padding: 10px 20px; margin: 20px; cursor: pointer; }
+    #gameArea { display: none; }
+    #restart { display: none; }
+    #nikoPointButton { display: none; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>ニコリヒト vs つるつる君 タイピングバトル</h1>
+
+  <div id="startArea">
+    <button id="startButton">スタート</button>
+  </div>
+
+  <div id="gameArea">
+    <div>
+      <img src="http://nikorihito.com/wp-content/uploads/2024/11/ニコリヒト.png" alt="ニコリヒト">
+      <img src="http://nikorihito.com/wp-content/uploads/2024/11/つるつる君.png" alt="つるつる君">
+    </div>
+
+    <div>
+      ニコリヒト HP
+      <div class="bar"><div id="playerHP" class="inner"></div></div>
+      ニコリポイント
+      <div class="bar"><div id="nikoPoint" class="inner"></div></div>
+      つるつる君 HP
+      <div class="bar"><div id="npcHP" class="inner"></div></div>
+    </div>
+
+    <div id="meaning">意味：---</div>
+    <div id="word">準備中...</div>
+    <input type="text" id="input" placeholder="ここに入力" disabled>
+    <button id="nikoPointButton">必殺技発動！</button>
+  </div>
+
+  <div id="result"></div>
+  <div id="stats"></div>
+  <div id="restart">
+    <button onclick="init()">再度挑戦</button>
+  </div>
+
+  <script>
+    const words = [
+      { en: "I am", ja: "私は〜です" },
+      { en: "You are", ja: "あなたは〜です" },
+      { en: "He is", ja: "彼は〜です" },
+      { en: "She is", ja: "彼女は〜です" },
+      { en: "It is", ja: "それは〜です" },
+      { en: "We are", ja: "私たちは〜です" },
+      { en: "They are", ja: "彼らは〜です" },
+      { en: "Do you", ja: "あなたは〜しますか？" },
+      { en: "Does he", ja: "彼は〜しますか？" },
+      { en: "Can you", ja: "あなたは〜できますか？" },
+      { en: "I have", ja: "私は〜を持っています" },
+      { en: "He has", ja: "彼は〜を持っています" }
+    ];
+
+    let currentWord = {};
+    let startTime = 0;
+    let missCount = 0;
+    let playerHP = 20000;
+    let npcHP = 20000;
+    let nikoPoint = 0;
+    const maxNikoPoint = 100;
+    let npcInterval;
+    const input = document.getElementById("input");
+
+    function startGame() {
+      document.getElementById("startArea").style.display = "none";
+      document.getElementById("gameArea").style.display = "block";
+      input.disabled = false;
+      nextWord();
+      startTime = Date.now();
+      missCount = 0;
+      playerHP = 20000;
+      npcHP = 20000;
+      nikoPoint = 0;
+      updateBars();
+      npcInterval = setInterval(npcAttack, 1200);
+    }
+
+    function nextWord() {
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      document.getElementById("word").textContent = currentWord.en;
+      document.getElementById("meaning").textContent = "意味: " + currentWord.ja;
+      input.value = "";
+      input.focus();
+    }
+
+    input.addEventListener("input", () => {
+      const typed = input.value;
+      if (currentWord.en.startsWith(typed)) {
+        if (typed === currentWord.en) {
+          npcHP -= 300;
+          nikoPoint += 20;
+          if (nikoPoint >= maxNikoPoint) {
+            nikoPoint = maxNikoPoint;
+            document.getElementById("nikoPointButton").style.display = "inline-block";
+          }
+          updateBars();
+          if (npcHP <= 0) finishGame(true);
+          else nextWord();
+        }
+      } else {
+        missCount++;
+        playerHP -= 150;
+        updateBars();
+        input.value = "";
+        if (playerHP <= 0) finishGame(false);
+      }
+    });
+
+    function npcAttack() {
+      playerHP -= 250;
+      updateBars();
+      if (playerHP <= 0) finishGame(false);
+    }
+
+    function updateBars() {
+      document.getElementById("playerHP").style.width = (playerHP / 20000 * 100) + "%";
+      document.getElementById("npcHP").style.width = (npcHP / 20000 * 100) + "%";
+      document.getElementById("nikoPoint").style.width = (nikoPoint / maxNikoPoint * 100) + "%";
+    }
+
+    document.getElementById("nikoPointButton").addEventListener("click", () => {
+      if (nikoPoint >= maxNikoPoint) {
+        npcHP -= 3000;
+        nikoPoint = 0;
+        document.getElementById("nikoPointButton").style.display = "none";
+        updateBars();
+        if (npcHP <= 0) finishGame(true);
+      }
+    });
+
+    function finishGame(playerWon) {
+      clearInterval(npcInterval);
+      input.disabled = true;
+      document.getElementById("nikoPointButton").style.display = "none";
+      const timeTaken = ((Date.now() - startTime) / 1000).toFixed(2);
+      document.getElementById("result").textContent = playerWon ? "🎉 ニコリヒトの勝利！" : "😢 つるつる君の勝利...";
+      document.getElementById("stats").innerHTML = `タイム：${timeTaken}秒<br>ミス数：${missCount}回`;
+      document.getElementById("restart").style.display = "block";
+    }
+
+    function init() {
+      document.getElementById("startArea").style.display = "block";
+      document.getElementById("gameArea").style.display = "none";
+      document.getElementById("result").textContent = "";
+      document.getElementById("stats").textContent = "";
+      document.getElementById("restart").style.display = "none";
+    }
+
+    document.getElementById("startButton").addEventListener("click", startGame);
+  </script>
+
+</body>
+</html>
