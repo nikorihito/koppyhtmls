@@ -57,6 +57,9 @@
 </div>
 
 <script>
+// ★ 効果音の準備
+const missSound = new Audio('miss.mp3');
+
 const words = {
   easy: [
     { en: "I am", ja: "私は〜です" },
@@ -137,6 +140,9 @@ input.addEventListener("beforeinput", (e) => {
     if (!currentWord.en.startsWith(typed)) {
       e.preventDefault();
       missCount++;
+      // ★ ミス音を再生
+      missSound.currentTime = 0;
+      missSound.play();
       playerHP -= 150;
       updateBars();
       if (playerHP <= 0) finishGame(false);
@@ -186,7 +192,6 @@ function init() {
   document.getElementById("restart").style.display = "none";
 }
 
-// 必殺技: /キー押したら発動
 window.addEventListener("keydown", (e) => {
   if (e.key === "/" && nikoPoint >= maxNikoPoint && !input.disabled) {
     npcHP -= 3000;
