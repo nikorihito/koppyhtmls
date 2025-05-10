@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ニコリカイギー 🎉</title>
+  <style>
+    body { font-family: sans-serif; background: #fff8dc; text-align: center; padding: 20px; }
+    button { padding: 10px 20px; font-size: 16px; margin: 5px; background: orange; color: white; border: none; border-radius: 10px; cursor: pointer; }
+    video { width: 300px; height: 225px; border: 4px solid #ccc; border-radius: 10px; background: black; }
+    textarea { width: 80%; height: 100px; }
+    #reaction { font-size: 50px; position: absolute; top: 10%; left: 50%; transform: translateX(-50%); animation: pop 1s ease; pointer-events: none; display: none; }
+    @keyframes pop { 0% { opacity:1; transform: translateX(-50%) translateY(0); } 100% { opacity:0; transform: translateX(-50%) translateY(-100px); } }
+  </style>
+  <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+<body>
+  <h1>ニコリカイギー 🎉</h1>
+
+  <!-- Googleログイン -->
+  <div class="g-signin2" data-onsuccess="onSignIn"></div>
+  <div id="userProfile" style="display:none;">
+    <p>こんにちは、<span id="userName"></span>さん！</p>
+  </div>
+
+  <div id="setup">
+    <button id="startBtn">会議を始める</button><br>
+    <input type="text" id="joinId" placeholder="参加IDを入力">
+    <button id="joinBtn">会議に参加する</button><br>
+    <p id="myIdDisplay"></p>
+    <button id="copyId" style="display:none;">IDコピー</button><br>
+  </div>
+
+  <div id="meeting" style="display:none;">
+    <h2>会議ルーム</h2>
+    <p>あなたのID: <span id="myIdDisplayMeeting"></span> <button id="copyIdMeeting">IDコピー</button></p>
+    <video id="myVideo" autoplay muted></video>
+    <video id="remoteVideo" autoplay></video><br>
+    <p>カメラ: <select id="cameraSelect"></select> マイク: <select id="micSelect"></select></p>
+    <button id="cameraBtn">カメラON/OFF</button>
+    <button id="shareScreen">画面共有</button>
+    <button id="muteBtn">ミュート/解除</button>
+    <button id="leaveBtn">退出</button><br>
+    <button class="reactionBtn" data-reaction="👏">👏</button>
+    <button class="reactionBtn" data-reaction="❤️">❤️</button>
+    <button class="reactionBtn" data-reaction="👍">👍</button>
+    <button class="reactionBtn" data-reaction="😂">😂</button>
+    <button class="reactionBtn" data-reaction="😢">😢</button>
+    <button class="reactionBtn" data-reaction="😡">😡</button>
+    <button class="reactionBtn" data-reaction="👎">👎</button>
+    <button class="reactionBtn" data-reaction="🤔">🤔</button>
+    <button class="reactionBtn" data-reaction="😶">😶</button>
+    <div>
+      <textarea id="chatLog" readonly></textarea><br>
+      <input type="text" id="chatInput" placeholder="メッセージ">
+      <button id="sendBtn">送信</button>
+    </div>
+    <div id="reaction">👏</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
+  <script>
+    function generateRandomId(length) {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let id = '';
+      for (let i = 0; i < length; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return id;
+    }
+    const randomId = generateRandomId(12);
+    const peer = new Peer(randomId);
+
+    let conn, call, localStream;
+    const myIdDisplay = document.getElementById('myIdDisplay');
+    const myIdDisplayMeeting = document.getElementById('myIdDisplayMeeting');
+    const copyId = document.getElementById('copyId');
+    const copyIdMeeting = document.getElementById('copyIdMeeting');
+    const myVideo = document.getElementById('myVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    const chatLog = document.getElementById('chatLog');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const cameraSelect = document.getElementById('cameraSelect');
+    const micSelect = document.getElementById('micSelect');
+    const reaction = document.getElementById('reaction');
+
+    peer.on('open', id => {
+      myIdDisplay.textContent = `あなたのID: ${id}`;
+      myIdDisplayMeeting.textContent = id;
+      copyId.style.display = 'inline';
+    });
+
+    copyId.onclick = () => { navigator.clipboard.writeText(peer.id); alert('IDコピーしました！'); };
+    copyIdMeeting.onclick = () => { navigator.clipboard.writeText(peer.id); alert('IDコピーしました！'); };
+
+    async function updateDeviceList() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      cameraSelect.innerHTML = '';
+      micSelect.innerHTML = '';
+      devices.forEach(d => {
+        if (d.kind === 'videoinput') {
+          const opt = document.createElement('option');
+          opt.value = d.deviceId;
+          opt.text = d.label || 'カメラ';
+          cameraSelect.appendChild(opt);
+        }
+        if (d.kind === 'audioinput') {
+          const opt = document.createElement('option');
+          opt.value = d.deviceId;
+          opt.text = d.label || 'マイク';
+          micSelect.appendChild(opt);
+        }
+      });
+    }
+
+    async function getMedia(videoId, audioId) {
+      const constraints = {
+        video: { deviceId: videoId ? { exact: videoId } : undefined },
+        audio: { deviceId: audioId ? { exact: audioId } : undefined }
+      };
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    }
+
+    async function startCall(joinId = null) {
+      await updateDeviceList();
+      localStream = await getMedia(cameraSelect.value, micSelect.value);
+      myVideo.srcObject = localStream;
+      setupVolumeDetection();
+
+      if (joinId) {
+        conn = peer.connect(joinId);
+        conn.on('open', () => { chatLog.value += "チャット接続しました\n"; });
+        conn.on('data', handleData);
+        call = peer.call(joinId, localStream);
+        call.on('stream', stream => { remoteVideo.srcObject = stream; });
+      }
+    }
+
+    function handleData(data) {
+      if (data.startsWith('reaction:')) {
+        const reactionType = data.split(':')[1];
+        showReaction(reactionType);
+      } else {
+        chatLog.value += `相手: ${data}\n`;
+      }
+    }
+
+    function showReaction(type) {
+      reaction.textContent = type;
+      reaction.style.display = 'block';
+      setTimeout(() => { reaction.style.display = 'none'; }, 1000);
+    }
+
+    document.getElementById('startBtn').onclick = async () => {
+      await startCall();
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('meeting').style.display = 'block';
+    };
+
+    document.getElementById('joinBtn').onclick = async () => {
+      const joinId = document.getElementById('joinId').value;
+      await startCall(joinId);
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('meeting').style.display = 'block';
+    };
+
+    peer.on('connection', connection => {
+      connection.on('data', handleData);
+      if (!conn) conn = connection;
+    });
+
+    peer.on('call', incomingCall => {
+      getMedia(cameraSelect.value, micSelect.value).then(stream => {
+        localStream = stream;
+        myVideo.srcObject = stream;
+        setupVolumeDetection();
+        incomingCall.answer(stream);
+        incomingCall.on('stream', stream => { remoteVideo.srcObject = stream; });
+      });
+    });
+
+    sendBtn.onclick = () => {
+      if (conn && conn.open) {
+        conn.send(chatInput.value);
+        chatLog.value += `あなた: ${chatInput.value}\n`;
+        chatInput.value = '';
+      } else {
+        chatLog.value += `⚠️ 接続されていません\n`;
+      }
+    };
+
+    document.querySelectorAll('.reactionBtn').forEach(btn => {
+      btn.onclick = () => {
+        const type = btn.dataset.reaction;
+        if (conn && conn.open) { conn.send('reaction:' + type); }
+        showReaction(type);
+      };
+    });
+
+    document.getElementById('cameraBtn').onclick = () => {
+      const track = localStream.getVideoTracks()[0];
+      track.enabled = !track.enabled;
+      document.getElementById('cameraBtn').textContent = track.enabled ? 'カメラOFF' : 'カメラON';
+    };
+
+    document.getElementById('muteBtn').onclick = () => {
+      const track = localStream.getAudioTracks()[0];
+      track.enabled = !track.enabled;
+      document.getElementById('muteBtn').textContent = track.enabled ? 'ミュート' : 'ミュート解除';
+    };
+
+    document.getElementById('shareScreen').onclick = async () => {
+      if (!call) { alert('接続後に画面共有してください！'); return; }
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      call.peerConnection.getSenders().find(s => s.track.kind === 'video')
+        .replaceTrack(screenStream.getVideoTracks()[0]);
+      remoteVideo.srcObject = screenStream;
+      screenStream.getVideoTracks()[0].onended = () => {
+        call.peerConnection.getSenders().find(s => s.track.kind === 'video')
+          .replaceTrack(localStream.getVideoTracks()[0]);
+        remoteVideo.srcObject = null;
+      };
+    };
+
+    document.getElementById('leaveBtn').onclick = () => {
+      if (call) call.close();
+      if (conn) conn.close();
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
+      myVideo.srcObject = null;
+      remoteVideo.srcObject = null;
+      chatLog.value += "会議を退出しました\n";
+      document.getElementById('meeting').style.display = 'none';
+      document.getElementById('setup').style.display = 'block';
+      updateDeviceList();
+    };
+
+    function setupVolumeDetection() {
+      const audioCtx = new AudioContext();
+      const analyser = audioCtx.createAnalyser();
+      const source = audioCtx.createMediaStreamSource(localStream);
+      source.connect(analyser);
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      function checkVolume() {
+        analyser.getByteFrequencyData(dataArray);
+        const vol = dataArray.reduce((a,b)=>a+b)/dataArray.length;
+        myVideo.style.borderColor = vol > 30 ? 'lime' : '#ccc';
+        requestAnimationFrame(checkVolume);
+      }
+      checkVolume();
+    }
+
+    function onSignIn(googleUser) {
+      const profile = googleUser.getBasicProfile();
+      document.getElementById('userName').textContent = profile.getName();
+      document.getElementById('userProfile').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
