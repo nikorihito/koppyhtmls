@@ -13,11 +13,6 @@
   input { font-size: 20px; padding: 10px; width: 300px; }
   #result, #stats, #restart { margin-top: 20px; font-size: 20px; }
   button { font-size: 18px; padding: 10px 20px; margin: 20px; cursor: pointer; }
-  <div style="margin-top: 30px;">
-    <label for="missVolume">ミス音量 📢</label>
-    <input type="range" id="missVolume" min="0" max="1" step="0.01" value="1" style="width: 200px; vertical-align: middle;">
-    <span id="volumeLabel">100%</span>
-  </div>
   #gameArea, #restart, #levelArea { display: none; }
   #nikoPointButton { display: none; margin-top: 10px; }
 </style>
@@ -55,6 +50,14 @@
   <input type="text" id="input" placeholder="ここに入力" disabled>
 </div>
 
+<!-- 📢🔇 音量調整スライダー -->
+<div style="margin-top: 30px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+  <span>🔇</span>
+  <input type="range" id="missVolume" min="0" max="1" step="0.01" value="1" style="width: 200px;">
+  <span>📢</span>
+  <span id="volumeLabel" style="min-width: 50px; text-align: left;">100%</span>
+</div>
+
 <div id="result"></div>
 <div id="stats"></div>
 <div id="restart">
@@ -65,6 +68,7 @@
 // ★ 効果音の準備
 const missSound = new Audio('miss.mp3');
 
+// 音量スライダー連動
 document.getElementById("missVolume").addEventListener("input", (e) => {
   const volume = parseFloat(e.target.value);
   missSound.volume = volume;
@@ -151,7 +155,6 @@ input.addEventListener("beforeinput", (e) => {
     if (!currentWord.en.startsWith(typed)) {
       e.preventDefault();
       missCount++;
-      // ★ ミス音を再生
       missSound.currentTime = 0;
       missSound.play();
       playerHP -= 150;
