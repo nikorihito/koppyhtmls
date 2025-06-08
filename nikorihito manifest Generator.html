@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nikorihito manifest Generator</title>
+  <link rel="icon" href="http://nikorihito.com/wp-content/uploads/2024/05/nikorihito.png" type="image/png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px;
+      max-width: 200px;
+      height: auto;
+    }
+    .spacer {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>nikorihito manifest Generator</h1>
+    <img src="http://nikorihito.com/wp-content/uploads/2024/05/nikorihito.png" alt="nikorihito Logo" class="logo">
+    <div class="form-group">
+      <h2>manifest.jsonの作成</h2>
+
+      <label for="packType">パックの種類</label>
+      <select id="packType">
+        <option value="resource">リソースパック</option>
+        <option value="behavior">ビヘイビアーパック</option>
+        <option value="skin">スキンパック</option>
+      </select>
+
+      <label for="packName">パック名</label>
+      <input type="text" id="packName" placeholder="パックの名前を入力">
+
+      <label for="packDescription">パックの説明</label>
+      <textarea id="packDescription" rows="4" placeholder="パックの説明を入力"></textarea>
+
+      <label for="packVersion">バージョン (例: 1.0.0)</label>
+      <input type="text" id="packVersion" placeholder="バージョンを入力">
+
+      <div class="spacer"></div>
+
+      <button onclick="generateManifest()">manifest.jsonを生成</button>
+    </div>
+  </div>
+
+  <script>
+    function generateUUID() {
+      let d = new Date().getTime();
+      let d2 = (performance && performance.now && (performance.now() * 1000)) || 0;
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16;
+        if (d > 0) {
+          r = (d + r) % 16 | 0;
+          d = Math.floor(d / 16);
+        } else {
+          r = (d2 + r) % 16 | 0;
+          d2 = Math.floor(d2 / 16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
+    function generateManifest() {
+      const packType = document.getElementById('packType').value;
+      const name = document.getElementById('packName').value.trim();
+      const description = document.getElementById('packDescription').value.trim();
+      const versionStr = document.getElementById('packVersion').value.trim();
+      const version = versionStr.split('.').map(Number);
+      const minEngineVersion = [1, 21, 10];
+
+      if (!name || !description || version.length !== 3 || version.some(isNaN)) {
+        alert("すべての項目を正しく入力してください（バージョンは 1.0.0 の形式）");
+        return;
+      }
+
+      const manifest = {
+        format_version: 2,
+        header: {
+          description: description,
+          name: name,
+          uuid: generateUUID(),
+          version: version,
+          min_engine_version: minEngineVersion
+        },
+        modules: [
+          {
+            description: description,
+            uuid: generateUUID(),
+            version: version
+          }
+        ]
+      };
+
+      if (packType === 'resource') {
+        manifest.modules[0].type = 'resources';
+      } else if (packType === 'behavior') {
+        manifest.modules[0].type = 'data';
+      } else if (packType === 'skin') {
+        manifest.modules[0].type = 'skin_pack';
+      }
+
+      const blob = new Blob([JSON.stringify(manifest, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      const now = new Date().toISOString().replace(/[:.]/g, '-');
+      link.download = `manifest_${packType}_${now}.json`;
+      link.click();
+
+      alert('manifest.jsonが生成されました！');
+    }
+  </script>
+</body>
+</html>
