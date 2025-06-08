@@ -37,9 +37,6 @@
         <option value="skin">スキンパック</option>
       </select>
 
-      <label for="fileName">保存するファイル名（拡張子は自動）</label>
-      <input type="text" id="fileName" placeholder="例: mypack">
-
       <label for="packName">パック名</label>
       <input type="text" id="packName" placeholder="パックの名前を入力">
 
@@ -109,7 +106,6 @@
       const description = document.getElementById('packDescription').value.trim();
       const versionStr = document.getElementById('packVersion').value.trim();
       const version = versionStr.split('.').map(Number);
-      const fileNameInput = document.getElementById('fileName').value.trim();
       const iconFile = document.getElementById('packIcon').files[0];
 
       if (!name || !description || version.length !== 3 || version.some(isNaN)) {
