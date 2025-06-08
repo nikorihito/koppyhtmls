@@ -37,8 +37,8 @@
         <option value="skin">スキンパック</option>
       </select>
 
-      <label for="folderName">保存時の名前（拡張子不要・省略可）</label>
-      <input type="text" id="folderName" placeholder="例: mypack">
+      <label for="fileName">保存するファイル名（拡張子は自動）</label>
+      <input type="text" id="fileName" placeholder="例: mypack">
 
       <label for="packName">パック名</label>
       <input type="text" id="packName" placeholder="パックの名前を入力">
@@ -59,7 +59,7 @@
       </div>
 
       <div class="spacer"></div>
-      <button onclick="generateManifest()">名前を付けて保存</button>
+      <button onclick="generateManifest()">保存</button>
     </div>
   </div>
 
@@ -78,11 +78,9 @@
         const reader = new FileReader();
         reader.onload = function (e) {
           const dataUrl = e.target.result;
-
           const preview = document.createElement('div');
           preview.innerHTML = `<strong>${baseName}</strong><br><img src="${dataUrl}" alt="${baseName}">`;
           document.getElementById('skinsPreview').appendChild(preview);
-
           skinList.push({ name: baseName, file: file });
         };
         reader.readAsDataURL(file);
@@ -111,7 +109,7 @@
       const description = document.getElementById('packDescription').value.trim();
       const versionStr = document.getElementById('packVersion').value.trim();
       const version = versionStr.split('.').map(Number);
-      const fileNameInput = document.getElementById('folderName').value.trim();
+      const fileNameInput = document.getElementById('fileName').value.trim();
       const iconFile = document.getElementById('packIcon').files[0];
 
       if (!name || !description || version.length !== 3 || version.some(isNaN)) {
@@ -157,7 +155,6 @@
           const skinData = await skin.file.arrayBuffer();
           const fileName = `${skin.name.replace(/\s+/g, '_')}.png`;
           zip.file(fileName, skinData);
-
           skinsJson.skins.push({
             localization_name: skin.name,
             geometry: "geometry.humanoid.custom",
@@ -171,17 +168,15 @@
 
       const blob = await zip.generateAsync({ type: "blob" });
       const extension = packType === 'addon' ? 'mcaddon' : 'mcpack';
+      const safeFileName = (fileNameInput || (packType === 'addon' ? 'myaddon' : 'mypack')).replace(/[^a-zA-Z0-9_\-]/g, '_');
+      const fullName = `${safeFileName}.${extension}`;
 
-      // Save As 機能：ダウンロード時に保存名を指定
-      const fileHandle = await window.showSaveFilePicker({
-        suggestedName: fileNameInput || (packType === 'addon' ? 'myaddon' : 'mypack'),
-        types: [{ description: 'Minecraft Pack', accept: { 'application/octet-stream': [`.${extension}`] } }]
-      });
-      const writable = await fileHandle.createWritable();
-      await writable.write(blob);
-      await writable.close();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fullName;
+      link.click();
 
-      alert(`${extension}ファイルが保存されました！`);
+      alert(`${fullName} を保存しました！`);
     }
   </script>
 </body>
