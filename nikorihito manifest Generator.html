@@ -20,6 +20,7 @@
     button:hover { background-color: #45a049; }
     .logo { display: block; margin: 0 auto 20px; max-width: 200px; }
     .spacer { margin-bottom: 20px; }
+    #skinsPreview img { width: 64px; height: 64px; margin-right: 10px; }
   </style>
 </head>
 <body>
@@ -48,15 +49,29 @@
       <label for="packVersion">バージョン (例: 1.0.0)</label>
       <input type="text" id="packVersion" placeholder="バージョンを入力">
 
-      <label for="packIcon">pack_icon.png（画像ファイル）</label>
+      <label for="packIcon">pack_icon.png（任意）</label>
       <input type="file" id="packIcon" accept="image/png">
+
+      <div id="skinSection" style="display: none; margin-top: 20px;">
+        <h3>スキン追加</h3>
+        <button type="button" onclick="addSkin()">＋ スキンを追加</button>
+        <div id="skinsPreview" style="margin-top: 15px;"></div>
+      </div>
 
       <div class="spacer"></div>
       <button onclick="generateManifest()">manifestを生成してパックをダウンロード</button>
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
+    const skinList = [];
+
+    document.getElementById('packType').addEventListener('change', function () {
+      const section = document.getElementById('skinSection');
+      section.style.display = this.value === 'skin' ? 'block' : 'none';
+    });
+
     function generateUUID() {
       let d = new Date().getTime();
       let d2 = (performance && performance.now && (performance.now() * 1000)) || 0;
@@ -71,6 +86,34 @@
         }
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
       });
+    }
+
+    function addSkin() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/png';
+      input.style.display = 'none';
+      input.addEventListener('change', function () {
+        const file = input.files[0];
+        if (!file) return;
+
+        const skinName = prompt("このスキンの名前を入力してください:");
+        if (!skinName) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const dataUrl = e.target.result;
+
+          const preview = document.createElement('div');
+          preview.innerHTML = `<strong>${skinName}</strong><br><img src="${dataUrl}" alt="${skinName}">`;
+          document.getElementById('skinsPreview').appendChild(preview);
+
+          skinList.push({ name: skinName, file: file });
+        };
+        reader.readAsDataURL(file);
+      });
+      document.body.appendChild(input);
+      input.click();
     }
 
     async function generateManifest() {
@@ -89,49 +132,53 @@
       }
 
       const minEngineVersion = [1, 21, 10];
-      const baseManifest = {
+      const manifest = {
         format_version: 2,
         header: {
-          description: description,
-          name: name,
-          uuid: generateUUID(),
-          version: version,
-          min_engine_version: minEngineVersion
+          description, name, uuid: generateUUID(), version, min_engine_version: minEngineVersion
         },
         modules: []
       };
 
       if (packType === 'resource' || packType === 'addon') {
-        baseManifest.modules.push({
-          type: 'resources',
-          uuid: generateUUID(),
-          version: version,
-          description: description
-        });
+        manifest.modules.push({ type: 'resources', uuid: generateUUID(), version, description });
       }
       if (packType === 'behavior' || packType === 'addon') {
-        baseManifest.modules.push({
-          type: 'data',
-          uuid: generateUUID(),
-          version: version,
-          description: description
-        });
+        manifest.modules.push({ type: 'data', uuid: generateUUID(), version, description });
       }
       if (packType === 'skin') {
-        baseManifest.modules.push({
-          type: 'skin_pack',
-          uuid: generateUUID(),
-          version: version,
-          description: description
-        });
+        manifest.modules.push({ type: 'skin_pack', uuid: generateUUID(), version, description });
       }
 
       const zip = new JSZip();
-      zip.file("manifest.json", JSON.stringify(baseManifest, null, 2));
+      zip.file("manifest.json", JSON.stringify(manifest, null, 2));
 
       if (iconFile) {
         const iconData = await iconFile.arrayBuffer();
         zip.file("pack_icon.png", iconData);
+      }
+
+      if (packType === 'skin') {
+        const skinsJson = {
+          skins: [],
+          localization_name: name,
+          serialize_name: name
+        };
+
+        for (const skin of skinList) {
+          const skinData = await skin.file.arrayBuffer();
+          const fileName = `${skin.name.replace(/\s+/g, '_')}.png`;
+          zip.file(fileName, skinData);
+
+          skinsJson.skins.push({
+            localization_name: skin.name,
+            geometry: "geometry.humanoid.custom",
+            texture: fileName,
+            type: "free"
+          });
+        }
+
+        zip.file("skins.json", JSON.stringify(skinsJson, null, 2));
       }
 
       const blob = await zip.generateAsync({ type: "blob" });
@@ -144,7 +191,5 @@
       alert(`${extension}ファイルが生成されました！`);
     }
   </script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
 </html>
