@@ -37,7 +37,7 @@
         <option value="skin">スキンパック</option>
       </select>
 
-      <label for="folderName">フォルダ名（省略可）</label>
+      <label for="folderName">保存時の名前（拡張子不要・省略可）</label>
       <input type="text" id="folderName" placeholder="例: mypack">
 
       <label for="packName">パック名</label>
@@ -53,13 +53,13 @@
       <input type="file" id="packIcon" accept="image/png">
 
       <div id="skinSection" style="display: none; margin-top: 20px;">
-        <h3>スキン追加</h3>
-        <button type="button" onclick="addSkin()">＋ スキンを追加</button>
+        <h3>スキン追加（複数まとめてOK）</h3>
+        <input type="file" id="skinUploader" accept="image/png" multiple>
         <div id="skinsPreview" style="margin-top: 15px;"></div>
       </div>
 
       <div class="spacer"></div>
-      <button onclick="generateManifest()">manifestを生成してパックをダウンロード</button>
+      <button onclick="generateManifest()">名前を付けて保存</button>
     </div>
   </div>
 
@@ -68,8 +68,25 @@
     const skinList = [];
 
     document.getElementById('packType').addEventListener('change', function () {
-      const section = document.getElementById('skinSection');
-      section.style.display = this.value === 'skin' ? 'block' : 'none';
+      document.getElementById('skinSection').style.display = this.value === 'skin' ? 'block' : 'none';
+    });
+
+    document.getElementById('skinUploader').addEventListener('change', function () {
+      const files = Array.from(this.files);
+      for (const file of files) {
+        const baseName = file.name.replace('.png', '');
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const dataUrl = e.target.result;
+
+          const preview = document.createElement('div');
+          preview.innerHTML = `<strong>${baseName}</strong><br><img src="${dataUrl}" alt="${baseName}">`;
+          document.getElementById('skinsPreview').appendChild(preview);
+
+          skinList.push({ name: baseName, file: file });
+        };
+        reader.readAsDataURL(file);
+      }
     });
 
     function generateUUID() {
@@ -88,42 +105,13 @@
       });
     }
 
-    function addSkin() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/png';
-      input.style.display = 'none';
-      input.addEventListener('change', function () {
-        const file = input.files[0];
-        if (!file) return;
-
-        const skinName = prompt("このスキンの名前を入力してください:");
-        if (!skinName) return;
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const dataUrl = e.target.result;
-
-          const preview = document.createElement('div');
-          preview.innerHTML = `<strong>${skinName}</strong><br><img src="${dataUrl}" alt="${skinName}">`;
-          document.getElementById('skinsPreview').appendChild(preview);
-
-          skinList.push({ name: skinName, file: file });
-        };
-        reader.readAsDataURL(file);
-      });
-      document.body.appendChild(input);
-      input.click();
-    }
-
     async function generateManifest() {
       const packType = document.getElementById('packType').value;
       const name = document.getElementById('packName').value.trim();
       const description = document.getElementById('packDescription').value.trim();
       const versionStr = document.getElementById('packVersion').value.trim();
       const version = versionStr.split('.').map(Number);
-      const folderName = document.getElementById('folderName').value.trim() || 
-        (packType === 'addon' ? 'myaddon' : 'mypack');
+      const fileNameInput = document.getElementById('folderName').value.trim();
       const iconFile = document.getElementById('packIcon').files[0];
 
       if (!name || !description || version.length !== 3 || version.some(isNaN)) {
@@ -183,12 +171,17 @@
 
       const blob = await zip.generateAsync({ type: "blob" });
       const extension = packType === 'addon' ? 'mcaddon' : 'mcpack';
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `${folderName}.${extension}`;
-      link.click();
 
-      alert(`${extension}ファイルが生成されました！`);
+      // Save As 機能：ダウンロード時に保存名を指定
+      const fileHandle = await window.showSaveFilePicker({
+        suggestedName: fileNameInput || (packType === 'addon' ? 'myaddon' : 'mypack'),
+        types: [{ description: 'Minecraft Pack', accept: { 'application/octet-stream': [`.${extension}`] } }]
+      });
+      const writable = await fileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+
+      alert(`${extension}ファイルが保存されました！`);
     }
   </script>
 </body>
