@@ -165,15 +165,25 @@
       const blob = await zip.generateAsync({ type: "blob" });
       const extension = packType === 'addon' ? 'mcaddon' : 'mcpack';
       const defaultFileName = packType === 'addon' ? 'myaddon' : 'mypack';
-      const safeFileName = defaultFileName.replace(/[^a-zA-Z0-9_\-]/g, '_');
-      const fullName = `${safeFileName}.${extension}`;
 
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = fullName;
-      link.click();
+      try {
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: `${defaultFileName}.${extension}`,
+          types: [{
+            description: 'Minecraft Pack',
+            accept: { 'application/octet-stream': [`.${extension}`] }
+          }]
+        });
 
-      alert(`${fullName} を保存しました！`);
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+
+        alert(`${defaultFileName}.${extension} を保存しました！`);
+      } catch (error) {
+        alert("保存がキャンセルされました。");
+      }
+
     }
   </script>
 </body>
