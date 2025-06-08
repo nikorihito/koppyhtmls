@@ -164,7 +164,8 @@
 
       const blob = await zip.generateAsync({ type: "blob" });
       const extension = packType === 'addon' ? 'mcaddon' : 'mcpack';
-      const safeFileName = (fileNameInput || (packType === 'addon' ? 'myaddon' : 'mypack')).replace(/[^a-zA-Z0-9_\-]/g, '_');
+      const defaultFileName = packType === 'addon' ? 'myaddon' : 'mypack';
+      const safeFileName = defaultFileName.replace(/[^a-zA-Z0-9_\-]/g, '_');
       const fullName = `${safeFileName}.${extension}`;
 
       const link = document.createElement("a");
