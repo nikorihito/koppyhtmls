@@ -137,30 +137,66 @@
     }
   }
 
+  let beamAngle = 0;
+  
   function firePhase3() {
-    const count = 24;
-    const baseAngle = (frame / 20) % (Math.PI * 2);
-    for (let i = 0; i < count; i++) {
-      const angle = baseAngle + (Math.PI * 2 / count) * i;
-      bullets.push(createBullet(angle, 2));
+    beams = []; // 毎フレーム更新なので前のをクリア
+  
+    const directions = 4; // 十字（上下左右）
+    for (let i = 0; i < directions; i++) {
+      const angle = beamAngle + (Math.PI / 2) * i;
+      beams.push({
+        angle,
+        radius: 8,
+        color: "cyan",
+        timer: 2 // 毎フレーム再生成するので短めでOK
+      });
     }
+  
+    beamAngle += 0.02; // 回転スピード調整
   }
 
-  function firePhase4() {
-    if (frame % 90 !== 0) return;
-    const speed = 6;
-    const size = 12;
-    const directions = [
-      { x: canvas.width / 2, y: 0, dx: 0, dy: speed },
-      { x: canvas.width / 2, y: canvas.height, dx: 0, dy: -speed },
-      { x: 0, y: canvas.height / 2, dx: speed, dy: 0 },
-      { x: canvas.width, y: canvas.height / 2, dx: -speed, dy: 0 }
-    ];
-    directions.forEach(dir => {
-      beams.push({ ...dir, radius: size, color: "cyan", timer: 60 });
+  // ビームの描画を変更（updateは移動させない）
+  function updateBeams() {
+    // 今回は動かないビームなので更新処理なしでOK
+    }
+  function drawRotatingBeams() {
+    beams.forEach(beam => {
+      const angle = beam.angle;
+      const dx = Math.cos(angle);
+      const dy = Math.sin(angle);
+  
+      // 始点・終点をキャンバス端まで
+      const startX = enemy.x - dx * 1000; // 画面外まで伸ばす感じ
+      const startY = enemy.y - dy * 1000;
+      const endX = enemy.x + dx * 1000;
+      const endY = enemy.y + dy * 1000;
+  
+      ctx.strokeStyle = beam.color;
+      ctx.lineWidth = beam.radius;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
     });
   }
-
+  
+  
+    function firePhase4() {
+      if (frame % 90 !== 0) return;
+      const speed = 6;
+      const size = 12;
+      const directions = [
+        { x: canvas.width / 2, y: 0, dx: 0, dy: speed },
+        { x: canvas.width / 2, y: canvas.height, dx: 0, dy: -speed },
+        { x: 0, y: canvas.height / 2, dx: speed, dy: 0 },
+        { x: canvas.width, y: canvas.height / 2, dx: -speed, dy: 0 }
+      ];
+      directions.forEach(dir => {
+        beams.push({ ...dir, radius: size, color: "cyan", timer: 60 });
+      });
+    }
+  
   function firePhase5() {
     if (frame % 120 !== 0) return;
     const count = 8;
@@ -297,3 +333,4 @@
 </script>
 </body>
 </html>
+
