@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>楽々！PDFメーカー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ui-bg:#0f172a; /* slate-900 */
+      --ui-surface:#111827; /* gray-900 */
+      --ui-border:#374151; /* gray-700 */
+      --ui-text:#e5e7eb; /* gray-200 */
+      --ui-muted:#9ca3af; /* gray-400 */
+      --accent:#22d3ee; /* cyan-400 */
+      --accent-2:#a78bfa; /* violet-400 */
+      --paper-shadow:0 10px 30px rgba(0,0,0,.35);
+      --paper-bg:#ffffff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Noto Sans JP', system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN","Yu Gothic", Meiryo, sans-serif;
+      background:linear-gradient(180deg, var(--ui-bg), #0b1224 60%);
+      color:var(--ui-text);
+    }
+    .app{
+      display:flex; flex-direction:column; min-height:100dvh;
+    }
+    header{
+      border-bottom:1px solid var(--ui-border);
+      background:radial-gradient(1200px 300px at 10% -20%, rgba(34,211,238,.12), transparent 60%),
+                 radial-gradient(1200px 300px at 90% -20%, rgba(167,139,250,.12), transparent 60%),
+                 var(--ui-surface);
+      padding:14px 16px;
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+      position:sticky; top:0; z-index:50;
+    }
+    header h1{font-size:16px; font-weight:700; margin:0 8px 0 0; letter-spacing:.02em}
+    .sep{width:1px; height:28px; background:var(--ui-border)}
+    .ctrl-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    label{font-size:12px; color:var(--ui-muted)}
+    select,input[type="number"],input[type="text"]{
+      background:#0b1224; border:1px solid var(--ui-border); color:var(--ui-text);
+      border-radius:10px; padding:8px 10px; font-size:13px; outline:none; min-width:80px;
+    }
+    input[type="checkbox"]{transform:translateY(1px)}
+    button{
+      background:linear-gradient(90deg, var(--accent), var(--accent-2));
+      color:#0b1224; border:0; padding:9px 14px; border-radius:12px; font-weight:700; cursor:pointer; font-size:13px;
+      transition:filter .15s ease; box-shadow:0 6px 16px rgba(34,211,238,.15), 0 6px 16px rgba(167,139,250,.12);
+    }
+    button.secondary{background:#0b1224; color:var(--ui-text); border:1px solid var(--ui-border); box-shadow:none}
+    button:hover{filter:brightness(1.05)}
+
+    .toolbar{
+      display:flex; gap:8px; padding:10px 16px; background:#0b1224; border-bottom:1px solid var(--ui-border);
+      position:sticky; top:64px; z-index:40; flex-wrap:wrap
+    }
+    .tbtn{background:#0e162d; border:1px solid var(--ui-border); color:var(--ui-text); padding:8px 10px; border-radius:10px; cursor:pointer; font-size:13px}
+    .tbtn:hover{background:#121a33}
+
+    main{
+      flex:1; display:flex; justify-content:center; padding:24px; gap:24px; align-items:flex-start;
+    }
+    .side{
+      width:340px; background:#0b1224; border:1px solid var(--ui-border); border-radius:16px; padding:16px; position:sticky; top:116px; height:max-content
+    }
+    .side h3{margin:0 0 10px; font-size:14px}
+    .side .group{border-top:1px solid var(--ui-border); padding-top:12px; margin-top:12px}
+
+    .stage{
+      flex:1; display:flex; justify-content:center; align-items:flex-start; flex-wrap:wrap; gap:24px
+    }
+
+    .paper{
+      background:var(--paper-bg); color:#111; width:min(100%, 900px); border-radius:16px; box-shadow:var(--paper-shadow);
+      padding:0; overflow:hidden; border:1px solid rgba(0,0,0,.05);
+    }
+    .paper-inner{ padding:24px; }
+
+    .print-body{ max-width:680px; margin:0 auto; background:white; color:#111; padding:24px; border-radius:12px }
+    .print-body img{ max-width:100%; height:auto }
+    #editor{ min-height:1200px; outline:none }
+
+    .helper{font-size:12px; color:var(--ui-muted)}
+
+    .print-header,.print-footer{ display:none; }
+    .page-break{ display:inline-block; padding:6px 10px; margin:12px 0; background:#f5f5f5; color:#444; border:1px dashed #bbb; border-radius:8px }
+
+    /* Print styles injected dynamically */
+    @media print{
+      body{ background:white; }
+      header, .toolbar, .side{ display:none !important; }
+      .paper{ box-shadow:none; border:none }
+      .print-header,.print-footer{ display:block; position:fixed; left:0; right:0; color:#111; font-size:12px; padding:6mm 12mm; }
+      .print-header{ top:0; border-bottom:1px solid #ddd; }
+      .print-footer{ bottom:0; border-top:1px solid #ddd; }
+      .print-body{ margin:0 auto; background:white; color:#111; }
+      .page-break{ break-after:page; page-break-after:always; color:#888; border:none; height:0; padding:0; margin:0 }
+      .page-number::after{ content: counter(page); }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>📝 楽々！PDFメーカー</h1>
+    <div class="sep"></div>
+    <div class="ctrl-row">
+      <label>ページサイズ
+        <select id="pageSize">
+          <option value="A4">A4</option>
+          <option value="A5">A5</option>
+          <option value="Letter">Letter</option>
+        </select>
+      </label>
+      <label>向き
+        <select id="orientation">
+          <option value="portrait">縦</option>
+          <option value="landscape">横</option>
+        </select>
+      </label>
+      <label>余白 (mm)
+        <input type="number" id="margin" min="5" max="40" step="1" value="15" />
+      </label>
+      <label>フォント
+        <select id="font">
+          <option value="'Noto Sans JP', sans-serif">Noto Sans JP</option>
+          <option value="system-ui, -apple-system, Segoe UI, Roboto, 'Yu Gothic', Meiryo, sans-serif">システム(ゴシック)</option>
+          <option value="serif">明朝 (serif)</option>
+          <option value="monospace">等幅 (monospace)</option>
+        </select>
+      </label>
+      <label>文字サイズ
+        <input type="number" id="fontSize" min="10" max="24" step="1" value="16" />
+      </label>
+      <label>行間
+        <input type="number" id="lineHeight" min="1" max="2.4" step="0.1" value="1.6" />
+      </label>
+      <button id="save" class="secondary" title="ローカル保存">保存</button>
+      <button id="load" class="secondary" title="保存内容を読み込み">読み込み</button>
+      <button id="reset" class="secondary" title="初期化">初期化</button>
+      <button id="printBtn" title="PDFを作成 (印刷でPDF保存)">PDFを作成</button>
+    </div>
+  </header>
+
+  <div class="toolbar" aria-label="編集ツールバー">
+    <button class="tbtn" data-cmd="bold"><b>B</b></button>
+    <button class="tbtn" data-cmd="italic"><i>I</i></button>
+    <button class="tbtn" data-cmd="underline"><u>U</u></button>
+    <span class="sep" style="height:24px"></span>
+    <button class="tbtn" data-block="H1">H1</button>
+    <button class="tbtn" data-block="H2">H2</button>
+    <button class="tbtn" data-block="P">段落</button>
+    <button class="tbtn" data-cmd="insertUnorderedList">箇条書き</button>
+    <button class="tbtn" data-cmd="insertOrderedList">番号</button>
+    <span class="sep" style="height:24px"></span>
+    <button class="tbtn" data-cmd="justifyLeft">左</button>
+    <button class="tbtn" data-cmd="justifyCenter">中央</button>
+    <button class="tbtn" data-cmd="justifyRight">右</button>
+    <span class="sep" style="height:24px"></span>
+    <button class="tbtn" id="linkBtn">リンク</button>
+    <button class="tbtn" id="imgBtn">画像</button>
+    <button class="tbtn" id="pageBreakBtn">ページ区切り</button>
+    <input type="file" id="imgInput" accept="image/*" hidden />
+  </div>
+
+  <main>
+    <aside class="side" id="side">
+      <h3>ヘッダー & フッター</h3>
+      <div class="group">
+        <label><input type="checkbox" id="useHeader" checked> ヘッダーを表示</label>
+        <input type="text" id="headerText" placeholder="ヘッダーのテキスト" value="楽々！PDFメーカー" />
+        <div class="helper">ヘッダーは各ページ上部に固定表示されます。</div>
+      </div>
+      <div class="group">
+        <label><input type="checkbox" id="useFooter" checked> フッターを表示</label>
+        <input type="text" id="footerText" placeholder="フッターのテキスト" value="© 2025 Koppy Lab" />
+        <label style="display:flex; gap:8px; align-items:center; margin-top:8px">
+          <input type="checkbox" id="usePageNum" checked> ページ番号を右下に表示
+        </label>
+        <div class="helper">Chrome/Edge の印刷で有効です。合計ページ数は環境によって表示されない場合があります。</div>
+      </div>
+      <div class="group">
+        <h3>テンプレート</h3>
+        <div class="ctrl-row" style="gap:6px; flex-wrap:wrap">
+          <button class="secondary" data-tpl="simple">ビジネス文書</button>
+          <button class="secondary" data-tpl="flyer">イベント告知</button>
+          <button class="secondary" data-tpl="invoice">簡易請求書</button>
+        </div>
+        <div class="helper">クリックすると現在の内容の末尾にテンプレートが挿入されます。</div>
+      </div>
+      <div class="group">
+        <h3>ヒント</h3>
+        <ul class="helper" style="padding-left:18px; line-height:1.7">
+          <li>画像はドラッグ&ドロップ、貼り付けでも挿入できます。</li>
+          <li>「PDFを作成」を押し、ブラウザの印刷画面で <b>PDFに保存</b> を選択。</li>
+          <li>「ページ区切り」で任意の位置から新しいページに。</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="stage">
+      <div class="paper">
+        <div class="paper-inner">
+          <div class="print-header" id="printHeader"><span id="headerContent"></span></div>
+          <div class="print-footer" id="printFooter"><span id="footerContent"></span> <span class="page-number" id="pageNum" style="float:right"></span></div>
+
+          <div class="print-body" id="printBody" style="">
+            <div id="editor" contenteditable="true" spellcheck="false">
+              <h1>ようこそ！ 楽々！PDFメーカー</h1>
+              <p>ここに文章を書き、画像を入れ、見出しや箇条書きで整えたら、右上の<b>PDFを作成</b>をクリック。印刷画面で <b>送信先: PDFに保存</b> を選び、保存してください。</p>
+              <h2>特長</h2>
+              <ul>
+                <li>ページサイズ/向き/余白を選択</li>
+                <li>ヘッダー・フッターとページ番号</li>
+                <li>ドラッグ&ドロップで画像挿入</li>
+                <li>テンプレートをワンクリック挿入</li>
+              </ul>
+              <div class="page-break">— ここでページ区切り —</div>
+              <p>ページ区切りのサンプル。印刷時にはこの灰色バーは表示されません。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  const editor = document.getElementById('editor');
+  const pageSizeSel = document.getElementById('pageSize');
+  const orientSel = document.getElementById('orientation');
+  const marginInput = document.getElementById('margin');
+  const fontSel = document.getElementById('font');
+  const fontSizeInput = document.getElementById('fontSize');
+  const lineHeightInput = document.getElementById('lineHeight');
+  const printBtn = document.getElementById('printBtn');
+  const saveBtn = document.getElementById('save');
+  const loadBtn = document.getElementById('load');
+  const resetBtn = document.getElementById('reset');
+
+  const useHeader = document.getElementById('useHeader');
+  const useFooter = document.getElementById('useFooter');
+  const headerText = document.getElementById('headerText');
+  const footerText = document.getElementById('footerText');
+  const usePageNum = document.getElementById('usePageNum');
+
+  const headerContent = document.getElementById('headerContent');
+  const footerContent = document.getElementById('footerContent');
+  const pageNum = document.getElementById('pageNum');
+  const printBody = document.getElementById('printBody');
+
+  const imgBtn = document.getElementById('imgBtn');
+  const imgInput = document.getElementById('imgInput');
+  const linkBtn = document.getElementById('linkBtn');
+  const pageBreakBtn = document.getElementById('pageBreakBtn');
+
+  const tplButtons = document.querySelectorAll('button[data-tpl]');
+
+  const pageSizeMap = {
+    A4: { w:210, h:297 },
+    A5: { w:148, h:210 },
+    Letter: { w:215.9, h:279.4 }
+  };
+
+  function mmToPx(mm){ return mm * 96 / 25.4; }
+
+  function updateScreenPaperWidth(){
+    const size = pageSizeMap[pageSizeSel.value];
+    const margin = Number(marginInput.value || 15);
+    const isLandscape = orientSel.value === 'landscape';
+    const pageWmm = isLandscape ? size.h : size.w;
+    const contentWmm = Math.max(20, pageWmm - margin * 2);
+    const px = Math.round(mmToPx(contentWmm));
+    document.querySelector('.print-body').style.maxWidth = px + 'px';
+  }
+
+  function ensurePrintStyle(){
+    let st = document.getElementById('dynamicPrint');
+    if(!st){
+      st = document.createElement('style');
+      st.id = 'dynamicPrint';
+      document.head.appendChild(st);
+    }
+    return st;
+  }
+
+  function updatePrintCSS(){
+    const sizeKey = pageSizeSel.value; const size = pageSizeMap[sizeKey];
+    const margin = Number(marginInput.value || 15);
+    const orientation = orientSel.value;
+    const headerOn = useHeader.checked;
+    const footerOn = useFooter.checked;
+
+    const headerH = headerOn ? 12 : 0; // mm
+    const footerH = footerOn ? 12 : 0; // mm
+
+    headerContent.textContent = headerText.value || '';
+    footerContent.textContent = footerText.value || '';
+
+    pageNum.style.display = (footerOn && usePageNum.checked) ? 'inline-block' : 'none';
+
+    const st = ensurePrintStyle();
+    st.textContent = `@media print{\n`+
+      `  @page{ size:${sizeKey} ${orientation}; margin:${margin}mm; }\n`+
+      `  .print-body{ margin-top:${headerH}mm; margin-bottom:${footerH}mm; }\n`+
+      `  .print-header{ display:${headerOn ? 'block':'none'}; }\n`+
+      `  .print-footer{ display:${footerOn ? 'block':'none'}; }\n`+
+      `}`;
+  }
+
+  function applyEditorStyles(){
+    editor.style.fontFamily = fontSel.value;
+    editor.style.fontSize = Number(fontSizeInput.value || 16) + 'px';
+    editor.style.lineHeight = Number(lineHeightInput.value || 1.6);
+  }
+
+  function exec(cmd, val=null){
+    document.execCommand(cmd, false, val);
+    editor.focus();
+  }
+
+  // Toolbar basic commands
+  document.querySelectorAll('.tbtn[data-cmd]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      exec(btn.dataset.cmd);
+    });
+  });
+  // Block format
+  document.querySelectorAll('.tbtn[data-block]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const tag = btn.dataset.block;
+      exec('formatBlock', tag === 'P' ? 'P' : tag);
+    });
+  });
+
+  linkBtn.addEventListener('click', ()=>{
+    const url = prompt('リンクURLを入力:');
+    if(url){ exec('createLink', url); }
+  });
+
+  pageBreakBtn.addEventListener('click', ()=>{
+    const node = document.createElement('div');
+    node.className = 'page-break';
+    node.textContent = '— ここでページ区切り —';
+    insertNodeAtCursor(node);
+  });
+
+  imgBtn.addEventListener('click', ()=> imgInput.click());
+  imgInput.addEventListener('change', (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const rd = new FileReader();
+    rd.onload = ()=> insertImage(rd.result);
+    rd.readAsDataURL(f);
+    imgInput.value = '';
+  });
+
+  function insertImage(src){
+    const img = document.createElement('img');
+    img.src = src; img.alt = '';
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    insertNodeAtCursor(img);
+  }
+
+  function insertNodeAtCursor(node){
+    const sel = window.getSelection();
+    if(!sel || sel.rangeCount === 0){ editor.appendChild(node); return; }
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(node);
+    range.setStartAfter(node); range.setEndAfter(node);
+    sel.removeAllRanges(); sel.addRange(range);
+    editor.focus();
+  }
+
+  // Drag & Drop images
+  editor.addEventListener('dragover', (e)=>{ e.preventDefault(); });
+  editor.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if(files && files.length){
+      [...files].forEach(f=>{
+        if(f.type.startsWith('image/')){
+          const rd = new FileReader(); rd.onload = ()=> insertImage(rd.result); rd.readAsDataURL(f);
+        }
+      });
+    }
+  });
+
+  // Paste image from clipboard
+  editor.addEventListener('paste', (e)=>{
+    const items = e.clipboardData && e.clipboardData.items;
+    if(!items) return;
+    for(const it of items){
+      if(it.type && it.type.indexOf('image') !== -1){
+        const file = it.getAsFile();
+        const rd = new FileReader(); rd.onload = ()=> insertImage(rd.result); rd.readAsDataURL(file);
+        e.preventDefault();
+      }
+    }
+  });
+
+  // Persistence
+  const STORAGE_KEY = 'easy_pdf_maker_v1';
+  function save(){
+    const data = {
+      html: editor.innerHTML,
+      pageSize: pageSizeSel.value,
+      orientation: orientSel.value,
+      margin: marginInput.value,
+      font: fontSel.value,
+      fontSize: fontSizeInput.value,
+      lineHeight: lineHeightInput.value,
+      useHeader: useHeader.checked,
+      useFooter: useFooter.checked,
+      usePageNum: usePageNum.checked,
+      headerText: headerText.value,
+      footerText: footerText.value
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    flash('保存しました');
+  }
+  function load(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw){ flash('保存データがありません'); return; }
+    try{
+      const d = JSON.parse(raw);
+      editor.innerHTML = d.html || editor.innerHTML;
+      pageSizeSel.value = d.pageSize || 'A4';
+      orientSel.value = d.orientation || 'portrait';
+      marginInput.value = d.margin || 15;
+      fontSel.value = d.font || fontSel.value;
+      fontSizeInput.value = d.fontSize || 16;
+      lineHeightInput.value = d.lineHeight || 1.6;
+      useHeader.checked = !!d.useHeader;
+      useFooter.checked = !!d.useFooter;
+      usePageNum.checked = !!d.usePageNum;
+      headerText.value = d.headerText || '';
+      footerText.value = d.footerText || '';
+      applyEditorStyles(); updatePrintCSS(); updateScreenPaperWidth();
+      flash('読み込みました');
+    }catch(err){ console.error(err); flash('読み込みに失敗しました'); }
+  }
+  function resetAll(){
+    if(!confirm('内容を初期化しますか？')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    editor.innerHTML = '<h1>ようこそ！ 楽々！PDFメーカー</h1>\n<p>ここに文章を書き…</p>';
+    pageSizeSel.value = 'A4';
+    orientSel.value = 'portrait';
+    marginInput.value = 15; fontSel.value = "'Noto Sans JP', sans-serif";
+    fontSizeInput.value = 16; lineHeightInput.value = 1.6;
+    useHeader.checked = true; useFooter.checked = true; usePageNum.checked = true;
+    headerText.value = '楽々！PDFメーカー'; footerText.value = '© 2025 Koppy Lab';
+    applyEditorStyles(); updatePrintCSS(); updateScreenPaperWidth();
+  }
+
+  saveBtn.addEventListener('click', save);
+  loadBtn.addEventListener('click', load);
+  resetBtn.addEventListener('click', resetAll);
+
+  [pageSizeSel, orientSel, marginInput, useHeader, useFooter, usePageNum, headerText, footerText]
+    .forEach?.(()=>{}) // placeholder (older browsers)
+
+  pageSizeSel.addEventListener('change', ()=>{ updatePrintCSS(); updateScreenPaperWidth(); });
+  orientSel.addEventListener('change', ()=>{ updatePrintCSS(); updateScreenPaperWidth(); });
+  marginInput.addEventListener('input', ()=>{ updatePrintCSS(); updateScreenPaperWidth(); });
+  useHeader.addEventListener('change', updatePrintCSS);
+  useFooter.addEventListener('change', updatePrintCSS);
+  usePageNum.addEventListener('change', updatePrintCSS);
+  headerText.addEventListener('input', updatePrintCSS);
+  footerText.addEventListener('input', updatePrintCSS);
+
+  fontSel.addEventListener('change', applyEditorStyles);
+  fontSizeInput.addEventListener('input', applyEditorStyles);
+  lineHeightInput.addEventListener('input', applyEditorStyles);
+
+  printBtn.addEventListener('click', ()=>{ updatePrintCSS(); window.print(); });
+
+  // Templates
+  const templates = {
+    simple: `\n<h1>件名：◯◯◯に関するご案内</h1>\n<p>平素よりお世話になっております。<br>株式会社△△の□□です。</p>\n<h2>概要</h2>\n<ul><li>日時：2025年8月20日(水) 14:00-15:00</li><li>場所：オンライン(Zoom)</li><li>目的：新機能のご紹介</li></ul>\n<h2>詳細</h2>\n<p>当日はデモンストレーションを予定しています。ご不明点は下記お問い合わせ先までお願いいたします。</p>\n<p>———</p>\n<p>株式会社△△<br>□□（部署名）<br>TEL: 03-1234-5678 / MAIL: info@example.com</p>`,
+    flyer: `\n<h1>【参加者募集】英語×マイクラ ワークショップ</h1>\n<p>ブロックで学ぶ楽しい英語体験！小学生向けのイベントです。</p>\n<ul><li>日程：9/7(日) 10:00-12:00</li><li>場所：ニコリヒトラボ</li><li>持ち物：ノートPC</li></ul>\n<h2>お申込み</h2>\n<p>QRコードまたはURLからお申込みください。</p>`,
+    invoice: `\n<h1>請求書</h1>\n<p>請求日：2025/08/18　請求番号：INV-2025-001</p>\n<table style="width:100%; border-collapse:collapse">
+      <thead>
+        <tr><th style="border:1px solid #ccc; padding:6px; text-align:left">品目</th><th style="border:1px solid #ccc; padding:6px; text-align:right">数量</th><th style="border:1px solid #ccc; padding:6px; text-align:right">単価</th><th style="border:1px solid #ccc; padding:6px; text-align:right">金額</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="border:1px solid #ccc; padding:6px">ワークショップ運営費</td><td style="border:1px solid #ccc; padding:6px; text-align:right">1</td><td style="border:1px solid #ccc; padding:6px; text-align:right">50,000</td><td style="border:1px solid #ccc; padding:6px; text-align:right">50,000</td></tr>
+        <tr><td style="border:1px solid #ccc; padding:6px">教材作成費</td><td style="border:1px solid #ccc; padding:6px; text-align:right">1</td><td style="border:1px solid #ccc; padding:6px; text-align:right">15,000</td><td style="border:1px solid #ccc; padding:6px; text-align:right">15,000</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3" style="border:1px solid #ccc; padding:6px; text-align:right">小計</td><td style="border:1px solid #ccc; padding:6px; text-align:right">65,000</td></tr>
+        <tr><td colspan="3" style="border:1px solid #ccc; padding:6px; text-align:right">消費税(10%)</td><td style="border:1px solid #ccc; padding:6px; text-align:right">6,500</td></tr>
+        <tr><td colspan="3" style="border:1px solid #ccc; padding:6px; text-align:right"><b>合計</b></td><td style="border:1px solid #ccc; padding:6px; text-align:right"><b>71,500</b></td></tr>
+      </tfoot>
+    </table>\n<p style="margin-top:12px">お振込先：◯◯銀行 ××支店 普通 1234567 カ)ニコリヒトラボ</p>`
+  };
+  tplButtons.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const key = b.dataset.tpl;
+      insertHtml(templates[key] || '');
+    });
+  });
+
+  function insertHtml(html){
+    const frag = document.createRange().createContextualFragment(html);
+    insertNodeAtCursor(frag);
+  }
+
+  // Initial apply
+  applyEditorStyles(); updatePrintCSS(); updateScreenPaperWidth();
+
+  function flash(msg){
+    const tip = document.createElement('div');
+    tip.textContent = msg;
+    Object.assign(tip.style, {
+      position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+      background:'rgba(34,211,238,.95)', color:'#05232a', padding:'10px 16px',
+      borderRadius:'12px', fontWeight:'700', zIndex:9999, boxShadow:'0 8px 20px rgba(0,0,0,.25)'
+    });
+    document.body.appendChild(tip);
+    setTimeout(()=> tip.remove(), 1500);
+  }
+})();
+</script>
+
+</body>
+</html>
