@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>UUID Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #0f2027, #040404 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .card {
+      width: 420px;
+      padding: 40px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.15);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #00e5ff;
+    }
+
+    .count-select {
+      margin-bottom: 16px;
+    }
+
+    select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+    }
+
+    .uuid-box {
+      font-size: 13px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      word-break: break-all;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      max-height: 180px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      text-align: left;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .generate {
+      background: linear-gradient(135deg, #00e5ff, #00ff9d);
+      color: #003333;
+    }
+
+    .generate:hover {
+      filter: brightness(1.1);
+    }
+
+    .copy {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .copy:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .toast {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #00ff9d;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>UUID Generator</h1>
+
+    <!-- 個数選択 -->
+    <div class="count-select">
+      生成数：
+      <select id="count">
+        <!-- 1〜20個 -->
+        <script>
+          for (let i = 1; i <= 20; i++) {
+            document.write(`<option value="${i}">${i}</option>`);
+          }
+        </script>
+      </select>
+    </div>
+
+    <div class="uuid-box" id="uuid">ここにUUIDが表示されます</div>
+
+    <div class="buttons">
+      <button class="generate" onclick="generateUUID()">Generate</button>
+      <button class="copy" onclick="copyUUID()">Copy</button>
+    </div>
+
+    <div class="toast" id="toast">Copied!</div>
+  </div>
+
+  <script>
+    function generateUUID() {
+      const count = document.getElementById("count").value;
+      let result = [];
+
+      for (let i = 0; i < count; i++) {
+        result.push(crypto.randomUUID());
+      }
+
+      document.getElementById("uuid").textContent = result.join("\n");
+    }
+
+    function copyUUID() {
+      const text = document.getElementById("uuid").textContent;
+      if (!text || text.includes("ここに")) return;
+
+      navigator.clipboard.writeText(text);
+
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1500);
+    }
+  </script>
+
+</body>
+</html>
