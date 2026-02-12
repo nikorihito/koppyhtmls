@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>タイピングの広場</title>
+  <meta name="description" content="速さ・正確性・両方を磨ける、4つのタイピングゲームが集まる広場" />
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a33;
+      --panel2:#0f1630;
+      --text:#eaf0ff;
+      --muted:#9fb0d0;
+      --line:rgba(255,255,255,.10);
+      --accent:#7c5cff;
+      --good:#35d07f;
+      --warn:#ffcc66;
+      --bad:#ff5c7a;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(124,92,255,.20), transparent 50%),
+        radial-gradient(900px 500px at 90% 30%, rgba(53,208,127,.12), transparent 45%),
+        radial-gradient(700px 450px at 40% 90%, rgba(255,92,122,.10), transparent 45%),
+        var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+    button{font:inherit}
+
+    .wrap{max-width:1100px; margin:0 auto; padding:24px 18px 64px}
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      position:sticky; top:0; z-index:10;
+      padding:14px 18px;
+      margin: -24px -18px 16px;
+      background: linear-gradient(to bottom, rgba(11,16,32,.92), rgba(11,16,32,.70));
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      min-width: 260px;
+    }
+    .logo{
+      width:40px; height:40px; border-radius:14px;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.22), transparent 45%),
+                  linear-gradient(135deg, rgba(124,92,255,.9), rgba(53,208,127,.6));
+      box-shadow: 0 10px 25px rgba(124,92,255,.15);
+    }
+    .brand h1{font-size:16px; margin:0; letter-spacing:.04em}
+    .brand p{margin:2px 0 0; color:var(--muted); font-size:12px}
+
+    .top-actions{
+      display:flex; align-items:center; gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:9px 12px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--text);
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .chip:hover{transform: translateY(-1px); background:rgba(255,255,255,.08)}
+    .chip .k{opacity:.85}
+    .chip .v{color:var(--muted); font-weight:600}
+
+    .hero{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      margin-top:10px;
+    }
+    @media (max-width: 900px){
+      .hero{grid-template-columns:1fr}
+      .brand{min-width:auto}
+    }
+    .card{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(18,26,51,.92), rgba(15,22,48,.84));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card .pad{padding:18px}
+    .title{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    }
+    .title h2{margin:0; font-size:18px; letter-spacing:.02em}
+    .title p{margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.55}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      border:1px solid var(--line);
+      padding:7px 10px; border-radius:999px;
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+    @media (max-width: 700px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    .mode{
+      position:relative;
+      cursor:pointer;
+      transition: .16s ease;
+      min-height: 162px;
+    }
+    .mode:hover{transform: translateY(-2px)}
+    .mode:active{transform: translateY(0px)}
+    .mode .pad{padding:16px}
+    .mode .head{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .mode .name{
+      display:flex; align-items:center; gap:10px;
+      margin:0;
+      font-size:16px;
+    }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+    }
+    .desc{margin:10px 0 0; color:var(--muted); font-size:13px; line-height:1.55}
+    .stats{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:14px;
+    }
+    .stat{
+      flex: 1 1 120px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+    .stat .label{font-size:11px; color:var(--muted)}
+    .stat .value{margin-top:4px; font-size:15px; font-weight:700}
+
+    .icon{
+      width:38px; height:38px;
+      display:grid; place-items:center;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.18), rgba(255,255,255,.04));
+      font-size:18px;
+    }
+
+    .cta-row{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:14px;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      transition:.15s ease;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn:hover{transform: translateY(-1px); background:rgba(255,255,255,.08)}
+    .btn.primary{
+      border-color: rgba(124,92,255,.55);
+      background: linear-gradient(135deg, rgba(124,92,255,.22), rgba(255,255,255,.06));
+    }
+
+    footer{
+      margin-top:22px;
+      color:var(--muted);
+      font-size:12px;
+      display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      opacity:.95;
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center; justify-content:center;
+      padding:18px;
+      z-index: 999;
+    }
+    .modal{
+      width:min(720px, 100%);
+      border-radius: 22px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(18,26,51,.98), rgba(15,22,48,.94));
+      box-shadow: 0 24px 70px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modal header{
+      position:unset;
+      margin:0;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      backdrop-filter:none;
+    }
+    .modal header .h{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      width:100%;
+    }
+    .modal header h3{margin:0; font-size:15px}
+    .modal .body{padding:16px}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 680px){ .row{grid-template-columns:1fr} }
+    .field{
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+    }
+    .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:8px}
+    .field select, .field input[type="text"]{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      color:var(--text);
+      outline:none;
+    }
+    .field .hint{margin-top:8px; font-size:12px; color:var(--muted); line-height:1.45}
+    .modal .actions{
+      padding:14px 16px;
+      border-top:1px solid var(--line);
+      display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;
+      background: rgba(255,255,255,.02);
+    }
+    .muted{color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(18,26,51,.92);
+      color:var(--text);
+      display:none;
+      z-index: 1000;
+      box-shadow: 0 12px 35px rgba(0,0,0,.35);
+      font-size:13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>タイピングの広場</h1>
+          <p>速さ・正確性・両方を磨ける 4つのゲームモード</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="chip" id="btnProfile" type="button" title="プロフィール">
+          <span class="k">👤</span><span class="v" id="uiPlayerName">Guest</span>
+        </button>
+        <button class="chip" id="btnSettings" type="button" title="設定">
+          <span class="k">⚙️</span><span class="v">設定</span>
+        </button>
+        <button class="chip" id="btnReset" type="button" title="ローカル記録リセット">
+          <span class="k">🧹</span><span class="v">記録リセット</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="card">
+        <div class="pad">
+          <div class="title">
+            <div>
+              <h2>今日の目標</h2>
+              <p>
+                まずは <b>WPM</b> と <b>Accuracy</b> を測って、伸びしろを見える化しましょう。<br />
+                各モードは将来的にランキング（オンライン）へ拡張できます。
+              </p>
+            </div>
+            <div class="badge" id="uiToday">
+              📅 <span class="mono" id="uiDate"></span>
+            </div>
+          </div>
+
+          <div class="cta-row">
+            <button class="btn primary" type="button" id="btnQuickStart">▶ クイックスタート</button>
+            <button class="btn" type="button" id="btnHowTo">📘 遊び方</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="title">
+            <div>
+              <h2>あなたのベスト</h2>
+              <p class="muted">この端末のローカル記録（最初のMVP用）</p>
+            </div>
+            <div class="badge">💾 Local</div>
+          </div>
+
+          <div class="grid" style="grid-template-columns:1fr; margin-top:12px">
+            <div class="stat">
+              <div class="label">最高 WPM（全モード）</div>
+              <div class="value" id="bestWpm">-</div>
+            </div>
+            <div class="stat">
+              <div class="label">最高 Accuracy（全モード）</div>
+              <div class="value" id="bestAcc">-</div>
+            </div>
+          </div>
+
+          <div class="muted" style="margin-top:10px; font-size:12px; line-height:1.6">
+            ※ゲーム本体は次で実装。今は「広場（ハブ）」として、選択・設定・記録の土台を用意しています。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="ゲーム一覧">
+      <!-- 1 -->
+      <a class="card mode" href="#play=sprinter" data-mode="sprinter" aria-label="目指せ！タイピングスプリンター">
+        <div class="pad">
+          <div class="head">
+            <div class="name">
+              <div class="icon" aria-hidden="true">🏃</div>
+              <div>
+                目指せ！タイピングスプリンター
+                <div class="muted" style="font-size:12px;margin-top:4px">タイピングレース（ソロ / オンライン）</div>
+              </div>
+            </div>
+            <div class="pill">速さ</div>
+          </div>
+          <p class="desc">
+            入力スピード勝負。自己ベストのゴーストと競って、最速タイムを更新しよう。
+          </p>
+          <div class="stats">
+            <div class="stat"><div class="label">自己ベストWPM</div><div class="value" id="sprinter_wpm">-</div></div>
+            <div class="stat"><div class="label">自己ベストAccuracy</div><div class="value" id="sprinter_acc">-</div></div>
+          </div>
+        </div>
+      </a>
+
+      <!-- 2 -->
+      <a class="card mode" href="#play=forest" data-mode="forest" aria-label="生き残れ！タイピング魔術の森">
+        <div class="pad">
+          <div class="head">
+            <div class="name">
+              <div class="icon" aria-hidden="true">💀</div>
+              <div>
+                生き残れ！タイピング魔術の森
+                <div class="muted" style="font-size:12px;margin-top:4px">無限湧き💀を何匹倒せる？</div>
+              </div>
+            </div>
+            <div class="pill">速さ</div>
+          </div>
+          <p class="desc">
+            次々に迫る💀をタイピングで撃破。反射神経とスピードで生存時間を伸ばせ。
+          </p>
+          <div class="stats">
+            <div class="stat"><div class="label">最高撃破数</div><div class="value" id="forest_score">-</div></div>
+            <div class="stat"><div class="label">自己ベストWPM</div><div class="value" id="forest_wpm">-</div></div>
+          </div>
+        </div>
+      </a>
+
+      <!-- 3 -->
+      <a class="card mode" href="#play=island" data-mode="island" aria-label="落ちるな！タイピングのんびり島">
+        <div class="pad">
+          <div class="head">
+            <div class="name">
+              <div class="icon" aria-hidden="true">🏝️</div>
+              <div>
+                落ちるな！タイピングのんびり島
+                <div class="muted" style="font-size:12px;margin-top:4px">ミスで海面上昇、どこまで耐える？</div>
+              </div>
+            </div>
+            <div class="pill">正確性</div>
+          </div>
+          <p class="desc">
+            ミスをすると海面が上がる。焦らず、丁寧に。Accuracyを鍛えるサバイバル。
+          </p>
+          <div class="stats">
+            <div class="stat"><div class="label">最高生存時間</div><div class="value" id="island_score">-</div></div>
+            <div class="stat"><div class="label">自己ベストAccuracy</div><div class="value" id="island_acc">-</div></div>
+          </div>
+        </div>
+      </a>
+
+      <!-- 4 -->
+      <a class="card mode" href="#play=restaurant" data-mode="restaurant" aria-label="食の極み！スーパーレストラン">
+        <div class="pad">
+          <div class="head">
+            <div class="name">
+              <div class="icon" aria-hidden="true">🍽️</div>
+              <div>
+                食の極み！スーパーレストラン
+                <div class="muted" style="font-size:12px;margin-top:4px">遅延×ミスで怒ゲージ上昇</div>
+              </div>
+            </div>
+            <div class="pill">両方</div>
+          </div>
+          <p class="desc">
+            速さも正確性も必要。遅いと怒ゲージが上がり、ミスでも怒る。最高の提供を目指せ。
+          </p>
+          <div class="stats">
+            <div class="stat"><div class="label">最高売上（クリア数）</div><div class="value" id="restaurant_score">-</div></div>
+            <div class="stat"><div class="label">総合ベスト</div><div class="value" id="restaurant_rank">-</div></div>
+          </div>
+        </div>
+      </a>
+    </section>
+
+    <footer>
+      <div>© <span id="year"></span> タイピングの広場</div>
+      <div class="muted">MVP Hub v0.1（ゲーム本体は順次実装）</div>
+    </footer>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal">
+      <header>
+        <div class="h">
+          <h3 id="settingsTitle">⚙️ 設定</h3>
+          <button class="btn" type="button" data-close="settingsModal">✕ 閉じる</button>
+        </div>
+      </header>
+      <div class="body">
+        <div class="row">
+          <div class="field">
+            <label for="playerName">プレイヤー名</label>
+            <input id="playerName" type="text" maxlength="16" placeholder="例：koppy" />
+            <div class="hint">ランキングや対戦表示に使います（最大16文字）。</div>
+          </div>
+          <div class="field">
+            <label for="inputMode">入力方式（予定）</label>
+            <select id="inputMode">
+              <option value="romaji">ローマ字（推奨）</option>
+              <option value="kana">かな入力（将来対応）</option>
+            </select>
+            <div class="hint">MVPではローマ字想定。かな入力は拡張フェーズで追加が現実的です。</div>
+          </div>
+          <div class="field">
+            <label for="difficulty">難易度（初期値）</label>
+            <select id="difficulty">
+              <option value="easy">かんたん</option>
+              <option value="normal" selected>ふつう</option>
+              <option value="hard">むずかしい</option>
+            </select>
+            <div class="hint">各ゲーム開始時のデフォルト難易度として使用します。</div>
+          </div>
+          <div class="field">
+            <label for="sound">効果音</label>
+            <select id="sound">
+              <option value="on" selected>ON</option>
+              <option value="off">OFF</option>
+            </select>
+            <div class="hint">演出は後から強化できます。まずはON/OFFだけ用意。</div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" data-close="settingsModal">キャンセル</button>
+        <button class="btn primary" type="button" id="saveSettings">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div class="modal-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <div class="modal">
+      <header>
+        <div class="h">
+          <h3 id="profileTitle">👤 プロフィール</h3>
+          <button class="btn" type="button" data-close="profileModal">✕ 閉じる</button>
+        </div>
+      </header>
+      <div class="body">
+        <div class="field">
+          <label>プレイヤー名</label>
+          <div class="mono" id="profileName">Guest</div>
+          <div class="hint">設定から変更できます。</div>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div class="field">
+            <label>最高WPM（全モード）</label>
+            <div class="mono" id="profileBestWpm">-</div>
+          </div>
+          <div class="field">
+            <label>最高Accuracy（全モード）</label>
+            <div class="mono" id="profileBestAcc">-</div>
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>実績（予定）</label>
+          <div class="muted">バッジ / 称号 / 週間チャレンジは、ランキング実装と同時に追加すると効果が大きいです。</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" data-close="profileModal">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // =========================
+    // Local Storage Keys
+    // =========================
+    const LS = {
+      SETTINGS: "typing_plaza_settings_v1",
+      STATS: "typing_plaza_stats_v1"
+    };
+
+    // =========================
+    // Default State
+    // =========================
+    const defaultSettings = {
+      playerName: "Guest",
+      inputMode: "romaji",
+      difficulty: "normal",
+      sound: "on"
+    };
+
+    // Minimal stats schema for the hub (game bodies will update these later)
+    const defaultStats = {
+      sprinter: { bestWpm: null, bestAcc: null },
+      forest: { bestKills: null, bestWpm: null },
+      island: { bestTimeSec: null, bestAcc: null },
+      restaurant: { bestServed: null, bestRank: null },
+      global: { bestWpm: null, bestAcc: null }
+    };
+
+    function safeParse(json, fallback){
+      try { return JSON.parse(json) ?? fallback; } catch { return fallback; }
+    }
+
+    function loadSettings(){
+      return safeParse(localStorage.getItem(LS.SETTINGS), defaultSettings);
+    }
+    function saveSettings(v){
+      localStorage.setItem(LS.SETTINGS, JSON.stringify(v));
+    }
+
+    function loadStats(){
+      const s = safeParse(localStorage.getItem(LS.STATS), defaultStats);
+      // merge to ensure new fields exist
+      return deepMerge(structuredClone(defaultStats), s);
+    }
+    function saveStats(v){
+      localStorage.setItem(LS.STATS, JSON.stringify(v));
+    }
+
+    function deepMerge(target, source){
+      for(const k of Object.keys(source || {})){
+        if(source[k] && typeof source[k] === "object" && !Array.isArray(source[k])){
+          if(!target[k] || typeof target[k] !== "object") target[k] = {};
+          deepMerge(target[k], source[k]);
+        }else{
+          target[k] = source[k];
+        }
+      }
+      return target;
+    }
+
+    // =========================
+    // UI helpers
+    // =========================
+    const $ = (id) => document.getElementById(id);
+
+    function fmtPercent(v){
+      if(v == null) return "-";
+      const n = Math.max(0, Math.min(100, v));
+      return `${n.toFixed(1)}%`;
+    }
+    function fmtWpm(v){
+      if(v == null) return "-";
+      return `${Math.round(v)} WPM`;
+    }
+    function fmtNum(v){
+      if(v == null) return "-";
+      return String(v);
+    }
+    function fmtTimeSec(v){
+      if(v == null) return "-";
+      const m = Math.floor(v / 60);
+      const s = Math.floor(v % 60);
+      return `${m}:${String(s).padStart(2,"0")}`;
+    }
+
+    function toast(msg){
+      const t = $("toast");
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(()=>{ t.style.display = "none"; }, 2200);
+    }
+
+    // =========================
+    // Modal control
+    // =========================
+    function openModal(id){
+      const el = $(id);
+      if(!el) return;
+      el.style.display = "flex";
+    }
+    function closeModal(id){
+      const el = $(id);
+      if(!el) return;
+      el.style.display = "none";
+    }
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-close]");
+      if(btn){
+        closeModal(btn.getAttribute("data-close"));
+        return;
+      }
+      const backdrop = e.target.classList.contains("modal-backdrop") ? e.target : null;
+      if(backdrop){
+        backdrop.style.display = "none";
+      }
+    });
+
+    // =========================
+    // Render hub stats
+    // =========================
+    function render(){
+      const settings = loadSettings();
+      const stats = loadStats();
+
+      $("uiPlayerName").textContent = settings.playerName || "Guest";
+      $("profileName").textContent = settings.playerName || "Guest";
+
+      // Global bests
+      $("bestWpm").textContent = fmtWpm(stats.global.bestWpm);
+      $("bestAcc").textContent = fmtPercent(stats.global.bestAcc);
+      $("profileBestWpm").textContent = fmtWpm(stats.global.bestWpm);
+      $("profileBestAcc").textContent = fmtPercent(stats.global.bestAcc);
+
+      // Mode cards
+      $("sprinter_wpm").textContent = fmtWpm(stats.sprinter.bestWpm);
+      $("sprinter_acc").textContent = fmtPercent(stats.sprinter.bestAcc);
+
+      $("forest_score").textContent = stats.forest.bestKills == null ? "-" : `${stats.forest.bestKills} 体`;
+      $("forest_wpm").textContent = fmtWpm(stats.forest.bestWpm);
+
+      $("island_score").textContent = stats.island.bestTimeSec == null ? "-" : fmtTimeSec(stats.island.bestTimeSec);
+      $("island_acc").textContent = fmtPercent(stats.island.bestAcc);
+
+      $("restaurant_score").textContent = stats.restaurant.bestServed == null ? "-" : `${stats.restaurant.bestServed} 品`;
+      $("restaurant_rank").textContent = stats.restaurant.bestRank == null ? "-" : String(stats.restaurant.bestRank);
+
+      // Date/Year
+      const now = new Date();
+      $("uiDate").textContent = now.toISOString().slice(0,10);
+      $("year").textContent = String(now.getFullYear());
+    }
+
+    // =========================
+    // Routing: #play=mode
+    // =========================
+    function parseHash(){
+      const h = location.hash.replace(/^#/, "");
+      const parts = h.split("&").filter(Boolean);
+      const map = {};
+      for(const p of parts){
+        const [k,v] = p.split("=");
+        if(k) map[decodeURIComponent(k)] = decodeURIComponent(v ?? "");
+      }
+      return map;
+    }
+
+    function handleRoute(){
+      const q = parseHash();
+      if(q.play){
+        // MVP: game bodies not implemented yet
+        const mode = q.play;
+        const names = {
+          sprinter: "目指せ！タイピングスプリンター",
+          forest: "生き残れ！タイピング魔術の森",
+          island: "落ちるな！タイピングのんびり島",
+          restaurant: "食の極み！スーパーレストラン"
+        };
+        toast(`「${names[mode] ?? mode}」は次で実装します（ハブは完成）`);
+        // Reset hash so repeated clicks still show toast
+        history.replaceState(null, "", " ");
+      }
+    }
+
+    window.addEventListener("hashchange", handleRoute);
+
+    // =========================
+    // Buttons
+    // =========================
+    $("btnSettings").addEventListener("click", () => {
+      const s = loadSettings();
+      $("playerName").value = s.playerName ?? "Guest";
+      $("inputMode").value = s.inputMode ?? "romaji";
+      $("difficulty").value = s.difficulty ?? "normal";
+      $("sound").value = s.sound ?? "on";
+      openModal("settingsModal");
+    });
+
+    $("saveSettings").addEventListener("click", () => {
+      const next = {
+        playerName: ($("playerName").value || "Guest").trim().slice(0,16),
+        inputMode: $("inputMode").value,
+        difficulty: $("difficulty").value,
+        sound: $("sound").value
+      };
+      saveSettings(next);
+      closeModal("settingsModal");
+      render();
+      toast("設定を保存しました");
+    });
+
+    $("btnProfile").addEventListener("click", () => {
+      render();
+      openModal("profileModal");
+    });
+
+    $("btnReset").addEventListener("click", () => {
+      // Safety: simple confirm
+      const ok = confirm("ローカル記録（ベスト・設定）をリセットします。よろしいですか？");
+      if(!ok) return;
+      localStorage.removeItem(LS.SETTINGS);
+      localStorage.removeItem(LS.STATS);
+      render();
+      toast("リセットしました");
+    });
+
+    $("btnHowTo").addEventListener("click", () => {
+      toast("遊び方：好きなモードを選択 → ゲーム画面は次で実装（今はハブの土台）");
+    });
+
+    $("btnQuickStart").addEventListener("click", () => {
+      // Start with the sprint mode as default
+      location.hash = "play=sprinter";
+    });
+
+    // =========================
+    // Demo data (optional): remove if you don't want sample bests
+    // =========================
+    (function seedIfEmpty(){
+      const existing = localStorage.getItem(LS.STATS);
+      if(existing) return;
+      // 初回だけ「見栄え用」仮データ。不要ならこのIIFEごと消してOK。
+      const s = structuredClone(defaultStats);
+      s.sprinter.bestWpm = 72;
+      s.sprinter.bestAcc = 97.4;
+      s.forest.bestKills = 38;
+      s.forest.bestWpm = 68;
+      s.island.bestTimeSec = 154;
+      s.island.bestAcc = 99.2;
+      s.restaurant.bestServed = 21;
+      s.restaurant.bestRank = "S";
+      s.global.bestWpm = 72;
+      s.global.bestAcc = 99.2;
+      saveStats(s);
+    })();
+
+    // Init
+    render();
+    handleRoute();
+  </script>
+</body>
+</html>
