@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>食の極み！スーパーレストラン</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;background:#0b1020;color:#eaf0ff}
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    .card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:14px;padding:14px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{cursor:pointer;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#eaf0ff;padding:10px 12px;border-radius:12px}
+    input{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25);color:#eaf0ff;outline:none}
+    .chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);border-radius:999px;padding:8px 10px;font-size:13px}
+    .hud{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .bar{width:260px;height:10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;overflow:hidden;background:rgba(0,0,0,.22)}
+    .bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg, rgba(53,208,127,.9), rgba(255,204,102,.9), rgba(255,92,122,.95))}
+    .prompt{font-size:20px;line-height:1.7;word-break:break-word}
+    .done{color:#35d07f}
+    .next{text-decoration:underline;text-decoration-color:#7c5cff;text-underline-offset:3px}
+    .todo{opacity:.92}
+    .small{font-size:12px;opacity:.8;line-height:1.6}
+    .orders{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .order{border:1px solid rgba(255,255,255,.10);border-radius:14px;background:rgba(255,255,255,.04);padding:10px 12px}
+    .orderTop{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .orderBar{height:8px;border:1px solid rgba(255,255,255,.10);border-radius:999px;overflow:hidden;background:rgba(0,0,0,.18);margin-top:8px}
+    .orderBar i{display:block;height:100%;width:50%;background:linear-gradient(90deg, rgba(53,208,127,.85), rgba(255,204,102,.85), rgba(255,92,122,.85))}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🍽️ 食の極み！スーパーレストラン</h1>
+
+  <div class="card">
+    <div class="row">
+      <label>名前 <input id="name" placeholder="例：koppy" maxlength="16"></label>
+      <button class="btn" id="btnStart">開始</button>
+      <button class="btn" id="btnStop">停止</button>
+    </div>
+    <div class="hud" style="margin-top:10px">
+      <span class="chip">🍽️ 提供 <span id="served">0</span></span>
+      <span class="chip">⚡ <span id="wpm">0</span></span>
+      <span class="chip">🎯 <span id="acc">100.0</span>%</span>
+      <span class="chip">❌ <span id="miss">0</span></span>
+      <span class="chip">😠 <span id="angerTxt">0</span>%</span>
+      <div class="bar" title="怒ゲージ"><i id="angerBar"></i></div>
+    </div>
+    <div class="small" style="margin-top:10px">
+      遅いほど怒ゲージ上昇、ミスでも上昇。提供成功で少し下がります。満タンでゲームオーバー。
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="prompt" id="prompt"></div>
+    <div class="row" style="margin-top:10px">
+      <input id="inp" placeholder="現在の注文を打て！（1文字ずつ判定）" style="flex:1 1 340px">
+    </div>
+
+    <div class="orders" id="orders"></div>
+  </div>
+</div>
+
+<script type="module">
+  const V = "11.0.0";
+  import { initializeApp } from `https://www.gstatic.com/firebasejs/${V}/firebase-app.js`;
+  import { getAuth, signInAnonymously } from `https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`;
+  import { getFirestore, doc, setDoc, serverTimestamp } from `https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`;
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    appId: "YOUR_APP_ID",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const u = await signInAnonymously(auth);
+  const uid = u.user.uid;
+
+  const ui = {
+    name: document.getElementById("name"),
+    btnStart: document.getElementById("btnStart"),
+    btnStop: document.getElementById("btnStop"),
+    served: document.getElementById("served"),
+    wpm: document.getElementById("wpm"),
+    acc: document.getElementById("acc"),
+    miss: document.getElementById("miss"),
+    angerTxt: document.getElementById("angerTxt"),
+    angerBar: document.getElementById("angerBar"),
+    prompt: document.getElementById("prompt"),
+    inp: document.getElementById("inp"),
+    orders: document.getElementById("orders"),
+  };
+
+  const MENU = [
+    "やきたて ぱん を おねがいします",
+    "あつあつ すーぷ を ください",
+    "さらだ を ていねいに もってきて",
+    "でざーと を すぐに たべたい",
+    "water please",
+    "fast and accurate typing"
+  ];
+
+  function pickOrder(){
+    return MENU[Math.floor(Math.random()*MENU.length)];
+  }
+  function esc(s){return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");}
+
+  const state = {
+    running:false,
+    startMs:0,
+    total:0, correct:0, miss:0,
+    served:0,
+    anger:0,       // 0..100
+    // orders: { id, text, i, ttlMs, bornMs }
+    queue:[],
+    nextId:1,
+    loop:null,
+  };
+
+  function metrics(){
+    const elapsed = Math.max(1, performance.now()-state.startMs);
+    const min = elapsed/60000;
+    const wpm = (state.correct/5)/min;
+    const acc = state.total ? (state.correct/state.total)*100 : 100;
+    return { elapsed, wpm, acc };
+  }
+
+  function current(){
+    return state.queue[0] ?? null;
+  }
+
+  function renderPrompt(){
+    const o = current();
+    if(!o){ ui.prompt.textContent = "開始すると注文が入ります"; return; }
+    const t=o.text, i=o.i;
+    const done=t.slice(0,i), next=t[i]??"", todo=t.slice(i+1);
+    ui.prompt.innerHTML = `<span class="done">${esc(done)}</span>${next?`<span class="next">${esc(next)}</span>`:""}<span class="todo">${esc(todo)}</span>`;
+  }
+
+  function renderOrders(){
+    const now = performance.now();
+    ui.orders.innerHTML = state.queue.slice(0,3).map((o,idx)=>{
+      const age = now - o.bornMs;
+      const remain = Math.max(0, o.ttlMs - age);
+      const ratio = remain / o.ttlMs; // 1→0
+      const pct = Math.round(ratio*100);
+      return `
+        <div class="order">
+          <div class="orderTop">
+            <div><b>${idx===0?"▶ 現在":"待ち"}</b> ${esc(o.text)}</div>
+            <div style="opacity:.8;font-size:12px">${(remain/1000).toFixed(1)}s</div>
+          </div>
+          <div class="orderBar"><i style="width:${pct}%"></i></div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function hud(){
+    const { wpm, acc } = metrics();
+    ui.served.textContent = String(state.served);
+    ui.wpm.textContent = String(Math.round(wpm));
+    ui.acc.textContent = acc.toFixed(1);
+    ui.miss.textContent = String(state.miss);
+    ui.angerTxt.textContent = String(Math.round(state.anger));
+    ui.angerBar.style.width = `${Math.round(state.anger)}%`;
+  }
+
+  function tick(){
+    if(!state.running) return;
+    const now = performance.now();
+
+    // 時間経過で怒る（ベース）
+    state.anger = Math.min(100, state.anger + 0.045);
+
+    // 注文切れ（遅延）で怒ゲージ加速
+    for(const o of state.queue){
+      const age = now - o.bornMs;
+      if(age > o.ttlMs){
+        state.anger = Math.min(100, state.anger + 0.12);
+      }
+    }
+
+    // 注文補充（キュー維持）
+    while(state.queue.length < 3){
+      state.queue.push({
+        id: state.nextId++,
+        text: pickOrder(),
+        i: 0,
+        ttlMs: 5200,         // 制限時間（難度はここで調整）
+        bornMs: now
+      });
+    }
+
+    if(state.anger >= 100){
+      stop(true);
+      return;
+    }
+
+    renderPrompt();
+    renderOrders();
+    hud();
+    requestAnimationFrame(tick);
+  }
+
+  function start(){
+    state.running=true;
+    state.startMs=performance.now();
+    state.total=0; state.correct=0; state.miss=0;
+    state.served=0;
+    state.anger=0;
+    state.queue=[];
+    state.nextId=1;
+    ui.inp.value="";
+    ui.inp.focus();
+    requestAnimationFrame(tick);
+  }
+
+  function calcRank(wpm, acc, served){
+    // ざっくり総合指標（調整前提）
+    const score = (wpm * (acc/100)) + served*2;
+    if(score >= 90 && acc >= 98) return "S";
+    if(score >= 70 && acc >= 96) return "A";
+    if(score >= 55 && acc >= 94) return "B";
+    if(score >= 40) return "C";
+    return "D";
+  }
+
+  async function stop(gameOver){
+    state.running=false;
+    const { wpm, acc } = metrics();
+    const rank = calcRank(wpm, acc, state.served);
+    await saveScore("restaurant", { wpm, acc, served: state.served, rank });
+    alert(gameOver ? `ゲームオーバー！提供 ${state.served} / ランク ${rank}` : `停止しました（保存）ランク ${rank}`);
+  }
+
+  async function saveScore(mode, { wpm, acc, served, rank }){
+    const name = (ui.name.value || "Guest").trim().slice(0,16) || "Guest";
+    const ref = doc(db, "leaderboards", mode, "scores", uid);
+    await setDoc(ref, {
+      name, wpm, acc,
+      score: served,
+      rank,
+      updatedAt: serverTimestamp()
+    }, { merge:true });
+  }
+
+  ui.inp.addEventListener("keydown",(e)=>{
+    if(!state.running) return;
+    if(e.key.length===1 && !e.ctrlKey && !e.metaKey && !e.altKey){
+      e.preventDefault();
+      const o = current();
+      if(!o) return;
+      const expected = o.text[o.i];
+      if(expected==null) return;
+
+      state.total++;
+      if(e.key === expected){
+        state.correct++;
+        o.i++;
+        if(o.i >= o.text.length){
+          // 提供成功
+          state.served++;
+          state.queue.shift();
+          // 成功で怒りを下げる（救済）
+          state.anger = Math.max(0, state.anger - 10);
+        }
+      } else {
+        state.miss++;
+        // ミスで怒ゲージ増
+        state.anger = Math.min(100, state.anger + 2.6);
+      }
+    }
+  });
+
+  ui.btnStart.addEventListener("click", start);
+  ui.btnStop.addEventListener("click", ()=> stop(false));
+
+  ui.prompt.textContent="「開始」を押してください。";
+</script>
+</body>
+</html>
