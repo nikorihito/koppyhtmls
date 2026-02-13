@@ -3,21 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>目指せ！タイピングスプリンター</title>
-  <meta name="description" content="日本語表示×ローマ字入力で、WPM/Accuracy/Timeを競うタイピングレース" />
+  <title>目指せ！タイピングスプリンター（ソロ）</title>
+  <meta name="description" content="短距離型タイピングレース。WPMとAccuracyで自己ベスト更新を狙う。" />
   <style>
     :root{
-      --bg:#0b1020;
-      --panel:rgba(18,26,51,.86);
-      --text:#eaf0ff;
-      --muted:#9fb0d0;
-      --line:rgba(255,255,255,.12);
-      --accent:#7c5cff;
-      --good:#35d07f;
-      --warn:#ffcc66;
-      --bad:#ff5c7a;
-      --shadow:0 18px 45px rgba(0,0,0,.40);
-      --radius:18px;
+      --bg:#f6f8ff;
+      --card: rgba(255,255,255,.82);
+      --card2: rgba(255,255,255,.65);
+      --text:#101425;
+      --muted:#5e6a86;
+      --line: rgba(16,20,37,.12);
+      --accent:#4f7cff;
+      --accent2:#33c2a1;
+      --bad:#ff4d6d;
+      --warn:#ffb020;
+      --shadow: 0 18px 55px rgba(25,35,70,.12);
+      --radius: 18px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -25,60 +26,58 @@
       margin:0;
       color:var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      background: var(--bg);
+    }
+
+    /* 背景画像 */
+    .bg{
+      position:fixed; inset:0;
       background:
-        linear-gradient(to bottom, rgba(11,16,32,.65), rgba(11,16,32,.90)),
-        url("./sprinter_bg.png");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+        linear-gradient(180deg, rgba(246,248,255,.92), rgba(246,248,255,.72)),
+        url("./sprinter_bg.png") center/cover no-repeat;
+      filter:saturate(1.05);
+      z-index:-1;
     }
-    a{color:inherit;text-decoration:none}
-    button,input{font:inherit}
 
-    .wrap{max-width:1100px;margin:0 auto;padding:22px 16px 64px}
+    .wrap{max-width:1080px; margin:0 auto; padding:22px 16px 54px}
     header{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
       padding:14px 16px;
-      background:rgba(11,16,32,.55);
+      background: rgba(255,255,255,.75);
       border:1px solid var(--line);
-      border-radius:22px;
-      box-shadow:var(--shadow);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
-      position:sticky;top:12px;z-index:20;
+      position:sticky; top:12px; z-index:10;
     }
-    .brand{display:flex;align-items:center;gap:12px}
+    .brand{display:flex; align-items:center; gap:12px}
     .logo{
-      width:40px;height:40px;border-radius:14px;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.22), transparent 45%),
-                  linear-gradient(135deg, rgba(124,92,255,.95), rgba(53,208,127,.60));
-      box-shadow:0 10px 25px rgba(124,92,255,.18);
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, rgba(79,124,255,.95), rgba(51,194,161,.75));
+      box-shadow: 0 14px 40px rgba(79,124,255,.25);
     }
-    .brand h1{margin:0;font-size:15px;letter-spacing:.04em}
-    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
-
-    .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    h1{margin:0; font-size:16px; letter-spacing:.02em}
+    .sub{margin:2px 0 0; font-size:12px; color:var(--muted)}
+    .top{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
     .chip{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:9px 12px;border-radius:999px;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
       border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-      cursor:pointer;transition:.15s ease;
+      background: rgba(255,255,255,.75);
+      cursor:pointer;
+      transition:.15s ease;
     }
-    .chip:hover{transform:translateY(-1px);background:rgba(255,255,255,.08)}
-    .chip .v{color:var(--muted);font-weight:700}
+    .chip:hover{transform: translateY(-1px)}
+    .chip .v{font-weight:700}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap:14px;
-      margin-top:14px;
-    }
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; margin-top:14px}
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
 
     .card{
       border:1px solid var(--line);
-      background: var(--panel);
+      background: var(--card);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -86,340 +85,226 @@
     }
     .pad{padding:16px}
 
-    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
     .stat{
-      flex:1 1 160px;
+      flex: 1 1 160px;
       border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
       border-radius:16px;
+      background: var(--card2);
       padding:10px 12px;
     }
-    .stat .k{color:var(--muted);font-size:11px}
-    .stat .v{margin-top:4px;font-weight:800;font-size:16px}
+    .label{font-size:11px; color:var(--muted)}
+    .value{margin-top:4px; font-weight:800; font-size:16px}
 
-    .progress{
-      height:10px;border-radius:999px;overflow:hidden;
+    .btn{
       border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
+      background: rgba(255,255,255,.85);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      transition:.15s ease;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .btn.primary{
+      border-color: rgba(79,124,255,.35);
+      background: linear-gradient(135deg, rgba(79,124,255,.20), rgba(255,255,255,.85));
+    }
+
+    .typingBox{
+      border:1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.90);
+      padding:14px;
+    }
+    .jp{font-size:18px; font-weight:800; line-height:1.55}
+    .kana{margin-top:6px; font-size:13px; color:var(--muted); line-height:1.55}
+    .hint{margin-top:10px; font-size:12px; color:var(--muted)}
+    .inputRow{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap}
+    input[type="text"]{
+      flex: 1 1 260px;
+      border:1px solid var(--line);
+      border-radius: 14px;
+      padding:12px 12px;
+      font-size:16px;
+      outline:none;
+      background: rgba(255,255,255,.95);
+    }
+    input[type="text"]:focus{border-color: rgba(79,124,255,.55); box-shadow: 0 0 0 4px rgba(79,124,255,.12)}
+    .progress{
+      margin-top:12px;
+      height:10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.7);
+      overflow:hidden;
     }
     .bar{
       height:100%;
       width:0%;
-      background: linear-gradient(90deg, rgba(124,92,255,.85), rgba(53,208,127,.70));
+      background: linear-gradient(90deg, rgba(79,124,255,.90), rgba(51,194,161,.90));
       transition: width .15s linear;
     }
 
-    .question{
-      margin-top:12px;
-      padding:14px 14px;
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-    }
-    .jp{font-size:22px;font-weight:900;letter-spacing:.02em}
-    .kana{margin-top:6px;color:var(--muted);font-size:13px}
-    .target{
+    .status{
       margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      font-size:14px;
-      line-height:1.6;
-    }
-    .target .done{color:rgba(234,240,255,.95)}
-    .target .todo{color:rgba(159,176,208,.95)}
-    .target .cursor{display:inline-block;min-width:10px;border-bottom:2px solid rgba(255,255,255,.35)}
-
-    .inputbox{
-      margin-top:12px;
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-    }
-    input[type="text"]{
-      flex: 1 1 360px;
-      padding:12px 12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(0,0,0,.22);
-      color:var(--text);
-      outline:none;
-    }
-    input[type="text"]:focus{border-color: rgba(124,92,255,.55); box-shadow:0 0 0 4px rgba(124,92,255,.14)}
-    .btn{
-      padding:11px 12px;border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      cursor:pointer;transition:.15s ease;
-      display:inline-flex;align-items:center;gap:8px;
-    }
-    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.08)}
-    .btn.primary{
-      border-color: rgba(124,92,255,.55);
-      background: linear-gradient(135deg, rgba(124,92,255,.25), rgba(255,255,255,.06));
-    }
-    .btn.danger{
-      border-color: rgba(255,92,122,.55);
-      background: linear-gradient(135deg, rgba(255,92,122,.18), rgba(255,255,255,.06));
+      display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      font-size:12px; color:var(--muted);
     }
 
-    .muted{color:var(--muted)}
-    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.6}
-    .warn{color:var(--warn)}
-    .good{color:var(--good)}
-    .bad{color:var(--bad)}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.8);
+      font-size:12px;
+      color:var(--muted);
+    }
 
     .toast{
-      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-      padding:10px 12px;border-radius:999px;
+      position:fixed;
+      left:50%;
+      bottom:16px;
+      transform:translateX(-50%);
+      padding:10px 12px;
+      border-radius:999px;
       border:1px solid var(--line);
-      background:rgba(18,26,51,.92);
-      color:var(--text);
-      display:none;z-index:1000;
-      box-shadow:0 12px 35px rgba(0,0,0,.35);
+      background: rgba(255,255,255,.92);
+      box-shadow: var(--shadow);
+      display:none;
+      z-index: 999;
       font-size:13px;
     }
-    .shake{animation: shake .12s linear 0s 2}
-    @keyframes shake{
-      0%{transform:translateX(0)}
-      25%{transform:translateX(-3px)}
-      50%{transform:translateX(3px)}
-      75%{transform:translateX(-2px)}
-      100%{transform:translateX(0)}
-    }
 
-    .modal-backdrop{
-      position:fixed; inset:0; display:none;
-      align-items:center; justify-content:center;
-      background: rgba(0,0,0,.62);
-      padding:18px; z-index:999;
-    }
-    .modal{
-      width:min(760px, 100%);
-      border-radius:22px;
-      border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(18,26,51,.98), rgba(15,22,48,.95));
-      box-shadow: 0 24px 70px rgba(0,0,0,.55);
-      overflow:hidden;
-    }
-    .modal .head{
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      background: rgba(255,255,255,.03);
-    }
-    .modal .body{padding:16px}
-    .modal .actions{
-      padding:14px 16px;border-top:1px solid var(--line);
-      display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;
-      background: rgba(255,255,255,.02);
-    }
-    .field{
-      padding:12px;border:1px solid var(--line);
-      border-radius:16px;background:rgba(255,255,255,.04);
-    }
-    .field label{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
-    .field input{
-      width:100%;
-      padding:10px 10px;border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      color: var(--text);
-      outline:none;
-    }
-    footer{margin-top:16px;color:var(--muted);font-size:12px;opacity:.95}
+    .danger{color:var(--bad); font-weight:800}
+    .ok{color: #1f7a4b; font-weight:800}
   </style>
 </head>
+
 <body>
+  <div class="bg" aria-hidden="true"></div>
+
   <div class="wrap">
     <header>
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>目指せ！タイピングスプリンター</h1>
-          <p>日本語表示 × ローマ字入力 / WPM・Accuracy・Time</p>
+          <h1>目指せ！タイピングスプリンター（ソロ）</h1>
+          <div class="sub">表示は日本語 / 入力はローマ字（互換OK）</div>
         </div>
       </div>
-      <div class="top-actions">
-        <button class="chip" id="btnBack" type="button" title="戻る（広場へ）">
-          <span>⬅</span><span class="v">広場へ</span>
-        </button>
-        <button class="chip" id="btnProfile" type="button" title="プロフィール">
-          <span>👤</span><span class="v" id="uiPlayerName">Guest</span>
-        </button>
-        <button class="chip" id="btnSettings" type="button" title="設定">
-          <span>⚙️</span><span class="v">設定</span>
-        </button>
+      <div class="top">
+        <button class="chip" id="btnBack" type="button">⬅ <span class="v">広場へ</span></button>
+        <button class="chip" id="btnSettings" type="button">⚙️ <span class="v">設定</span></button>
+        <span class="badge">📦 texts_ja.json 連携</span>
       </div>
     </header>
 
     <div class="grid">
-      <!-- Game -->
+      <!-- メイン -->
       <section class="card">
         <div class="pad">
           <div class="row">
-            <div class="stat"><div class="k">状態</div><div class="v" id="uiState">待機中</div></div>
-            <div class="stat"><div class="k">WPM</div><div class="v" id="uiWpm">-</div></div>
-            <div class="stat"><div class="k">Accuracy</div><div class="v" id="uiAcc">-</div></div>
-            <div class="stat"><div class="k">Time</div><div class="v" id="uiTime">0.00s</div></div>
+            <div class="stat">
+              <div class="label">状態</div>
+              <div class="value" id="uiState">準備中</div>
+            </div>
+            <div class="stat">
+              <div class="label">残り時間</div>
+              <div class="value mono" id="uiTime">60.0</div>
+            </div>
+            <div class="stat">
+              <div class="label">問題数</div>
+              <div class="value mono"><span id="uiDone">0</span>/<span id="uiTotal">10</span></div>
+            </div>
           </div>
 
-          <div style="margin-top:12px">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <div class="muted">進捗 <span class="mono" id="uiProgressText">0/10</span></div>
-              <div class="muted">接続 <span class="mono" id="uiNet">Firebase: …</span></div>
-            </div>
-            <div class="progress" aria-label="進捗バー"><div class="bar" id="bar"></div></div>
-          </div>
+          <div style="margin-top:14px" class="typingBox">
+            <div class="jp" id="uiJp">スタートを押して開始</div>
+            <div class="kana mono" id="uiKana">（ここに ひらがな が出ます）</div>
+            <div class="hint">※入力欄にはローマ字を打ってください。例：し → <span class="mono">shi</span> / <span class="mono">si</span></div>
 
-          <div class="question" style="margin-top:14px">
-            <div class="jp" id="qJp">—</div>
-            <div class="kana mono" id="qKana">—</div>
-
-            <div class="target mono" id="qTarget">
-              <span class="done"></span><span class="cursor"></span><span class="todo"></span>
-            </div>
-
-            <div class="inputbox">
-              <input id="typingInput" type="text" inputmode="latin" autocomplete="off" autocapitalize="off" spellcheck="false"
-                     placeholder="英字（ローマ字）で入力 / Backspaceで戻る" />
+            <div class="inputRow">
+              <input id="typeInput" type="text" inputmode="latin" autocomplete="off" autocapitalize="off" spellcheck="false"
+                     placeholder="ここにローマ字で入力" disabled />
               <button class="btn primary" id="btnStart" type="button">▶ スタート</button>
-              <button class="btn" id="btnRetry" type="button">🔁 リトライ</button>
-              <button class="btn danger" id="btnGiveUp" type="button">⛔ 中断</button>
+              <button class="btn" id="btnRestart" type="button">↻ リスタート</button>
             </div>
 
-            <div class="hint">
-              ✅ ローマ字揺れ対応（例：し＝ <span class="mono">shi / si</span>）<br/>
-              ✅ ミス入力は進まず、ミスとしてカウント（競技向け）<br/>
-              <span class="warn">※最初にFirestoreへ保存するため、匿名ログインが走ります。</span>
+            <div class="progress" aria-label="進捗">
+              <div class="bar" id="bar"></div>
+            </div>
+
+            <div class="status">
+              <div>入力: <span class="mono" id="uiTyped">""</span></div>
+              <div>判定: <span id="uiJudge" class="ok">OK</span></div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Best & Info -->
+      <!-- サイド -->
       <aside class="card">
         <div class="pad">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-            <div>
-              <div style="font-weight:900">自己ベスト（この端末）</div>
-              <div class="muted" style="font-size:12px;margin-top:4px">Local + Firestore（自分のみ）</div>
+          <div class="row">
+            <div class="stat">
+              <div class="label">WPM（推定）</div>
+              <div class="value" id="uiWpm">-</div>
             </div>
-            <div class="muted mono" id="uidShort">uid: …</div>
+            <div class="stat">
+              <div class="label">Accuracy</div>
+              <div class="value" id="uiAcc">-</div>
+            </div>
           </div>
 
           <div class="row" style="margin-top:12px">
-            <div class="stat"><div class="k">Best WPM</div><div class="v" id="bestWpm">-</div></div>
-            <div class="stat"><div class="k">Best Acc</div><div class="v" id="bestAcc">-</div></div>
-            <div class="stat"><div class="k">Best Time</div><div class="v" id="bestTime">-</div></div>
-            <div class="stat"><div class="k">Best Date</div><div class="v" id="bestDate">-</div></div>
-          </div>
-
-          <div class="field" style="margin-top:12px">
-            <label>レース設定</label>
-            <div class="muted" style="font-size:13px;line-height:1.6">
-              問題数：<span class="mono" id="cfgCount">10</span><br/>
-              制限時間：<span class="mono">なし（タイムアタック）</span><br/>
-              採点：<span class="mono">WPM / Accuracy / Time</span>
+            <div class="stat">
+              <div class="label">ミス数</div>
+              <div class="value" id="uiMiss">0</div>
+            </div>
+            <div class="stat">
+              <div class="label">総キー数</div>
+              <div class="value" id="uiKeys">0</div>
             </div>
           </div>
 
-          <div class="field" style="margin-top:12px">
-            <label>メモ</label>
-            <div class="muted" style="font-size:12px;line-height:1.6">
-              このスプリンターが“型”になります。<br/>
-              ここが完成すれば、残り3ゲームは同じエンジンで高速に横展開できます。
+          <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px">
+            <div class="row">
+              <div class="stat">
+                <div class="label">自己ベスト WPM</div>
+                <div class="value" id="uiBestWpm">-</div>
+              </div>
+              <div class="stat">
+                <div class="label">自己ベスト Accuracy</div>
+                <div class="value" id="uiBestAcc">-</div>
+              </div>
+            </div>
+            <div class="hint" style="margin-top:10px">
+              設定とベストはローカル保存。Firebaseランキングは次フェーズで接続できます。
             </div>
           </div>
 
-          <footer>© <span id="year"></span> Typing Hiroba / Sprinter v1.0</footer>
+          <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px">
+            <div class="label">難易度（文章の長さ）</div>
+            <div class="row" style="margin-top:8px">
+              <button class="btn" data-diff="easy" type="button">かんたん（short）</button>
+              <button class="btn" data-diff="normal" type="button">ふつう（medium）</button>
+              <button class="btn" data-diff="hard" type="button">むずかしい（long）</button>
+            </div>
+          </div>
         </div>
       </aside>
     </div>
+
+    <div class="toast" id="toast"></div>
   </div>
 
-  <!-- Settings Modal -->
-  <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-    <div class="modal">
-      <div class="head">
-        <div style="font-weight:900" id="settingsTitle">⚙️ 設定</div>
-        <button class="btn" type="button" data-close="settingsModal">✕ 閉じる</button>
-      </div>
-      <div class="body">
-        <div class="field">
-          <label for="playerName">プレイヤー名（ランキング表示用）</label>
-          <input id="playerName" type="text" maxlength="16" placeholder="例：koppy" />
-          <div class="muted" style="margin-top:8px;font-size:12px;line-height:1.5">
-            ※MVPでは匿名ログイン + 表示名を保存します（最大16文字）。
-          </div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn" type="button" data-close="settingsModal">キャンセル</button>
-        <button class="btn primary" type="button" id="saveSettings">保存</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Profile Modal -->
-  <div class="modal-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
-    <div class="modal">
-      <div class="head">
-        <div style="font-weight:900" id="profileTitle">👤 プロフィール</div>
-        <button class="btn" type="button" data-close="profileModal">✕ 閉じる</button>
-      </div>
-      <div class="body">
-        <div class="field">
-          <label>プレイヤー名</label>
-          <div class="mono" id="profileName">Guest</div>
-        </div>
-        <div class="field" style="margin-top:12px">
-          <label>UID</label>
-          <div class="mono" id="profileUid">…</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn" type="button" data-close="profileModal">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
-    <div class="modal">
-      <div class="head">
-        <div style="font-weight:900" id="resultTitle">🏁 レース結果</div>
-        <button class="btn" type="button" data-close="resultModal">✕ 閉じる</button>
-      </div>
-      <div class="body">
-        <div class="row">
-          <div class="stat"><div class="k">WPM</div><div class="v" id="resWpm">-</div></div>
-          <div class="stat"><div class="k">Accuracy</div><div class="v" id="resAcc">-</div></div>
-          <div class="stat"><div class="k">Time</div><div class="v" id="resTime">-</div></div>
-          <div class="stat"><div class="k">Miss</div><div class="v" id="resMiss">-</div></div>
-        </div>
-        <div class="field" style="margin-top:12px">
-          <label>保存</label>
-          <div class="muted" id="resSave">…</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn" type="button" id="btnResultRetry">🔁 もう一回</button>
-        <button class="btn primary" type="button" id="btnResultClose" data-close="resultModal">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
+  <!-- Firebase（現段階では“入れても入れなくても”動く） -->
   <script type="module">
-    // ===== Firebase (CDN) =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-    // ===== Romaji table =====
-    import { ROMAJI_TABLE } from "./assets/romaji_table.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD65FaPtQiKdfl2IOiJlWCrFWAwQVhPnNI",
@@ -431,575 +316,517 @@
       measurementId: "G-G06Q1Y899Y"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    try{
+      const app = initializeApp(firebaseConfig);
+      getAnalytics(app);
+    }catch(e){
+      // ローカル(file://)で開くと analytics が失敗することがあるので無視
+      console.warn("Firebase init skipped:", e?.message || e);
+    }
+  </script>
 
-    // ===== Helpers =====
-    const $ = (id) => document.getElementById(id);
+  <!-- Game Logic -->
+  <script type="module">
+    import { ROMAJI_TABLE } from "./romaji_table.js";
+
+    // ==========
+    // LocalStorage
+    // ==========
     const LS = {
-      SETTINGS: "typing_settings_v1",
-      SPRINTER_BEST: "sprinter_best_v1"
+      SETTINGS: "typing_plaza_settings_v1",
+      SPRINTER: "typing_sprinter_stats_v1"
     };
 
-    function safeParse(v, fallback){ try{ return JSON.parse(v) ?? fallback; } catch { return fallback; } }
+    const defaultSettings = {
+      playerName: "Guest",
+      difficulty: "normal", // easy/normal/hard
+      sound: "on"
+    };
+
+    const defaultSprinterStats = {
+      bestWpm: null,
+      bestAcc: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function safeParse(json, fallback){
+      try { return JSON.parse(json) ?? fallback; } catch { return fallback; }
+    }
+
+    function loadSettings(){
+      const s = safeParse(localStorage.getItem(LS.SETTINGS), defaultSettings);
+      return { ...defaultSettings, ...s };
+    }
+    function saveSettings(v){
+      localStorage.setItem(LS.SETTINGS, JSON.stringify(v));
+    }
+    function loadBest(){
+      const s = safeParse(localStorage.getItem(LS.SPRINTER), defaultSprinterStats);
+      return { ...defaultSprinterStats, ...s };
+    }
+    function saveBest(v){
+      localStorage.setItem(LS.SPRINTER, JSON.stringify(v));
+    }
+
     function toast(msg){
       const t = $("toast");
       t.textContent = msg;
       t.style.display = "block";
       clearTimeout(toast._timer);
-      toast._timer = setTimeout(()=> t.style.display="none", 2200);
-    }
-    function openModal(id){ const el=$(id); if(el) el.style.display="flex"; }
-    function closeModal(id){ const el=$(id); if(el) el.style.display="none"; }
-
-    document.addEventListener("click", (e)=>{
-      const btn = e.target.closest("[data-close]");
-      if(btn){ closeModal(btn.getAttribute("data-close")); return; }
-      if(e.target.classList.contains("modal-backdrop")) e.target.style.display="none";
-    });
-
-    function loadSettings(){
-      return safeParse(localStorage.getItem(LS.SETTINGS), { playerName:"Guest" });
-    }
-    function saveSettings(v){
-      localStorage.setItem(LS.SETTINGS, JSON.stringify(v));
+      toast._timer = setTimeout(()=>{ t.style.display = "none"; }, 2200);
     }
 
-    function loadBest(){
-      return safeParse(localStorage.getItem(LS.SPRINTER_BEST), null);
+    // ==========
+    // texts_ja.json load
+    // ==========
+    let TEXTS = null; // {short:[{id,jp,kana}], medium:..., long:...}
+
+    async function loadTexts(){
+      const res = await fetch("./texts_ja.json", { cache:"no-store" });
+      if(!res.ok) throw new Error("texts_ja.json が読み込めませんでした");
+      const json = await res.json();
+      if(!json.short || !json.medium || !json.long) throw new Error("texts_ja.json の形式が想定と違います");
+      TEXTS = json;
     }
-    function saveBest(v){
-      localStorage.setItem(LS.SPRINTER_BEST, JSON.stringify(v));
+
+    function pickPoolByDifficulty(diff){
+      if(!TEXTS) return [];
+      if(diff === "easy") return TEXTS.short;
+      if(diff === "hard") return TEXTS.long;
+      return TEXTS.medium; // normal
     }
 
-    function fmtWpm(v){ return v==null ? "-" : `${Math.round(v)} WPM`; }
-    function fmtAcc(v){ return v==null ? "-" : `${Math.max(0,Math.min(100,v)).toFixed(1)}%`; }
-    function fmtTimeMs(ms){ return ms==null ? "-" : `${(ms/1000).toFixed(2)}s`; }
-    function shortUid(uid){ return uid ? uid.slice(0,6)+"…"+uid.slice(-4) : "…"; }
+    function sampleQuestions(pool, n){
+      const a = [...pool];
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a.slice(0, Math.min(n, a.length));
+    }
 
-    // ===== Kana -> Romaji candidates (supports variants) =====
-    // We match by "candidates set". We avoid explosion by limiting candidates.
-    const MAX_CANDIDATES = 512;
+    // ==========
+    // Romaji matcher (multi-accepted)
+    // ==========
+    // かな文字列を、許可されるローマ字系列へ（複数候補）として扱い、入力に対して前方一致で進める。
+    // 実装は「現在位置idx」＋「残り許容候補群」を状態として更新する方式。
 
-    function tokenizeKana(kana){
-      // Handles digraphs first (2 chars), and keeps 'っ' as token.
+    function buildTokenOptions(kana){
+      // 最大長3（拗音「しゃ」など）を優先マッチ
       const tokens = [];
       for(let i=0;i<kana.length;){
-        const ch = kana[i];
+        let chunk = null;
 
-        if(ch === "っ"){
-          tokens.push("っ");
-          i++;
+        // 3文字/2文字/1文字の順で辞書にあるか確認
+        for(const len of [3,2,1]){
+          const s = kana.slice(i, i+len);
+          if(ROMAJI_TABLE[s]){
+            chunk = s;
+            break;
+          }
+        }
+
+        // 「っ」の特別扱いは token として保持（後で子音重ねを許容）
+        if(!chunk){
+          // 未定義文字が来た場合はそのままスキップ（ここで落とすより運用継続）
+          tokens.push({ kind:"raw", kana:kana[i], options: [] });
+          i += 1;
           continue;
         }
 
-        const two = kana.slice(i, i+2);
-        if(ROMAJI_TABLE[two]){
-          tokens.push(two);
-          i += 2;
-          continue;
-        }
-
-        const one = kana[i];
-        tokens.push(one);
-        i++;
+        tokens.push({ kind:"kana", kana: chunk, options: ROMAJI_TABLE[chunk] });
+        i += chunk.length;
       }
       return tokens;
     }
 
-    function isVowel(c){ return ["a","i","u","e","o"].includes(c); }
-
-    function expandRomajiCandidates(kana){
-      const tokens = tokenizeKana(kana);
-      let candidates = new Set([""]);
-
-      for(let idx=0; idx<tokens.length; idx++){
-        const t = tokens[idx];
-
-        if(t === "っ"){
-          // sokuon: duplicate first consonant of next token's romaji
-          const next = tokens[idx+1];
-          const nextList = next ? ROMAJI_TABLE[next] : null;
-          if(!nextList) continue; // orphan: ignore
-          const newSet = new Set();
-          for(const base of candidates){
-            for(const r of nextList){
-              const first = r[0];
-              // only consonant doubling (if vowel, ignore)
-              if(first && !isVowel(first)){
-                newSet.add(base + first);
-              }else{
-                newSet.add(base);
-              }
-              if(newSet.size >= MAX_CANDIDATES) break;
-            }
-            if(newSet.size >= MAX_CANDIDATES) break;
-          }
-          candidates = newSet;
-          continue;
-        }
-
-        const list = ROMAJI_TABLE[t];
-        if(!list){
-          // Unknown char: keep as-is (rare). This will likely never match.
-          const newSet = new Set();
-          for(const base of candidates){
-            newSet.add(base + t);
-            if(newSet.size >= MAX_CANDIDATES) break;
-          }
-          candidates = newSet;
-          continue;
-        }
-
-        const newSet = new Set();
-        for(const base of candidates){
-          for(const r of list){
-            newSet.add(base + r);
-            if(newSet.size >= MAX_CANDIDATES) break;
-          }
-          if(newSet.size >= MAX_CANDIDATES) break;
-        }
-        candidates = newSet;
-      }
-
-      return Array.from(candidates);
+    function isConsonant(ch){
+      return /^[bcdfghjklmnpqrstvwxyz]$/.test(ch);
     }
 
-    // ===== Game state =====
-    const RACE_COUNT = 10;
-
-    const state = {
-      uid: null,
-      playerName: "Guest",
-      texts: [],
-      race: [],
-      index: 0,
-      started: false,
-      finished: false,
-      startAt: 0,
-      timer: null,
-
-      // current question
-      q: null,                 // {jp,kana}
-      candidates: [],          // expanded romaji candidates
-      typed: "",
-
-      // scoring
-      correctKeystrokes: 0,
-      missKeystrokes: 0,
-      totalCorrectChars: 0
-    };
-
-    function setNetLabel(msg){ $("uiNet").textContent = msg; }
-
-    function calcNowMs(){
-      if(!state.started) return 0;
-      return performance.now() - state.startAt;
+    // 1問分の「許可される入力」状態を作る
+    function createMatcherState(kana){
+      const tokens = buildTokenOptions(kana);
+      return {
+        tokens,
+        tokenIndex: 0,
+        // tokenごとの候補を状態として持つ（例：し -> ["shi","si"]）
+        // currentCandidates は「今のtokenで残っている候補（未消化）」の配列
+        currentCandidates: null,
+        // 促音（っ）対応用：次の子音を重ねる許容
+        pendingSmallTsu: false
+      };
     }
 
-    function calcWpm(elapsedMs){
-      if(elapsedMs <= 0) return 0;
-      // Standard: (correct chars / 5) / minutes
-      const minutes = elapsedMs / 60000;
-      return (state.totalCorrectChars / 5) / minutes;
-    }
-
-    function calcAcc(){
-      const total = state.correctKeystrokes + state.missKeystrokes;
-      if(total <= 0) return 100;
-      return (state.correctKeystrokes / total) * 100;
-    }
-
-    function renderStats(){
-      const ms = calcNowMs();
-      const wpm = state.started ? calcWpm(ms) : null;
-      const acc = state.started ? calcAcc() : null;
-
-      $("uiTime").textContent = `${(ms/1000).toFixed(2)}s`;
-      $("uiWpm").textContent = state.started ? `${Math.round(wpm)} WPM` : "-";
-      $("uiAcc").textContent = state.started ? `${acc.toFixed(1)}%` : "-";
-
-      const progress = Math.min(1, (state.index) / RACE_COUNT);
-      $("bar").style.width = `${progress*100}%`;
-      $("uiProgressText").textContent = `${state.index}/${RACE_COUNT}`;
-    }
-
-    function renderQuestion(){
-      if(!state.q){
-        $("qJp").textContent = "—";
-        $("qKana").textContent = "—";
-        $("qTarget").querySelector(".done").textContent = "";
-        $("qTarget").querySelector(".todo").textContent = "";
+    function ensureCandidates(st){
+      if(st.currentCandidates) return;
+      // tokenIndex が範囲外なら終端
+      if(st.tokenIndex >= st.tokens.length){
+        st.currentCandidates = [];
         return;
       }
 
-      $("qJp").textContent = state.q.jp;
-      $("qKana").textContent = `よみ: ${state.q.kana}`;
+      const tk = st.tokens[st.tokenIndex];
 
-      // Show canonical target = first candidate (display only)
-      const canonical = state.candidates[0] ?? "";
-      const typed = state.typed;
-
-      const done = typed;
-      const todo = canonical.slice(typed.length);
-
-      $("qTarget").querySelector(".done").textContent = done;
-      $("qTarget").querySelector(".todo").textContent = todo;
-    }
-
-    function setStateLabel(s){ $("uiState").textContent = s; }
-
-    function pickRace(texts){
-      // choose RACE_COUNT items (random with replacement if insufficient)
-      const arr = [];
-      for(let i=0;i<RACE_COUNT;i++){
-        const item = texts[Math.floor(Math.random()*texts.length)];
-        arr.push(item);
+      if(tk.kind === "kana"){
+        // 促音トークンなら、次のトークンに進めつつフラグを立てる
+        if(tk.kana === "っ"){
+          st.pendingSmallTsu = true;
+          st.tokenIndex++;
+          st.currentCandidates = null;
+          ensureCandidates(st);
+          return;
+        }
+        st.currentCandidates = tk.options.map(s => s.toLowerCase());
+        return;
       }
-      return arr;
+
+      // raw は入力対象外として飛ばす（安全運用）
+      st.tokenIndex++;
+      st.currentCandidates = null;
+      ensureCandidates(st);
     }
 
-    function setQuestion(i){
-      state.index = i;
-      state.q = state.race[i] ?? null;
-      state.typed = "";
+    // 入力1文字を食べられるか（食べたら state を更新）
+    function consumeChar(st, ch){
+      ch = ch.toLowerCase();
+      ensureCandidates(st);
 
-      if(state.q){
-        state.candidates = expandRomajiCandidates(state.q.kana);
-        // canonical = shortest candidate first for nicer display
-        state.candidates.sort((a,b)=>a.length-b.length);
-      }else{
-        state.candidates = [];
+      // もう終わり
+      if(st.tokenIndex >= st.tokens.length){
+        return { ok:false, done:true };
       }
-      renderQuestion();
-      renderStats();
+
+      // 促音（っ）: 次のtokenの候補の先頭子音を1回余計に打てる
+      if(st.pendingSmallTsu){
+        // 次のtoken候補の先頭子音（例：ka->k, shi->s）に一致したら消費OKとしてフラグ解除し、
+        // tokenIndexは進めず（次tokenを通常処理で打つ）
+        ensureCandidates(st);
+        const can = st.currentCandidates || [];
+        const headSet = new Set();
+        for(const cand of can){
+          const head = cand[0];
+          if(head) headSet.add(head);
+        }
+        if(headSet.has(ch) && isConsonant(ch)){
+          st.pendingSmallTsu = false;
+          return { ok:true, done:false };
+        }
+        // 促音中でも通常の消費を許すと壊れるので、ここではNG
+        return { ok:false, done:false };
+      }
+
+      const cands = st.currentCandidates || [];
+      // 候補のうち、先頭が ch のものだけ残す（先頭1文字を削る）
+      const next = [];
+      for(const cand of cands){
+        if(cand.startsWith(ch)){
+          const rest = cand.slice(1);
+          next.push(rest);
+        }
+      }
+
+      if(next.length === 0){
+        return { ok:false, done:false };
+      }
+
+      // 候補更新
+      st.currentCandidates = next;
+
+      // 候補の中に空文字があれば、そのtokenが完了（ただし他候補が残っていても、最短で進めてよい）
+      if(st.currentCandidates.some(x => x.length === 0)){
+        // 次tokenへ進む
+        st.tokenIndex++;
+        st.currentCandidates = null;
+        ensureCandidates(st);
+      }
+
+      const done = (st.tokenIndex >= st.tokens.length);
+      return { ok:true, done };
     }
 
-    function resetRun(){
-      state.index = 0;
-      state.started = false;
-      state.finished = false;
-      state.startAt = 0;
-      state.typed = "";
-      state.correctKeystrokes = 0;
-      state.missKeystrokes = 0;
-      state.totalCorrectChars = 0;
-      clearInterval(state.timer);
-      state.timer = null;
+    // ==========
+    // Game (Sprinter Solo)
+    // ==========
+    const GAME = {
+      totalQuestions: 10,
+      timeLimitSec: 60.0
+    };
 
-      setStateLabel("待機中");
-      $("typingInput").value = "";
-      $("typingInput").disabled = true;
+    let settings = loadSettings();
+    let best = loadBest();
 
-      $("bar").style.width = `0%`;
-      $("uiProgressText").textContent = `0/${RACE_COUNT}`;
-      $("uiTime").textContent = `0.00s`;
+    let questions = [];
+    let qIndex = 0;
+
+    let matcher = null;
+    let started = false;
+    let ended = false;
+
+    let startTs = 0;
+    let timerId = null;
+
+    // metrics
+    let totalKeystrokes = 0;
+    let missCount = 0;
+    let correctKeystrokes = 0;
+
+    function fmtWpm(v){
+      if(v == null) return "-";
+      return `${Math.round(v)} WPM`;
+    }
+    function fmtAcc(v){
+      if(v == null) return "-";
+      return `${v.toFixed(1)}%`;
+    }
+
+    function renderBest(){
+      $("uiBestWpm").textContent = fmtWpm(best.bestWpm);
+      $("uiBestAcc").textContent = fmtAcc(best.bestAcc);
+    }
+
+    function setStateLabel(s){
+      $("uiState").textContent = s;
+    }
+
+    function setQuestion(idx){
+      qIndex = idx;
+      const q = questions[qIndex];
+      $("uiJp").textContent = q.jp;
+      $("uiKana").textContent = q.kana;
+      $("uiDone").textContent = String(qIndex);
+      $("uiTotal").textContent = String(questions.length);
+      $("uiTyped").textContent = '""';
+      $("uiJudge").textContent = "OK";
+      $("uiJudge").className = "ok";
+      $("typeInput").value = "";
+      $("bar").style.width = `${(qIndex / questions.length) * 100}%`;
+      matcher = createMatcherState(q.kana);
+    }
+
+    function resetMetrics(){
+      totalKeystrokes = 0;
+      missCount = 0;
+      correctKeystrokes = 0;
+      $("uiKeys").textContent = "0";
+      $("uiMiss").textContent = "0";
       $("uiWpm").textContent = "-";
       $("uiAcc").textContent = "-";
     }
 
-    function startRun(){
-      if(state.texts.length === 0){
-        toast("問題データが読み込めません（assets/texts_ja.json を確認）");
+    function stopTimer(){
+      if(timerId){ clearInterval(timerId); timerId = null; }
+    }
+
+    function currentTimeLeft(){
+      const t = (performance.now() - startTs) / 1000;
+      return Math.max(0, GAME.timeLimitSec - t);
+    }
+
+    function updateHud(){
+      const left = currentTimeLeft();
+      $("uiTime").textContent = left.toFixed(1);
+
+      const elapsedMin = Math.max(0.001, (performance.now()-startTs)/1000/60);
+      // WPMの一般的な計算：正解キー/5/分
+      const wpm = (correctKeystrokes / 5) / elapsedMin;
+      const acc = totalKeystrokes === 0 ? 100 : (correctKeystrokes / totalKeystrokes) * 100;
+
+      $("uiWpm").textContent = Number.isFinite(wpm) ? `${Math.round(wpm)} WPM` : "-";
+      $("uiAcc").textContent = Number.isFinite(acc) ? `${acc.toFixed(1)}%` : "-";
+
+      $("uiKeys").textContent = String(totalKeystrokes);
+      $("uiMiss").textContent = String(missCount);
+
+      if(left <= 0){
+        endGame("タイムアップ");
+      }
+    }
+
+    function endGame(reason){
+      if(ended) return;
+      ended = true;
+      started = false;
+      stopTimer();
+      $("typeInput").disabled = true;
+
+      // final metrics
+      const elapsedMin = Math.max(0.001, (performance.now()-startTs)/1000/60);
+      const wpm = (correctKeystrokes / 5) / elapsedMin;
+      const acc = totalKeystrokes === 0 ? 0 : (correctKeystrokes / totalKeystrokes) * 100;
+
+      setStateLabel(`終了（${reason}）`);
+
+      // best update
+      let updated = false;
+      if(Number.isFinite(wpm) && (best.bestWpm == null || wpm > best.bestWpm)){
+        best.bestWpm = wpm;
+        updated = true;
+      }
+      if(Number.isFinite(acc) && (best.bestAcc == null || acc > best.bestAcc)){
+        best.bestAcc = acc;
+        updated = true;
+      }
+      if(updated){
+        saveBest(best);
+        renderBest();
+        toast("自己ベストを更新しました");
+      }else{
+        toast("結果を記録しました");
+      }
+
+      // progress 100%
+      $("bar").style.width = `100%`;
+    }
+
+    function startGame(){
+      if(!TEXTS){
+        toast("texts_ja.json を読み込み中です…");
         return;
       }
-      state.race = pickRace(state.texts);
-      resetRun();
+
+      settings = loadSettings();
+
+      const pool = pickPoolByDifficulty(settings.difficulty);
+      questions = sampleQuestions(pool, GAME.totalQuestions);
+
+      if(questions.length < GAME.totalQuestions){
+        toast("文章数が不足しています（texts_ja.json を確認してください）");
+        return;
+      }
+
+      resetMetrics();
+      ended = false;
+      started = true;
+
+      setStateLabel("プレイ中");
+      $("typeInput").disabled = false;
+      $("typeInput").focus();
 
       setQuestion(0);
 
-      state.started = true;
-      state.startAt = performance.now();
-      setStateLabel("レース中");
-      $("typingInput").disabled = false;
-      $("typingInput").focus();
-
-      state.timer = setInterval(renderStats, 60);
-      toast("スタート！");
+      startTs = performance.now();
+      stopTimer();
+      timerId = setInterval(updateHud, 50);
+      updateHud();
     }
 
-    function stopRun(label="中断"){
-      clearInterval(state.timer);
-      state.timer = null;
-      state.started = false;
-      state.finished = false;
-      setStateLabel(label);
-      $("typingInput").disabled = true;
-    }
-
-    function isValidNextChar(nextTyped){
-      // Accept if any candidate has this as prefix
-      for(const c of state.candidates){
-        if(c.startsWith(nextTyped)) return true;
-      }
-      return false;
-    }
-
-    function isComplete(){
-      // Complete if any candidate equals typed
-      return state.candidates.some(c => c === state.typed);
+    function restartGame(){
+      stopTimer();
+      $("typeInput").disabled = true;
+      setStateLabel("準備中");
+      $("uiTime").textContent = GAME.timeLimitSec.toFixed(1);
+      $("uiDone").textContent = "0";
+      $("uiTotal").textContent = String(GAME.totalQuestions);
+      $("uiJp").textContent = "スタートを押して開始";
+      $("uiKana").textContent = "（ここに ひらがな が出ます）";
+      $("uiTyped").textContent = '""';
+      $("uiJudge").textContent = "OK";
+      $("uiJudge").className = "ok";
+      $("bar").style.width = "0%";
+      resetMetrics();
+      started = false;
+      ended = false;
     }
 
     function advanceQuestion(){
-      const nextIndex = state.index + 1;
-      if(nextIndex >= RACE_COUNT){
-        finishRun();
+      const nextIdx = qIndex + 1;
+      if(nextIdx >= questions.length){
+        endGame("完走");
         return;
       }
-      setQuestion(nextIndex);
-      $("typingInput").value = "";
+      setQuestion(nextIdx);
+      $("bar").style.width = `${(nextIdx / questions.length) * 100}%`;
     }
 
-    async function finishRun(){
-      state.finished = true;
-      clearInterval(state.timer);
-      state.timer = null;
+    // ==========
+    // Input handling
+    // ==========
+    $("typeInput").addEventListener("keydown", (e) => {
+      if(!started || ended) return;
 
-      const elapsedMs = performance.now() - state.startAt;
-      const wpm = calcWpm(elapsedMs);
-      const acc = calcAcc();
-      const miss = state.missKeystrokes;
-
-      setStateLabel("完走！");
-      $("typingInput").disabled = true;
-
-      // result view
-      $("resWpm").textContent = `${Math.round(wpm)} WPM`;
-      $("resAcc").textContent = `${acc.toFixed(1)}%`;
-      $("resTime").textContent = `${(elapsedMs/1000).toFixed(2)}s`;
-      $("resMiss").textContent = `${miss}`;
-
-      // save local best
-      const nowIso = new Date().toISOString();
-      const local = loadBest();
-      const current = { bestWpm: wpm, bestAcc: acc, bestTimeMs: elapsedMs, bestAt: nowIso };
-
-      let improved = false;
-      if(!local){
-        improved = true;
-      }else{
-        // primary: higher WPM, secondary: higher Acc, tertiary: faster time
-        const a = current, b = local;
-        const better =
-          (a.bestWpm > b.bestWpm + 1e-6) ||
-          (Math.abs(a.bestWpm - b.bestWpm) < 1e-6 && a.bestAcc > b.bestAcc + 1e-6) ||
-          (Math.abs(a.bestWpm - b.bestWpm) < 1e-6 && Math.abs(a.bestAcc - b.bestAcc) < 1e-6 && a.bestTimeMs < b.bestTimeMs);
-        improved = better;
-      }
-      if(improved) saveBest(current);
-
-      renderBestPanel();
-
-      // save firestore (self doc)
-      $("resSave").textContent = "Firestoreへ保存中…";
-      try{
-        if(!state.uid) throw new Error("uidがありません（匿名ログイン未完了）");
-        const ref = doc(db, "leaderboards", "sprinter", "scores", state.uid);
-
-        // Merge: keep best only (same comparison as local)
-        const snap = await getDoc(ref);
-        let remote = null;
-        if(snap.exists()) remote = snap.data();
-
-        const candidate = {
-          uid: state.uid,
-          name: state.playerName || "Guest",
-          bestWpm: wpm,
-          bestAcc: acc,
-          bestTimeMs: elapsedMs,
-          missCount: miss,
-          updatedAt: serverTimestamp()
-        };
-
-        let shouldWrite = true;
-        if(remote && typeof remote.bestWpm === "number"){
-          const better =
-            (candidate.bestWpm > remote.bestWpm + 1e-6) ||
-            (Math.abs(candidate.bestWpm - remote.bestWpm) < 1e-6 && candidate.bestAcc > (remote.bestAcc ?? 0) + 1e-6) ||
-            (Math.abs(candidate.bestWpm - remote.bestWpm) < 1e-6 && Math.abs(candidate.bestAcc - (remote.bestAcc ?? 0)) < 1e-6 && candidate.bestTimeMs < (remote.bestTimeMs ?? Number.MAX_SAFE_INTEGER));
-          shouldWrite = better;
-        }
-
-        if(shouldWrite){
-          await setDoc(ref, candidate, { merge:true });
-          $("resSave").innerHTML = `<span class="good">保存：OK</span>（自分のベストを更新）`;
-        }else{
-          // still update name if changed (optional)
-          await setDoc(ref, { name: candidate.name, updatedAt: serverTimestamp() }, { merge:true });
-          $("resSave").innerHTML = `<span class="muted">保存：SKIP</span>（既により良い記録があります）`;
-        }
-      }catch(err){
-        console.error(err);
-        $("resSave").innerHTML = `<span class="bad">保存：NG</span>（ルール/匿名ログイン/Hostingを確認）`;
-      }
-
-      openModal("resultModal");
-    }
-
-    function renderBestPanel(){
-      const b = loadBest();
-      $("bestWpm").textContent = b ? fmtWpm(b.bestWpm) : "-";
-      $("bestAcc").textContent = b ? fmtAcc(b.bestAcc) : "-";
-      $("bestTime").textContent = b ? fmtTimeMs(b.bestTimeMs) : "-";
-      $("bestDate").textContent = b ? new Date(b.bestAt).toLocaleString() : "-";
-    }
-
-    // ===== Input handling (accept only valid next char) =====
-    function onKeyDown(e){
-      if(!state.started || state.finished) return;
-
-      const input = $("typingInput");
-
-      if(e.key === "Backspace"){
-        if(state.typed.length > 0){
-          state.typed = state.typed.slice(0, -1);
-          input.value = state.typed;
-          renderQuestion();
-        }else{
-          input.value = "";
-        }
-        e.preventDefault();
-        return;
-      }
-
-      // Ignore control keys
-      if(e.ctrlKey || e.metaKey || e.altKey) return;
+      // 使わないキーは無視
       if(e.key.length !== 1) return;
 
-      const ch = e.key.toLowerCase();
-      // allow a-z and '
-      if(!(/[a-z']/).test(ch)) {
+      const ch = e.key;
+      if(!/^[a-zA-Z-.,]$/.test(ch)){
+        // 許容文字を増やしたいならここを拡張
         e.preventDefault();
         return;
       }
 
-      const next = state.typed + ch;
-      if(isValidNextChar(next)){
-        state.typed = next;
-        input.value = state.typed;
-        state.correctKeystrokes++;
-        state.totalCorrectChars++; // accepted char as correct char
-        renderQuestion();
+      totalKeystrokes++;
 
-        if(isComplete()){
-          // Completed one phrase
-          advanceQuestion();
-        }
+      const r = consumeChar(matcher, ch);
+      if(r.ok){
+        correctKeystrokes++;
+        $("uiJudge").textContent = "OK";
+        $("uiJudge").className = "ok";
       }else{
-        state.missKeystrokes++;
-        // shake
-        input.classList.remove("shake");
-        void input.offsetWidth;
-        input.classList.add("shake");
+        missCount++;
+        $("uiJudge").textContent = "MISS";
+        $("uiJudge").className = "danger";
       }
+
+      // 入力欄は「見た目用」なので、実キーはここで反映
+      const v = $("typeInput").value + ch.toLowerCase();
+      $("typeInput").value = v;
+      $("uiTyped").textContent = `"${v}"`;
+
+      updateHud();
+
+      if(r.ok && r.done){
+        // 次の問題へ（入力欄はリセット）
+        advanceQuestion();
+      }
+
       e.preventDefault();
-    }
-
-    // ===== Load texts =====
-    async function loadTexts(){
-      const res = await fetch("./assets/texts_ja.json", { cache:"no-store" });
-      if(!res.ok) throw new Error("texts_ja.json not found");
-      const json = await res.json();
-      const list = json?.sprinter ?? [];
-      // Validate schema
-      state.texts = list.filter(x => x && typeof x.jp==="string" && typeof x.kana==="string");
-      $("cfgCount").textContent = String(RACE_COUNT);
-    }
-
-    // ===== Auth =====
-    async function ensureAuth(){
-      setNetLabel("Firebase: 認証中…");
-      return new Promise((resolve)=>{
-        onAuthStateChanged(auth, async (user)=>{
-          if(user){
-            state.uid = user.uid;
-            $("uidShort").textContent = "uid: " + shortUid(state.uid);
-            $("profileUid").textContent = state.uid;
-            setNetLabel("Firebase: OK");
-            resolve();
-            return;
-          }
-          try{
-            await signInAnonymously(auth);
-          }catch(e){
-            console.error(e);
-            setNetLabel("Firebase: NG");
-            toast("匿名ログインに失敗（Authentication→Anonymousを有効にしてください）");
-            resolve();
-          }
-        });
-      });
-    }
-
-    // ===== UI Events =====
-    $("btnStart").addEventListener("click", () => startRun());
-    $("btnRetry").addEventListener("click", () => startRun());
-    $("btnGiveUp").addEventListener("click", () => {
-      if(!state.started){ toast("まだ開始していません"); return; }
-      const ok = confirm("レースを中断します。よろしいですか？");
-      if(!ok) return;
-      stopRun("中断");
-      toast("中断しました");
     });
 
-    $("btnResultRetry").addEventListener("click", () => {
-      closeModal("resultModal");
-      startRun();
+    // ==========
+    // UI buttons
+    // ==========
+    $("btnStart").addEventListener("click", startGame);
+    $("btnRestart").addEventListener("click", () => {
+      restartGame();
+      toast("リスタートしました");
     });
 
+    // 広場へ（今は仮：index.html へ戻す想定）
     $("btnBack").addEventListener("click", () => {
-      // 広場がある場合は index.html へ。なければ無効でもOK。
       location.href = "./index.html";
     });
 
-    $("btnSettings").addEventListener("click", ()=>{
-      const s = loadSettings();
-      $("playerName").value = (s.playerName ?? "Guest");
-      openModal("settingsModal");
-    });
-    $("saveSettings").addEventListener("click", ()=>{
-      const next = { playerName: ($("playerName").value || "Guest").trim().slice(0,16) };
-      saveSettings(next);
-      state.playerName = next.playerName;
-      $("uiPlayerName").textContent = state.playerName;
-      $("profileName").textContent = state.playerName;
-      closeModal("settingsModal");
-      toast("保存しました");
+    // 設定（今回は最小：難易度切替だけ）
+    $("btnSettings").addEventListener("click", () => {
+      toast("設定：右側の難易度ボタンで文章の長さを切替できます");
     });
 
-    $("btnProfile").addEventListener("click", ()=>{
-      $("profileName").textContent = state.playerName;
-      $("profileUid").textContent = state.uid ?? "…";
-      openModal("profileModal");
+    // 難易度ボタン
+    document.querySelectorAll("[data-diff]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const diff = btn.getAttribute("data-diff");
+        const s = loadSettings();
+        s.difficulty = diff;
+        saveSettings(s);
+        toast(`難易度を変更しました：${diff === "easy" ? "かんたん" : diff === "hard" ? "むずかしい" : "ふつう"}`);
+      });
     });
 
-    $("typingInput").addEventListener("keydown", onKeyDown);
+    // ==========
+    // Init
+    // ==========
+    renderBest();
+    restartGame();
 
-    // ===== Init =====
-    (async function init(){
-      const now = new Date();
-      $("year").textContent = String(now.getFullYear());
-
-      const s = loadSettings();
-      state.playerName = s.playerName ?? "Guest";
-      $("uiPlayerName").textContent = state.playerName;
-      $("profileName").textContent = state.playerName;
-
-      renderBestPanel();
-      resetRun();
-
-      try{
-        await loadTexts();
-      }catch(e){
-        console.error(e);
-        toast("問題データが読み込めません（assets/texts_ja.json）");
-      }
-
-      await ensureAuth();
-      toast("準備OK：スタートできます");
-    })();
+    try{
+      await loadTexts();
+      toast("texts_ja.json を読み込みました");
+    }catch(e){
+      console.error(e);
+      toast("texts_ja.json の読み込みに失敗しました（配置と名前を確認）");
+    }
   </script>
 </body>
 </html>
