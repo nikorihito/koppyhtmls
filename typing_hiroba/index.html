@@ -45,10 +45,7 @@
       backdrop-filter: blur(10px);
       border-bottom:1px solid var(--line);
     }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      min-width: 260px;
-    }
+    .brand{display:flex; align-items:center; gap:12px; min-width: 260px;}
     .logo{
       width:40px; height:40px; border-radius:14px;
       background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.22), transparent 45%),
@@ -58,11 +55,7 @@
     .brand h1{font-size:16px; margin:0; letter-spacing:.04em}
     .brand p{margin:2px 0 0; color:var(--muted); font-size:12px}
 
-    .top-actions{
-      display:flex; align-items:center; gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
+    .top-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
     .chip{
       display:inline-flex; align-items:center; gap:8px;
       padding:9px 12px;
@@ -87,6 +80,7 @@
       .hero{grid-template-columns:1fr}
       .brand{min-width:auto}
     }
+
     .card{
       border:1px solid var(--line);
       background:linear-gradient(180deg, rgba(18,26,51,.92), rgba(15,22,48,.84));
@@ -95,9 +89,7 @@
       overflow:hidden;
     }
     .card .pad{padding:18px}
-    .title{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-    }
+    .title{display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
     .title h2{margin:0; font-size:18px; letter-spacing:.02em}
     .title p{margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.55}
     .badge{
@@ -129,14 +121,8 @@
     .mode:hover{transform: translateY(-2px)}
     .mode:active{transform: translateY(0px)}
     .mode .pad{padding:16px}
-    .mode .head{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .mode .name{
-      display:flex; align-items:center; gap:10px;
-      margin:0;
-      font-size:16px;
-    }
+    .mode .head{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+    .mode .name{display:flex; align-items:center; gap:10px; margin:0; font-size:16px;}
     .pill{
       font-size:12px;
       padding:6px 10px;
@@ -146,10 +132,7 @@
       color:var(--muted);
     }
     .desc{margin:10px 0 0; color:var(--muted); font-size:13px; line-height:1.55}
-    .stats{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top:14px;
-    }
+    .stats{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
     .stat{
       flex: 1 1 120px;
       padding:10px 12px;
@@ -159,7 +142,6 @@
     }
     .stat .label{font-size:11px; color:var(--muted)}
     .stat .value{margin-top:4px; font-size:15px; font-weight:700}
-
     .icon{
       width:38px; height:38px;
       display:grid; place-items:center;
@@ -169,10 +151,7 @@
       font-size:18px;
     }
 
-    .cta-row{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top:14px;
-    }
+    .cta-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
     .btn{
       border:1px solid var(--line);
       background:rgba(255,255,255,.06);
@@ -222,10 +201,7 @@
       background: rgba(255,255,255,.03);
       backdrop-filter:none;
     }
-    .modal header .h{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      width:100%;
-    }
+    .modal header .h{display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;}
     .modal header h3{margin:0; font-size:15px}
     .modal .body{padding:16px}
     .row{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
@@ -305,12 +281,10 @@
               <h2>今日の目標</h2>
               <p>
                 まずは <b>WPM</b> と <b>Accuracy</b> を測って、伸びしろを見える化しましょう。<br />
-                各モードは将来的にランキング（オンライン）へ拡張できます。
+                モード選択で各ゲームに遷移します（MVPは単一ページ構成でもOK）。
               </p>
             </div>
-            <div class="badge" id="uiToday">
-              📅 <span class="mono" id="uiDate"></span>
-            </div>
+            <div class="badge" id="uiToday">📅 <span class="mono" id="uiDate"></span></div>
           </div>
 
           <div class="cta-row">
@@ -325,7 +299,7 @@
           <div class="title">
             <div>
               <h2>あなたのベスト</h2>
-              <p class="muted">この端末のローカル記録（最初のMVP用）</p>
+              <p class="muted">この端末のローカル記録（まず動くMVP）</p>
             </div>
             <div class="badge">💾 Local</div>
           </div>
@@ -342,15 +316,14 @@
           </div>
 
           <div class="muted" style="margin-top:10px; font-size:12px; line-height:1.6">
-            ※ゲーム本体は次で実装。今は「広場（ハブ）」として、選択・設定・記録の土台を用意しています。
+            ※各ゲームは別HTML（sprinter.html 等）として実装していきます。
           </div>
         </div>
       </div>
     </section>
 
     <section class="grid" aria-label="ゲーム一覧">
-      <!-- 1 -->
-      <a class="card mode" href="#play=sprinter" data-mode="sprinter" aria-label="目指せ！タイピングスプリンター">
+      <a class="card mode" href="sprinter.html" data-mode="sprinter" aria-label="目指せ！タイピングスプリンター">
         <div class="pad">
           <div class="head">
             <div class="name">
@@ -362,9 +335,7 @@
             </div>
             <div class="pill">速さ</div>
           </div>
-          <p class="desc">
-            入力スピード勝負。自己ベストのゴーストと競って、最速タイムを更新しよう。
-          </p>
+          <p class="desc">入力スピード勝負。自己ベスト更新を狙う。</p>
           <div class="stats">
             <div class="stat"><div class="label">自己ベストWPM</div><div class="value" id="sprinter_wpm">-</div></div>
             <div class="stat"><div class="label">自己ベストAccuracy</div><div class="value" id="sprinter_acc">-</div></div>
@@ -372,8 +343,7 @@
         </div>
       </a>
 
-      <!-- 2 -->
-      <a class="card mode" href="#play=forest" data-mode="forest" aria-label="生き残れ！タイピング魔術の森">
+      <a class="card mode" href="forest.html" data-mode="forest" aria-label="生き残れ！タイピング魔術の森">
         <div class="pad">
           <div class="head">
             <div class="name">
@@ -385,9 +355,7 @@
             </div>
             <div class="pill">速さ</div>
           </div>
-          <p class="desc">
-            次々に迫る💀をタイピングで撃破。反射神経とスピードで生存時間を伸ばせ。
-          </p>
+          <p class="desc">次々に迫る💀をタイピングで撃破。スピード強化。</p>
           <div class="stats">
             <div class="stat"><div class="label">最高撃破数</div><div class="value" id="forest_score">-</div></div>
             <div class="stat"><div class="label">自己ベストWPM</div><div class="value" id="forest_wpm">-</div></div>
@@ -395,8 +363,7 @@
         </div>
       </a>
 
-      <!-- 3 -->
-      <a class="card mode" href="#play=island" data-mode="island" aria-label="落ちるな！タイピングのんびり島">
+      <a class="card mode" href="island.html" data-mode="island" aria-label="落ちるな！タイピングのんびり島">
         <div class="pad">
           <div class="head">
             <div class="name">
@@ -408,9 +375,7 @@
             </div>
             <div class="pill">正確性</div>
           </div>
-          <p class="desc">
-            ミスをすると海面が上がる。焦らず、丁寧に。Accuracyを鍛えるサバイバル。
-          </p>
+          <p class="desc">ミスで海面が上がる。Accuracyを鍛えるサバイバル。</p>
           <div class="stats">
             <div class="stat"><div class="label">最高生存時間</div><div class="value" id="island_score">-</div></div>
             <div class="stat"><div class="label">自己ベストAccuracy</div><div class="value" id="island_acc">-</div></div>
@@ -418,8 +383,7 @@
         </div>
       </a>
 
-      <!-- 4 -->
-      <a class="card mode" href="#play=restaurant" data-mode="restaurant" aria-label="食の極み！スーパーレストラン">
+      <a class="card mode" href="restaurant.html" data-mode="restaurant" aria-label="食の極み！スーパーレストラン">
         <div class="pad">
           <div class="head">
             <div class="name">
@@ -431,9 +395,7 @@
             </div>
             <div class="pill">両方</div>
           </div>
-          <p class="desc">
-            速さも正確性も必要。遅いと怒ゲージが上がり、ミスでも怒る。最高の提供を目指せ。
-          </p>
+          <p class="desc">速さ×正確性。遅い・ミスで怒ゲージが上がる。</p>
           <div class="stats">
             <div class="stat"><div class="label">最高売上（クリア数）</div><div class="value" id="restaurant_score">-</div></div>
             <div class="stat"><div class="label">総合ベスト</div><div class="value" id="restaurant_rank">-</div></div>
@@ -444,7 +406,7 @@
 
     <footer>
       <div>© <span id="year"></span> タイピングの広場</div>
-      <div class="muted">MVP Hub v0.1（ゲーム本体は順次実装）</div>
+      <div class="muted">Hub v0.2（各ゲームへ遷移）</div>
     </footer>
   </div>
 
@@ -470,7 +432,7 @@
               <option value="romaji">ローマ字（推奨）</option>
               <option value="kana">かな入力（将来対応）</option>
             </select>
-            <div class="hint">MVPではローマ字想定。かな入力は拡張フェーズで追加が現実的です。</div>
+            <div class="hint">MVPではローマ字想定。</div>
           </div>
           <div class="field">
             <label for="difficulty">難易度（初期値）</label>
@@ -479,7 +441,7 @@
               <option value="normal" selected>ふつう</option>
               <option value="hard">むずかしい</option>
             </select>
-            <div class="hint">各ゲーム開始時のデフォルト難易度として使用します。</div>
+            <div class="hint">各ゲーム開始時のデフォルト難易度。</div>
           </div>
           <div class="field">
             <label for="sound">効果音</label>
@@ -487,7 +449,7 @@
               <option value="on" selected>ON</option>
               <option value="off">OFF</option>
             </select>
-            <div class="hint">演出は後から強化できます。まずはON/OFFだけ用意。</div>
+            <div class="hint">MVPはON/OFFのみ。</div>
           </div>
         </div>
       </div>
@@ -525,7 +487,7 @@
         </div>
         <div class="field" style="margin-top:12px">
           <label>実績（予定）</label>
-          <div class="muted">バッジ / 称号 / 週間チャレンジは、ランキング実装と同時に追加すると効果が大きいです。</div>
+          <div class="muted">バッジ/称号/週間チャレンジはランキング導入時に追加。</div>
         </div>
       </div>
       <div class="actions">
@@ -555,7 +517,6 @@
       sound: "on"
     };
 
-    // Minimal stats schema for the hub (game bodies will update these later)
     const defaultStats = {
       sprinter: { bestWpm: null, bestAcc: null },
       forest: { bestKills: null, bestWpm: null },
@@ -567,23 +528,6 @@
     function safeParse(json, fallback){
       try { return JSON.parse(json) ?? fallback; } catch { return fallback; }
     }
-
-    function loadSettings(){
-      return safeParse(localStorage.getItem(LS.SETTINGS), defaultSettings);
-    }
-    function saveSettings(v){
-      localStorage.setItem(LS.SETTINGS, JSON.stringify(v));
-    }
-
-    function loadStats(){
-      const s = safeParse(localStorage.getItem(LS.STATS), defaultStats);
-      // merge to ensure new fields exist
-      return deepMerge(structuredClone(defaultStats), s);
-    }
-    function saveStats(v){
-      localStorage.setItem(LS.STATS, JSON.stringify(v));
-    }
-
     function deepMerge(target, source){
       for(const k of Object.keys(source || {})){
         if(source[k] && typeof source[k] === "object" && !Array.isArray(source[k])){
@@ -594,6 +538,13 @@
         }
       }
       return target;
+    }
+
+    function loadSettings(){ return safeParse(localStorage.getItem(LS.SETTINGS), defaultSettings); }
+    function saveSettings(v){ localStorage.setItem(LS.SETTINGS, JSON.stringify(v)); }
+    function loadStats(){
+      const s = safeParse(localStorage.getItem(LS.STATS), defaultStats);
+      return deepMerge(structuredClone(defaultStats), s);
     }
 
     // =========================
@@ -610,17 +561,12 @@
       if(v == null) return "-";
       return `${Math.round(v)} WPM`;
     }
-    function fmtNum(v){
-      if(v == null) return "-";
-      return String(v);
-    }
     function fmtTimeSec(v){
       if(v == null) return "-";
       const m = Math.floor(v / 60);
       const s = Math.floor(v % 60);
       return `${m}:${String(s).padStart(2,"0")}`;
     }
-
     function toast(msg){
       const t = $("toast");
       t.textContent = msg;
@@ -632,31 +578,18 @@
     // =========================
     // Modal control
     // =========================
-    function openModal(id){
-      const el = $(id);
-      if(!el) return;
-      el.style.display = "flex";
-    }
-    function closeModal(id){
-      const el = $(id);
-      if(!el) return;
-      el.style.display = "none";
-    }
+    function openModal(id){ const el = $(id); if(el) el.style.display = "flex"; }
+    function closeModal(id){ const el = $(id); if(el) el.style.display = "none"; }
 
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-close]");
-      if(btn){
-        closeModal(btn.getAttribute("data-close"));
-        return;
-      }
+      if(btn){ closeModal(btn.getAttribute("data-close")); return; }
       const backdrop = e.target.classList.contains("modal-backdrop") ? e.target : null;
-      if(backdrop){
-        backdrop.style.display = "none";
-      }
+      if(backdrop){ backdrop.style.display = "none"; }
     });
 
     // =========================
-    // Render hub stats
+    // Render
     // =========================
     function render(){
       const settings = loadSettings();
@@ -665,13 +598,11 @@
       $("uiPlayerName").textContent = settings.playerName || "Guest";
       $("profileName").textContent = settings.playerName || "Guest";
 
-      // Global bests
       $("bestWpm").textContent = fmtWpm(stats.global.bestWpm);
       $("bestAcc").textContent = fmtPercent(stats.global.bestAcc);
       $("profileBestWpm").textContent = fmtWpm(stats.global.bestWpm);
       $("profileBestAcc").textContent = fmtPercent(stats.global.bestAcc);
 
-      // Mode cards
       $("sprinter_wpm").textContent = fmtWpm(stats.sprinter.bestWpm);
       $("sprinter_acc").textContent = fmtPercent(stats.sprinter.bestAcc);
 
@@ -684,44 +615,10 @@
       $("restaurant_score").textContent = stats.restaurant.bestServed == null ? "-" : `${stats.restaurant.bestServed} 品`;
       $("restaurant_rank").textContent = stats.restaurant.bestRank == null ? "-" : String(stats.restaurant.bestRank);
 
-      // Date/Year
       const now = new Date();
       $("uiDate").textContent = now.toISOString().slice(0,10);
       $("year").textContent = String(now.getFullYear());
     }
-
-    // =========================
-    // Routing: #play=mode
-    // =========================
-    function parseHash(){
-      const h = location.hash.replace(/^#/, "");
-      const parts = h.split("&").filter(Boolean);
-      const map = {};
-      for(const p of parts){
-        const [k,v] = p.split("=");
-        if(k) map[decodeURIComponent(k)] = decodeURIComponent(v ?? "");
-      }
-      return map;
-    }
-
-    function handleRoute(){
-      const q = parseHash();
-      if(q.play){
-        // MVP: game bodies not implemented yet
-        const mode = q.play;
-        const names = {
-          sprinter: "目指せ！タイピングスプリンター",
-          forest: "生き残れ！タイピング魔術の森",
-          island: "落ちるな！タイピングのんびり島",
-          restaurant: "食の極み！スーパーレストラン"
-        };
-        toast(`「${names[mode] ?? mode}」は次で実装します（ハブは完成）`);
-        // Reset hash so repeated clicks still show toast
-        history.replaceState(null, "", " ");
-      }
-    }
-
-    window.addEventListener("hashchange", handleRoute);
 
     // =========================
     // Buttons
@@ -748,13 +645,9 @@
       toast("設定を保存しました");
     });
 
-    $("btnProfile").addEventListener("click", () => {
-      render();
-      openModal("profileModal");
-    });
+    $("btnProfile").addEventListener("click", () => { render(); openModal("profileModal"); });
 
     $("btnReset").addEventListener("click", () => {
-      // Safety: simple confirm
       const ok = confirm("ローカル記録（ベスト・設定）をリセットします。よろしいですか？");
       if(!ok) return;
       localStorage.removeItem(LS.SETTINGS);
@@ -764,38 +657,16 @@
     });
 
     $("btnHowTo").addEventListener("click", () => {
-      toast("遊び方：好きなモードを選択 → ゲーム画面は次で実装（今はハブの土台）");
+      toast("遊び方：好きなモードを選択 → 各ゲームページに移動します");
     });
 
     $("btnQuickStart").addEventListener("click", () => {
-      // Start with the sprint mode as default
-      location.hash = "play=sprinter";
+      // まずはスプリンターへ
+      location.href = "sprinter.html";
     });
-
-    // =========================
-    // Demo data (optional): remove if you don't want sample bests
-    // =========================
-    (function seedIfEmpty(){
-      const existing = localStorage.getItem(LS.STATS);
-      if(existing) return;
-      // 初回だけ「見栄え用」仮データ。不要ならこのIIFEごと消してOK。
-      const s = structuredClone(defaultStats);
-      s.sprinter.bestWpm = 72;
-      s.sprinter.bestAcc = 97.4;
-      s.forest.bestKills = 38;
-      s.forest.bestWpm = 68;
-      s.island.bestTimeSec = 154;
-      s.island.bestAcc = 99.2;
-      s.restaurant.bestServed = 21;
-      s.restaurant.bestRank = "S";
-      s.global.bestWpm = 72;
-      s.global.bestAcc = 99.2;
-      saveStats(s);
-    })();
 
     // Init
     render();
-    handleRoute();
   </script>
 </body>
 </html>
