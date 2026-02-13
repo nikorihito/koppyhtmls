@@ -383,12 +383,46 @@
     let TEXTS = null; // {short:[{id,jp,kana}], medium:..., long:...}
 
     async function loadTexts(){
-      const res = await fetch("./texts_ja.json", { cache:"no-store" });
-      if(!res.ok) throw new Error("texts_ja.json が読み込めませんでした");
-      const json = await res.json();
-      if(!json.short || !json.medium || !json.long) throw new Error("texts_ja.json の形式が想定と違います");
-      TEXTS = json;
+  const res = await fetch("./texts_ja.json", { cache:"no-store" });
+  if(!res.ok) throw new Error("texts_ja.json が読み込めませんでした（404など）");
+
+  const json = await res.json();
+
+  // 形式A: { short:[...], medium:[...], long:[...] }
+  if(json.short && json.medium && json.long){
+    TEXTS = json;
+    return;
+  }
+
+  // 形式B: { texts:[{jp,kana,len:"short|medium|long"}, ...] }
+  if(Array.isArray(json.texts)){
+    const short=[], medium=[], long=[];
+    for(const t of json.texts){
+      const len = t.len || "medium";
+      if(len === "short") short.push(t);
+      else if(len === "long") long.push(t);
+      else medium.push(t);
     }
+    TEXTS = { short, medium, long };
+    return;
+  }
+
+  // 形式C: 配列だけ [ {jp,kana,len?...}, ... ]
+  if(Array.isArray(json)){
+    const short=[], medium=[], long=[];
+    for(const t of json){
+      const len = t.len || "medium";
+      if(len === "short") short.push(t);
+      else if(len === "long") long.push(t);
+      else medium.push(t);
+    }
+    TEXTS = { short, medium, long };
+    return;
+  }
+
+  throw new Error("texts_ja.json の形式が不明です（short/medium/long or texts[] or 配列 を推奨）");
+}
+
 
     function pickPoolByDifficulty(diff){
       if(!TEXTS) return [];
