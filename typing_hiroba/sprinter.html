@@ -475,4 +475,531 @@
     }
 
     function fmtWpm(v){ return v==null ? "-" : `${Math.round(v)} WPM`; }
-    funct
+    function fmtAcc(v){ return v==null ? "-" : `${Math.max(0,Math.min(100,v)).toFixed(1)}%`; }
+    function fmtTimeMs(ms){ return ms==null ? "-" : `${(ms/1000).toFixed(2)}s`; }
+    function shortUid(uid){ return uid ? uid.slice(0,6)+"…"+uid.slice(-4) : "…"; }
+
+    // ===== Kana -> Romaji candidates (supports variants) =====
+    // We match by "candidates set". We avoid explosion by limiting candidates.
+    const MAX_CANDIDATES = 512;
+
+    function tokenizeKana(kana){
+      // Handles digraphs first (2 chars), and keeps 'っ' as token.
+      const tokens = [];
+      for(let i=0;i<kana.length;){
+        const ch = kana[i];
+
+        if(ch === "っ"){
+          tokens.push("っ");
+          i++;
+          continue;
+        }
+
+        const two = kana.slice(i, i+2);
+        if(ROMAJI_TABLE[two]){
+          tokens.push(two);
+          i += 2;
+          continue;
+        }
+
+        const one = kana[i];
+        tokens.push(one);
+        i++;
+      }
+      return tokens;
+    }
+
+    function isVowel(c){ return ["a","i","u","e","o"].includes(c); }
+
+    function expandRomajiCandidates(kana){
+      const tokens = tokenizeKana(kana);
+      let candidates = new Set([""]);
+
+      for(let idx=0; idx<tokens.length; idx++){
+        const t = tokens[idx];
+
+        if(t === "っ"){
+          // sokuon: duplicate first consonant of next token's romaji
+          const next = tokens[idx+1];
+          const nextList = next ? ROMAJI_TABLE[next] : null;
+          if(!nextList) continue; // orphan: ignore
+          const newSet = new Set();
+          for(const base of candidates){
+            for(const r of nextList){
+              const first = r[0];
+              // only consonant doubling (if vowel, ignore)
+              if(first && !isVowel(first)){
+                newSet.add(base + first);
+              }else{
+                newSet.add(base);
+              }
+              if(newSet.size >= MAX_CANDIDATES) break;
+            }
+            if(newSet.size >= MAX_CANDIDATES) break;
+          }
+          candidates = newSet;
+          continue;
+        }
+
+        const list = ROMAJI_TABLE[t];
+        if(!list){
+          // Unknown char: keep as-is (rare). This will likely never match.
+          const newSet = new Set();
+          for(const base of candidates){
+            newSet.add(base + t);
+            if(newSet.size >= MAX_CANDIDATES) break;
+          }
+          candidates = newSet;
+          continue;
+        }
+
+        const newSet = new Set();
+        for(const base of candidates){
+          for(const r of list){
+            newSet.add(base + r);
+            if(newSet.size >= MAX_CANDIDATES) break;
+          }
+          if(newSet.size >= MAX_CANDIDATES) break;
+        }
+        candidates = newSet;
+      }
+
+      return Array.from(candidates);
+    }
+
+    // ===== Game state =====
+    const RACE_COUNT = 10;
+
+    const state = {
+      uid: null,
+      playerName: "Guest",
+      texts: [],
+      race: [],
+      index: 0,
+      started: false,
+      finished: false,
+      startAt: 0,
+      timer: null,
+
+      // current question
+      q: null,                 // {jp,kana}
+      candidates: [],          // expanded romaji candidates
+      typed: "",
+
+      // scoring
+      correctKeystrokes: 0,
+      missKeystrokes: 0,
+      totalCorrectChars: 0
+    };
+
+    function setNetLabel(msg){ $("uiNet").textContent = msg; }
+
+    function calcNowMs(){
+      if(!state.started) return 0;
+      return performance.now() - state.startAt;
+    }
+
+    function calcWpm(elapsedMs){
+      if(elapsedMs <= 0) return 0;
+      // Standard: (correct chars / 5) / minutes
+      const minutes = elapsedMs / 60000;
+      return (state.totalCorrectChars / 5) / minutes;
+    }
+
+    function calcAcc(){
+      const total = state.correctKeystrokes + state.missKeystrokes;
+      if(total <= 0) return 100;
+      return (state.correctKeystrokes / total) * 100;
+    }
+
+    function renderStats(){
+      const ms = calcNowMs();
+      const wpm = state.started ? calcWpm(ms) : null;
+      const acc = state.started ? calcAcc() : null;
+
+      $("uiTime").textContent = `${(ms/1000).toFixed(2)}s`;
+      $("uiWpm").textContent = state.started ? `${Math.round(wpm)} WPM` : "-";
+      $("uiAcc").textContent = state.started ? `${acc.toFixed(1)}%` : "-";
+
+      const progress = Math.min(1, (state.index) / RACE_COUNT);
+      $("bar").style.width = `${progress*100}%`;
+      $("uiProgressText").textContent = `${state.index}/${RACE_COUNT}`;
+    }
+
+    function renderQuestion(){
+      if(!state.q){
+        $("qJp").textContent = "—";
+        $("qKana").textContent = "—";
+        $("qTarget").querySelector(".done").textContent = "";
+        $("qTarget").querySelector(".todo").textContent = "";
+        return;
+      }
+
+      $("qJp").textContent = state.q.jp;
+      $("qKana").textContent = `よみ: ${state.q.kana}`;
+
+      // Show canonical target = first candidate (display only)
+      const canonical = state.candidates[0] ?? "";
+      const typed = state.typed;
+
+      const done = typed;
+      const todo = canonical.slice(typed.length);
+
+      $("qTarget").querySelector(".done").textContent = done;
+      $("qTarget").querySelector(".todo").textContent = todo;
+    }
+
+    function setStateLabel(s){ $("uiState").textContent = s; }
+
+    function pickRace(texts){
+      // choose RACE_COUNT items (random with replacement if insufficient)
+      const arr = [];
+      for(let i=0;i<RACE_COUNT;i++){
+        const item = texts[Math.floor(Math.random()*texts.length)];
+        arr.push(item);
+      }
+      return arr;
+    }
+
+    function setQuestion(i){
+      state.index = i;
+      state.q = state.race[i] ?? null;
+      state.typed = "";
+
+      if(state.q){
+        state.candidates = expandRomajiCandidates(state.q.kana);
+        // canonical = shortest candidate first for nicer display
+        state.candidates.sort((a,b)=>a.length-b.length);
+      }else{
+        state.candidates = [];
+      }
+      renderQuestion();
+      renderStats();
+    }
+
+    function resetRun(){
+      state.index = 0;
+      state.started = false;
+      state.finished = false;
+      state.startAt = 0;
+      state.typed = "";
+      state.correctKeystrokes = 0;
+      state.missKeystrokes = 0;
+      state.totalCorrectChars = 0;
+      clearInterval(state.timer);
+      state.timer = null;
+
+      setStateLabel("待機中");
+      $("typingInput").value = "";
+      $("typingInput").disabled = true;
+
+      $("bar").style.width = `0%`;
+      $("uiProgressText").textContent = `0/${RACE_COUNT}`;
+      $("uiTime").textContent = `0.00s`;
+      $("uiWpm").textContent = "-";
+      $("uiAcc").textContent = "-";
+    }
+
+    function startRun(){
+      if(state.texts.length === 0){
+        toast("問題データが読み込めません（assets/texts_ja.json を確認）");
+        return;
+      }
+      state.race = pickRace(state.texts);
+      resetRun();
+
+      setQuestion(0);
+
+      state.started = true;
+      state.startAt = performance.now();
+      setStateLabel("レース中");
+      $("typingInput").disabled = false;
+      $("typingInput").focus();
+
+      state.timer = setInterval(renderStats, 60);
+      toast("スタート！");
+    }
+
+    function stopRun(label="中断"){
+      clearInterval(state.timer);
+      state.timer = null;
+      state.started = false;
+      state.finished = false;
+      setStateLabel(label);
+      $("typingInput").disabled = true;
+    }
+
+    function isValidNextChar(nextTyped){
+      // Accept if any candidate has this as prefix
+      for(const c of state.candidates){
+        if(c.startsWith(nextTyped)) return true;
+      }
+      return false;
+    }
+
+    function isComplete(){
+      // Complete if any candidate equals typed
+      return state.candidates.some(c => c === state.typed);
+    }
+
+    function advanceQuestion(){
+      const nextIndex = state.index + 1;
+      if(nextIndex >= RACE_COUNT){
+        finishRun();
+        return;
+      }
+      setQuestion(nextIndex);
+      $("typingInput").value = "";
+    }
+
+    async function finishRun(){
+      state.finished = true;
+      clearInterval(state.timer);
+      state.timer = null;
+
+      const elapsedMs = performance.now() - state.startAt;
+      const wpm = calcWpm(elapsedMs);
+      const acc = calcAcc();
+      const miss = state.missKeystrokes;
+
+      setStateLabel("完走！");
+      $("typingInput").disabled = true;
+
+      // result view
+      $("resWpm").textContent = `${Math.round(wpm)} WPM`;
+      $("resAcc").textContent = `${acc.toFixed(1)}%`;
+      $("resTime").textContent = `${(elapsedMs/1000).toFixed(2)}s`;
+      $("resMiss").textContent = `${miss}`;
+
+      // save local best
+      const nowIso = new Date().toISOString();
+      const local = loadBest();
+      const current = { bestWpm: wpm, bestAcc: acc, bestTimeMs: elapsedMs, bestAt: nowIso };
+
+      let improved = false;
+      if(!local){
+        improved = true;
+      }else{
+        // primary: higher WPM, secondary: higher Acc, tertiary: faster time
+        const a = current, b = local;
+        const better =
+          (a.bestWpm > b.bestWpm + 1e-6) ||
+          (Math.abs(a.bestWpm - b.bestWpm) < 1e-6 && a.bestAcc > b.bestAcc + 1e-6) ||
+          (Math.abs(a.bestWpm - b.bestWpm) < 1e-6 && Math.abs(a.bestAcc - b.bestAcc) < 1e-6 && a.bestTimeMs < b.bestTimeMs);
+        improved = better;
+      }
+      if(improved) saveBest(current);
+
+      renderBestPanel();
+
+      // save firestore (self doc)
+      $("resSave").textContent = "Firestoreへ保存中…";
+      try{
+        if(!state.uid) throw new Error("uidがありません（匿名ログイン未完了）");
+        const ref = doc(db, "leaderboards", "sprinter", "scores", state.uid);
+
+        // Merge: keep best only (same comparison as local)
+        const snap = await getDoc(ref);
+        let remote = null;
+        if(snap.exists()) remote = snap.data();
+
+        const candidate = {
+          uid: state.uid,
+          name: state.playerName || "Guest",
+          bestWpm: wpm,
+          bestAcc: acc,
+          bestTimeMs: elapsedMs,
+          missCount: miss,
+          updatedAt: serverTimestamp()
+        };
+
+        let shouldWrite = true;
+        if(remote && typeof remote.bestWpm === "number"){
+          const better =
+            (candidate.bestWpm > remote.bestWpm + 1e-6) ||
+            (Math.abs(candidate.bestWpm - remote.bestWpm) < 1e-6 && candidate.bestAcc > (remote.bestAcc ?? 0) + 1e-6) ||
+            (Math.abs(candidate.bestWpm - remote.bestWpm) < 1e-6 && Math.abs(candidate.bestAcc - (remote.bestAcc ?? 0)) < 1e-6 && candidate.bestTimeMs < (remote.bestTimeMs ?? Number.MAX_SAFE_INTEGER));
+          shouldWrite = better;
+        }
+
+        if(shouldWrite){
+          await setDoc(ref, candidate, { merge:true });
+          $("resSave").innerHTML = `<span class="good">保存：OK</span>（自分のベストを更新）`;
+        }else{
+          // still update name if changed (optional)
+          await setDoc(ref, { name: candidate.name, updatedAt: serverTimestamp() }, { merge:true });
+          $("resSave").innerHTML = `<span class="muted">保存：SKIP</span>（既により良い記録があります）`;
+        }
+      }catch(err){
+        console.error(err);
+        $("resSave").innerHTML = `<span class="bad">保存：NG</span>（ルール/匿名ログイン/Hostingを確認）`;
+      }
+
+      openModal("resultModal");
+    }
+
+    function renderBestPanel(){
+      const b = loadBest();
+      $("bestWpm").textContent = b ? fmtWpm(b.bestWpm) : "-";
+      $("bestAcc").textContent = b ? fmtAcc(b.bestAcc) : "-";
+      $("bestTime").textContent = b ? fmtTimeMs(b.bestTimeMs) : "-";
+      $("bestDate").textContent = b ? new Date(b.bestAt).toLocaleString() : "-";
+    }
+
+    // ===== Input handling (accept only valid next char) =====
+    function onKeyDown(e){
+      if(!state.started || state.finished) return;
+
+      const input = $("typingInput");
+
+      if(e.key === "Backspace"){
+        if(state.typed.length > 0){
+          state.typed = state.typed.slice(0, -1);
+          input.value = state.typed;
+          renderQuestion();
+        }else{
+          input.value = "";
+        }
+        e.preventDefault();
+        return;
+      }
+
+      // Ignore control keys
+      if(e.ctrlKey || e.metaKey || e.altKey) return;
+      if(e.key.length !== 1) return;
+
+      const ch = e.key.toLowerCase();
+      // allow a-z and '
+      if(!(/[a-z']/).test(ch)) {
+        e.preventDefault();
+        return;
+      }
+
+      const next = state.typed + ch;
+      if(isValidNextChar(next)){
+        state.typed = next;
+        input.value = state.typed;
+        state.correctKeystrokes++;
+        state.totalCorrectChars++; // accepted char as correct char
+        renderQuestion();
+
+        if(isComplete()){
+          // Completed one phrase
+          advanceQuestion();
+        }
+      }else{
+        state.missKeystrokes++;
+        // shake
+        input.classList.remove("shake");
+        void input.offsetWidth;
+        input.classList.add("shake");
+      }
+      e.preventDefault();
+    }
+
+    // ===== Load texts =====
+    async function loadTexts(){
+      const res = await fetch("./assets/texts_ja.json", { cache:"no-store" });
+      if(!res.ok) throw new Error("texts_ja.json not found");
+      const json = await res.json();
+      const list = json?.sprinter ?? [];
+      // Validate schema
+      state.texts = list.filter(x => x && typeof x.jp==="string" && typeof x.kana==="string");
+      $("cfgCount").textContent = String(RACE_COUNT);
+    }
+
+    // ===== Auth =====
+    async function ensureAuth(){
+      setNetLabel("Firebase: 認証中…");
+      return new Promise((resolve)=>{
+        onAuthStateChanged(auth, async (user)=>{
+          if(user){
+            state.uid = user.uid;
+            $("uidShort").textContent = "uid: " + shortUid(state.uid);
+            $("profileUid").textContent = state.uid;
+            setNetLabel("Firebase: OK");
+            resolve();
+            return;
+          }
+          try{
+            await signInAnonymously(auth);
+          }catch(e){
+            console.error(e);
+            setNetLabel("Firebase: NG");
+            toast("匿名ログインに失敗（Authentication→Anonymousを有効にしてください）");
+            resolve();
+          }
+        });
+      });
+    }
+
+    // ===== UI Events =====
+    $("btnStart").addEventListener("click", () => startRun());
+    $("btnRetry").addEventListener("click", () => startRun());
+    $("btnGiveUp").addEventListener("click", () => {
+      if(!state.started){ toast("まだ開始していません"); return; }
+      const ok = confirm("レースを中断します。よろしいですか？");
+      if(!ok) return;
+      stopRun("中断");
+      toast("中断しました");
+    });
+
+    $("btnResultRetry").addEventListener("click", () => {
+      closeModal("resultModal");
+      startRun();
+    });
+
+    $("btnBack").addEventListener("click", () => {
+      // 広場がある場合は index.html へ。なければ無効でもOK。
+      location.href = "./index.html";
+    });
+
+    $("btnSettings").addEventListener("click", ()=>{
+      const s = loadSettings();
+      $("playerName").value = (s.playerName ?? "Guest");
+      openModal("settingsModal");
+    });
+    $("saveSettings").addEventListener("click", ()=>{
+      const next = { playerName: ($("playerName").value || "Guest").trim().slice(0,16) };
+      saveSettings(next);
+      state.playerName = next.playerName;
+      $("uiPlayerName").textContent = state.playerName;
+      $("profileName").textContent = state.playerName;
+      closeModal("settingsModal");
+      toast("保存しました");
+    });
+
+    $("btnProfile").addEventListener("click", ()=>{
+      $("profileName").textContent = state.playerName;
+      $("profileUid").textContent = state.uid ?? "…";
+      openModal("profileModal");
+    });
+
+    $("typingInput").addEventListener("keydown", onKeyDown);
+
+    // ===== Init =====
+    (async function init(){
+      const now = new Date();
+      $("year").textContent = String(now.getFullYear());
+
+      const s = loadSettings();
+      state.playerName = s.playerName ?? "Guest";
+      $("uiPlayerName").textContent = state.playerName;
+      $("profileName").textContent = state.playerName;
+
+      renderBestPanel();
+      resetRun();
+
+      try{
+        await loadTexts();
+      }catch(e){
+        console.error(e);
+        toast("問題データが読み込めません（assets/texts_ja.json）");
+      }
+
+      await ensureAuth();
+      toast("準備OK：スタートできます");
+    })();
+  </script>
+</body>
+</html>
