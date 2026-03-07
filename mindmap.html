@@ -1,0 +1,857 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MindMap Studio</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121933;
+      --panel-2:#1a2347;
+      --text:#edf2ff;
+      --muted:#9fb0e3;
+      --line:#6270a8;
+      --accent:#78a6ff;
+      --accent-2:#9bffcf;
+      --danger:#ff8f8f;
+      --warning:#ffd37a;
+      --node:#1a2450;
+      --node-selected:#28408c;
+      --border:#33437d;
+      --shadow:0 10px 28px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,#09101f,#0f1730 55%,#0b1020);
+      height:100vh;
+      overflow:hidden;
+    }
+    .app{
+      display:grid;
+      grid-template-columns:340px 1fr;
+      height:100vh;
+    }
+    .sidebar{
+      background:rgba(12,18,37,.94);
+      border-right:1px solid rgba(255,255,255,.08);
+      padding:18px;
+      overflow:auto;
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .logo{
+      width:42px;height:42px;border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),#7e7bff 55%, var(--accent-2));
+      box-shadow:var(--shadow);
+      display:grid;place-items:center;
+      font-weight:800;color:#081126;
+    }
+    h1{font-size:20px;margin:0 0 2px}
+    .sub{color:var(--muted);font-size:12px}
+    .panel{
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:14px;
+      margin-top:12px;
+      box-shadow:var(--shadow);
+    }
+    .panel h2{
+      margin:0 0 10px;
+      font-size:14px;
+      color:#dfe7ff;
+      letter-spacing:.02em;
+    }
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .row.one{grid-template-columns:1fr}
+    button, input, textarea, select{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:14px;
+    }
+    button{
+      background:var(--panel-2);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    button:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.18)}
+    button.primary{background:linear-gradient(135deg,#4b79ff,#79a5ff)}
+    button.good{background:linear-gradient(135deg,#2d7c67,#3fbf9b)}
+    button.warn{background:linear-gradient(135deg,#8d6a18,#d7a638)}
+    button.danger{background:linear-gradient(135deg,#7f3444,#c7556d)}
+    input, textarea, select{
+      background:#0d1430;
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    textarea{min-height:80px;resize:vertical}
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .canvas-wrap{
+      position:relative;
+      overflow:hidden;
+    }
+    .topbar{
+      position:absolute;
+      top:16px;left:16px;right:16px;
+      z-index:10;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      pointer-events:none;
+    }
+    .badgebar,.statusbar{
+      display:flex;gap:8px;flex-wrap:wrap;
+      pointer-events:auto;
+    }
+    .badge{
+      background:rgba(10,16,34,.78);
+      border:1px solid rgba(255,255,255,.1);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:#dce5ff;
+      backdrop-filter: blur(8px);
+    }
+    svg{
+      width:100%;
+      height:100%;
+      display:block;
+      cursor:grab;
+      user-select:none;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(120,166,255,.08), transparent 20%),
+        radial-gradient(circle at 80% 50%, rgba(155,255,207,.06), transparent 20%),
+        linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,0));
+    }
+    svg.dragging{cursor:grabbing}
+    .link{
+      fill:none;
+      stroke:rgba(163,180,255,.7);
+      stroke-width:2.2;
+    }
+    .node rect{
+      fill:var(--node);
+      stroke:var(--border);
+      stroke-width:1.2;
+      rx:14; ry:14;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,.2));
+    }
+    .node.selected rect{
+      fill:var(--node-selected);
+      stroke:#a7c1ff;
+      stroke-width:1.8;
+    }
+    .node text{
+      fill:white;
+      font-size:14px;
+      dominant-baseline:middle;
+      pointer-events:none;
+    }
+    .node .meta{
+      fill:#c9d8ff;
+      font-size:11px;
+    }
+    .toolbar{
+      position:absolute;
+      right:18px;
+      bottom:18px;
+      z-index:10;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .toolbar button{
+      width:auto;
+      min-width:48px;
+      padding:10px 14px;
+      background:rgba(14,21,45,.88);
+      backdrop-filter: blur(8px);
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:11px;
+      border:1px solid rgba(255,255,255,.12);
+      padding:2px 6px;
+      border-radius:8px;
+      color:#dce5ff;
+      background:rgba(255,255,255,.04);
+      display:inline-block;
+    }
+    .footer-note{
+      margin-top:10px;
+      font-size:11px;
+      color:#8ea1d7;
+      line-height:1.5;
+    }
+    .success{color:#8dffc4}
+    .error{color:#ffb1b1}
+    @media (max-width: 1024px){
+      .app{grid-template-columns:1fr}
+      .sidebar{
+        position:absolute; inset:0 auto 0 0;
+        width:min(92vw, 360px);
+        z-index:30;
+        transform:translateX(0);
+      }
+      .canvas-wrap{margin-left:min(92vw, 360px)}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">MM</div>
+        <div>
+          <h1>MindMap Studio</h1>
+          <div class="sub">保存・エクスポート・GitHub Gist対応の単一HTML版</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>ノード編集</h2>
+        <div class="row one"><input id="nodeText" placeholder="選択中ノードのテキスト" /></div>
+        <div class="row one"><textarea id="nodeNote" placeholder="メモ（任意）"></textarea></div>
+        <div class="row">
+          <button id="applyEdit" class="primary">反映</button>
+          <button id="renameQuick">その場で編集</button>
+        </div>
+        <div class="row">
+          <button id="addChild">子ノード追加</button>
+          <button id="addSibling">兄弟ノード追加</button>
+        </div>
+        <div class="row">
+          <button id="toggleCollapse">折りたたみ</button>
+          <button id="deleteNode" class="danger">削除</button>
+        </div>
+        <div class="hint">
+          操作: ダブルクリックで編集、ドラッグでノード移動、キャンバスドラッグでパン、ホイールでズーム。
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>保存 / 読み込み</h2>
+        <div class="row">
+          <button id="saveLocal" class="good">ローカル保存</button>
+          <button id="loadLocal">ローカル読込</button>
+        </div>
+        <div class="row">
+          <button id="downloadJson">JSON書き出し</button>
+          <button id="uploadJson">JSON読み込み</button>
+        </div>
+        <div class="row one">
+          <button id="downloadHtml" class="warn">このHTMLを保存</button>
+        </div>
+        <input type="file" id="fileInput" accept=".json,application/json" style="display:none" />
+        <div class="hint">ブラウザ内保存は <span class="kbd">localStorage</span> を利用します。</div>
+      </div>
+
+      <div class="panel">
+        <h2>GitHub Gist 連携</h2>
+        <div class="row one"><input id="gistToken" type="password" placeholder="GitHub Personal Access Token (gist権限)" /></div>
+        <div class="row one"><input id="gistId" placeholder="Gist ID（既存を更新/読込するとき）" /></div>
+        <div class="row one"><input id="gistFilename" value="mindmap.json" placeholder="ファイル名" /></div>
+        <div class="row">
+          <button id="saveGist" class="good">Gist保存</button>
+          <button id="loadGist">Gist読込</button>
+        </div>
+        <div class="hint">
+          トークンはこのページ内でのみ使用し、サーバー送信しません。公開したくない内容は Secret Gist を使ってください。
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>ショートカット</h2>
+        <div class="hint">
+          <span class="kbd">Tab</span> 子追加　
+          <span class="kbd">Enter</span> 兄弟追加　
+          <span class="kbd">Delete</span> 削除　
+          <span class="kbd">Ctrl/Cmd + S</span> ローカル保存　
+          <span class="kbd">F2</span> 編集
+        </div>
+      </div>
+
+      <div class="footer-note" id="status">準備完了。</div>
+    </aside>
+
+    <main class="canvas-wrap">
+      <div class="topbar">
+        <div class="badgebar">
+          <div class="badge">選択: <span id="selectedLabel">なし</span></div>
+          <div class="badge">ノード数: <span id="nodeCount">0</span></div>
+        </div>
+        <div class="statusbar">
+          <div class="badge">GitHub Pagesにそのまま配置可能</div>
+        </div>
+      </div>
+
+      <svg id="svg" viewBox="0 0 1600 1000" aria-label="mind map canvas">
+        <g id="viewport">
+          <g id="links"></g>
+          <g id="nodes"></g>
+        </g>
+      </svg>
+
+      <div class="toolbar">
+        <button id="zoomIn">＋</button>
+        <button id="zoomOut">－</button>
+        <button id="fitView">Fit</button>
+        <button id="centerView">Center</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'mindmap_studio_data_v1';
+
+    function uid() {
+      return 'n_' + Math.random().toString(36).slice(2, 10);
+    }
+
+    function makeDefaultMap() {
+      return {
+        id: uid(),
+        text: 'MindMap',
+        note: 'ここから編集を始めてください',
+        collapsed: false,
+        x: 0, y: 0,
+        children: [
+          { id: uid(), text: '企画', note: '', collapsed: false, x: 260, y: -140, children: [] },
+          { id: uid(), text: '設計', note: '', collapsed: false, x: 260, y: 0, children: [] },
+          { id: uid(), text: '実装', note: '', collapsed: false, x: 260, y: 140, children: [] }
+        ]
+      };
+    }
+
+    let root = makeDefaultMap();
+    let selectedId = root.id;
+    let panX = 800, panY = 480, zoom = 1;
+    let draggingCanvas = false;
+    let dragNodeId = null;
+    let dragStart = null;
+    let movedDuringDrag = false;
+
+    const svg = document.getElementById('svg');
+    const viewport = document.getElementById('viewport');
+    const linksEl = document.getElementById('links');
+    const nodesEl = document.getElementById('nodes');
+
+    const statusEl = document.getElementById('status');
+    const selectedLabelEl = document.getElementById('selectedLabel');
+    const nodeCountEl = document.getElementById('nodeCount');
+    const nodeTextEl = document.getElementById('nodeText');
+    const nodeNoteEl = document.getElementById('nodeNote');
+
+    function setStatus(msg, type='') {
+      statusEl.className = 'footer-note ' + type;
+      statusEl.textContent = msg;
+    }
+
+    function traverse(node, parent=null, arr=[]) {
+      arr.push({node, parent});
+      if (!node.collapsed) {
+        for (const child of (node.children || [])) traverse(child, node, arr);
+      }
+      return arr;
+    }
+
+    function findNodeAndParent(id, node=root, parent=null) {
+      if (node.id === id) return { node, parent };
+      for (const child of (node.children || [])) {
+        const found = findNodeAndParent(id, child, node);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function countNodes(node=root) {
+      let c = 1;
+      for (const child of (node.children || [])) c += countNodes(child);
+      return c;
+    }
+
+    function getVisibleBounds() {
+      const items = traverse(root);
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const {node} of items) {
+        minX = Math.min(minX, node.x - 80);
+        maxX = Math.max(maxX, node.x + 140);
+        minY = Math.min(minY, node.y - 40);
+        maxY = Math.max(maxY, node.y + 40);
+      }
+      if (!isFinite(minX)) return {minX:-300,maxX:300,minY:-200,maxY:200};
+      return {minX,maxX,minY,maxY};
+    }
+
+    function autoLayout() {
+      const horizontalGap = 250;
+      const verticalGap = 90;
+
+      function layout(node, depth, topY) {
+        const visibleChildren = node.collapsed ? [] : (node.children || []);
+        if (!visibleChildren.length) {
+          if (node !== root && (node.x === 0 && node.y === 0)) {
+            node.x = depth * horizontalGap;
+            node.y = topY;
+          }
+          return topY + verticalGap;
+        }
+        let currentY = topY;
+        const childYs = [];
+        for (const child of visibleChildren) {
+          currentY = layout(child, depth + 1, currentY);
+          childYs.push(child.y);
+        }
+        if (node === root && node.x === 0 && node.y === 0) {
+          node.x = 0; node.y = 0;
+        } else if (node.id !== root.id && node.x === 0 && node.y === 0) {
+          node.x = depth * horizontalGap;
+          node.y = (childYs[0] + childYs[childYs.length - 1]) / 2;
+        }
+        if (visibleChildren.length) {
+          node.y = node.id === root.id ? 0 : (childYs[0] + childYs[childYs.length - 1]) / 2;
+        }
+        visibleChildren.forEach((child, i) => {
+          if (child.x === 0 && child.y === 0) {
+            child.x = depth * horizontalGap;
+          }
+        });
+        return currentY;
+      }
+
+      root.x = 0;
+      root.y = 0;
+      layout(root, 0, -((countNodes(root)-1) * verticalGap)/2);
+      render();
+    }
+
+    function updateInspector() {
+      const found = findNodeAndParent(selectedId);
+      if (!found) return;
+      nodeTextEl.value = found.node.text || '';
+      nodeNoteEl.value = found.node.note || '';
+      selectedLabelEl.textContent = found.node.text || '(無題)';
+      nodeCountEl.textContent = String(countNodes(root));
+    }
+
+    function render() {
+      viewport.setAttribute('transform', `translate(${panX},${panY}) scale(${zoom})`);
+      linksEl.innerHTML = '';
+      nodesEl.innerHTML = '';
+
+      const items = traverse(root);
+      for (const {node, parent} of items) {
+        if (parent) {
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          const sx = parent.x + 140;
+          const sy = parent.y;
+          const tx = node.x - 10;
+          const ty = node.y;
+          const cx1 = sx + (tx - sx) * 0.45;
+          const cx2 = sx + (tx - sx) * 0.7;
+          path.setAttribute('d', `M ${sx} ${sy} C ${cx1} ${sy}, ${cx2} ${ty}, ${tx} ${ty}`);
+          path.setAttribute('class', 'link');
+          linksEl.appendChild(path);
+        }
+      }
+
+      for (const {node} of items) {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'node' + (node.id === selectedId ? ' selected' : ''));
+        g.setAttribute('transform', `translate(${node.x},${node.y})`);
+        g.dataset.id = node.id;
+
+        const width = Math.max(120, Math.min(260, (node.text || '').length * 10 + 34));
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', 0);
+        rect.setAttribute('y', -26);
+        rect.setAttribute('width', width);
+        rect.setAttribute('height', 52);
+        g.appendChild(rect);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', 16);
+        text.setAttribute('y', -2);
+        text.textContent = node.text || '(無題)';
+        g.appendChild(text);
+
+        const meta = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        meta.setAttribute('x', width - 16);
+        meta.setAttribute('y', 14);
+        meta.setAttribute('text-anchor', 'end');
+        meta.setAttribute('class', 'meta');
+        const childCount = (node.children || []).length;
+        meta.textContent = `${node.collapsed ? '▶' : '▼'} ${childCount}`;
+        g.appendChild(meta);
+
+        g.addEventListener('mousedown', (e) => {
+          e.stopPropagation();
+          selectedId = node.id;
+          updateInspector();
+          render();
+          dragNodeId = node.id;
+          movedDuringDrag = false;
+          dragStart = toWorld(e.clientX, e.clientY);
+        });
+
+        g.addEventListener('dblclick', (e) => {
+          e.stopPropagation();
+          quickRename();
+        });
+
+        nodesEl.appendChild(g);
+      }
+
+      updateInspector();
+    }
+
+    function toWorld(clientX, clientY) {
+      const rect = svg.getBoundingClientRect();
+      const x = (clientX - rect.left - panX) / zoom;
+      const y = (clientY - rect.top - panY) / zoom;
+      return { x, y };
+    }
+
+    function addChild() {
+      const found = findNodeAndParent(selectedId);
+      if (!found) return;
+      const offset = ((found.node.children || []).length - 0.5) * 90;
+      const newNode = {
+        id: uid(),
+        text: '新しいノード',
+        note: '',
+        collapsed: false,
+        x: found.node.x + 250,
+        y: found.node.y + offset + 90,
+        children: []
+      };
+      found.node.children = found.node.children || [];
+      found.node.children.push(newNode);
+      found.node.collapsed = false;
+      selectedId = newNode.id;
+      render();
+      setStatus('子ノードを追加しました。', 'success');
+    }
+
+    function addSibling() {
+      const found = findNodeAndParent(selectedId);
+      if (!found || !found.parent) return;
+      const siblings = found.parent.children;
+      const idx = siblings.findIndex(n => n.id === selectedId);
+      const newNode = {
+        id: uid(),
+        text: '新しいノード',
+        note: '',
+        collapsed: false,
+        x: found.node.x,
+        y: found.node.y + 90,
+        children: []
+      };
+      siblings.splice(idx + 1, 0, newNode);
+      selectedId = newNode.id;
+      render();
+      setStatus('兄弟ノードを追加しました。', 'success');
+    }
+
+    function deleteNode() {
+      const found = findNodeAndParent(selectedId);
+      if (!found || !found.parent) {
+        setStatus('ルートノードは削除できません。', 'error');
+        return;
+      }
+      found.parent.children = found.parent.children.filter(n => n.id !== selectedId);
+      selectedId = found.parent.id;
+      render();
+      setStatus('ノードを削除しました。', 'success');
+    }
+
+    function toggleCollapse() {
+      const found = findNodeAndParent(selectedId);
+      if (!found) return;
+      found.node.collapsed = !found.node.collapsed;
+      render();
+    }
+
+    function applyEdit() {
+      const found = findNodeAndParent(selectedId);
+      if (!found) return;
+      found.node.text = nodeTextEl.value.trim() || '無題';
+      found.node.note = nodeNoteEl.value;
+      render();
+      setStatus('ノードを更新しました。', 'success');
+    }
+
+    function quickRename() {
+      const found = findNodeAndParent(selectedId);
+      if (!found) return;
+      const v = prompt('ノード名を入力', found.node.text || '');
+      if (v === null) return;
+      found.node.text = v.trim() || '無題';
+      render();
+      setStatus('ノード名を変更しました。', 'success');
+    }
+
+    function serialize() {
+      return JSON.stringify(root, null, 2);
+    }
+
+    function loadFromObject(obj) {
+      root = obj;
+      if (!root.id) root.id = uid();
+      selectedId = root.id;
+      render();
+      setStatus('マップを読み込みました。', 'success');
+    }
+
+    function saveLocal() {
+      localStorage.setItem(STORAGE_KEY, serialize());
+      setStatus('ローカル保存しました。', 'success');
+    }
+
+    function loadLocal() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        setStatus('保存データがありません。', 'error');
+        return;
+      }
+      loadFromObject(JSON.parse(raw));
+    }
+
+    function download(name, content, type='application/json') {
+      const blob = new Blob([content], {type});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function saveGist() {
+      const token = document.getElementById('gistToken').value.trim();
+      const gistId = document.getElementById('gistId').value.trim();
+      const filename = document.getElementById('gistFilename').value.trim() || 'mindmap.json';
+      if (!token) {
+        setStatus('GitHub token を入力してください。', 'error');
+        return;
+      }
+
+      const body = {
+        description: 'MindMap Studio data',
+        public: false,
+        files: {
+          [filename]: {
+            content: serialize()
+          }
+        }
+      };
+
+      const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+      const method = gistId ? 'PATCH' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Accept': 'application/vnd.github+json',
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+        const data = await res.json();
+        document.getElementById('gistId').value = data.id;
+        setStatus(`Gistに保存しました。Gist ID: ${data.id}`, 'success');
+      } catch (err) {
+        console.error(err);
+        setStatus('Gist保存に失敗しました。トークン権限やCORS設定を確認してください。', 'error');
+      }
+    }
+
+    async function loadGist() {
+      const gistId = document.getElementById('gistId').value.trim();
+      const filename = document.getElementById('gistFilename').value.trim() || 'mindmap.json';
+      if (!gistId) {
+        setStatus('Gist ID を入力してください。', 'error');
+        return;
+      }
+      try {
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: {'Accept': 'application/vnd.github+json'}
+        });
+        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+        const data = await res.json();
+        const file = data.files[filename] || Object.values(data.files)[0];
+        if (!file) throw new Error('Gist file not found');
+        const obj = JSON.parse(file.content);
+        loadFromObject(obj);
+        setStatus('Gistから読み込みました。', 'success');
+      } catch (err) {
+        console.error(err);
+        setStatus('Gist読込に失敗しました。Gist IDやファイル名を確認してください。', 'error');
+      }
+    }
+
+    function fitView() {
+      const b = getVisibleBounds();
+      const width = svg.clientWidth || 1200;
+      const height = svg.clientHeight || 800;
+      const contentW = Math.max(200, b.maxX - b.minX + 160);
+      const contentH = Math.max(200, b.maxY - b.minY + 120);
+      zoom = Math.min(width / contentW, height / contentH, 1.35);
+      panX = width / 2 - ((b.minX + b.maxX) / 2) * zoom;
+      panY = height / 2 - ((b.minY + b.maxY) / 2) * zoom;
+      render();
+    }
+
+    function centerView() {
+      const width = svg.clientWidth || 1200;
+      const height = svg.clientHeight || 800;
+      panX = width / 2;
+      panY = height / 2;
+      zoom = 1;
+      render();
+    }
+
+    // UI bindings
+    document.getElementById('applyEdit').onclick = applyEdit;
+    document.getElementById('renameQuick').onclick = quickRename;
+    document.getElementById('addChild').onclick = addChild;
+    document.getElementById('addSibling').onclick = addSibling;
+    document.getElementById('toggleCollapse').onclick = toggleCollapse;
+    document.getElementById('deleteNode').onclick = deleteNode;
+    document.getElementById('saveLocal').onclick = saveLocal;
+    document.getElementById('loadLocal').onclick = loadLocal;
+    document.getElementById('downloadJson').onclick = () => download('mindmap.json', serialize());
+    document.getElementById('uploadJson').onclick = () => document.getElementById('fileInput').click();
+    document.getElementById('downloadHtml').onclick = async () => {
+      try {
+        const res = await fetch(window.location.href);
+        const text = await res.text();
+        download('mindmap-studio.html', text, 'text/html');
+      } catch {
+        download('mindmap-data.json', serialize());
+        setStatus('HTML取得に失敗したためJSONを書き出しました。ローカルファイル実行時はHTML保存が制限される場合があります。', 'error');
+      }
+    };
+    document.getElementById('saveGist').onclick = saveGist;
+    document.getElementById('loadGist').onclick = loadGist;
+    document.getElementById('zoomIn').onclick = () => { zoom = Math.min(2.5, zoom * 1.12); render(); };
+    document.getElementById('zoomOut').onclick = () => { zoom = Math.max(0.3, zoom / 1.12); render(); };
+    document.getElementById('fitView').onclick = fitView;
+    document.getElementById('centerView').onclick = centerView;
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          loadFromObject(JSON.parse(reader.result));
+        } catch {
+          setStatus('JSONの読み込みに失敗しました。', 'error');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    svg.addEventListener('mousedown', (e) => {
+      draggingCanvas = true;
+      svg.classList.add('dragging');
+      dragStart = { x: e.clientX, y: e.clientY, panX, panY };
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (dragNodeId) {
+        const found = findNodeAndParent(dragNodeId);
+        if (!found) return;
+        const p = toWorld(e.clientX, e.clientY);
+        found.node.x = p.x;
+        found.node.y = p.y;
+        movedDuringDrag = true;
+        render();
+        return;
+      }
+      if (!draggingCanvas) return;
+      panX = dragStart.panX + (e.clientX - dragStart.x);
+      panY = dragStart.panY + (e.clientY - dragStart.y);
+      render();
+    });
+    window.addEventListener('mouseup', () => {
+      draggingCanvas = false;
+      svg.classList.remove('dragging');
+      dragNodeId = null;
+    });
+    svg.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const wx = (mx - panX) / zoom;
+      const wy = (my - panY) / zoom;
+
+      const factor = e.deltaY < 0 ? 1.1 : 0.91;
+      const newZoom = Math.max(0.3, Math.min(2.5, zoom * factor));
+      panX = mx - wx * newZoom;
+      panY = my - wy * newZoom;
+      zoom = newZoom;
+      render();
+    }, { passive:false });
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveLocal();
+        return;
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault(); addChild();
+      } else if (e.key === 'Enter') {
+        if (document.activeElement === nodeTextEl || document.activeElement === nodeNoteEl) return;
+        e.preventDefault(); addSibling();
+      } else if (e.key === 'Delete') {
+        deleteNode();
+      } else if (e.key === 'F2') {
+        e.preventDefault();
+        quickRename();
+      }
+    });
+
+    // Initial
+    autoLayout();
+    fitView();
+    setStatus('準備完了。ローカル保存やGitHub Gist連携が使えます。');
+  </script>
+</body>
+</html>
+'''
+
+path = Path('/mnt/data/mindmap-studio.html')
+path.write_text(html, encoding='utf-8')
+print(f"Saved to {path}")
