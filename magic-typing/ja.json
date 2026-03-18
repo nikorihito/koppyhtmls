@@ -1,0 +1,22 @@
+{
+  "mode": "ja",
+  "label": "日本語",
+  "fileLabel": "ja.json",
+  "entries": [
+    { "display": "ほのお", "input": "honoo" },
+    { "display": "こおり", "input": "koori" },
+    { "display": "かみなり", "input": "kaminari" },
+    { "display": "まほうじん", "input": "mahoujin" },
+    { "display": "せいなるひかり", "input": "seinaruhikari" },
+    { "display": "しんぴのたて", "input": "shinpinotate" },
+    { "display": "えいえんのつるぎ", "input": "eiennotsurugi" },
+    { "display": "くろいほのお", "input": "kuroihonoo" },
+    { "display": "しずかなかぜ", "input": "shizukanakaze" },
+    { "display": "たいようのひかり", "input": "taiyounohikari" },
+    { "display": "しんくうは", "input": "shinkuha" },
+    { "display": "せんこう", "input": "senkou" },
+    { "display": "まよいのもり", "input": "mayoinomori" },
+    { "display": "ほしのかけら", "input": "hoshinokakera" },
+    { "display": "きぼうのつばさ", "input": "kibounotsubasa" }
+  ]
+}

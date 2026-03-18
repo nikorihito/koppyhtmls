@@ -1,0 +1,22 @@
+{
+  "mode": "en",
+  "label": "English",
+  "fileLabel": "en.json",
+  "entries": [
+    { "display": "fire", "input": "fire" },
+    { "display": "ice", "input": "ice" },
+    { "display": "thunder", "input": "thunder" },
+    { "display": "magic circle", "input": "magiccircle" },
+    { "display": "holy light", "input": "holylight" },
+    { "display": "mystic shield", "input": "mysticshield" },
+    { "display": "ancient sword", "input": "ancientsword" },
+    { "display": "dark flame", "input": "darkflame" },
+    { "display": "silent wind", "input": "silentwind" },
+    { "display": "brave knight", "input": "braveknight" },
+    { "display": "crystal road", "input": "crystalroad" },
+    { "display": "silver gate", "input": "silvergate" },
+    { "display": "storm field", "input": "stormfield" },
+    { "display": "phantom blade", "input": "phantomblade" },
+    { "display": "healing light", "input": "healinglight" }
+  ]
+}
