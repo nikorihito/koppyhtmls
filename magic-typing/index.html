@@ -3,1168 +3,1196 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Typing Colosseum Battle</title>
+  <title>Arcane Typing Arena</title>
   <style>
     * { box-sizing: border-box; }
     :root {
-      --bg1: #8bd4ff;
-      --bg2: #dff4ff;
-      --panel: rgba(0, 0, 0, 0.72);
-      --panel2: rgba(0, 0, 0, 0.58);
-      --line: rgba(255,255,255,0.18);
-      --blue: #2f9dfb;
-      --hpBlue: #3aa0ff;
-      --scBlue: #2cd3ff;
-      --red: #ff4d4d;
-      --green: #47ff5d;
-      --white: #ffffff;
-      --text: #f5fbff;
-      --gold: #ffe071;
-      --shadow: 0 18px 36px rgba(0,0,0,0.22);
+      --bg-a: #0d1024;
+      --bg-b: #151b3a;
+      --panel: rgba(18, 24, 52, 0.82);
+      --panel-strong: rgba(14, 19, 42, 0.92);
+      --line: rgba(170, 192, 255, 0.16);
+      --text: #eef4ff;
+      --muted: #9fb0d9;
+      --accent: #7c8cff;
+      --accent-2: #31d4ff;
+      --accent-3: #c084fc;
+      --danger: #ff6b7f;
+      --good: #53e0a1;
+      --gold: #ffd166;
+      --shadow: 0 24px 64px rgba(0,0,0,0.36);
     }
     html, body {
       margin: 0;
       min-height: 100%;
-      font-family: "Arial Black", "Yu Gothic", "Meiryo", sans-serif;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(124, 140, 255, 0.18), transparent 22%),
+        radial-gradient(circle at 80% 12%, rgba(49, 212, 255, 0.12), transparent 22%),
+        radial-gradient(circle at 50% 78%, rgba(192, 132, 252, 0.08), transparent 24%),
+        linear-gradient(180deg, var(--bg-b), var(--bg-a));
       color: var(--text);
-      background: linear-gradient(180deg, #9ed8ff 0%, #ddf2ff 45%, #cbf0ff 100%);
+      font-family: Inter, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
     }
-    body {
-      overflow-x: hidden;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.45;
     }
     .app {
-      min-height: 100vh;
       position: relative;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.0), rgba(255,255,255,0.08)),
-        linear-gradient(180deg, rgba(0,0,0,0.00), rgba(0,0,0,0.12));
-    }
-    .sky {
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 54vh;
-      background:
-        radial-gradient(circle at 15% 12%, rgba(255,255,255,0.95) 0 30px, transparent 31px),
-        radial-gradient(circle at 22% 15%, rgba(255,255,255,0.95) 0 25px, transparent 26px),
-        radial-gradient(circle at 29% 13%, rgba(255,255,255,0.95) 0 28px, transparent 29px),
-        radial-gradient(circle at 70% 18%, rgba(255,255,255,0.90) 0 38px, transparent 39px),
-        radial-gradient(circle at 76% 20%, rgba(255,255,255,0.90) 0 30px, transparent 31px),
-        radial-gradient(circle at 83% 17%, rgba(255,255,255,0.90) 0 36px, transparent 37px),
-        linear-gradient(180deg, #6cc8ff 0%, #b7e8ff 58%, rgba(207,243,255,0.65) 100%);
-      filter: saturate(1.05);
-    }
-    .arena-floor {
-      position: absolute;
-      inset: auto 0 0 0;
-      height: 48vh;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06)),
-        linear-gradient(135deg, rgba(25,44,55,0.75) 25%, transparent 25%) -24px 0/48px 48px,
-        linear-gradient(225deg, rgba(25,44,55,0.75) 25%, transparent 25%) -24px 0/48px 48px,
-        linear-gradient(315deg, rgba(25,44,55,0.75) 25%, transparent 25%) 0px 0/48px 48px,
-        linear-gradient(45deg, rgba(25,44,55,0.75) 25%, rgba(91,181,216,0.55) 25%) 0px 0/48px 48px;
-      opacity: 0.9;
-      transform: perspective(540px) rotateX(72deg);
-      transform-origin: top center;
-      top: 48vh;
-      filter: blur(0.25px);
-    }
-    .hud {
-      position: relative;
-      z-index: 5;
+      z-index: 1;
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 18px;
       display: grid;
-      grid-template-columns: 1fr 180px 1fr;
-      align-items: start;
       gap: 16px;
-      padding: 8px 20px 0;
-    }
-    .status-box {
-      background: rgba(0,0,0,0.9);
-      border: 3px solid #000;
-      clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 50%, calc(100% - 26px) 100%, 0 100%, 14px 50%);
-      padding: 8px 14px 10px 22px;
-      display: grid;
-      grid-template-columns: 64px 1fr 58px;
-      gap: 10px;
-      box-shadow: var(--shadow);
-      min-height: 64px;
-      align-items: center;
-    }
-    .status-box.right {
-      clip-path: polygon(26px 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 26px 100%, 0 50%);
-      padding: 8px 22px 10px 14px;
-      grid-template-columns: 58px 1fr 64px;
-    }
-    .lv-block {
-      text-align: center;
-      font-weight: 900;
-      line-height: 1.02;
-    }
-    .lv-block .mini { font-size: 18px; }
-    .lv-block .big { font-size: 24px; }
-    .gauge-stack { display: grid; gap: 6px; }
-    .gauge-label-row {
-      display: grid;
-      grid-template-columns: 44px 1fr;
-      gap: 8px;
-      align-items: center;
-    }
-    .gauge-label {
-      background: #000;
-      border: 2px solid #444;
-      font-size: 16px;
-      font-weight: 900;
-      line-height: 1;
-      padding: 6px 0;
-      text-align: center;
-    }
-    .gauge-outer {
-      background: #0f1720;
-      border: 2px solid #000;
-      height: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    .gauge-fill {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 0;
-      transition: width 0.18s ease;
-    }
-    .gauge-fill.hp { background: linear-gradient(90deg, #1f7cff, #68b7ff); }
-    .gauge-fill.sc { background: linear-gradient(90deg, #2cd3ff, #95f8ff); }
-    .gauge-value {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 900;
-      text-shadow: 0 1px 0 #000;
-      letter-spacing: 0.03em;
-    }
-    .timer-wrap {
-      display: flex;
-      justify-content: center;
-    }
-    .timer-circle {
-      width: 118px;
-      height: 118px;
-      border-radius: 50%;
-      background: #000;
-      border: 4px solid var(--red);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow);
-      font-size: 26px;
-      font-weight: 900;
-      color: #fff;
-    }
-    .main-stage {
-      position: relative;
-      z-index: 4;
-      min-height: 620px;
-      padding: 22px 18px 24px;
-    }
-    .banner {
-      position: relative;
-      margin: 26px auto 0;
-      width: min(1040px, calc(100% - 34px));
-      min-height: 98px;
-      padding: 22px 26px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, #5dff72, #44ea63);
-      color: #000;
-      font-size: clamp(30px, 4vw, 54px);
-      font-weight: 900;
-      text-align: center;
-      box-shadow: 0 12px 30px rgba(60, 255, 110, 0.24);
-      text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      letter-spacing: 0.02em;
-    }
-    .banner::before,
-    .banner::after {
-      content: "";
-      position: absolute;
-      top: 12px;
-      bottom: 12px;
-      width: 18px;
-      background: linear-gradient(180deg, rgba(255,100,100,0.85), rgba(50,120,255,0.8));
-    }
-    .banner::before { left: -10px; clip-path: polygon(100% 0, 0 50%, 100% 100%); }
-    .banner::after { right: -10px; clip-path: polygon(0 0, 100% 50%, 0 100%); }
-    .stage-grid {
-      position: relative;
-      margin-top: 48px;
-      min-height: 420px;
-      display: grid;
-      grid-template-columns: 1fr 340px 1fr;
-      align-items: end;
-      gap: 12px;
-    }
-    .fighter {
-      display: flex;
-      justify-content: center;
-      align-items: end;
-      min-height: 260px;
-      position: relative;
-    }
-    .fighter-card {
-      width: 220px;
-      min-height: 240px;
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.16));
-      display: grid;
-      place-items: center;
-      position: relative;
-      transition: transform 0.12s ease, filter 0.18s ease;
-      filter: drop-shadow(0 14px 24px rgba(0,0,0,0.24));
-    }
-    .fighter-card.hit {
-      transform: scale(1.06);
-      filter: brightness(1.18) drop-shadow(0 14px 26px rgba(255,120,120,0.3));
-    }
-    .fighter-card.cast {
-      transform: scale(1.03);
-      filter: brightness(1.1) drop-shadow(0 14px 26px rgba(120,200,255,0.3));
-    }
-    .fighter-emoji {
-      font-size: 150px;
-      line-height: 1;
-      user-select: none;
-    }
-    .fighter-name {
-      position: absolute;
-      bottom: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.82);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      box-shadow: var(--shadow);
-      white-space: nowrap;
-    }
-    .keyboard-panel {
-      align-self: center;
-      justify-self: center;
-      width: min(340px, 95%);
-      min-height: 120px;
-      border-radius: 12px;
-      background: rgba(50, 66, 88, 0.40);
-      border: 1px solid rgba(255,255,255,0.22);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
-      padding: 10px;
-      backdrop-filter: blur(6px);
-    }
-    .keys { display: grid; gap: 4px; }
-    .key-row { display: flex; justify-content: center; gap: 4px; }
-    .key {
-      min-width: 22px;
-      height: 24px;
-      border-radius: 4px;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.16);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      color: rgba(255,255,255,0.88);
-    }
-    .controls {
-      position: relative;
-      z-index: 5;
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 16px;
-      padding: 0 18px 20px;
-      margin-top: -26px;
     }
     .panel {
       background: var(--panel);
-      border: 2px solid rgba(255,255,255,0.14);
-      border-radius: 20px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
       box-shadow: var(--shadow);
-      padding: 16px;
+      backdrop-filter: blur(10px);
     }
-    .panel h2 {
-      margin: 0 0 12px;
-      font-size: 22px;
-      letter-spacing: 0.03em;
-    }
-    .word-display {
-      min-height: 72px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.16);
-      padding: 14px 16px;
+    .topbar {
       display: grid;
-      gap: 6px;
-      margin-bottom: 12px;
+      grid-template-columns: 1.25fr auto auto;
+      gap: 14px;
+      align-items: stretch;
     }
-    .mode-info {
-      font-size: 12px;
-      color: #d5ecff;
-      letter-spacing: 0.08em;
+    .brand {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      background: linear-gradient(135deg, rgba(124,140,255,0.28), rgba(49,212,255,0.16));
+      border: 1px solid rgba(124,140,255,0.36);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(26px, 3.6vw, 40px);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .brand p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-    .display-text {
-      font-size: clamp(26px, 3.2vw, 42px);
+    .mini-panel {
+      min-width: 180px;
+      padding: 14px 18px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+    }
+    .mini-panel .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+    .mini-panel .value {
+      margin-top: 6px;
+      font-size: 42px;
+      line-height: 1;
       font-weight: 900;
-      line-height: 1.2;
-      word-break: break-word;
-      color: #fff;
     }
-    .sub-input {
-      font-size: 16px;
-      color: #b4e8ff;
-      min-height: 24px;
-      letter-spacing: 0.05em;
-    }
-    .input-box {
-      width: 100%;
-      height: 54px;
-      border-radius: 14px;
-      border: 2px solid rgba(255,255,255,0.2);
-      background: rgba(0,0,0,0.36);
-      color: #fff;
-      padding: 0 16px;
-      font-size: 22px;
-      font-weight: 900;
-      outline: none;
-    }
-    .input-box:focus {
-      border-color: #8be8ff;
-      box-shadow: 0 0 0 4px rgba(139,232,255,0.16);
-    }
-    .progress-line {
-      margin-top: 10px;
-      height: 14px;
-      border-radius: 999px;
-      background: rgba(0,0,0,0.44);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #44c8ff, #98f0ff);
-      transition: width 0.18s ease;
-    }
-    .word-meta {
-      margin-top: 8px;
+    .toolbar {
       display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: #d6f6ff;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 14px 18px;
     }
-    .selectors {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 12px;
+    button, select {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      font: inherit;
     }
-    .field {
-      display: grid;
-      gap: 6px;
-    }
-    .field label {
-      font-size: 13px;
-      color: #d6f2ff;
-      letter-spacing: 0.06em;
-    }
-    .field select,
-    .mode-toggle button,
-    .action-btn,
-    .spell-btn {
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.18);
-      font-weight: 900;
+    button {
       cursor: pointer;
+      font-weight: 700;
       transition: transform 0.12s ease, opacity 0.12s ease, box-shadow 0.12s ease;
     }
-    .field select {
-      height: 44px;
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      padding: 0 12px;
-      font-size: 16px;
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .primary-btn {
+      background: linear-gradient(135deg, rgba(124,140,255,0.96), rgba(49,212,255,0.82));
+      color: #0c1025;
+      box-shadow: 0 14px 28px rgba(49,212,255,0.18);
     }
-    .mode-toggle {
+    .layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: 320px 1fr 330px;
+      gap: 16px;
+      align-items: start;
     }
-    .mode-toggle button,
-    .action-btn,
-    .spell-btn {
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      min-height: 44px;
-      padding: 10px 12px;
+    .card {
+      padding: 18px;
     }
-    .mode-toggle button.active,
-    .action-btn.primary,
-    .spell-btn.ready {
-      background: linear-gradient(180deg, #48dbff, #299dff);
-      color: #001323;
-      box-shadow: 0 8px 20px rgba(41,157,255,0.22);
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 20px;
+      letter-spacing: 0.02em;
     }
-    .action-row {
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .selector-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .enemy-option {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+    .enemy-option:hover {
+      transform: translateY(-1px);
+      border-color: rgba(124,140,255,0.34);
+    }
+    .enemy-option.active {
+      background: linear-gradient(135deg, rgba(124,140,255,0.16), rgba(49,212,255,0.08));
+      border-color: rgba(124,140,255,0.42);
+    }
+    .enemy-option .top {
       display: flex;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .spells {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .spell-btn {
-      text-align: left;
-      min-height: 88px;
-      position: relative;
-    }
-    .spell-btn .cost {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 12px;
-      color: #bcefff;
-    }
-    .spell-btn .name {
-      font-size: 16px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 6px;
     }
-    .spell-btn .desc {
+    .enemy-option .name {
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .enemy-option .hp {
+      color: var(--gold);
       font-size: 12px;
-      line-height: 1.5;
-      color: #d6f0ff;
       font-weight: 700;
     }
-    .logs {
-      min-height: 142px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      padding: 12px 14px;
-      white-space: pre-line;
-      line-height: 1.75;
-      font-size: 14px;
-      color: #f3fbff;
+    .stack {
+      display: grid;
+      gap: 14px;
     }
+    .stat-box {
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+    .stat-head .name {
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .stat-head .tag {
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+    }
+    .bar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .bar {
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      transition: width 0.2s ease;
+    }
+    .hp-fill { background: linear-gradient(90deg, #49d18f, #81f495); }
+    .enemy-fill { background: linear-gradient(90deg, #ff6b7f, #ff9f68); }
+    .sc-fill { background: linear-gradient(90deg, #31d4ff, #7c8cff); }
+    .shield-fill { background: linear-gradient(90deg, #ffd166, #ffe6a6); }
+
+    .arena-wrap {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .announce {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(124,140,255,0.16), rgba(192,132,252,0.10));
+      border: 1px solid rgba(124,140,255,0.22);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #eef2ff;
+    }
+    .arena {
+      position: relative;
+      min-height: 640px;
+      border-radius: 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(124,140,255,0.18), transparent 18%),
+        radial-gradient(circle at 50% 50%, rgba(49,212,255,0.08), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00)),
+        linear-gradient(180deg, #14193a 0%, #10142f 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .arena::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(255,255,255,0.06) 0 1px, transparent 1px) center/30px 30px,
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 30px 30px, 30px 30px, 30px 30px;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    .sigil {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      width: 320px;
+      height: 320px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 2px solid rgba(124,140,255,0.20);
+      box-shadow:
+        0 0 0 24px rgba(124,140,255,0.04),
+        0 0 0 52px rgba(49,212,255,0.02),
+        inset 0 0 48px rgba(124,140,255,0.08);
+      pointer-events: none;
+    }
+    .sigil::before,
+    .sigil::after {
+      content: "";
+      position: absolute;
+      inset: 28px;
+      border-radius: 50%;
+      border: 1px dashed rgba(49,212,255,0.28);
+    }
+    .sigil::after {
+      inset: 76px;
+      border-style: solid;
+      border-color: rgba(192,132,252,0.20);
+    }
+    .fighter {
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      z-index: 2;
+    }
+    .fighter .avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 76px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.28), inset 0 0 30px rgba(255,255,255,0.04);
+    }
+    .fighter .label {
+      margin-top: 12px;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .fighter .name {
+      margin-top: 6px;
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .fighter.player {
+      left: 56px;
+      bottom: 70px;
+    }
+    .fighter.player .avatar {
+      background: radial-gradient(circle at 35% 30%, rgba(49,212,255,0.36), rgba(124,140,255,0.16));
+      color: #dff9ff;
+    }
+    .fighter.enemy {
+      right: 56px;
+      top: 70px;
+    }
+    .fighter.enemy .avatar {
+      background: radial-gradient(circle at 35% 30%, rgba(255,107,127,0.34), rgba(192,132,252,0.16));
+      color: #fff1f5;
+    }
+    .casting-ring {
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,0.14);
+      z-index: 1;
+      opacity: 0.8;
+    }
+    .player-ring { left: 72px; bottom: 84px; }
+    .enemy-ring { right: 72px; top: 84px; }
     .projectile-layer {
       position: absolute;
       inset: 0;
       pointer-events: none;
-      z-index: 9;
+      z-index: 4;
       overflow: hidden;
     }
     .projectile {
       position: absolute;
-      top: 56%;
-      width: 34px;
-      height: 34px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
+      box-shadow: 0 0 30px currentColor;
       opacity: 0.95;
-      box-shadow: 0 0 18px rgba(255,255,255,0.26);
+      animation: linearSpell 0.7s ease-out forwards;
     }
-    .projectile.player { left: calc(25% + 40px); animation: fly-right 0.56s ease-out forwards; }
-    .projectile.enemy { right: calc(25% + 40px); animation: fly-left 0.6s ease-out forwards; }
-    .projectile.fire { background: radial-gradient(circle, #fff3b0 0%, #ff9d42 38%, #ff4d4d 76%, rgba(255,77,77,0) 100%); }
-    .projectile.ice { background: radial-gradient(circle, #e9fbff 0%, #86f3ff 42%, #48b8ff 76%, rgba(72,184,255,0) 100%); }
-    .projectile.thunder { width: 18px; height: 88px; border-radius: 16px; background: linear-gradient(180deg, rgba(255,255,255,0.18), #fff59d 20%, #ffd84d 48%, rgba(255,216,77,0)); }
-    .projectile.shadow { background: radial-gradient(circle, #d7c7ff 0%, #8b7dff 46%, #4d41ff 82%, rgba(77,65,255,0) 100%); }
-    .projectile.wind { background: radial-gradient(circle, #ffffff 0%, #caf8ff 40%, #92edff 72%, rgba(146,237,255,0) 100%); }
-    .projectile.basic { background: radial-gradient(circle, #ffffff 0%, #75e2ff 55%, rgba(117,226,255,0) 100%); }
-    @keyframes fly-right {
-      0% { transform: translateY(0) scale(0.8); opacity: 0; }
-      18% { opacity: 1; }
-      100% { transform: translateX(560px) translateY(-22px) scale(1.18); opacity: 0; }
+    .projectile.player {
+      left: 170px;
+      bottom: 160px;
+      background: radial-gradient(circle, #effaff 0%, #31d4ff 52%, rgba(49,212,255,0) 100%);
+      color: #31d4ff;
     }
-    @keyframes fly-left {
-      0% { transform: translateY(0) scale(0.8); opacity: 0; }
-      18% { opacity: 1; }
-      100% { transform: translateX(-560px) translateY(-18px) scale(1.18); opacity: 0; }
+    .projectile.enemy {
+      right: 170px;
+      top: 160px;
+      background: radial-gradient(circle, #fff5f8 0%, #ff6b7f 52%, rgba(255,107,127,0) 100%);
+      color: #ff6b7f;
+      animation-name: enemySpell;
+    }
+    .projectile.fire { background: radial-gradient(circle, #fff1c5 0%, #ff8e53 45%, rgba(255,142,83,0) 100%); color: #ff8e53; }
+    .projectile.prism { background: radial-gradient(circle, #f7f2ff 0%, #c084fc 45%, rgba(192,132,252,0) 100%); color: #c084fc; }
+    .projectile.heal { background: radial-gradient(circle, #f0fff8 0%, #53e0a1 45%, rgba(83,224,161,0) 100%); color: #53e0a1; animation-duration: 0.55s; }
+    @keyframes linearSpell {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translate(660px, -320px) scale(1.2); opacity: 0; }
+    }
+    @keyframes enemySpell {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translate(-660px, 320px) scale(1.2); opacity: 0; }
+    }
+    .damage {
+      position: absolute;
+      z-index: 5;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      animation: damageFloat 0.9s ease-out forwards;
+      text-shadow: 0 8px 20px rgba(0,0,0,0.26);
+      pointer-events: none;
+    }
+    .damage.player-hit { right: 180px; top: 250px; color: #ff9aa6; }
+    .damage.enemy-hit { left: 180px; bottom: 220px; color: #8cebff; }
+    .damage.heal { left: 140px; bottom: 250px; color: #8affc6; }
+    @keyframes damageFloat {
+      0% { opacity: 0; transform: translateY(18px) scale(0.82); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-34px) scale(1.08); }
+    }
+    .typing-panel {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 22px;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(12, 16, 36, 0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 38px rgba(0,0,0,0.28);
+      z-index: 6;
+      display: grid;
+      gap: 14px;
+    }
+    .typing-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .typing-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .typing-word {
+      min-height: 56px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      word-break: break-word;
+    }
+    .typing-word .pending { color: rgba(255,255,255,0.28); }
+    .typing-word .typed { color: #8cebff; text-shadow: 0 0 18px rgba(49,212,255,0.32); }
+    .typing-input {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 14px 16px;
+      font-size: 18px;
+      outline: none;
+    }
+    .typing-input:focus {
+      border-color: rgba(49,212,255,0.42);
+      box-shadow: 0 0 0 4px rgba(49,212,255,0.10);
+    }
+    .side-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .skill-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .skill-btn {
+      width: 100%;
+      text-align: left;
+      background: rgba(255,255,255,0.04);
+    }
+    .skill-btn .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .skill-btn .name {
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .skill-btn .cost {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .skill-btn .desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+    .skill-btn .key {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .log-box {
+      min-height: 138px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 14px;
+      color: #d8e5ff;
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-line;
     }
     .result-box {
-      margin-top: 12px;
       display: none;
-      border-radius: 14px;
-      background: rgba(71,255,93,0.15);
-      border: 1px solid rgba(71,255,93,0.22);
-      padding: 12px;
-      color: #f4fff7;
-      font-weight: 900;
+      border-radius: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(124,140,255,0.18), rgba(49,212,255,0.12));
+      border: 1px solid rgba(124,140,255,0.24);
     }
     .result-box.show { display: block; }
     .result-grid {
       margin-top: 10px;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
     .result-item {
-      border-radius: 12px;
-      background: rgba(255,255,255,0.08);
-      padding: 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      padding: 12px;
     }
-    .result-item .label { font-size: 11px; color: #d6fbdd; }
-    .result-item .value { font-size: 26px; margin-top: 4px; }
-    .note {
-      margin-top: 10px;
+    .result-item .label {
       font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .result-item .value {
+      margin-top: 4px;
+      font-size: 28px;
+      font-weight: 900;
+    }
+    .tiny-note {
+      font-size: 12px;
+      color: var(--muted);
       line-height: 1.7;
-      color: #d5efff;
     }
-    @media (max-width: 1100px) {
-      .hud { grid-template-columns: 1fr; justify-items: center; }
-      .status-box, .status-box.right { width: min(760px, 100%); }
-      .timer-wrap { order: -1; }
-      .stage-grid { grid-template-columns: 1fr; min-height: 520px; }
-      .keyboard-panel { order: 2; }
-      .controls { grid-template-columns: 1fr; }
+    @media (max-width: 1240px) {
+      .layout { grid-template-columns: 1fr; }
+      .topbar { grid-template-columns: 1fr; }
+      .mini-panel, .toolbar { justify-items: start; justify-content: flex-start; }
     }
-    @media (max-width: 720px) {
-      .status-box, .status-box.right {
-        grid-template-columns: 52px 1fr 44px;
-        padding-left: 16px;
-        padding-right: 16px;
-      }
-      .status-box.right { grid-template-columns: 44px 1fr 52px; }
-      .gauge-label { font-size: 13px; }
-      .timer-circle { width: 96px; height: 96px; font-size: 22px; }
-      .banner { min-height: 84px; font-size: 28px; }
-      .selectors { grid-template-columns: 1fr; }
-      .spells { grid-template-columns: 1fr; }
-      .result-grid { grid-template-columns: 1fr 1fr; }
-      .fighter-card { width: 180px; min-height: 200px; }
-      .fighter-emoji { font-size: 120px; }
+    @media (max-width: 860px) {
+      .fighter.player { left: 20px; bottom: 120px; }
+      .fighter.enemy { right: 20px; top: 20px; }
+      .player-ring { left: 30px; bottom: 132px; }
+      .enemy-ring { right: 30px; top: 32px; }
+      .fighter { width: 190px; height: 190px; }
+      .fighter .avatar { width: 120px; height: 120px; font-size: 56px; }
+      .arena { min-height: 700px; }
+      .projectile.player { left: 100px; bottom: 220px; }
+      .projectile.enemy { right: 100px; top: 120px; }
+      @keyframes linearSpell { 100% { transform: translate(420px, -180px) scale(1.2); opacity: 0; } }
+      @keyframes enemySpell { 100% { transform: translate(-420px, 220px) scale(1.2); opacity: 0; } }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="sky"></div>
-    <div class="arena-floor"></div>
+    <header class="topbar">
+      <section class="panel brand">
+        <div class="brand-icon">✦</div>
+        <div>
+          <h1>Arcane Typing Arena</h1>
+          <p>original fantasy duel interface</p>
+        </div>
+      </section>
+      <section class="panel mini-panel">
+        <div class="label">Duel Timer</div>
+        <div id="timeValue" class="value">60</div>
+      </section>
+      <section class="panel toolbar">
+        <select id="modeSelect">
+          <option value="ja">日本語モード</option>
+          <option value="en">English Mode</option>
+        </select>
+        <button id="startBtn" class="primary-btn">バトル開始</button>
+        <button id="resetBtn">リセット</button>
+      </section>
+    </header>
 
-    <section class="hud">
-      <div class="status-box">
-        <div class="lv-block"><div class="mini">LV.</div><div id="playerLv" class="big">27</div></div>
-        <div class="gauge-stack">
-          <div class="gauge-label-row">
-            <div class="gauge-label">HP</div>
-            <div class="gauge-outer">
-              <div id="playerHpFill" class="gauge-fill hp"></div>
-              <div id="playerHpText" class="gauge-value">8000/8000</div>
+    <main class="layout">
+      <aside class="side-grid">
+        <section class="panel card">
+          <h2 class="section-title">敵の選択</h2>
+          <div id="enemySelector" class="selector-grid"></div>
+          <p class="tiny-note" style="margin-top:12px;">敵ごとにHP・攻撃間隔・魔法威力が異なります。開始前に選択してください。</p>
+        </section>
+
+        <section class="panel card stack">
+          <div class="stat-box">
+            <div class="stat-head"><div class="name">プレイヤー</div><span class="tag">HP 8000</span></div>
+            <div class="bar-row"><span>HP</span><span id="playerHpText">8000 / 8000</span></div>
+            <div class="bar"><div id="playerHpFill" class="fill hp-fill"></div></div>
+            <div class="bar-row" style="margin-top:10px;"><span>Spell Charge</span><span id="playerScText">0 / 100</span></div>
+            <div class="bar"><div id="playerScFill" class="fill sc-fill"></div></div>
+            <div class="bar-row" style="margin-top:10px;"><span>Barrier</span><span id="shieldText">0</span></div>
+            <div class="bar"><div id="shieldFill" class="fill shield-fill"></div></div>
+          </div>
+
+          <div class="stat-box">
+            <div class="stat-head"><div id="enemyCardName" class="name">敵</div><span class="tag">Enemy</span></div>
+            <div class="bar-row"><span>HP</span><span id="enemyHpText">10000 / 10000</span></div>
+            <div class="bar"><div id="enemyHpFill" class="fill enemy-fill"></div></div>
+            <div class="bar-row" style="margin-top:10px;"><span>Attack Cycle</span><span id="enemyAttackText">3.8s</span></div>
+            <div class="bar"><div id="enemyCycleFill" class="fill sc-fill"></div></div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="panel arena-wrap">
+        <div id="announce" class="announce">開始すると、敵は移動せず魔法で攻撃してきます。タイピングでチャージをためて反撃してください。</div>
+
+        <div class="arena">
+          <div class="sigil"></div>
+          <div class="casting-ring player-ring"></div>
+          <div class="casting-ring enemy-ring"></div>
+
+          <div class="fighter player">
+            <div>
+              <div class="avatar">🧙</div>
+              <div class="label">Player</div>
+              <div class="name">Spell Scribe</div>
             </div>
           </div>
-          <div class="gauge-label-row">
-            <div class="gauge-label">SC</div>
-            <div class="gauge-outer">
-              <div id="playerScFill" class="gauge-fill sc"></div>
-              <div id="playerScText" class="gauge-value">0/100</div>
+
+          <div class="fighter enemy">
+            <div>
+              <div id="enemyAvatar" class="avatar">👁️</div>
+              <div class="label">Enemy</div>
+              <div id="enemyNameLarge" class="name">Astral Warden</div>
             </div>
           </div>
-        </div>
-        <div></div>
-      </div>
 
-      <div class="timer-wrap">
-        <div id="timerText" class="timer-circle">60.00</div>
-      </div>
+          <div id="projectileLayer" class="projectile-layer"></div>
 
-      <div class="status-box right">
-        <div></div>
-        <div class="gauge-stack">
-          <div class="gauge-label-row">
-            <div class="gauge-label">HP</div>
-            <div class="gauge-outer">
-              <div id="enemyHpFill" class="gauge-fill hp"></div>
-              <div id="enemyHpText" class="gauge-value">10000/10000</div>
+          <div class="typing-panel">
+            <div class="typing-head">
+              <div class="typing-meta">
+                <div id="modeBadge" class="pill">MODE: 日本語</div>
+                <div id="dataBadge" class="pill">DATA: ja.json</div>
+                <div id="comboBadge" class="pill">COMBO: 0</div>
+              </div>
+              <div id="progressBadge" class="pill">PROGRESS: 0%</div>
             </div>
-          </div>
-          <div class="gauge-label-row">
-            <div class="gauge-label">SC</div>
-            <div class="gauge-outer">
-              <div id="enemyScFill" class="gauge-fill sc"></div>
-              <div id="enemyScText" class="gauge-value">0/100</div>
-            </div>
+            <div id="wordDisplay" class="typing-word"></div>
+            <div class="bar"><div id="wordProgressFill" class="fill sc-fill"></div></div>
+            <input id="typingInput" class="typing-input" type="text" placeholder="ここに入力" autocomplete="off" autocapitalize="off" spellcheck="false" />
           </div>
         </div>
-        <div class="lv-block"><div class="mini">LV.</div><div id="enemyLv" class="big">24</div></div>
-      </div>
-    </section>
+      </section>
 
-    <main class="main-stage">
-      <div id="banner" class="banner">「S」でスタート</div>
-
-      <div class="stage-grid">
-        <div class="fighter">
-          <div id="playerCard" class="fighter-card">
-            <div class="fighter-emoji">🧙</div>
-            <div class="fighter-name">プレイヤー</div>
+      <aside class="side-grid">
+        <section class="panel card">
+          <h2 class="section-title">魔法スキル</h2>
+          <div class="skill-grid">
+            <button id="skillBurst" class="skill-btn">
+              <div class="top"><span class="name">Sigil Burst</span><span class="cost">SC 25</span></div>
+              <div class="desc">安定した単体魔法。素早く撃てる基本スペル。</div>
+              <div class="key">Key 1</div>
+            </button>
+            <button id="skillPrism" class="skill-btn">
+              <div class="top"><span class="name">Prism Lancer</span><span class="cost">SC 45</span></div>
+              <div class="desc">高火力の貫通槍。大ダメージ用。</div>
+              <div class="key">Key 2</div>
+            </button>
+            <button id="skillBarrier" class="skill-btn">
+              <div class="top"><span class="name">Aegis Veil</span><span class="cost">SC 35</span></div>
+              <div class="desc">バリアを張って次の被ダメージを軽減。</div>
+              <div class="key">Key 3</div>
+            </button>
+            <button id="skillHeal" class="skill-btn">
+              <div class="top"><span class="name">Aurora Heal</span><span class="cost">SC 40</span></div>
+              <div class="desc">HPを回復して粘るための回復魔法。</div>
+              <div class="key">Key 4</div>
+            </button>
           </div>
-        </div>
+        </section>
 
-        <div class="keyboard-panel">
-          <div class="keys">
-            <div class="key-row">
-              <div class="key">1</div><div class="key">2</div><div class="key">3</div><div class="key">4</div><div class="key">5</div><div class="key">6</div><div class="key">7</div><div class="key">8</div><div class="key">9</div><div class="key">0</div>
-            </div>
-            <div class="key-row">
-              <div class="key">Q</div><div class="key">W</div><div class="key">E</div><div class="key">R</div><div class="key">T</div><div class="key">Y</div><div class="key">U</div><div class="key">I</div><div class="key">O</div><div class="key">P</div>
-            </div>
-            <div class="key-row">
-              <div class="key">A</div><div class="key">S</div><div class="key">D</div><div class="key">F</div><div class="key">G</div><div class="key">H</div><div class="key">J</div><div class="key">K</div><div class="key">L</div>
-            </div>
-            <div class="key-row">
-              <div class="key">Z</div><div class="key">X</div><div class="key">C</div><div class="key">V</div><div class="key">B</div><div class="key">N</div><div class="key">M</div>
-            </div>
-            <div class="key-row"><div class="key" style="min-width: 180px;">Space</div></div>
-          </div>
-        </div>
+        <section class="panel card">
+          <h2 class="section-title">バトルログ</h2>
+          <div id="logBox" class="log-box">魔導闘技場に接続しました。敵を選択して開始してください。</div>
+        </section>
 
-        <div class="fighter">
-          <div id="enemyCard" class="fighter-card">
-            <div id="enemyEmoji" class="fighter-emoji">🛡️</div>
-            <div id="enemyName" class="fighter-name">聖騎士の仮面</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="projectileLayer" class="projectile-layer"></div>
-    </main>
-
-    <section class="controls">
-      <div class="panel">
-        <h2>バトル設定</h2>
-        <div class="selectors">
-          <div class="field">
-            <label for="enemySelect">敵を選ぶ</label>
-            <select id="enemySelect"></select>
-          </div>
-          <div class="field">
-            <label>言語モード</label>
-            <div class="mode-toggle">
-              <button id="modeJa" class="active">日本語</button>
-              <button id="modeEn">English</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="word-display">
-          <div id="modeInfo" class="mode-info">MODE: 日本語 / DATA: ja.json</div>
-          <div id="displayText" class="display-text">「S」でスタート</div>
-          <div id="subInput" class="sub-input">start</div>
-        </div>
-
-        <input id="typingInput" class="input-box" type="text" placeholder="ここにタイプ" autocomplete="off" autocapitalize="off" spellcheck="false" />
-        <div class="progress-line"><div id="progressFill" class="progress-fill"></div></div>
-        <div class="word-meta">
-          <span id="progressText">0%</span>
-          <span id="correctText">成功 0 / ミス 0</span>
-        </div>
-
-        <div class="action-row">
-          <button id="startBtn" class="action-btn primary">スタート</button>
-          <button id="resetBtn" class="action-btn">リセット</button>
-        </div>
-
-        <div class="note">
-          ・プレイヤー HP は 8000 固定です。<br />
-          ・正しくタイプすると通常攻撃 + SC が増加し、魔法が使えるようになります。<br />
-          ・敵は近づかず、その場から魔法で攻撃します。<br />
-          ・日本語モードは ja.json、英語モードは en.json を読み込みます。<br />
-          ・別ファイル読み込みはブラウザの制約上、ローカルサーバー経由で開くのが確実です。
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>魔法 / ログ</h2>
-        <div class="spells">
-          <button id="spellFire" class="spell-btn"><span class="cost">SC 30</span><div class="name">🔥 ファイア</div><div class="desc">高火力。敵に 750 ダメージ。</div></button>
-          <button id="spellIce" class="spell-btn"><span class="cost">SC 25</span><div class="name">❄ アイス</div><div class="desc">敵の詠唱速度を少し遅くする。450 ダメージ。</div></button>
-          <button id="spellThunder" class="spell-btn"><span class="cost">SC 45</span><div class="name">⚡ サンダー</div><div class="desc">強力な一撃。1100 ダメージ。</div></button>
-          <button id="spellHeal" class="spell-btn"><span class="cost">SC 35</span><div class="name">💚 ヒール</div><div class="desc">自分の HP を 900 回復。</div></button>
-        </div>
-
-        <div id="logs" class="logs" style="margin-top: 12px;">敵を選んで、「S」またはスタートボタンで開始できます。</div>
-
-        <div id="resultBox" class="result-box">
-          <div>試合結果</div>
+        <section id="resultBox" class="panel card result-box">
+          <h2 class="section-title">リザルト</h2>
           <div class="result-grid">
-            <div class="result-item"><div class="label">スコア</div><div id="resultScore" class="value">0</div></div>
-            <div class="result-item"><div class="label">撃破率</div><div id="resultEnemyHp" class="value">0%</div></div>
-            <div class="result-item"><div class="label">正確率</div><div id="resultAccuracy" class="value">100%</div></div>
-            <div class="result-item"><div class="label">最大コンボ</div><div id="resultCombo" class="value">0</div></div>
+            <div class="result-item"><div class="label">Score</div><div id="resultScore" class="value">0</div></div>
+            <div class="result-item"><div class="label">Accuracy</div><div id="resultAccuracy" class="value">100%</div></div>
+            <div class="result-item"><div class="label">Max Combo</div><div id="resultCombo" class="value">0</div></div>
+            <div class="result-item"><div class="label">Enemy</div><div id="resultEnemy" class="value">-</div></div>
           </div>
-        </div>
-      </div>
-    </section>
+        </section>
+      </aside>
+    </main>
   </div>
 
   <script>
-    const fallbackData = {
-      ja: {
-        mode: "ja",
-        label: "日本語",
-        fileLabel: "ja.json",
-        entries: [
-          { display: "ほのお", input: "honoo" },
-          { display: "こおり", input: "koori" },
-          { display: "かみなり", input: "kaminari" },
-          { display: "まほうじん", input: "mahoujin" },
-          { display: "せいなるひかり", input: "seinaruhikari" },
-          { display: "しんぴのたて", input: "shinpinotate" },
-          { display: "えいえんのつるぎ", input: "eiennotsurugi" },
-          { display: "くろいほのお", input: "kuroihonoo" },
-          { display: "しずかなかぜ", input: "shizukanakaze" },
-          { display: "たいようのひかり", input: "taiyounohikari" }
-        ]
-      },
-      en: {
-        mode: "en",
-        label: "English",
-        fileLabel: "en.json",
-        entries: [
-          { display: "fire", input: "fire" },
-          { display: "ice", input: "ice" },
-          { display: "thunder", input: "thunder" },
-          { display: "magic circle", input: "magiccircle" },
-          { display: "holy light", input: "holylight" },
-          { display: "mystic shield", input: "mysticshield" },
-          { display: "ancient sword", input: "ancientsword" },
-          { display: "dark flame", input: "darkflame" },
-          { display: "silent wind", input: "silentwind" },
-          { display: "brave knight", input: "braveknight" }
-        ]
-      }
-    };
-
-    const enemies = [
-      { id: "mask", name: "聖騎士の仮面", emoji: "🛡️", hp: 10000, level: 24, scGain: 10, damageMin: 320, damageMax: 520, spellTypes: ["shadow", "fire"] },
-      { id: "mage", name: "古代魔導師", emoji: "🧿", hp: 10800, level: 26, scGain: 12, damageMin: 340, damageMax: 560, spellTypes: ["thunder", "shadow", "ice"] },
-      { id: "beast", name: "雷獣ヴォルト", emoji: "🐲", hp: 11600, level: 29, scGain: 13, damageMin: 360, damageMax: 600, spellTypes: ["thunder", "wind", "fire"] },
-      { id: "angel", name: "天光の守護者", emoji: "👼", hp: 9800, level: 23, scGain: 11, damageMin: 300, damageMax: 490, spellTypes: ["wind", "ice"] }
+    const ENEMY_PRESETS = [
+      { id: 'astral-warden', name: 'Astral Warden', jpName: 'アストラル・ウォーデン', emoji: '👁️', hp: 9800, attackPower: 520, attackInterval: 3800, element: '星霊術' },
+      { id: 'ember-golem', name: 'Ember Golem', jpName: 'エンバー・ゴーレム', emoji: '🪨', hp: 10400, attackPower: 580, attackInterval: 4200, element: '熾炎術' },
+      { id: 'frost-serpent', name: 'Frost Serpent', jpName: 'フロスト・サーペント', emoji: '🐉', hp: 11050, attackPower: 490, attackInterval: 3400, element: '氷晶術' },
+      { id: 'void-witch', name: 'Void Witch', jpName: 'ヴォイド・ウィッチ', emoji: '🜂', hp: 11800, attackPower: 640, attackInterval: 4600, element: '虚空魔法' }
     ];
 
-    const spells = {
-      fire: { cost: 30, damage: 750, type: "fire", name: "ファイア" },
-      ice: { cost: 25, damage: 450, type: "ice", name: "アイス" },
-      thunder: { cost: 45, damage: 1100, type: "thunder", name: "サンダー" },
-      heal: { cost: 35, heal: 900, name: "ヒール" }
+    const MODES = {
+      ja: { label: '日本語', file: 'ja.json', placeholder: 'ローマ字で入力', startText: '日本語モードで開始しました。単語を打ってSCをため、魔法を発動してください。' },
+      en: { label: 'English', file: 'en.json', placeholder: 'Type here in English', startText: 'English mode started. Type words to gain charge and cast spells.' }
+    };
+
+    const SKILLS = {
+      burst: { cost: 25, damage: 460, projectile: 'player', announce: 'Sigil Burst' },
+      prism: { cost: 45, damage: 860, projectile: 'prism', announce: 'Prism Lancer' },
+      barrier: { cost: 35, shield: 1200, announce: 'Aegis Veil' },
+      heal: { cost: 40, heal: 950, projectile: 'heal', announce: 'Aurora Heal' }
     };
 
     const state = {
+      mode: 'ja',
+      dataset: [],
+      currentEntry: null,
+      input: '',
       isPlaying: false,
-      mode: "ja",
-      datasets: { ja: fallbackData.ja, en: fallbackData.en },
-      currentData: fallbackData.ja,
-      currentEntry: fallbackData.ja.entries[0],
-      playerMaxHp: 8000,
+      timeLeft: 60,
+      timerInterval: null,
+      enemyInterval: null,
+      enemyCycleProgress: 0,
+      enemyCycleTicker: null,
+      enemyIndex: 0,
+      enemy: null,
       playerHp: 8000,
+      playerMaxHp: 8000,
       playerSc: 0,
-      enemyMaxHp: 10000,
-      enemyHp: 10000,
-      enemySc: 0,
-      enemyAttackSpeed: 1,
-      enemyCastingSlowUntil: 0,
+      playerScMax: 100,
+      shield: 0,
       score: 0,
-      timeLeft: 60.0,
-      levelPlayer: 27,
-      levelEnemy: 24,
-      correct: 0,
-      miss: 0,
       combo: 0,
       maxCombo: 0,
-      input: "",
-      enemy: enemies[0],
-      timerLoop: null,
-      enemyLoop: null,
-      spellEffectLoop: null
+      correct: 0,
+      miss: 0
     };
 
-    const els = {
-      playerHpFill: document.getElementById("playerHpFill"),
-      playerHpText: document.getElementById("playerHpText"),
-      playerScFill: document.getElementById("playerScFill"),
-      playerScText: document.getElementById("playerScText"),
-      enemyHpFill: document.getElementById("enemyHpFill"),
-      enemyHpText: document.getElementById("enemyHpText"),
-      enemyScFill: document.getElementById("enemyScFill"),
-      enemyScText: document.getElementById("enemyScText"),
-      timerText: document.getElementById("timerText"),
-      banner: document.getElementById("banner"),
-      enemyName: document.getElementById("enemyName"),
-      enemyEmoji: document.getElementById("enemyEmoji"),
-      enemyCard: document.getElementById("enemyCard"),
-      playerCard: document.getElementById("playerCard"),
-      displayText: document.getElementById("displayText"),
-      subInput: document.getElementById("subInput"),
-      modeInfo: document.getElementById("modeInfo"),
-      typingInput: document.getElementById("typingInput"),
-      progressFill: document.getElementById("progressFill"),
-      progressText: document.getElementById("progressText"),
-      correctText: document.getElementById("correctText"),
-      enemySelect: document.getElementById("enemySelect"),
-      modeJa: document.getElementById("modeJa"),
-      modeEn: document.getElementById("modeEn"),
-      startBtn: document.getElementById("startBtn"),
-      resetBtn: document.getElementById("resetBtn"),
-      logs: document.getElementById("logs"),
-      resultBox: document.getElementById("resultBox"),
-      resultScore: document.getElementById("resultScore"),
-      resultEnemyHp: document.getElementById("resultEnemyHp"),
-      resultAccuracy: document.getElementById("resultAccuracy"),
-      resultCombo: document.getElementById("resultCombo"),
-      spellFire: document.getElementById("spellFire"),
-      spellIce: document.getElementById("spellIce"),
-      spellThunder: document.getElementById("spellThunder"),
-      spellHeal: document.getElementById("spellHeal"),
-      projectileLayer: document.getElementById("projectileLayer"),
-      playerLv: document.getElementById("playerLv"),
-      enemyLv: document.getElementById("enemyLv")
+    const el = {
+      modeSelect: document.getElementById('modeSelect'),
+      startBtn: document.getElementById('startBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      enemySelector: document.getElementById('enemySelector'),
+      timeValue: document.getElementById('timeValue'),
+      playerHpText: document.getElementById('playerHpText'),
+      playerHpFill: document.getElementById('playerHpFill'),
+      playerScText: document.getElementById('playerScText'),
+      playerScFill: document.getElementById('playerScFill'),
+      shieldText: document.getElementById('shieldText'),
+      shieldFill: document.getElementById('shieldFill'),
+      enemyCardName: document.getElementById('enemyCardName'),
+      enemyHpText: document.getElementById('enemyHpText'),
+      enemyHpFill: document.getElementById('enemyHpFill'),
+      enemyAttackText: document.getElementById('enemyAttackText'),
+      enemyCycleFill: document.getElementById('enemyCycleFill'),
+      enemyAvatar: document.getElementById('enemyAvatar'),
+      enemyNameLarge: document.getElementById('enemyNameLarge'),
+      announce: document.getElementById('announce'),
+      modeBadge: document.getElementById('modeBadge'),
+      dataBadge: document.getElementById('dataBadge'),
+      comboBadge: document.getElementById('comboBadge'),
+      progressBadge: document.getElementById('progressBadge'),
+      wordDisplay: document.getElementById('wordDisplay'),
+      wordProgressFill: document.getElementById('wordProgressFill'),
+      typingInput: document.getElementById('typingInput'),
+      projectileLayer: document.getElementById('projectileLayer'),
+      logBox: document.getElementById('logBox'),
+      resultBox: document.getElementById('resultBox'),
+      resultScore: document.getElementById('resultScore'),
+      resultAccuracy: document.getElementById('resultAccuracy'),
+      resultCombo: document.getElementById('resultCombo'),
+      resultEnemy: document.getElementById('resultEnemy'),
+      skillBurst: document.getElementById('skillBurst'),
+      skillPrism: document.getElementById('skillPrism'),
+      skillBarrier: document.getElementById('skillBarrier'),
+      skillHeal: document.getElementById('skillHeal')
     };
+
+    function setLog(text) {
+      el.logBox.textContent = text;
+    }
+
+    function setAnnounce(text) {
+      el.announce.textContent = text;
+    }
 
     function clamp(value, min, max) {
       return Math.max(min, Math.min(max, value));
     }
 
-    function log(message) {
-      els.logs.textContent = message;
+    function accuracy() {
+      const total = state.correct + state.miss;
+      return total === 0 ? 100 : Math.round((state.correct / total) * 100);
     }
 
-    function randomEntry() {
-      const arr = state.currentData.entries;
-      return arr[Math.floor(Math.random() * arr.length)];
+    function selectedEnemy() {
+      return ENEMY_PRESETS[state.enemyIndex];
     }
 
-    function setEntry(entry) {
-      state.currentEntry = entry;
-      state.input = "";
-      els.typingInput.value = "";
-      els.displayText.textContent = entry.display;
-      els.subInput.textContent = entry.input;
-      updateProgress();
+    function syncEnemyCard() {
+      const enemy = selectedEnemy();
+      el.enemyCardName.textContent = state.mode === 'ja' ? enemy.jpName : enemy.name;
+      el.enemyNameLarge.textContent = state.mode === 'ja' ? enemy.jpName : enemy.name;
+      el.enemyAvatar.textContent = enemy.emoji;
+      el.enemyAttackText.textContent = (enemy.attackInterval / 1000).toFixed(1) + 's';
     }
 
-    function updateProgress() {
-      const len = state.currentEntry?.input?.length || 1;
-      const progress = Math.round((state.input.length / len) * 100);
-      els.progressFill.style.width = progress + "%";
-      els.progressText.textContent = progress + "%";
-      els.correctText.textContent = `成功 ${state.correct} / ミス ${state.miss}`;
-    }
-
-    function updateHud() {
-      els.playerHpFill.style.width = (state.playerHp / state.playerMaxHp * 100) + "%";
-      els.playerHpText.textContent = `${Math.round(state.playerHp)}/${state.playerMaxHp}`;
-      els.playerScFill.style.width = state.playerSc + "%";
-      els.playerScText.textContent = `${Math.round(state.playerSc)}/100`;
-
-      els.enemyHpFill.style.width = (state.enemyHp / state.enemyMaxHp * 100) + "%";
-      els.enemyHpText.textContent = `${Math.round(state.enemyHp)}/${state.enemyMaxHp}`;
-      els.enemyScFill.style.width = state.enemySc + "%";
-      els.enemyScText.textContent = `${Math.round(state.enemySc)}/100`;
-
-      els.timerText.textContent = state.timeLeft.toFixed(2);
-      els.playerLv.textContent = state.levelPlayer;
-      els.enemyLv.textContent = state.levelEnemy;
-
-      updateSpellButtons();
-    }
-
-    function updateSpellButtons() {
-      const mapping = [
-        [els.spellFire, spells.fire.cost],
-        [els.spellIce, spells.ice.cost],
-        [els.spellThunder, spells.thunder.cost],
-        [els.spellHeal, spells.heal.cost]
-      ];
-      for (const [button, cost] of mapping) {
-        button.classList.toggle("ready", state.playerSc >= cost && state.isPlaying);
-      }
-    }
-
-    function populateEnemies() {
-      els.enemySelect.innerHTML = "";
-      enemies.forEach(enemy => {
-        const option = document.createElement("option");
-        option.value = enemy.id;
-        option.textContent = `${enemy.name} / HP ${enemy.hp}`;
-        els.enemySelect.appendChild(option);
+    function renderEnemySelector() {
+      el.enemySelector.innerHTML = '';
+      ENEMY_PRESETS.forEach((enemy, index) => {
+        const button = document.createElement('button');
+        button.className = 'enemy-option' + (index === state.enemyIndex ? ' active' : '');
+        button.innerHTML = `
+          <div class="top">
+            <div class="name">${state.mode === 'ja' ? enemy.jpName : enemy.name}</div>
+            <div class="hp">HP ${enemy.hp.toLocaleString()}</div>
+          </div>
+          <div class="muted">${enemy.element} / ${(enemy.attackInterval / 1000).toFixed(1)}s interval / ${enemy.attackPower} dmg</div>
+        `;
+        button.addEventListener('click', () => {
+          if (state.isPlaying) return;
+          state.enemyIndex = index;
+          applyEnemySelection();
+        });
+        el.enemySelector.appendChild(button);
       });
     }
 
-    function setEnemy(enemyId) {
-      const enemy = enemies.find(e => e.id === enemyId) || enemies[0];
-      state.enemy = enemy;
-      state.enemyMaxHp = enemy.hp;
-      state.enemyHp = enemy.hp;
-      state.enemySc = 0;
-      state.levelEnemy = enemy.level;
-      els.enemyName.textContent = enemy.name;
-      els.enemyEmoji.textContent = enemy.emoji;
-      updateHud();
+    function applyEnemySelection() {
+      const enemyPreset = selectedEnemy();
+      state.enemy = {
+        ...enemyPreset,
+        maxHp: enemyPreset.hp,
+        hp: enemyPreset.hp
+      };
+      renderEnemySelector();
+      syncEnemyCard();
+      updateAllBars();
     }
 
-    async function loadDataset(mode) {
+    async function loadModeData(mode) {
+      const meta = MODES[mode];
+      const response = await fetch(meta.file + '?v=' + Date.now());
+      if (!response.ok) throw new Error(meta.file + ' を読み込めませんでした');
+      const data = await response.json();
+      state.dataset = data.entries || [];
       state.mode = mode;
-      const file = mode === "ja" ? "ja.json" : "en.json";
-      try {
-        const response = await fetch(file);
-        if (!response.ok) throw new Error(file + " load failed");
-        const data = await response.json();
-        state.datasets[mode] = data;
-      } catch (error) {
-        console.warn("JSON load fallback:", error.message);
+      el.modeBadge.textContent = 'MODE: ' + meta.label;
+      el.dataBadge.textContent = 'DATA: ' + meta.file;
+      el.typingInput.placeholder = meta.placeholder;
+      nextEntry();
+      renderEnemySelector();
+      syncEnemyCard();
+    }
+
+    function nextEntry() {
+      if (!state.dataset.length) {
+        state.currentEntry = { display: 'loading', input: 'loading' };
+      } else {
+        const random = state.dataset[Math.floor(Math.random() * state.dataset.length)];
+        state.currentEntry = random;
       }
-      state.currentData = state.datasets[mode] || fallbackData[mode];
-      els.modeInfo.textContent = `MODE: ${state.currentData.label} / DATA: ${state.currentData.fileLabel}`;
-      setEntry(randomEntry());
-      els.modeJa.classList.toggle("active", mode === "ja");
-      els.modeEn.classList.toggle("active", mode === "en");
-      if (!state.isPlaying) {
-        els.banner.textContent = mode === "ja" ? "「S」でスタート" : "Press S to Start";
+      state.input = '';
+      el.typingInput.value = '';
+      renderWord();
+    }
+
+    function renderWord() {
+      const entry = state.currentEntry || { display: '', input: '' };
+      const target = entry.input;
+      const progress = target.length ? Math.round((state.input.length / target.length) * 100) : 0;
+      el.progressBadge.textContent = 'PROGRESS: ' + progress + '%';
+      el.wordProgressFill.style.width = progress + '%';
+      el.wordDisplay.innerHTML = entry.display + '<br><span style="font-size:18px;color:var(--muted);letter-spacing:0.12em;">' +
+        target.split('').map((char, idx) => {
+          const typed = state.input[idx];
+          const cls = typed === char ? 'typed' : 'pending';
+          return '<span class="' + cls + '">' + char + '</span>';
+        }).join('') + '</span>';
+    }
+
+    function updateAllBars() {
+      el.timeValue.textContent = state.timeLeft;
+      el.playerHpText.textContent = state.playerHp.toLocaleString() + ' / ' + state.playerMaxHp.toLocaleString();
+      el.playerHpFill.style.width = (state.playerHp / state.playerMaxHp * 100) + '%';
+      el.playerScText.textContent = state.playerSc + ' / ' + state.playerScMax;
+      el.playerScFill.style.width = (state.playerSc / state.playerScMax * 100) + '%';
+      el.shieldText.textContent = state.shield.toLocaleString();
+      el.shieldFill.style.width = (clamp(state.shield / 1200, 0, 1) * 100) + '%';
+      el.comboBadge.textContent = 'COMBO: ' + state.combo;
+      if (state.enemy) {
+        el.enemyHpText.textContent = state.enemy.hp.toLocaleString() + ' / ' + state.enemy.maxHp.toLocaleString();
+        el.enemyHpFill.style.width = (state.enemy.hp / state.enemy.maxHp * 100) + '%';
       }
     }
 
-    function basicAttack() {
-      const damage = 180 + state.currentEntry.input.length * 18 + state.combo * 16;
-      state.enemyHp = clamp(state.enemyHp - damage, 0, state.enemyMaxHp);
-      state.playerSc = clamp(state.playerSc + 12, 0, 100);
-      state.score += damage * 2;
-      state.correct += 1;
+    function spawnProjectile(type) {
+      const node = document.createElement('div');
+      node.className = 'projectile ' + type;
+      el.projectileLayer.appendChild(node);
+      setTimeout(() => node.remove(), 900);
+    }
+
+    function spawnDamage(text, type) {
+      const node = document.createElement('div');
+      node.className = 'damage ' + type;
+      node.textContent = text;
+      el.projectileLayer.appendChild(node);
+      setTimeout(() => node.remove(), 900);
+    }
+
+    function gainSc(amount) {
+      state.playerSc = clamp(state.playerSc + amount, 0, state.playerScMax);
+    }
+
+    function normalAttack() {
+      const targetLen = state.currentEntry.input.length;
+      const damage = Math.floor(230 + targetLen * 12 + state.combo * 16);
+      state.enemy.hp = clamp(state.enemy.hp - damage, 0, state.enemy.maxHp);
+      state.score += damage;
       state.combo += 1;
       state.maxCombo = Math.max(state.maxCombo, state.combo);
-      spawnProjectile("player", "basic");
-      flashCard(els.enemyCard, "hit");
-      log(`通常攻撃！ ${damage} ダメージ。SC +12。`);
-      setEntry(randomEntry());
-      updateHud();
-      checkBattleEnd();
+      state.correct += 1;
+      gainSc(14);
+      setAnnounce('通常魔弾で ' + damage + ' ダメージ');
+      setLog('タイピング成功。通常魔弾が命中し、' + damage + ' ダメージ。SC +14。');
+      spawnProjectile('player');
+      spawnDamage('-' + damage, 'enemy-hit');
+      updateAllBars();
+      if (state.enemy.hp <= 0) {
+        finishBattle(true);
+        return;
+      }
+      nextEntry();
     }
 
-    function enemyCastSpell() {
+    function enemyCast() {
       if (!state.isPlaying) return;
-      const now = performance.now();
-      const slowRate = now < state.enemyCastingSlowUntil ? 0.55 : 1;
-      state.enemySc = clamp(state.enemySc + state.enemy.scGain * slowRate, 0, 100);
-      updateHud();
-      if (state.enemySc < 100) return;
-
-      state.enemySc = 0;
-      const types = state.enemy.spellTypes;
-      const type = types[Math.floor(Math.random() * types.length)];
-      const damage = Math.floor(state.enemy.damageMin + Math.random() * (state.enemy.damageMax - state.enemy.damageMin));
+      const base = state.enemy.attackPower;
+      const variance = Math.floor(Math.random() * 81) - 40;
+      let damage = base + variance;
+      if (state.shield > 0) {
+        const absorbed = Math.min(state.shield, Math.floor(damage * 0.65));
+        state.shield -= absorbed;
+        damage -= absorbed;
+      }
       state.playerHp = clamp(state.playerHp - damage, 0, state.playerMaxHp);
-      spawnProjectile("enemy", type);
-      flashCard(els.playerCard, "cast");
-      log(`${state.enemy.name} の魔法攻撃！ ${damage} ダメージ。`);
-      updateHud();
-      checkBattleEnd();
+      setAnnounce((state.mode === 'ja' ? state.enemy.jpName : state.enemy.name) + ' の魔法攻撃');
+      setLog((state.mode === 'ja' ? state.enemy.jpName : state.enemy.name) + ' が ' + state.enemy.element + ' を発動。' + damage + ' ダメージを受けた。');
+      spawnProjectile('enemy');
+      spawnDamage('-' + damage, 'player-hit');
+      updateAllBars();
+      if (state.playerHp <= 0) finishBattle(false);
     }
 
-    function castSpell(kind) {
+    function useSkill(kind) {
       if (!state.isPlaying) return;
-      const spell = spells[kind];
-      if (!spell) return;
-      if (state.playerSc < spell.cost) {
-        log(`${spell.name} を使うには SC ${spell.cost} が必要です。`);
+      const skill = SKILLS[kind];
+      if (state.playerSc < skill.cost) {
+        setAnnounce('SC が足りません');
+        setLog('必要SCが不足しています。タイピングでチャージをためてください。');
         return;
       }
-      state.playerSc -= spell.cost;
+      state.playerSc -= skill.cost;
 
-      if (spell.heal) {
-        state.playerHp = clamp(state.playerHp + spell.heal, 0, state.playerMaxHp);
-        flashCard(els.playerCard, "cast");
-        log(`ヒール発動！ HP を ${spell.heal} 回復。`);
-      } else {
-        state.enemyHp = clamp(state.enemyHp - spell.damage, 0, state.enemyMaxHp);
-        spawnProjectile("player", spell.type);
-        flashCard(els.enemyCard, "hit");
-        log(`${spell.name} 発動！ ${spell.damage} ダメージ。`);
-        if (kind === "ice") {
-          state.enemyCastingSlowUntil = performance.now() + 7000;
-          log(`${spell.name} 発動！ ${spell.damage} ダメージ。7秒間、敵の詠唱速度低下。`);
-        }
+      if (skill.damage) {
+        state.enemy.hp = clamp(state.enemy.hp - skill.damage, 0, state.enemy.maxHp);
+        state.score += skill.damage;
+        spawnProjectile(skill.projectile || 'player');
+        spawnDamage('-' + skill.damage, 'enemy-hit');
+        setAnnounce(skill.announce + ' 発動');
+        setLog(skill.announce + ' が命中。' + skill.damage + ' ダメージ。');
+      }
+      if (skill.shield) {
+        state.shield = clamp(state.shield + skill.shield, 0, 1200);
+        setAnnounce(skill.announce + ' 展開');
+        setLog('防御障壁を展開。バリア値 +' + skill.shield + '。');
+      }
+      if (skill.heal) {
+        state.playerHp = clamp(state.playerHp + skill.heal, 0, state.playerMaxHp);
+        spawnProjectile('heal');
+        spawnDamage('+' + skill.heal, 'heal');
+        setAnnounce(skill.announce + ' 発動');
+        setLog('HP を ' + skill.heal + ' 回復した。');
       }
 
-      state.score += spell.damage ? spell.damage * 2 : 120;
-      updateHud();
-      checkBattleEnd();
+      updateAllBars();
+      if (state.enemy.hp <= 0) finishBattle(true);
     }
 
-    function flashCard(element, className) {
-      element.classList.remove("hit", "cast");
-      void element.offsetWidth;
-      element.classList.add(className);
-      setTimeout(() => element.classList.remove(className), 220);
+    function startEnemyCastingLoop() {
+      clearInterval(state.enemyInterval);
+      clearInterval(state.enemyCycleTicker);
+      state.enemyCycleProgress = 0;
+      el.enemyCycleFill.style.width = '0%';
+      const interval = state.enemy.attackInterval;
+      state.enemyInterval = setInterval(enemyCast, interval);
+      state.enemyCycleTicker = setInterval(() => {
+        if (!state.isPlaying) return;
+        state.enemyCycleProgress += 100 / (interval / 100);
+        if (state.enemyCycleProgress >= 100) state.enemyCycleProgress = 0;
+        el.enemyCycleFill.style.width = state.enemyCycleProgress + '%';
+      }, 100);
     }
 
-    function spawnProjectile(side, type) {
-      const node = document.createElement("div");
-      node.className = `projectile ${side} ${type}`;
-      els.projectileLayer.appendChild(node);
-      setTimeout(() => node.remove(), 700);
-    }
-
-    function accuracy() {
-      const total = state.correct + state.miss;
-      if (total === 0) return 100;
-      return Math.round((state.correct / total) * 100);
-    }
-
-    function finishBattle(message) {
-      state.isPlaying = false;
-      clearInterval(state.timerLoop);
-      clearInterval(state.enemyLoop);
-      els.banner.textContent = message;
-      els.resultScore.textContent = state.score;
-      const remaining = Math.round(state.enemyHp / state.enemyMaxHp * 100);
-      els.resultEnemyHp.textContent = `${100 - remaining}%`;
-      els.resultAccuracy.textContent = `${accuracy()}%`;
-      els.resultCombo.textContent = state.maxCombo;
-      els.resultBox.classList.add("show");
-      log(message + "\nもう一度スタートできます。");
-      updateHud();
-    }
-
-    function checkBattleEnd() {
-      if (state.enemyHp <= 0) {
-        finishBattle("勝利！");
-      } else if (state.playerHp <= 0) {
-        finishBattle("敗北…");
-      }
-    }
-
-    function startBattle() {
-      clearInterval(state.timerLoop);
-      clearInterval(state.enemyLoop);
-      state.isPlaying = true;
-      state.resultBox?.classList.remove("show");
-      state.playerHp = state.playerMaxHp;
-      state.playerSc = 0;
-      state.enemyHp = state.enemyMaxHp;
-      state.enemySc = 0;
-      state.score = 0;
-      state.correct = 0;
-      state.miss = 0;
-      state.combo = 0;
-      state.maxCombo = 0;
-      state.timeLeft = 60.0;
-      state.enemyCastingSlowUntil = 0;
-      setEntry(randomEntry());
-      els.banner.textContent = state.mode === "ja" ? "タイピング開始！" : "Typing Start!";
-      log(`${state.enemy.name} との戦闘開始。タイプして SC を溜め、魔法を放て。`);
-      updateHud();
-      els.typingInput.focus();
-
-      state.timerLoop = setInterval(() => {
-        state.timeLeft = clamp(state.timeLeft - 0.05, 0, 999);
-        updateHud();
-        if (state.timeLeft <= 0) {
-          const playerRate = state.playerHp / state.playerMaxHp;
-          const enemyRate = state.enemyHp / state.enemyMaxHp;
-          if (enemyRate < playerRate) {
-            finishBattle("時間切れ判定勝ち！");
-          } else if (enemyRate > playerRate) {
-            finishBattle("時間切れ判定負け…");
-          } else {
-            finishBattle("時間切れドロー");
-          }
-        }
-      }, 50);
-
-      state.enemyLoop = setInterval(enemyCastSpell, 850);
-    }
-
-    function resetBattle() {
-      clearInterval(state.timerLoop);
-      clearInterval(state.enemyLoop);
-      state.isPlaying = false;
-      state.timeLeft = 60.0;
-      state.playerHp = state.playerMaxHp;
-      state.playerSc = 0;
-      state.score = 0;
-      state.correct = 0;
-      state.miss = 0;
-      state.combo = 0;
-      state.maxCombo = 0;
-      setEnemy(els.enemySelect.value || enemies[0].id);
-      setEntry(randomEntry());
-      els.banner.textContent = state.mode === "ja" ? "「S」でスタート" : "Press S to Start";
-      els.resultBox.classList.remove("show");
-      log("リセットしました。敵を選び直して開始できます。");
-      updateHud();
-    }
-
-    function handleInput(event) {
+    function handleTypingInput(event) {
       if (!state.isPlaying) {
-        event.target.value = "";
+        event.target.value = '';
         return;
       }
-      const value = event.target.value.toLowerCase().replace(/\s+/g, "");
-      const expected = state.currentEntry.input.slice(0, value.length).toLowerCase();
-      if (value !== expected) {
+      const raw = event.target.value.toLowerCase().replace(/\s+/g, '');
+      const target = state.currentEntry.input.toLowerCase().replace(/\s+/g, '');
+      const expected = target.slice(0, raw.length);
+      if (raw !== expected) {
         state.miss += 1;
         state.combo = 0;
         event.target.value = state.input;
-        log("入力ミス！ コンボが切れた。");
-        updateProgress();
-        updateHud();
+        setAnnounce('ミス');
+        setLog('入力ミス。コンボが切れました。');
+        updateAllBars();
         return;
       }
-      state.input = value;
-      updateProgress();
-      if (value === state.currentEntry.input.toLowerCase()) {
-        basicAttack();
-      }
+      state.input = raw;
+      renderWord();
+      if (raw === target) normalAttack();
     }
 
-    function wireEvents() {
-      els.startBtn.addEventListener("click", startBattle);
-      els.resetBtn.addEventListener("click", resetBattle);
-      els.modeJa.addEventListener("click", () => loadDataset("ja"));
-      els.modeEn.addEventListener("click", () => loadDataset("en"));
-      els.enemySelect.addEventListener("change", (e) => setEnemy(e.target.value));
-      els.typingInput.addEventListener("input", handleInput);
-      els.spellFire.addEventListener("click", () => castSpell("fire"));
-      els.spellIce.addEventListener("click", () => castSpell("ice"));
-      els.spellThunder.addEventListener("click", () => castSpell("thunder"));
-      els.spellHeal.addEventListener("click", () => castSpell("heal"));
-      document.addEventListener("keydown", (e) => {
-        if (e.key.toLowerCase() === "s" && !state.isPlaying) {
-          startBattle();
-          return;
+    function finishBattle(victory) {
+      state.isPlaying = false;
+      clearInterval(state.timerInterval);
+      clearInterval(state.enemyInterval);
+      clearInterval(state.enemyCycleTicker);
+      el.resultBox.classList.add('show');
+      el.resultScore.textContent = state.score.toLocaleString();
+      el.resultAccuracy.textContent = accuracy() + '%';
+      el.resultCombo.textContent = state.maxCombo;
+      el.resultEnemy.textContent = state.mode === 'ja' ? state.enemy.jpName : state.enemy.name;
+      setAnnounce(victory ? '勝利' : '敗北');
+      setLog(victory ? '敵を撃破しました。戦闘終了。' : 'HP が 0 になりました。戦闘終了。');
+    }
+
+    function startBattle() {
+      if (!state.dataset.length) return;
+      state.isPlaying = true;
+      state.timeLeft = 60;
+      state.score = 0;
+      state.combo = 0;
+      state.maxCombo = 0;
+      state.correct = 0;
+      state.miss = 0;
+      state.playerHp = state.playerMaxHp;
+      state.playerSc = 0;
+      state.shield = 0;
+      state.enemy = { ...selectedEnemy(), maxHp: selectedEnemy().hp, hp: selectedEnemy().hp };
+      el.resultBox.classList.remove('show');
+      syncEnemyCard();
+      nextEntry();
+      updateAllBars();
+      startEnemyCastingLoop();
+      setAnnounce(MODES[state.mode].startText);
+      setLog(MODES[state.mode].startText);
+      clearInterval(state.timerInterval);
+      state.timerInterval = setInterval(() => {
+        if (!state.isPlaying) return;
+        state.timeLeft -= 1;
+        updateAllBars();
+        if (state.timeLeft <= 0) {
+          finishBattle(state.enemy.hp <= state.enemy.maxHp - 1 && state.playerHp > state.enemy.hp);
         }
-        if (e.key === "1") castSpell("fire");
-        if (e.key === "2") castSpell("ice");
-        if (e.key === "3") castSpell("thunder");
-        if (e.key === "4") castSpell("heal");
-      });
+      }, 1000);
+      el.typingInput.focus();
     }
 
-    async function init() {
-      populateEnemies();
-      setEnemy(enemies[0].id);
-      wireEvents();
-      await loadDataset("ja");
-      updateHud();
+    function resetBattle() {
+      clearInterval(state.timerInterval);
+      clearInterval(state.enemyInterval);
+      clearInterval(state.enemyCycleTicker);
+      state.isPlaying = false;
+      state.timeLeft = 60;
+      state.playerHp = state.playerMaxHp;
+      state.playerSc = 0;
+      state.shield = 0;
+      state.score = 0;
+      state.combo = 0;
+      state.maxCombo = 0;
+      state.correct = 0;
+      state.miss = 0;
+      state.enemyCycleProgress = 0;
+      applyEnemySelection();
+      nextEntry();
+      updateAllBars();
+      el.enemyCycleFill.style.width = '0%';
+      el.resultBox.classList.remove('show');
+      setAnnounce('リセット完了');
+      setLog('戦闘をリセットしました。敵を確認して再開してください。');
     }
 
-    init();
+    el.typingInput.addEventListener('input', handleTypingInput);
+    el.startBtn.addEventListener('click', startBattle);
+    el.resetBtn.addEventListener('click', resetBattle);
+    el.modeSelect.addEventListener('change', async (e) => {
+      try {
+        await loadModeData(e.target.value);
+        resetBattle();
+      } catch (err) {
+        setAnnounce('読み込み失敗');
+        setLog(err.message);
+      }
+    });
+    el.skillBurst.addEventListener('click', () => useSkill('burst'));
+    el.skillPrism.addEventListener('click', () => useSkill('prism'));
+    el.skillBarrier.addEventListener('click', () => useSkill('barrier'));
+    el.skillHeal.addEventListener('click', () => useSkill('heal'));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '1') useSkill('burst');
+      if (e.key === '2') useSkill('prism');
+      if (e.key === '3') useSkill('barrier');
+      if (e.key === '4') useSkill('heal');
+      if ((e.key === 's' || e.key === 'S') && !state.isPlaying) startBattle();
+    });
+
+    (async function init() {
+      try {
+        renderEnemySelector();
+        applyEnemySelection();
+        await loadModeData('ja');
+        updateAllBars();
+      } catch (err) {
+        setAnnounce('初期化エラー');
+        setLog(err.message + '\n同じフォルダに ja.json / en.json を置いて、HTTPサーバー経由で開いてください。');
+      }
+    })();
   </script>
 </body>
 </html>
