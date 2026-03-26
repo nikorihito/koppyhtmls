@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>アンケート回答</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <div class="card">
+      <h2>アンケート回答</h2>
+
+      <form>
+        <div class="question-block">
+          <p>あなたの好きな色は？</p>
+          <input type="text" placeholder="回答を入力" />
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn">送信する</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
