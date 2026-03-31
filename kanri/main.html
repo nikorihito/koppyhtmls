@@ -211,6 +211,14 @@
     }
     .chat-name { font-size: 11px; margin-bottom: 4px; color: #64748b; }
     .row-gap { margin-top: 14px; }
+    .warning-red {
+      border-left: 6px solid #dc2626;
+      background: #fef2f2;
+    }
+    .warning-yellow {
+      border-left: 6px solid #ca8a04;
+      background: #fefce8;
+    }
     @media (max-width: 900px) { .app-shell { grid-template-columns: 1fr; } }
     @media (max-width: 640px) {
       .page { padding: 14px; }
@@ -280,7 +288,7 @@
 
             <div id="toggleFields" class="row-gap hidden">
               <label for="toggleMessage">オンオフ項目の説明</label>
-              <textarea id="toggleMessage" placeholder="例：ゲームを始める前に宿題を終わらせたらONにしてね"></textarea>
+              <textarea id="toggleMessage" placeholder="例：ゲーム時間を許可するかどうか"></textarea>
               <label for="toggleDefault" style="margin-top:16px;">初期状態</label>
               <select id="toggleDefault">
                 <option value="OFF">OFF</option>
@@ -368,6 +376,10 @@
     let currentUser = null;
     let currentPanel = "dashboard";
 
+    function nl2br(value) {
+      return String(value || "").replace(/\n/g, "<br>");
+    }
+
     function readJson(key, fallback) {
       try {
         return JSON.parse(localStorage.getItem(key)) ?? fallback;
@@ -453,12 +465,12 @@
 
         if (item.type === "warning") {
           const levelLabel = item.warningLevel === "red" ? "赤" : "黄";
+          card.classList.add(item.warningLevel === "red" ? "warning-red" : "warning-yellow");
           detailHtml = `
             <div class="item-value">
               <strong>警告レベル：</strong>${levelLabel}<br>
               <strong>警告文：</strong><br>
-              ${(item.message || "").replace(/
-/g, "<br>")}
+              ${nl2br(item.message)}
             </div>`;
         }
 
@@ -466,8 +478,7 @@
           detailHtml = `
             <div class="item-value">
               <strong>説明：</strong><br>
-              ${(item.message || "").replace(/
-/g, "<br>")}<br><br>
+              ${nl2br(item.message)}<br><br>
               <strong>現在の状態：</strong>${item.childResponse || item.defaultValue || "OFF"}
             </div>`;
           if (currentUser.role === "parent") {
@@ -483,13 +494,11 @@
           detailHtml = `
             <div class="item-value">
               <strong>記述依頼：</strong><br>
-              ${(item.requestText || "").replace(/
-/g, "<br>")}
+              ${nl2br(item.requestText)}
             </div>
             <div class="item-value">
               <strong>子供からの記述：</strong><br>
-              ${item.childResponse ? item.childResponse.replace(/
-/g, "<br>") : "まだ入力されていません。"}
+              ${item.childResponse ? nl2br(item.childResponse) : "まだ入力されていません。"}
             </div>`;
           if (currentUser.role === "child") {
             actionHtml = `
@@ -618,8 +627,7 @@
               <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="😊">😊</button>
             </div>`;
 
-        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${chat.text.replace(/
-/g, "<br>")}${reactions}${menu}`;
+        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${nl2br(chat.text)}${reactions}${menu}`;
         chatMessages.appendChild(bubble);
       });
 
