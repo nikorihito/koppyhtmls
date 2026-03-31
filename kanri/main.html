@@ -260,12 +260,39 @@
             <h3 class="section-title">管理項目を追加</h3>
             <label for="itemName">名前</label>
             <input id="itemName" type="text" placeholder="例：帰宅報告、宿題チェック" />
+
             <label for="itemType" style="margin-top:16px;">管理項目の種類</label>
             <select id="itemType">
               <option value="warning">警告用ボタン管理</option>
               <option value="toggle">オンオフ管理</option>
               <option value="text">子供記述式管理</option>
             </select>
+
+            <div id="warningFields" class="row-gap">
+              <label for="warningMessage">警告文</label>
+              <textarea id="warningMessage" placeholder="子供に送る警告文を入力"></textarea>
+              <label for="warningLevel" style="margin-top:16px;">警告レベル</label>
+              <select id="warningLevel">
+                <option value="red">赤</option>
+                <option value="yellow">黄</option>
+              </select>
+            </div>
+
+            <div id="toggleFields" class="row-gap hidden">
+              <label for="toggleMessage">オンオフ項目の説明</label>
+              <textarea id="toggleMessage" placeholder="例：ゲームを始める前に宿題を終わらせたらONにしてね"></textarea>
+              <label for="toggleDefault" style="margin-top:16px;">初期状態</label>
+              <select id="toggleDefault">
+                <option value="OFF">OFF</option>
+                <option value="ON">ON</option>
+              </select>
+            </div>
+
+            <div id="textFields" class="row-gap hidden">
+              <label for="textRequest">子供への記述依頼</label>
+              <textarea id="textRequest" placeholder="例：今日がんばったことを1つ書いてね"></textarea>
+            </div>
+
             <div class="button-row row-gap">
               <button class="button" id="addItemButton">追加する</button>
               <button class="button ghost" id="closeAddItemButton">閉じる</button>
@@ -421,23 +448,49 @@
 
         const child = getAccountById(item.childId);
         const parent = getAccountById(item.parentId);
+        let detailHtml = "";
         let actionHtml = "";
 
-        if (currentUser.role === "child") {
-          if (item.type === "warning") {
-            actionHtml = `<button class="button small" data-action="warningReply" data-id="${item.id}">確認したと返事する</button>`;
-          }
-          if (item.type === "toggle") {
+        if (item.type === "warning") {
+          const levelLabel = item.warningLevel === "red" ? "赤" : "黄";
+          detailHtml = `
+            <div class="item-value">
+              <strong>警告レベル：</strong>${levelLabel}<br>
+              <strong>警告文：</strong><br>
+              ${(item.message || "").replace(/\n/g, "<br>")}
+            </div>`;
+        }
+
+        if (item.type === "toggle") {
+          detailHtml = `
+            <div class="item-value">
+              <strong>説明：</strong><br>
+              ${(item.message || "").replace(/\n/g, "<br>")}<br><br>
+              <strong>現在の状態：</strong>${item.childResponse || item.defaultValue || "OFF"}
+            </div>`;
+          if (currentUser.role === "child") {
             actionHtml = `
-              <div class="button-row">
+              <div class="button-row row-gap">
                 <button class="button small" data-action="toggleReply" data-value="ON" data-id="${item.id}">ONにする</button>
                 <button class="button sub small" data-action="toggleReply" data-value="OFF" data-id="${item.id}">OFFにする</button>
               </div>`;
           }
-          if (item.type === "text") {
+        }
+
+        if (item.type === "text") {
+          detailHtml = `
+            <div class="item-value">
+              <strong>記述依頼：</strong><br>
+              ${(item.requestText || "").replace(/\n/g, "<br>")}
+            </div>
+            <div class="item-value">
+              <strong>子供からの記述：</strong><br>
+              ${item.childResponse ? item.childResponse.replace(/\n/g, "<br>") : "まだ入力されていません。"}
+            </div>`;
+          if (currentUser.role === "child") {
             actionHtml = `
-              <textarea id="reply-${item.id}" placeholder="返事を入力"></textarea>
-              <button class="button small row-gap" data-action="textReply" data-id="${item.id}">返事を送る</button>`;
+              <textarea id="reply-${item.id}" placeholder="依頼内容に対する記述を入力"></textarea>
+              <button class="button small row-gap" data-action="textReply" data-id="${item.id}">入力内容を送る</button>`;
           }
         }
 
@@ -448,25 +501,19 @@
             保護者：${parent ? parent.id : "-"}<br>
             子供：${child ? child.id : "未連携"}
           </div>
-          <div class="item-value">
-            <strong>子供からの返事：</strong><br>
-            ${item.childResponse ? item.childResponse.replace(/\n/g, "<br>") : "まだ返事はありません。"}
-          </div>
+          ${detailHtml}
           ${actionHtml}`;
 
         container.appendChild(card);
       });
 
-      container.querySelectorAll("[data-action='warningReply']").forEach((button) => {
-        button.addEventListener("click", () => updateItemResponse(button.dataset.id, "確認しました"));
-      });
       container.querySelectorAll("[data-action='toggleReply']").forEach((button) => {
         button.addEventListener("click", () => updateItemResponse(button.dataset.id, button.dataset.value));
       });
       container.querySelectorAll("[data-action='textReply']").forEach((button) => {
         button.addEventListener("click", () => {
           const textarea = document.getElementById(`reply-${button.dataset.id}`);
-          updateItemResponse(button.dataset.id, textarea.value.trim() || "（空の返事）");
+          updateItemResponse(button.dataset.id, textarea.value.trim() || "（空の記述）");
         });
       });
     }
@@ -546,9 +593,64 @@
       thread.forEach((chat) => {
         const bubble = document.createElement("div");
         bubble.className = `chat-bubble ${chat.fromId === currentUser.id ? "me" : "other"}`;
-        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${chat.text.replace(/\n/g, "<br>")}`;
+
+        const reactions = (chat.reactions || []).length
+          ? `<div style="margin-top:8px; font-size:18px;">${chat.reactions.join(" ")}</div>`
+          : "";
+
+        const menu = chat.fromId === currentUser.id
+          ? `
+            <div class="button-row" style="margin-top:8px;">
+              <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
+              <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
+              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="👍">👍</button>
+              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="❤️">❤️</button>
+              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="😊">😊</button>
+            </div>`
+          : `
+            <div class="button-row" style="margin-top:8px;">
+              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="👍">👍</button>
+              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="❤️">❤️</button>
+              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="😊">😊</button>
+            </div>`;
+
+        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${chat.text.replace(/\n/g, "<br>")}${reactions}${menu}`;
         chatMessages.appendChild(bubble);
       });
+
+      chatMessages.querySelectorAll("[data-chat-action='edit']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const chats = getChats();
+          const target = chats.find((chat) => chat.id === button.dataset.id);
+          if (!target) return;
+          const nextText = prompt("メッセージを編集", target.text);
+          if (nextText === null) return;
+          target.text = nextText.trim() || "（空メッセージ）";
+          writeJson("chats", chats);
+          renderChatMessages();
+        });
+      });
+
+      chatMessages.querySelectorAll("[data-chat-action='delete']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const chats = getChats().filter((chat) => chat.id !== button.dataset.id);
+          writeJson("chats", chats);
+          renderChatMessages();
+        });
+      });
+
+      chatMessages.querySelectorAll("[data-chat-action='react']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const chats = getChats();
+          const target = chats.find((chat) => chat.id === button.dataset.id);
+          if (!target) return;
+          if (!Array.isArray(target.reactions)) target.reactions = [];
+          target.reactions.push(button.dataset.emoji);
+          writeJson("chats", chats);
+          renderChatMessages();
+        });
+      });
+
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
@@ -621,6 +723,16 @@
       if (!name) return alert("管理項目名を入力してください。");
       if (linkedChildren.length === 0) return alert("先に子供アカウントと連携してください。");
 
+      const warningMessage = document.getElementById("warningMessage").value.trim();
+      const warningLevel = document.getElementById("warningLevel").value;
+      const toggleMessage = document.getElementById("toggleMessage").value.trim();
+      const toggleDefault = document.getElementById("toggleDefault").value;
+      const textRequest = document.getElementById("textRequest").value.trim();
+
+      if (type === "warning" && !warningMessage) return alert("警告文を入力してください。");
+      if (type === "toggle" && !toggleMessage) return alert("オンオフ項目の説明を入力してください。");
+      if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
+
       const managementItems = getManagementItems();
       linkedChildren.forEach((childId) => {
         managementItems.push({
@@ -629,12 +741,22 @@
           childId,
           name,
           type,
-          childResponse: ""
+          message: type === "warning" ? warningMessage : type === "toggle" ? toggleMessage : "",
+          warningLevel: type === "warning" ? warningLevel : "",
+          defaultValue: type === "toggle" ? toggleDefault : "",
+          requestText: type === "text" ? textRequest : "",
+          childResponse: type === "toggle" ? toggleDefault : ""
         });
       });
       writeJson("managementItems", managementItems);
       document.getElementById("itemName").value = "";
       document.getElementById("itemType").value = "warning";
+      document.getElementById("warningMessage").value = "";
+      document.getElementById("warningLevel").value = "red";
+      document.getElementById("toggleMessage").value = "";
+      document.getElementById("toggleDefault").value = "OFF";
+      document.getElementById("textRequest").value = "";
+      updateItemTypeFields();
       document.getElementById("addItemSection").classList.add("hidden");
       renderMain();
     });
@@ -673,13 +795,23 @@
       if (!partnerId) return alert("会話相手がいません。");
       if (!text) return alert("メッセージを入力してください。");
       const chats = getChats();
-      chats.push({ fromId: currentUser.id, toId: partnerId, text });
+      chats.push({ fromId: currentUser.id, toId: partnerId, text, id: generateId("chat"), reactions: [] });
       writeJson("chats", chats);
       document.getElementById("chatInput").value = "";
       renderChatMessages();
     });
 
+    function updateItemTypeFields() {
+      const type = document.getElementById("itemType").value;
+      document.getElementById("warningFields").classList.toggle("hidden", type !== "warning");
+      document.getElementById("toggleFields").classList.toggle("hidden", type !== "toggle");
+      document.getElementById("textFields").classList.toggle("hidden", type !== "text");
+    }
+
+    document.getElementById("itemType").addEventListener("change", updateItemTypeFields);
+
     if (initializeUser()) {
+      updateItemTypeFields();
       renderMain();
     }
   </script>
