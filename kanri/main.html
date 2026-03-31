@@ -172,6 +172,16 @@
       border-radius: 12px;
     }
 
+    .button.warn {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    .button.yellow {
+      background: #ca8a04;
+      color: #fff;
+    }
+
     .item-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -316,9 +326,7 @@
       color: #64748b;
     }
 
-    .row-gap {
-      margin-top: 14px;
-    }
+    .row-gap { margin-top: 14px; }
 
     .warning-red {
       border-left: 6px solid #dc2626;
@@ -328,6 +336,47 @@
     .warning-yellow {
       border-left: 6px solid #ca8a04;
       background: #fefce8;
+    }
+
+    .warning-box {
+      padding: 14px 16px;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .warning-box.red {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .warning-box.yellow {
+      background: #fefce8;
+      border: 1px solid #fde68a;
+    }
+
+    .inline-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 100px;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: 0 16px 35px rgba(15, 23, 42, 0.25);
+      z-index: 50;
+      min-width: 280px;
+      max-width: calc(100vw - 32px);
+      text-align: center;
+      line-height: 1.6;
     }
 
     @media (max-width: 900px) {
@@ -348,6 +397,10 @@
         min-width: 104px;
         height: 50px;
         font-size: 14px;
+      }
+
+      .inline-two {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -380,7 +433,13 @@
               <h2 id="welcomeTitle">ホーム</h2>
             </div>
           </div>
+
           <div class="section" id="dashboardSummary"></div>
+
+          <div class="section">
+            <h3 class="section-title">受信した警告</h3>
+            <div id="warningListContainer"></div>
+          </div>
         </section>
 
         <section id="panel-items" class="hidden">
@@ -400,8 +459,8 @@
 
             <label for="itemType" style="margin-top:16px;">管理項目の種類</label>
             <select id="itemType">
-              <option value="warning">警告用ボタン管理</option>
-              <option value="toggle">オンオフ管理（保護者操作）</option>
+              <option value="warning">警告管理</option>
+              <option value="toggle">ON/OFF管理</option>
               <option value="text">子供記述式管理</option>
             </select>
 
@@ -417,8 +476,19 @@
             </div>
 
             <div id="toggleFields" class="row-gap hidden">
-              <label for="toggleMessage">オンオフ項目の説明</label>
+              <label for="toggleMessage">ON/OFF項目の説明</label>
               <textarea id="toggleMessage" placeholder="例：ゲーム時間を許可するかどうか"></textarea>
+
+              <div class="inline-two row-gap">
+                <div>
+                  <label for="toggleOnLabel">ON時の表示</label>
+                  <input id="toggleOnLabel" type="text" placeholder="例：許可中" />
+                </div>
+                <div>
+                  <label for="toggleOffLabel">OFF時の表示</label>
+                  <input id="toggleOffLabel" type="text" placeholder="例：停止中" />
+                </div>
+              </div>
 
               <label for="toggleDefault" style="margin-top:16px;">初期状態</label>
               <select id="toggleDefault">
@@ -565,6 +635,8 @@
     </div>
   </div>
 
+  <div class="toast hidden" id="toastBox"></div>
+
   <script type="module">
     import {
       auth,
@@ -603,10 +675,15 @@
     let currentItems = [];
     let currentPartners = [];
     let currentChatMessages = [];
+    let currentWarnings = [];
+
     let chatUnsubscribe = null;
-    let usersCache = new Map();
     let linksUnsubscribe = null;
     let itemsUnsubscribe = null;
+    let warningsUnsubscribe = null;
+
+    let usersCache = new Map();
+    let lastRequestStateMap = new Map();
 
     let adminUsers = [];
     let adminLinks = [];
@@ -623,7 +700,18 @@
     const linksContainer = document.getElementById("linksContainer");
     const chatPartnerSelect = document.getElementById("chatPartnerSelect");
     const chatMessages = document.getElementById("chatMessages");
+    const warningListContainer = document.getElementById("warningListContainer");
+    const toastBox = document.getElementById("toastBox");
     const adminMenuButton = document.getElementById("adminMenuButton");
+
+    function showToast(message) {
+      toastBox.innerHTML = escapeHtml(message);
+      toastBox.classList.remove("hidden");
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => {
+        toastBox.classList.add("hidden");
+      }, 3000);
+    }
 
     function getDefaultAvatarEmoji(user) {
       if (!user) return "❔";
@@ -635,7 +723,6 @@
     }
 
     function renderAvatar(element, user) {
-      element.innerHTML = "";
       element.textContent = getDefaultAvatarEmoji(user);
     }
 
@@ -664,6 +751,30 @@
       `;
     }
 
+    function renderWarnings() {
+      if (currentWarnings.length === 0) {
+        warningListContainer.innerHTML = `<div class="empty">警告はまだありません。</div>`;
+        return;
+      }
+
+      const sorted = [...currentWarnings].sort((a, b) => {
+        const aTime = a.createdAt?.seconds || 0;
+        const bTime = b.createdAt?.seconds || 0;
+        return bTime - aTime;
+      });
+
+      warningListContainer.innerHTML = sorted.map((warning) => {
+        const fromUser = usersCache.get(warning.parentUid);
+        return `
+          <div class="warning-box ${warning.level === "red" ? "red" : "yellow"}">
+            <strong>${warning.level === "red" ? "赤警告" : "黄警告"}</strong><br>
+            送信者：${escapeHtml(fromUser?.accountId || "保護者")}<br>
+            内容：${nl2br(escapeHtml(warning.message))}
+          </div>
+        `;
+      }).join("");
+    }
+
     async function getUserByUid(uid) {
       if (usersCache.has(uid)) return usersCache.get(uid);
 
@@ -673,6 +784,97 @@
       const data = snap.data();
       usersCache.set(uid, data);
       return data;
+    }
+
+    async function subscribePartners() {
+      if (typeof linksUnsubscribe === "function") linksUnsubscribe();
+
+      const q = currentUser.role === "parent"
+        ? query(collection(db, "links"), where("parentUid", "==", currentUser.uid))
+        : query(collection(db, "links"), where("childUid", "==", currentUser.uid));
+
+      linksUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const partnerUids = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return currentUser.role === "parent" ? data.childUid : data.parentUid;
+        });
+
+        const partners = [];
+        for (const uid of partnerUids) {
+          const partner = await getUserByUid(uid);
+          if (partner) partners.push(partner);
+        }
+
+        currentPartners = partners;
+        renderLinks();
+        renderChatPartnerOptions();
+        renderDashboard();
+      });
+    }
+
+    async function subscribeWarnings() {
+      if (typeof warningsUnsubscribe === "function") warningsUnsubscribe();
+
+      if (currentUser.role !== "child") {
+        currentWarnings = [];
+        renderWarnings();
+        return;
+      }
+
+      const q = query(collection(db, "warnings"), where("childUid", "==", currentUser.uid));
+      warningsUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const list = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+
+        for (const warning of list) {
+          if (!usersCache.has(warning.parentUid)) {
+            const user = await getUserByUid(warning.parentUid);
+            if (user) usersCache.set(warning.parentUid, user);
+          }
+        }
+
+        currentWarnings = list;
+        renderWarnings();
+      });
+    }
+
+    async function subscribeItems() {
+      if (typeof itemsUnsubscribe === "function") itemsUnsubscribe();
+
+      const q = currentUser.role === "parent"
+        ? query(collection(db, "managementItems"), where("parentUid", "==", currentUser.uid))
+        : query(collection(db, "managementItems"), where("childUid", "==", currentUser.uid));
+
+      itemsUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const items = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data()
+        }));
+
+        for (const item of items) {
+          if (!usersCache.has(item.parentUid)) {
+            const user = await getUserByUid(item.parentUid);
+            if (user) usersCache.set(item.parentUid, user);
+          }
+          if (!usersCache.has(item.childUid)) {
+            const user = await getUserByUid(item.childUid);
+            if (user) usersCache.set(item.childUid, user);
+          }
+        }
+
+        if (currentUser.role === "child") {
+          items.forEach((item) => {
+            const oldState = lastRequestStateMap.get(item.id);
+            if (item.type === "text" && item.requestActive === true && oldState !== true) {
+              showToast(`保護者から文章記述の要請が出ました：${item.requestText || item.name}`);
+            }
+            lastRequestStateMap.set(item.id, item.requestActive === true);
+          });
+        }
+
+        currentItems = items;
+        renderItems();
+        renderDashboard();
+      });
     }
 
     function renderLinks() {
@@ -687,6 +889,24 @@
           <div class="item-meta">権限：${ROLE_LABELS[partner.role]}</div>
         </div>
       `).join("");
+    }
+
+    function buildWarningTargetOptions(itemId) {
+      if (currentPartners.length === 0) {
+        return `<option value="">連携ユーザーなし</option>`;
+      }
+
+      const options = [`<option value="all">全員</option>`];
+      currentPartners.forEach((partner) => {
+        options.push(`<option value="${partner.uid}">${escapeHtml(partner.accountId)}</option>`);
+      });
+
+      return `
+        <label for="warningTarget-${itemId}">警告先</label>
+        <select id="warningTarget-${itemId}">
+          ${options.join("")}
+        </select>
+      `;
     }
 
     function renderItems() {
@@ -705,6 +925,7 @@
 
         if (item.type === "warning") {
           className += item.warningLevel === "red" ? " warning-red" : " warning-yellow";
+
           detailHtml = `
             <div class="item-value">
               <strong>警告レベル：</strong>${item.warningLevel === "red" ? "赤" : "黄"}<br>
@@ -712,9 +933,16 @@
               ${nl2br(escapeHtml(item.message))}
             </div>
           `;
+
           if (currentUser.role === "parent") {
             actionHtml = `
+              <div class="row-gap">
+                ${buildWarningTargetOptions(item.id)}
+              </div>
               <div class="button-row row-gap">
+                <button class="button ${item.warningLevel === "red" ? "warn" : "yellow"} small" data-warning-send="${item.id}">
+                  警告する
+                </button>
                 <button class="button ghost small" data-delete-id="${item.id}">削除</button>
               </div>
             `;
@@ -722,13 +950,21 @@
         }
 
         if (item.type === "toggle") {
+          const currentState = item.childResponse || item.defaultValue || "OFF";
+          const onLabel = item.onLabel || "ON";
+          const offLabel = item.offLabel || "OFF";
+          const displayLabel = currentState === "ON" ? onLabel : offLabel;
+
           detailHtml = `
             <div class="item-value">
               <strong>説明：</strong><br>
               ${nl2br(escapeHtml(item.message))}<br><br>
-              <strong>現在の状態：</strong>${escapeHtml(item.childResponse || item.defaultValue || "OFF")}
+              <strong>現在の状態：</strong>${escapeHtml(displayLabel)}<br>
+              <strong>ON時の表示：</strong>${escapeHtml(onLabel)}<br>
+              <strong>OFF時の表示：</strong>${escapeHtml(offLabel)}
             </div>
           `;
+
           if (currentUser.role === "parent") {
             actionHtml = `
               <div class="button-row row-gap">
@@ -747,6 +983,9 @@
               ${nl2br(escapeHtml(item.requestText))}
             </div>
             <div class="item-value">
+              <strong>現在状態：</strong>${item.requestActive ? "記述依頼中" : "待機中"}
+            </div>
+            <div class="item-value">
               <strong>子供からの記述：</strong><br>
               ${item.childResponse ? nl2br(escapeHtml(item.childResponse)) : "まだ入力されていません。"}
             </div>
@@ -754,14 +993,19 @@
 
           if (currentUser.role === "child") {
             actionHtml = `
-              <textarea id="reply-${item.id}" placeholder="依頼内容に対する記述を入力"></textarea>
-              <button class="button small row-gap" data-reply-id="${item.id}">入力内容を送る</button>
+              <textarea id="reply-${item.id}" placeholder="依頼内容に対する記述を入力" ${item.requestActive ? "" : "disabled"}></textarea>
+              <button class="button small row-gap" data-reply-id="${item.id}" ${item.requestActive ? "" : "disabled"}>
+                入力内容を送る
+              </button>
             `;
           }
 
           if (currentUser.role === "parent") {
             actionHtml += `
               <div class="button-row row-gap">
+                <button class="button small" data-request-id="${item.id}">
+                  ${item.requestActive ? "要請中" : "要請する"}
+                </button>
                 <button class="button ghost small" data-delete-id="${item.id}">削除</button>
               </div>
             `;
@@ -793,11 +1037,65 @@
 
       itemsContainer.querySelectorAll("[data-reply-id]").forEach((button) => {
         button.addEventListener("click", async () => {
-          const textarea = document.getElementById(`reply-${button.dataset.replyId}`);
-          await updateDoc(doc(db, "managementItems", button.dataset.replyId), {
-            childResponse: textarea.value.trim() || "（空の記述）",
+          const itemId = button.dataset.replyId;
+          const textarea = document.getElementById(`reply-${itemId}`);
+          const text = textarea.value.trim();
+
+          await updateDoc(doc(db, "managementItems", itemId), {
+            childResponse: text || "（空の記述）",
+            requestActive: false,
             updatedAt: serverTimestamp()
           });
+        });
+      });
+
+      itemsContainer.querySelectorAll("[data-request-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const itemId = button.dataset.requestId;
+          await updateDoc(doc(db, "managementItems", itemId), {
+            requestActive: true,
+            updatedAt: serverTimestamp()
+          });
+        });
+      });
+
+      itemsContainer.querySelectorAll("[data-warning-send]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const itemId = button.dataset.warningSend;
+          const item = currentItems.find((i) => i.id === itemId);
+          if (!item) return;
+
+          const select = document.getElementById(`warningTarget-${itemId}`);
+          const target = select ? select.value : "";
+
+          if (!target) {
+            alert("警告先を選択してください。");
+            return;
+          }
+
+          if (target === "all") {
+            for (const partner of currentPartners) {
+              await addDoc(collection(db, "warnings"), {
+                parentUid: currentUser.uid,
+                childUid: partner.uid,
+                itemId: item.id,
+                level: item.warningLevel || "red",
+                message: item.message || "",
+                createdAt: serverTimestamp()
+              });
+            }
+          } else {
+            await addDoc(collection(db, "warnings"), {
+              parentUid: currentUser.uid,
+              childUid: target,
+              itemId: item.id,
+              level: item.warningLevel || "red",
+              message: item.message || "",
+              createdAt: serverTimestamp()
+            });
+          }
+
+          alert("警告を送信しました。");
         });
       });
 
@@ -934,62 +1232,6 @@
       document.getElementById("textFields").classList.toggle("hidden", type !== "text");
     }
 
-    async function subscribePartners() {
-      if (typeof linksUnsubscribe === "function") linksUnsubscribe();
-
-      const q = currentUser.role === "parent"
-        ? query(collection(db, "links"), where("parentUid", "==", currentUser.uid))
-        : query(collection(db, "links"), where("childUid", "==", currentUser.uid));
-
-      linksUnsubscribe = onSnapshot(q, async (snapshot) => {
-        const partnerUids = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          return currentUser.role === "parent" ? data.childUid : data.parentUid;
-        });
-
-        const partners = [];
-        for (const uid of partnerUids) {
-          const partner = await getUserByUid(uid);
-          if (partner) partners.push(partner);
-        }
-
-        currentPartners = partners;
-        renderLinks();
-        renderChatPartnerOptions();
-        renderDashboard();
-      });
-    }
-
-    async function subscribeItems() {
-      if (typeof itemsUnsubscribe === "function") itemsUnsubscribe();
-
-      const q = currentUser.role === "parent"
-        ? query(collection(db, "managementItems"), where("parentUid", "==", currentUser.uid))
-        : query(collection(db, "managementItems"), where("childUid", "==", currentUser.uid));
-
-      itemsUnsubscribe = onSnapshot(q, async (snapshot) => {
-        const items = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...docSnap.data()
-        }));
-
-        for (const item of items) {
-          if (!usersCache.has(item.parentUid)) {
-            const user = await getUserByUid(item.parentUid);
-            if (user) usersCache.set(item.parentUid, user);
-          }
-          if (!usersCache.has(item.childUid)) {
-            const user = await getUserByUid(item.childUid);
-            if (user) usersCache.set(item.childUid, user);
-          }
-        }
-
-        currentItems = items;
-        renderItems();
-        renderDashboard();
-      });
-    }
-
     async function addManagementItems() {
       const name = document.getElementById("itemName").value.trim();
       const type = document.getElementById("itemType").value;
@@ -997,12 +1239,16 @@
       const warningLevel = document.getElementById("warningLevel").value;
       const toggleMessage = document.getElementById("toggleMessage").value.trim();
       const toggleDefault = document.getElementById("toggleDefault").value;
+      const toggleOnLabel = document.getElementById("toggleOnLabel").value.trim();
+      const toggleOffLabel = document.getElementById("toggleOffLabel").value.trim();
       const textRequest = document.getElementById("textRequest").value.trim();
 
       if (!name) return alert("管理項目名を入力してください。");
       if (currentPartners.length === 0) return alert("先に子供アカウントと連携してください。");
       if (type === "warning" && !warningMessage) return alert("警告文を入力してください。");
-      if (type === "toggle" && !toggleMessage) return alert("オンオフ項目の説明を入力してください。");
+      if (type === "toggle" && !toggleMessage) return alert("ON/OFF項目の説明を入力してください。");
+      if (type === "toggle" && !toggleOnLabel) return alert("ON時の表示を入力してください。");
+      if (type === "toggle" && !toggleOffLabel) return alert("OFF時の表示を入力してください。");
       if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
 
       for (const partner of currentPartners) {
@@ -1014,8 +1260,11 @@
           message: type === "warning" ? warningMessage : type === "toggle" ? toggleMessage : "",
           warningLevel: type === "warning" ? warningLevel : "",
           defaultValue: type === "toggle" ? toggleDefault : "",
+          onLabel: type === "toggle" ? toggleOnLabel : "",
+          offLabel: type === "toggle" ? toggleOffLabel : "",
           requestText: type === "text" ? textRequest : "",
           childResponse: type === "toggle" ? toggleDefault : "",
+          requestActive: false,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
@@ -1027,6 +1276,8 @@
       document.getElementById("warningLevel").value = "red";
       document.getElementById("toggleMessage").value = "";
       document.getElementById("toggleDefault").value = "OFF";
+      document.getElementById("toggleOnLabel").value = "";
+      document.getElementById("toggleOffLabel").value = "";
       document.getElementById("textRequest").value = "";
       updateItemTypeFields();
       document.getElementById("addItemSection").classList.add("hidden");
@@ -1165,7 +1416,8 @@
         } else if (item.type === "toggle") {
           details = `
             説明：${nl2br(escapeHtml(item.message))}<br>
-            状態：${escapeHtml(item.childResponse || item.defaultValue || "OFF")}
+            状態：${escapeHtml((item.childResponse || item.defaultValue || "OFF") === "ON" ? (item.onLabel || "ON") : (item.offLabel || "OFF"))}<br>
+            ON表示：${escapeHtml(item.onLabel || "ON")} / OFF表示：${escapeHtml(item.offLabel || "OFF")}
           `;
         } else {
           details = `
@@ -1208,8 +1460,14 @@
           }
 
           if (item.type === "toggle") {
-            const nextMessage = prompt("オンオフ項目の説明を編集", item.message || "");
+            const nextMessage = prompt("ON/OFF項目の説明を編集", item.message || "");
             if (nextMessage !== null) item.message = nextMessage;
+
+            const nextOnLabel = prompt("ON時の表示を編集", item.onLabel || "ON");
+            if (nextOnLabel !== null) item.onLabel = nextOnLabel;
+
+            const nextOffLabel = prompt("OFF時の表示を編集", item.offLabel || "OFF");
+            if (nextOffLabel !== null) item.offLabel = nextOffLabel;
 
             const nextState = prompt("状態を入力（ON / OFF）", item.childResponse || item.defaultValue || "OFF");
             if (nextState === "ON" || nextState === "OFF") item.childResponse = nextState;
@@ -1229,6 +1487,8 @@
             warningLevel: item.warningLevel || "",
             childResponse: item.childResponse || "",
             requestText: item.requestText || "",
+            onLabel: item.onLabel || "",
+            offLabel: item.offLabel || "",
             updatedAt: serverTimestamp()
           });
         });
@@ -1348,6 +1608,7 @@
       renderDashboard();
       await subscribePartners();
       await subscribeItems();
+      await subscribeWarnings();
 
       if (currentUser.role === "admin") {
         subscribeAdminData();
