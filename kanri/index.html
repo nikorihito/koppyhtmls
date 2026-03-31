@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>保護者用管理サイト</title>
+  <title>保護者用管理サイト - index.html</title>
   <style>
     * {
       box-sizing: border-box;
@@ -26,7 +26,7 @@
 
     .card {
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       background: #ffffff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
@@ -40,7 +40,7 @@
     }
 
     .description {
-      margin: 0 0 28px;
+      margin: 0 0 24px;
       color: #475569;
       line-height: 1.7;
       font-size: 15px;
@@ -50,7 +50,7 @@
       background: #f1f5f9;
       border-radius: 20px;
       padding: 20px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .section-title {
@@ -82,6 +82,12 @@
       box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
     }
 
+    input[type="file"] {
+      width: 100%;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
     .role-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -95,6 +101,7 @@
       background: #ffffff;
       padding: 14px;
       cursor: pointer;
+      text-align: left;
       transition: 0.2s ease;
     }
 
@@ -116,7 +123,7 @@
 
     .button {
       width: 100%;
-      height: 48px;
+      min-height: 48px;
       border: none;
       border-radius: 14px;
       background: #0f172a;
@@ -125,6 +132,7 @@
       font-weight: 700;
       cursor: pointer;
       margin-top: 14px;
+      padding: 12px 18px;
     }
 
     .button.sub {
@@ -138,7 +146,7 @@
     }
 
     .message {
-      margin-top: 14px;
+      margin-top: 12px;
       padding: 14px 16px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -146,38 +154,7 @@
       font-size: 14px;
       color: #334155;
       line-height: 1.6;
-    }
-
-    .success-screen {
       display: none;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: #e2e8f0;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .success-title {
-      margin: 0 0 12px;
-      font-size: 28px;
-      line-height: 1.5;
-    }
-
-    .success-box {
-      background: #f1f5f9;
-      border-radius: 18px;
-      padding: 20px;
-      margin-top: 18px;
-    }
-
-    .success-box p {
-      margin: 6px 0;
-      line-height: 1.7;
     }
 
     @media (max-width: 640px) {
@@ -189,10 +166,6 @@
         font-size: 24px;
       }
 
-      .success-title {
-        font-size: 22px;
-      }
-
       .role-grid {
         grid-template-columns: 1fr;
       }
@@ -201,10 +174,10 @@
 </head>
 <body>
   <div class="page">
-    <div class="card" id="homeScreen">
+    <div class="card">
       <h1>保護者用管理サイト</h1>
       <p class="description">
-        まずはホーム画面の試作です。アカウント作成とログインの基本動作だけを確認できるようにしています。
+        ホーム画面です。アカウント作成とログインができます。
       </p>
 
       <div class="section">
@@ -216,10 +189,14 @@
 
       <div class="section">
         <h2 class="section-title">アカウント作成</h2>
+
         <label for="newAccountId">新しいアカウントID</label>
         <input id="newAccountId" type="text" placeholder="新しいアカウントIDを入力" />
 
-        <label style="margin-top: 16px;">権限</label>
+        <label for="accountImage" style="margin-top:16px;">アカウント画像（任意）</label>
+        <input id="accountImage" type="file" accept="image/*" />
+
+        <label style="margin-top:16px;">権限</label>
         <div class="role-grid">
           <button type="button" class="role-option active" data-role="child">
             <div class="role-name">子供用</div>
@@ -234,40 +211,47 @@
         <button class="button sub" id="createButton">アカウント作成ボタン</button>
       </div>
 
-      <div class="message" id="messageBox" style="display: none;"></div>
-    </div>
-
-    <div class="card success-screen" id="successScreen">
-      <div class="badge" id="successBadge"></div>
-      <h2 class="success-title" id="successTitle"></h2>
-      <div class="success-box">
-        <p id="successId"></p>
-        <p id="successRole"></p>
-      </div>
-      <button class="button" id="logoutButton">ログアウトする</button>
+      <div class="message" id="messageBox"></div>
     </div>
   </div>
 
   <script>
-    const accounts = [];
-    let selectedRole = "child";
-    let loggedInAccount = null;
-
-    const roleOptions = document.querySelectorAll(".role-option");
-    const homeScreen = document.getElementById("homeScreen");
-    const successScreen = document.getElementById("successScreen");
-    const loginIdInput = document.getElementById("loginId");
-    const newAccountIdInput = document.getElementById("newAccountId");
-    const messageBox = document.getElementById("messageBox");
-    const successBadge = document.getElementById("successBadge");
-    const successTitle = document.getElementById("successTitle");
-    const successId = document.getElementById("successId");
-    const successRole = document.getElementById("successRole");
-
     const roleLabels = {
       child: "子供用",
       parent: "保護者用"
     };
+
+    let selectedRole = "child";
+    let selectedImageData = "";
+
+    const roleOptions = document.querySelectorAll(".role-option");
+    const messageBox = document.getElementById("messageBox");
+
+    function readJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function writeJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getAccounts() {
+      return readJson("accounts", []);
+    }
+
+    function showMessage(text) {
+      if (!text) {
+        messageBox.style.display = "none";
+        messageBox.textContent = "";
+        return;
+      }
+      messageBox.textContent = text;
+      messageBox.style.display = "block";
+    }
 
     roleOptions.forEach((button) => {
       button.addEventListener("click", () => {
@@ -277,40 +261,31 @@
       });
     });
 
-    function showMessage(text) {
-      messageBox.textContent = text;
-      messageBox.style.display = "block";
-    }
+    document.getElementById("accountImage").addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        selectedImageData = "";
+        return;
+      }
 
-    function hideMessage() {
-      messageBox.style.display = "none";
-      messageBox.textContent = "";
-    }
-
-    function showSuccess(account) {
-      successBadge.textContent = roleLabels[account.role];
-      successTitle.textContent = `${roleLabels[account.role]}アカウントでログイン成功：${account.id}`;
-      successId.textContent = `アカウントID：${account.id}`;
-      successRole.textContent = `権限：${roleLabels[account.role]}`;
-
-      homeScreen.style.display = "none";
-      successScreen.style.display = "block";
-    }
-
-    function showHome() {
-      successScreen.style.display = "none";
-      homeScreen.style.display = "block";
-    }
+      const reader = new FileReader();
+      reader.onload = () => {
+        selectedImageData = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
 
     document.getElementById("createButton").addEventListener("click", () => {
-      const newId = newAccountIdInput.value.trim();
+      const newId = document.getElementById("newAccountId").value.trim();
 
       if (!newId) {
         showMessage("アカウントIDを入力してください。");
         return;
       }
 
+      const accounts = getAccounts();
       const exists = accounts.some((account) => account.id === newId);
+
       if (exists) {
         showMessage("そのアカウントIDはすでに使用されています。");
         return;
@@ -318,37 +293,37 @@
 
       accounts.push({
         id: newId,
-        role: selectedRole
+        role: selectedRole,
+        image: selectedImageData || ""
       });
 
-      newAccountIdInput.value = "";
+      writeJson("accounts", accounts);
+
+      document.getElementById("newAccountId").value = "";
+      document.getElementById("accountImage").value = "";
+      selectedImageData = "";
+
       showMessage(`${roleLabels[selectedRole]}アカウントを作成しました：${newId}`);
     });
 
     document.getElementById("loginButton").addEventListener("click", () => {
-      const loginId = loginIdInput.value.trim();
+      const loginId = document.getElementById("loginId").value.trim();
 
       if (!loginId) {
         showMessage("アカウントIDを入力してください。");
         return;
       }
 
+      const accounts = getAccounts();
       const found = accounts.find((account) => account.id === loginId);
+
       if (!found) {
         showMessage("該当するアカウントが見つかりません。");
         return;
       }
 
-      loggedInAccount = found;
-      loginIdInput.value = "";
-      hideMessage();
-      showSuccess(loggedInAccount);
-    });
-
-    document.getElementById("logoutButton").addEventListener("click", () => {
-      loggedInAccount = null;
-      showHome();
-      showMessage("ログアウトしました。");
+      sessionStorage.setItem("currentUserId", found.id);
+      window.location.href = "main.html";
     });
   </script>
 </body>
