@@ -6,26 +6,35 @@
   <title>main.html</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
+
     .hidden { display: none !important; }
-    .page { min-height: 100vh; padding: 24px; }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px;
+    }
+
     .app-shell {
       display: grid;
       grid-template-columns: 280px 1fr;
       min-height: calc(100vh - 48px);
       gap: 20px;
     }
+
     .sidebar, .main-panel {
       background: #fff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
       padding: 24px;
     }
+
     .profile-box {
       display: flex;
       gap: 14px;
@@ -35,6 +44,7 @@
       border-radius: 18px;
       margin-bottom: 18px;
     }
+
     .avatar {
       width: 60px;
       height: 60px;
@@ -49,11 +59,13 @@
       flex-shrink: 0;
       overflow: hidden;
     }
+
     .nav-title {
       font-size: 13px;
       color: #64748b;
       margin-bottom: 8px;
     }
+
     .menu-button {
       width: 100%;
       text-align: left;
@@ -65,7 +77,11 @@
       font-weight: 700;
       margin-bottom: 8px;
     }
-    .menu-button.active { background: #e2e8f0; }
+
+    .menu-button.active {
+      background: #e2e8f0;
+    }
+
     .panel-title {
       display: flex;
       justify-content: space-between;
@@ -73,23 +89,27 @@
       gap: 12px;
       margin-bottom: 18px;
     }
+
     .section {
       background: #f1f5f9;
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 16px;
     }
+
     .section-title {
       margin: 0 0 16px;
       font-size: 18px;
       font-weight: 700;
     }
+
     label {
       display: block;
       margin-bottom: 8px;
       font-size: 14px;
       font-weight: 700;
     }
+
     input[type="text"], select, textarea {
       width: 100%;
       border: 1px solid #cbd5e1;
@@ -99,9 +119,23 @@
       background: #fff;
       outline: none;
     }
-    input[type="text"], select { height: 48px; }
-    textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
-    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    input[type="text"], select {
+      height: 48px;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .button {
       min-height: 48px;
       border: none;
@@ -113,10 +147,26 @@
       cursor: pointer;
       padding: 12px 18px;
     }
+
     .button.full { width: 100%; }
-    .button.sub { background: #fff; color: #0f172a; border: 1px solid #cbd5e1; }
-    .button.ghost { background: #e2e8f0; color: #0f172a; }
-    .button.small { min-height: 40px; padding: 8px 12px; font-size: 13px; border-radius: 12px; }
+    .button.sub {
+      background: #fff;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .button.ghost {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .button.small {
+      min-height: 40px;
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+
     .item-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -124,9 +174,25 @@
       padding: 16px;
       margin-bottom: 12px;
     }
-    .item-card h4 { margin: 0 0 8px; font-size: 16px; }
-    .item-meta { color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
-    .item-value { margin-top: 8px; font-size: 14px; line-height: 1.7; }
+
+    .item-card h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .item-meta {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .item-value {
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
     .empty {
       padding: 18px;
       background: #f8fafc;
@@ -135,6 +201,7 @@
       color: #64748b;
       line-height: 1.7;
     }
+
     .badge {
       display: inline-block;
       padding: 6px 12px;
@@ -144,6 +211,7 @@
       font-weight: 700;
       margin-bottom: 10px;
     }
+
     .fab-chat {
       position: fixed;
       left: 20px;
@@ -159,6 +227,7 @@
       box-shadow: 0 16px 35px rgba(15, 23, 42, 0.2);
       z-index: 20;
     }
+
     .chat-modal {
       position: fixed;
       inset: 0;
@@ -169,6 +238,7 @@
       padding: 0;
       z-index: 30;
     }
+
     .chat-box {
       width: 100%;
       height: 100vh;
@@ -179,17 +249,24 @@
       flex-direction: column;
       overflow: hidden;
     }
+
     .chat-header, .chat-footer {
       padding: 16px;
       border-bottom: 1px solid #e2e8f0;
     }
-    .chat-footer { border-top: 1px solid #e2e8f0; border-bottom: none; }
+
+    .chat-footer {
+      border-top: 1px solid #e2e8f0;
+      border-bottom: none;
+    }
+
     .chat-messages {
       flex: 1;
       overflow: auto;
       padding: 16px;
       background: #f8fafc;
     }
+
     .chat-bubble {
       max-width: 82%;
       padding: 10px 12px;
@@ -199,30 +276,49 @@
       font-size: 14px;
       white-space: pre-wrap;
     }
+
     .chat-bubble.me {
       background: #0f172a;
       color: #fff;
       margin-left: auto;
     }
+
     .chat-bubble.other {
       background: #fff;
       color: #0f172a;
       border: 1px solid #e2e8f0;
     }
-    .chat-name { font-size: 11px; margin-bottom: 4px; color: #64748b; }
+
+    .chat-name {
+      font-size: 11px;
+      margin-bottom: 4px;
+      color: #64748b;
+    }
+
     .row-gap { margin-top: 14px; }
+
     .warning-red {
       border-left: 6px solid #dc2626;
       background: #fef2f2;
     }
+
     .warning-yellow {
       border-left: 6px solid #ca8a04;
       background: #fefce8;
     }
-    @media (max-width: 900px) { .app-shell { grid-template-columns: 1fr; } }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 640px) {
       .page { padding: 14px; }
-      .sidebar, .main-panel { padding: 20px; border-radius: 20px; }
+      .sidebar, .main-panel {
+        padding: 20px;
+        border-radius: 20px;
+      }
     }
   </style>
 </head>
@@ -237,6 +333,7 @@
             <div style="font-weight:700; font-size:18px;" id="sidebarId">-</div>
           </div>
         </div>
+
         <div class="nav-title">メニュー</div>
         <button class="menu-button active" data-panel="dashboard">ホーム</button>
         <button class="menu-button" data-panel="items">管理項目</button>
@@ -264,8 +361,10 @@
             </div>
             <button class="button" id="openAddItemButton">管理項目を追加する</button>
           </div>
+
           <div class="section hidden" id="addItemSection">
             <h3 class="section-title">管理項目を追加</h3>
+
             <label for="itemName">名前</label>
             <input id="itemName" type="text" placeholder="例：帰宅報告、宿題チェック" />
 
@@ -279,6 +378,7 @@
             <div id="warningFields" class="row-gap">
               <label for="warningMessage">警告文</label>
               <textarea id="warningMessage" placeholder="子供に送る警告文を入力"></textarea>
+
               <label for="warningLevel" style="margin-top:16px;">警告レベル</label>
               <select id="warningLevel">
                 <option value="red">赤</option>
@@ -289,6 +389,7 @@
             <div id="toggleFields" class="row-gap hidden">
               <label for="toggleMessage">オンオフ項目の説明</label>
               <textarea id="toggleMessage" placeholder="例：ゲーム時間を許可するかどうか"></textarea>
+
               <label for="toggleDefault" style="margin-top:16px;">初期状態</label>
               <select id="toggleDefault">
                 <option value="OFF">OFF</option>
@@ -306,6 +407,7 @@
               <button class="button ghost" id="closeAddItemButton">閉じる</button>
             </div>
           </div>
+
           <div id="itemsContainer"></div>
         </section>
 
@@ -316,12 +418,14 @@
               <h2>子供と連携する</h2>
             </div>
           </div>
+
           <div class="section" id="linkParentSection">
             <h3 class="section-title">連携設定</h3>
             <label for="linkChildId">子供のアカウントID</label>
             <input id="linkChildId" type="text" placeholder="子供のアカウントIDを入力" />
             <button class="button full row-gap" id="linkChildButton">連携する</button>
           </div>
+
           <div id="linksContainer"></div>
         </section>
 
@@ -352,12 +456,15 @@
           </div>
           <button class="button ghost small" id="closeChatButton">閉じる</button>
         </div>
+
         <div class="row-gap">
           <label for="chatPartnerSelect">相手</label>
           <select id="chatPartnerSelect"></select>
         </div>
       </div>
+
       <div class="chat-messages" id="chatMessages"></div>
+
       <div class="chat-footer">
         <textarea id="chatInput" placeholder="メッセージを入力"></textarea>
         <button class="button full row-gap" id="sendChatButton">送信する</button>
@@ -366,7 +473,11 @@
   </div>
 
   <script>
-    const roleLabels = { child: "子供用", parent: "保護者用" };
+    const roleLabels = {
+      child: "子供用",
+      parent: "保護者用"
+    };
+
     const itemTypeLabels = {
       warning: "警告用ボタン管理",
       toggle: "オンオフ管理（保護者操作）",
@@ -392,11 +503,25 @@
       localStorage.setItem(key, JSON.stringify(value));
     }
 
-    function getAccounts() { return readJson("accounts", []); }
-    function getManagementItems() { return readJson("managementItems", []); }
-    function getLinks() { return readJson("links", []); }
-    function getChats() { return readJson("chats", []); }
-    function getAccountById(id) { return getAccounts().find((account) => account.id === id); }
+    function getAccounts() {
+      return readJson("accounts", []);
+    }
+
+    function getManagementItems() {
+      return readJson("managementItems", []);
+    }
+
+    function getLinks() {
+      return readJson("links", []);
+    }
+
+    function getChats() {
+      return readJson("chats", []);
+    }
+
+    function getAccountById(id) {
+      return getAccounts().find((account) => account.id === id);
+    }
 
     function renderAvatar(element, account) {
       element.innerHTML = "";
@@ -416,7 +541,7 @@
     function getLinkedPartnerIds(userId) {
       return getLinks()
         .filter((link) => link.parentId === userId || link.childId === userId)
-        .map((link) => link.parentId === userId ? link.childId : link.parentId);
+        .map((link) => (link.parentId === userId ? link.childId : link.parentId));
     }
 
     function generateId(prefix) {
@@ -461,6 +586,7 @@
       }
 
       container.innerHTML = "";
+
       items.forEach((item) => {
         const card = document.createElement("div");
         card.className = "item-card";
@@ -478,12 +604,15 @@
               <strong>警告レベル：</strong>${levelLabel}<br>
               <strong>警告文：</strong><br>
               ${nl2br(item.message)}
-            </div>`;
+            </div>
+          `;
+
           if (currentUser.role === "parent") {
             actionHtml = `
               <div class="button-row row-gap">
                 <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
-              </div>`;
+              </div>
+            `;
           }
         }
 
@@ -493,14 +622,17 @@
               <strong>説明：</strong><br>
               ${nl2br(item.message)}<br><br>
               <strong>現在の状態：</strong>${item.childResponse || item.defaultValue || "OFF"}
-            </div>`;
+            </div>
+          `;
+
           if (currentUser.role === "parent") {
             actionHtml = `
               <div class="button-row row-gap">
                 <button class="button small" data-action="toggleReply" data-value="ON" data-id="${item.id}">ONにする</button>
                 <button class="button sub small" data-action="toggleReply" data-value="OFF" data-id="${item.id}">OFFにする</button>
                 <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
-              </div>`;
+              </div>
+            `;
           }
         }
 
@@ -513,17 +645,22 @@
             <div class="item-value">
               <strong>子供からの記述：</strong><br>
               ${item.childResponse ? nl2br(item.childResponse) : "まだ入力されていません。"}
-            </div>`;
+            </div>
+          `;
+
           if (currentUser.role === "child") {
             actionHtml = `
               <textarea id="reply-${item.id}" placeholder="依頼内容に対する記述を入力"></textarea>
-              <button class="button small row-gap" data-action="textReply" data-id="${item.id}">入力内容を送る</button>`;
+              <button class="button small row-gap" data-action="textReply" data-id="${item.id}">入力内容を送る</button>
+            `;
           }
+
           if (currentUser.role === "parent") {
             actionHtml += `
               <div class="button-row row-gap">
                 <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
-              </div>`;
+              </div>
+            `;
           }
         }
 
@@ -535,20 +672,25 @@
             子供：${child ? child.id : "未連携"}
           </div>
           ${detailHtml}
-          ${actionHtml}`;
+          ${actionHtml}
+        `;
 
         container.appendChild(card);
       });
 
       container.querySelectorAll("[data-action='toggleReply']").forEach((button) => {
-        button.addEventListener("click", () => updateItemResponse(button.dataset.id, button.dataset.value));
+        button.addEventListener("click", () => {
+          updateItemResponse(button.dataset.id, button.dataset.value);
+        });
       });
+
       container.querySelectorAll("[data-action='textReply']").forEach((button) => {
         button.addEventListener("click", () => {
           const textarea = document.getElementById(`reply-${button.dataset.id}`);
           updateItemResponse(button.dataset.id, textarea.value.trim() || "（空の記述）");
         });
       });
+
       container.querySelectorAll("[data-action='deleteItem']").forEach((button) => {
         button.addEventListener("click", () => {
           if (!confirm("この管理項目を削除しますか？")) return;
@@ -561,6 +703,7 @@
       const managementItems = getManagementItems();
       const target = managementItems.find((item) => item.id === itemId);
       if (!target) return;
+
       target.childResponse = value;
       writeJson("managementItems", managementItems);
       renderItems();
@@ -583,7 +726,8 @@
           <div class="item-card">
             <h4>${account.id}</h4>
             <div class="item-meta">権限：${roleLabels[account.role]}</div>
-          </div>`;
+          </div>
+        `;
       }).join("");
     }
 
@@ -591,6 +735,7 @@
       const select = document.getElementById("chatPartnerSelect");
       const partnerIds = getLinkedPartnerIds(currentUser.id);
       const currentValue = select.value;
+
       select.innerHTML = "";
 
       if (partnerIds.length === 0) {
@@ -604,6 +749,7 @@
       partnerIds.forEach((id) => {
         const account = getAccountById(id);
         if (!account) return;
+
         const option = document.createElement("option");
         option.value = id;
         option.textContent = `${account.id}（${roleLabels[account.role]}）`;
@@ -618,6 +764,7 @@
     function renderChatMessages() {
       const partnerId = document.getElementById("chatPartnerSelect").value;
       const chatMessages = document.getElementById("chatMessages");
+
       if (!partnerId) {
         chatMessages.innerHTML = `<div class="empty">会話相手がいません。</div>`;
         return;
@@ -634,6 +781,7 @@
       }
 
       chatMessages.innerHTML = "";
+
       thread.forEach((chat) => {
         const bubble = document.createElement("div");
         bubble.className = `chat-bubble ${chat.fromId === currentUser.id ? "me" : "other"}`;
@@ -643,10 +791,16 @@
             <div class="button-row" style="margin-top:8px;">
               <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
               <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
-            </div>`
+            </div>
+          `
           : "";
 
-        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${nl2br(chat.text)}${menu}`;
+        bubble.innerHTML = `
+          <div class="chat-name">${chat.fromId}</div>
+          ${nl2br(chat.text)}
+          ${menu}
+        `;
+
         chatMessages.appendChild(bubble);
       });
 
@@ -655,8 +809,10 @@
           const chats = getChats();
           const target = chats.find((chat) => chat.id === button.dataset.id);
           if (!target) return;
+
           const nextText = prompt("メッセージを編集", target.text);
           if (nextText === null) return;
+
           target.text = nextText.trim() || "（空メッセージ）";
           writeJson("chats", chats);
           renderChatMessages();
@@ -684,12 +840,15 @@
       document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
         button.classList.toggle("active", button.dataset.panel === currentPanel);
       });
+
       document.getElementById("panel-dashboard").classList.toggle("hidden", currentPanel !== "dashboard");
       document.getElementById("panel-items").classList.toggle("hidden", currentPanel !== "items");
       document.getElementById("panel-links").classList.toggle("hidden", currentPanel !== "links");
       document.getElementById("panel-chatGuide").classList.toggle("hidden", currentPanel !== "chatGuide");
+
       document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
       document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
+
       renderDashboard();
       renderItems();
       renderLinks();
@@ -703,12 +862,14 @@
         window.location.href = "index.html";
         return false;
       }
+
       const account = getAccountById(currentUserId);
       if (!account) {
         sessionStorage.removeItem("currentUserId");
         window.location.href = "index.html";
         return false;
       }
+
       currentUser = account;
       return true;
     }
@@ -736,10 +897,14 @@
 
     document.getElementById("addItemButton").addEventListener("click", () => {
       if (currentUser.role !== "parent") return;
+
       const name = document.getElementById("itemName").value.trim();
       const type = document.getElementById("itemType").value;
       const links = getLinks();
-      const linkedChildren = links.filter((link) => link.parentId === currentUser.id).map((link) => link.childId);
+      const linkedChildren = links
+        .filter((link) => link.parentId === currentUser.id)
+        .map((link) => link.childId);
+
       if (!name) return alert("管理項目名を入力してください。");
       if (linkedChildren.length === 0) return alert("先に子供アカウントと連携してください。");
 
@@ -754,6 +919,7 @@
       if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
 
       const managementItems = getManagementItems();
+
       linkedChildren.forEach((childId) => {
         managementItems.push({
           id: generateId("item"),
@@ -768,7 +934,9 @@
           childResponse: type === "toggle" ? toggleDefault : ""
         });
       });
+
       writeJson("managementItems", managementItems);
+
       document.getElementById("itemName").value = "";
       document.getElementById("itemType").value = "warning";
       document.getElementById("warningMessage").value = "";
@@ -776,6 +944,7 @@
       document.getElementById("toggleMessage").value = "";
       document.getElementById("toggleDefault").value = "OFF";
       document.getElementById("textRequest").value = "";
+
       updateItemTypeFields();
       document.getElementById("addItemSection").classList.add("hidden");
       renderMain();
@@ -783,16 +952,20 @@
 
     document.getElementById("linkChildButton").addEventListener("click", () => {
       if (currentUser.role !== "parent") return;
+
       const childId = document.getElementById("linkChildId").value.trim();
       if (!childId) return alert("子供のアカウントIDを入力してください。");
+
       const child = getAccountById(childId);
       if (!child || child.role !== "child") return alert("子供用アカウントが見つかりません。");
 
       const links = getLinks();
       const exists = links.some((link) => link.parentId === currentUser.id && link.childId === childId);
       if (exists) return alert("すでに連携済みです。");
+
       links.push({ parentId: currentUser.id, childId });
       writeJson("links", links);
+
       document.getElementById("linkChildId").value = "";
       renderMain();
     });
@@ -812,10 +985,18 @@
     document.getElementById("sendChatButton").addEventListener("click", () => {
       const partnerId = document.getElementById("chatPartnerSelect").value;
       const text = document.getElementById("chatInput").value.trim();
+
       if (!partnerId) return alert("会話相手がいません。");
       if (!text) return alert("メッセージを入力してください。");
+
       const chats = getChats();
-      chats.push({ fromId: currentUser.id, toId: partnerId, text, id: generateId("chat") });
+      chats.push({
+        fromId: currentUser.id,
+        toId: partnerId,
+        text,
+        id: generateId("chat")
+      });
+
       writeJson("chats", chats);
       document.getElementById("chatInput").value = "";
       renderChatMessages();
@@ -834,11 +1015,13 @@
       if (["accounts", "managementItems", "links", "chats"].includes(event.key)) {
         if (currentUser) {
           const refreshed = getAccountById(currentUser.id);
+
           if (!refreshed) {
             sessionStorage.removeItem("currentUserId");
             window.location.href = "index.html";
             return;
           }
+
           currentUser = refreshed;
           renderMain();
         }
