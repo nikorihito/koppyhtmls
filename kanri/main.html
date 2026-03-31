@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>main.html</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .hidden { display: none !important; }
+    .page { min-height: 100vh; padding: 24px; }
+    .app-shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 48px);
+      gap: 20px;
+    }
+    .sidebar, .main-panel {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+    .profile-box {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      background: #f8fafc;
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #334155;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .nav-title {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .menu-button {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .menu-button.active { background: #e2e8f0; }
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      background: #fff;
+      outline: none;
+    }
+    input[type="text"], select { height: 48px; }
+    textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .button {
+      min-height: 48px;
+      border: none;
+      border-radius: 14px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 12px 18px;
+    }
+    .button.full { width: 100%; }
+    .button.sub { background: #fff; color: #0f172a; border: 1px solid #cbd5e1; }
+    .button.ghost { background: #e2e8f0; color: #0f172a; }
+    .button.small { min-height: 40px; padding: 8px 12px; font-size: 13px; border-radius: 12px; }
+    .item-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .item-card h4 { margin: 0 0 8px; font-size: 16px; }
+    .item-meta { color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
+    .item-value { margin-top: 8px; font-size: 14px; line-height: 1.7; }
+    .empty {
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .fab-chat {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      border: none;
+      background: #0f172a;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 16px 35px rgba(15, 23, 42, 0.2);
+      z-index: 20;
+    }
+    .chat-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.36);
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 20px;
+      z-index: 30;
+    }
+    .chat-box {
+      width: min(420px, 100%);
+      height: min(560px, 78vh);
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-header, .chat-footer {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .chat-footer { border-top: 1px solid #e2e8f0; border-bottom: none; }
+    .chat-messages {
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+      background: #f8fafc;
+    }
+    .chat-bubble {
+      max-width: 82%;
+      padding: 10px 12px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    .chat-bubble.me {
+      background: #0f172a;
+      color: #fff;
+      margin-left: auto;
+    }
+    .chat-bubble.other {
+      background: #fff;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+    }
+    .chat-name { font-size: 11px; margin-bottom: 4px; color: #64748b; }
+    .row-gap { margin-top: 14px; }
+    @media (max-width: 900px) { .app-shell { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .sidebar, .main-panel { padding: 20px; border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page" id="mainPage">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="profile-box">
+          <div class="avatar" id="sidebarAvatar">?</div>
+          <div>
+            <div class="badge" id="sidebarRole">-</div>
+            <div style="font-weight:700; font-size:18px;" id="sidebarId">-</div>
+          </div>
+        </div>
+        <div class="nav-title">メニュー</div>
+        <button class="menu-button active" data-panel="dashboard">ホーム</button>
+        <button class="menu-button" data-panel="items">管理項目</button>
+        <button class="menu-button" data-panel="links">連携</button>
+        <button class="menu-button" data-panel="chatGuide">会話</button>
+        <button class="menu-button" id="logoutButton">ログアウトする</button>
+      </aside>
+
+      <main class="main-panel">
+        <section id="panel-dashboard">
+          <div class="panel-title">
+            <div>
+              <div class="badge" id="welcomeRole">-</div>
+              <h2 id="welcomeTitle">main.html</h2>
+            </div>
+          </div>
+          <div class="section" id="dashboardSummary"></div>
+        </section>
+
+        <section id="panel-items" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">管理項目</div>
+              <h2>管理項目の確認</h2>
+            </div>
+            <button class="button" id="openAddItemButton">管理項目を追加する</button>
+          </div>
+          <div class="section hidden" id="addItemSection">
+            <h3 class="section-title">管理項目を追加</h3>
+            <label for="itemName">名前</label>
+            <input id="itemName" type="text" placeholder="例：帰宅報告、宿題チェック" />
+            <label for="itemType" style="margin-top:16px;">管理項目の種類</label>
+            <select id="itemType">
+              <option value="warning">警告用ボタン管理</option>
+              <option value="toggle">オンオフ管理</option>
+              <option value="text">子供記述式管理</option>
+            </select>
+            <div class="button-row row-gap">
+              <button class="button" id="addItemButton">追加する</button>
+              <button class="button ghost" id="closeAddItemButton">閉じる</button>
+            </div>
+          </div>
+          <div id="itemsContainer"></div>
+        </section>
+
+        <section id="panel-links" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">連携</div>
+              <h2>子供と連携する</h2>
+            </div>
+          </div>
+          <div class="section" id="linkParentSection">
+            <h3 class="section-title">連携設定</h3>
+            <label for="linkChildId">子供のアカウントID</label>
+            <input id="linkChildId" type="text" placeholder="子供のアカウントIDを入力" />
+            <button class="button full row-gap" id="linkChildButton">連携する</button>
+          </div>
+          <div id="linksContainer"></div>
+        </section>
+
+        <section id="panel-chatGuide" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">会話</div>
+              <h2>連携ユーザーとのチャット</h2>
+            </div>
+          </div>
+          <div class="section">
+            左下の 💬 ボタンから会話を開始できます。保護者は連携済みの子供を選べます。子供は連携済みの保護者と会話できます。
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <button class="fab-chat" id="chatFab">💬</button>
+
+  <div class="chat-modal hidden" id="chatModal">
+    <div class="chat-box">
+      <div class="chat-header">
+        <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
+          <div>
+            <div class="badge">チャット</div>
+            <div style="font-weight:700; font-size:18px;">連携ユーザーと会話</div>
+          </div>
+          <button class="button ghost small" id="closeChatButton">閉じる</button>
+        </div>
+        <div class="row-gap">
+          <label for="chatPartnerSelect">相手</label>
+          <select id="chatPartnerSelect"></select>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-footer">
+        <textarea id="chatInput" placeholder="メッセージを入力"></textarea>
+        <button class="button full row-gap" id="sendChatButton">送信する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const roleLabels = { child: "子供用", parent: "保護者用" };
+    const itemTypeLabels = {
+      warning: "警告用ボタン管理",
+      toggle: "オンオフ管理",
+      text: "子供記述式管理"
+    };
+
+    let currentUser = null;
+    let currentPanel = "dashboard";
+
+    function readJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function writeJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getAccounts() { return readJson("accounts", []); }
+    function getManagementItems() { return readJson("managementItems", []); }
+    function getLinks() { return readJson("links", []); }
+    function getChats() { return readJson("chats", []); }
+    function getAccountById(id) { return getAccounts().find((account) => account.id === id); }
+
+    function renderAvatar(element, account) {
+      element.innerHTML = "";
+      if (account && account.image) {
+        const img = document.createElement("img");
+        img.src = account.image;
+        img.alt = account.id;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        element.appendChild(img);
+      } else {
+        element.textContent = account?.id ? account.id.charAt(0).toUpperCase() : "?";
+      }
+    }
+
+    function getLinkedPartnerIds(userId) {
+      return getLinks()
+        .filter((link) => link.parentId === userId || link.childId === userId)
+        .map((link) => link.parentId === userId ? link.childId : link.parentId);
+    }
+
+    function generateId(prefix) {
+      return `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    }
+
+    function renderDashboard() {
+      const summary = document.getElementById("dashboardSummary");
+      const linkedIds = getLinkedPartnerIds(currentUser.id);
+      const managementItems = getManagementItems();
+      const ownItems = currentUser.role === "parent"
+        ? managementItems.filter((item) => item.parentId === currentUser.id)
+        : managementItems.filter((item) => item.childId === currentUser.id);
+
+      summary.innerHTML = `
+        <div class="badge">概要</div>
+        <p><strong>ログイン中の権限：</strong>${roleLabels[currentUser.role]}</p>
+        <p><strong>アカウントID：</strong>${currentUser.id}</p>
+        <p><strong>連携中ユーザー数：</strong>${linkedIds.length}</p>
+        <p><strong>確認できる管理項目数：</strong>${ownItems.length}</p>
+        <p style="margin-bottom:0;">左のメニューから管理項目や連携設定を確認できます。</p>
+      `;
+    }
+
+    function renderItems() {
+      const container = document.getElementById("itemsContainer");
+      const managementItems = getManagementItems();
+      const items = currentUser.role === "parent"
+        ? managementItems.filter((item) => item.parentId === currentUser.id)
+        : managementItems.filter((item) => item.childId === currentUser.id);
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="empty">まだ管理項目はありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      items.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "item-card";
+
+        const child = getAccountById(item.childId);
+        const parent = getAccountById(item.parentId);
+        let actionHtml = "";
+
+        if (currentUser.role === "child") {
+          if (item.type === "warning") {
+            actionHtml = `<button class="button small" data-action="warningReply" data-id="${item.id}">確認したと返事する</button>`;
+          }
+          if (item.type === "toggle") {
+            actionHtml = `
+              <div class="button-row">
+                <button class="button small" data-action="toggleReply" data-value="ON" data-id="${item.id}">ONにする</button>
+                <button class="button sub small" data-action="toggleReply" data-value="OFF" data-id="${item.id}">OFFにする</button>
+              </div>`;
+          }
+          if (item.type === "text") {
+            actionHtml = `
+              <textarea id="reply-${item.id}" placeholder="返事を入力"></textarea>
+              <button class="button small row-gap" data-action="textReply" data-id="${item.id}">返事を送る</button>`;
+          }
+        }
+
+        card.innerHTML = `
+          <h4>${item.name}</h4>
+          <div class="item-meta">
+            種類：${itemTypeLabels[item.type]}<br>
+            保護者：${parent ? parent.id : "-"}<br>
+            子供：${child ? child.id : "未連携"}
+          </div>
+          <div class="item-value">
+            <strong>子供からの返事：</strong><br>
+            ${item.childResponse ? item.childResponse.replace(/\n/g, "<br>") : "まだ返事はありません。"}
+          </div>
+          ${actionHtml}`;
+
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll("[data-action='warningReply']").forEach((button) => {
+        button.addEventListener("click", () => updateItemResponse(button.dataset.id, "確認しました"));
+      });
+      container.querySelectorAll("[data-action='toggleReply']").forEach((button) => {
+        button.addEventListener("click", () => updateItemResponse(button.dataset.id, button.dataset.value));
+      });
+      container.querySelectorAll("[data-action='textReply']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const textarea = document.getElementById(`reply-${button.dataset.id}`);
+          updateItemResponse(button.dataset.id, textarea.value.trim() || "（空の返事）");
+        });
+      });
+    }
+
+    function updateItemResponse(itemId, value) {
+      const managementItems = getManagementItems();
+      const target = managementItems.find((item) => item.id === itemId);
+      if (!target) return;
+      target.childResponse = value;
+      writeJson("managementItems", managementItems);
+      renderItems();
+      renderDashboard();
+    }
+
+    function renderLinks() {
+      const container = document.getElementById("linksContainer");
+      const linkedIds = getLinkedPartnerIds(currentUser.id);
+
+      if (linkedIds.length === 0) {
+        container.innerHTML = `<div class="empty">まだ連携はありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = linkedIds.map((id) => {
+        const account = getAccountById(id);
+        if (!account) return "";
+        return `
+          <div class="item-card">
+            <h4>${account.id}</h4>
+            <div class="item-meta">権限：${roleLabels[account.role]}</div>
+          </div>`;
+      }).join("");
+    }
+
+    function renderChatPartnerOptions() {
+      const select = document.getElementById("chatPartnerSelect");
+      const partnerIds = getLinkedPartnerIds(currentUser.id);
+      select.innerHTML = "";
+
+      if (partnerIds.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "連携ユーザーがいません";
+        select.appendChild(option);
+        return;
+      }
+
+      partnerIds.forEach((id) => {
+        const account = getAccountById(id);
+        if (!account) return;
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = `${account.id}（${roleLabels[account.role]}）`;
+        select.appendChild(option);
+      });
+    }
+
+    function renderChatMessages() {
+      const partnerId = document.getElementById("chatPartnerSelect").value;
+      const chatMessages = document.getElementById("chatMessages");
+      if (!partnerId) {
+        chatMessages.innerHTML = `<div class="empty">会話相手がいません。</div>`;
+        return;
+      }
+
+      const thread = getChats().filter((chat) =>
+        (chat.fromId === currentUser.id && chat.toId === partnerId) ||
+        (chat.fromId === partnerId && chat.toId === currentUser.id)
+      );
+
+      if (thread.length === 0) {
+        chatMessages.innerHTML = `<div class="empty">まだ会話はありません。</div>`;
+        return;
+      }
+
+      chatMessages.innerHTML = "";
+      thread.forEach((chat) => {
+        const bubble = document.createElement("div");
+        bubble.className = `chat-bubble ${chat.fromId === currentUser.id ? "me" : "other"}`;
+        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${chat.text.replace(/\n/g, "<br>")}`;
+        chatMessages.appendChild(bubble);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function renderMain() {
+      document.getElementById("sidebarRole").textContent = roleLabels[currentUser.role];
+      document.getElementById("sidebarId").textContent = currentUser.id;
+      document.getElementById("welcomeRole").textContent = roleLabels[currentUser.role];
+      document.getElementById("welcomeTitle").textContent = `${roleLabels[currentUser.role]}アカウントでログイン中：main.html`;
+      renderAvatar(document.getElementById("sidebarAvatar"), currentUser);
+
+      document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.panel === currentPanel);
+      });
+      document.getElementById("panel-dashboard").classList.toggle("hidden", currentPanel !== "dashboard");
+      document.getElementById("panel-items").classList.toggle("hidden", currentPanel !== "items");
+      document.getElementById("panel-links").classList.toggle("hidden", currentPanel !== "links");
+      document.getElementById("panel-chatGuide").classList.toggle("hidden", currentPanel !== "chatGuide");
+      document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
+      document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
+      renderDashboard();
+      renderItems();
+      renderLinks();
+      renderChatPartnerOptions();
+      renderChatMessages();
+    }
+
+    function initializeUser() {
+      const currentUserId = sessionStorage.getItem("currentUserId");
+      if (!currentUserId) {
+        window.location.href = "index.html";
+        return false;
+      }
+      const account = getAccountById(currentUserId);
+      if (!account) {
+        sessionStorage.removeItem("currentUserId");
+        window.location.href = "index.html";
+        return false;
+      }
+      currentUser = account;
+      return true;
+    }
+
+    document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
+      button.addEventListener("click", () => {
+        currentPanel = button.dataset.panel;
+        renderMain();
+      });
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", () => {
+      sessionStorage.removeItem("currentUserId");
+      window.location.href = "index.html";
+    });
+
+    document.getElementById("openAddItemButton").addEventListener("click", () => {
+      if (currentUser.role !== "parent") return;
+      document.getElementById("addItemSection").classList.remove("hidden");
+    });
+
+    document.getElementById("closeAddItemButton").addEventListener("click", () => {
+      document.getElementById("addItemSection").classList.add("hidden");
+    });
+
+    document.getElementById("addItemButton").addEventListener("click", () => {
+      if (currentUser.role !== "parent") return;
+      const name = document.getElementById("itemName").value.trim();
+      const type = document.getElementById("itemType").value;
+      const links = getLinks();
+      const linkedChildren = links.filter((link) => link.parentId === currentUser.id).map((link) => link.childId);
+      if (!name) return alert("管理項目名を入力してください。");
+      if (linkedChildren.length === 0) return alert("先に子供アカウントと連携してください。");
+
+      const managementItems = getManagementItems();
+      linkedChildren.forEach((childId) => {
+        managementItems.push({
+          id: generateId("item"),
+          parentId: currentUser.id,
+          childId,
+          name,
+          type,
+          childResponse: ""
+        });
+      });
+      writeJson("managementItems", managementItems);
+      document.getElementById("itemName").value = "";
+      document.getElementById("itemType").value = "warning";
+      document.getElementById("addItemSection").classList.add("hidden");
+      renderMain();
+    });
+
+    document.getElementById("linkChildButton").addEventListener("click", () => {
+      if (currentUser.role !== "parent") return;
+      const childId = document.getElementById("linkChildId").value.trim();
+      if (!childId) return alert("子供のアカウントIDを入力してください。");
+      const child = getAccountById(childId);
+      if (!child || child.role !== "child") return alert("子供用アカウントが見つかりません。");
+
+      const links = getLinks();
+      const exists = links.some((link) => link.parentId === currentUser.id && link.childId === childId);
+      if (exists) return alert("すでに連携済みです。");
+      links.push({ parentId: currentUser.id, childId });
+      writeJson("links", links);
+      document.getElementById("linkChildId").value = "";
+      renderMain();
+    });
+
+    document.getElementById("chatFab").addEventListener("click", () => {
+      document.getElementById("chatModal").classList.remove("hidden");
+      renderChatPartnerOptions();
+      renderChatMessages();
+    });
+
+    document.getElementById("closeChatButton").addEventListener("click", () => {
+      document.getElementById("chatModal").classList.add("hidden");
+    });
+
+    document.getElementById("chatPartnerSelect").addEventListener("change", renderChatMessages);
+
+    document.getElementById("sendChatButton").addEventListener("click", () => {
+      const partnerId = document.getElementById("chatPartnerSelect").value;
+      const text = document.getElementById("chatInput").value.trim();
+      if (!partnerId) return alert("会話相手がいません。");
+      if (!text) return alert("メッセージを入力してください。");
+      const chats = getChats();
+      chats.push({ fromId: currentUser.id, toId: partnerId, text });
+      writeJson("chats", chats);
+      document.getElementById("chatInput").value = "";
+      renderChatMessages();
+    });
+
+    if (initializeUser()) {
+      renderMain();
+    }
+  </script>
+</body>
+</html>
