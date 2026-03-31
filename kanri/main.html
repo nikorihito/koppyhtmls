@@ -48,11 +48,6 @@
       overflow: hidden;
       flex-shrink: 0;
     }
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
     .nav-title {
       font-size: 13px;
       color: #64748b;
@@ -408,7 +403,6 @@
     import {
       doc,
       getDoc,
-      setDoc,
       addDoc,
       updateDoc,
       deleteDoc,
@@ -426,6 +420,8 @@
     let currentChatMessages = [];
     let chatUnsubscribe = null;
     let usersCache = new Map();
+    let linksUnsubscribe = null;
+    let itemsUnsubscribe = null;
 
     const sidebarAvatar = document.getElementById("sidebarAvatar");
     const sidebarRole = document.getElementById("sidebarRole");
@@ -440,14 +436,7 @@
 
     function renderAvatar(element, user) {
       element.innerHTML = "";
-      if (user?.imageUrl) {
-        const img = document.createElement("img");
-        img.src = user.imageUrl;
-        img.alt = user.accountId;
-        element.appendChild(img);
-      } else {
-        element.textContent = user?.accountId ? user.accountId.charAt(0).toUpperCase() : "?";
-      }
+      element.textContent = user?.accountId ? user.accountId.charAt(0).toUpperCase() : "?";
     }
 
     function setActivePanel(panelName) {
@@ -462,15 +451,12 @@
     }
 
     function renderDashboard() {
-      const linkedCount = currentPartners.length;
-      const ownItemCount = currentItems.length;
-
       dashboardSummary.innerHTML = `
         <div class="badge">概要</div>
         <p><strong>ログイン中の権限：</strong>${ROLE_LABELS[currentUser.role]}</p>
         <p><strong>アカウントID：</strong>${escapeHtml(currentUser.accountId)}</p>
-        <p><strong>連携中ユーザー数：</strong>${linkedCount}</p>
-        <p><strong>確認できる管理項目数：</strong>${ownItemCount}</p>
+        <p><strong>連携中ユーザー数：</strong>${currentPartners.length}</p>
+        <p><strong>確認できる管理項目数：</strong>${currentItems.length}</p>
         <p style="margin-bottom:0;">左のメニューから管理項目や連携設定を確認できます。</p>
       `;
     }
@@ -482,35 +468,6 @@
       const data = snap.data();
       usersCache.set(uid, data);
       return data;
-    }
-
-    async function loadPartners() {
-      if (!currentUser) return;
-
-      let linkQuery;
-      if (currentUser.role === "parent") {
-        linkQuery = query(collection(db, "links"), where("parentUid", "==", currentUser.uid));
-      } else {
-        linkQuery = query(collection(db, "links"), where("childUid", "==", currentUser.uid));
-      }
-
-      onSnapshot(linkQuery, async (snapshot) => {
-        const partnerUids = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          return currentUser.role === "parent" ? data.childUid : data.parentUid;
-        });
-
-        const partners = [];
-        for (const uid of partnerUids) {
-          const partner = await getUserByUid(uid);
-          if (partner) partners.push(partner);
-        }
-
-        currentPartners = partners;
-        renderLinks();
-        renderChatPartnerOptions();
-        renderDashboard();
-      });
     }
 
     function renderLinks() {
@@ -631,9 +588,8 @@
 
       itemsContainer.querySelectorAll("[data-reply-id]").forEach((button) => {
         button.addEventListener("click", async () => {
-          const itemId = button.dataset.replyId;
-          const textarea = document.getElementById(`reply-${itemId}`);
-          await updateDoc(doc(db, "managementItems", itemId), {
+          const textarea = document.getElementById(`reply-${button.dataset.replyId}`);
+          await updateDoc(doc(db, "managementItems", button.dataset.replyId), {
             childResponse: textarea.value.trim() || "（空の記述）",
             updatedAt: serverTimestamp()
           });
@@ -645,37 +601,6 @@
           if (!confirm("この管理項目を削除しますか？")) return;
           await deleteDoc(doc(db, "managementItems", button.dataset.deleteId));
         });
-      });
-    }
-
-    async function subscribeItems() {
-      let q;
-      if (currentUser.role === "parent") {
-        q = query(collection(db, "managementItems"), where("parentUid", "==", currentUser.uid));
-      } else {
-        q = query(collection(db, "managementItems"), where("childUid", "==", currentUser.uid));
-      }
-
-      onSnapshot(q, async (snapshot) => {
-        const items = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...docSnap.data()
-        }));
-
-        for (const item of items) {
-          if (!usersCache.has(item.parentUid)) {
-            const user = await getUserByUid(item.parentUid);
-            if (user) usersCache.set(item.parentUid, user);
-          }
-          if (!usersCache.has(item.childUid)) {
-            const user = await getUserByUid(item.childUid);
-            if (user) usersCache.set(item.childUid, user);
-          }
-        }
-
-        currentItems = items;
-        renderItems();
-        renderDashboard();
       });
     }
 
@@ -708,35 +633,9 @@
     }
 
     function stopChatSubscription() {
-      if (typeof chatUnsubscribe === "function") {
-        chatUnsubscribe();
-      }
+      if (typeof chatUnsubscribe === "function") chatUnsubscribe();
       chatUnsubscribe = null;
       currentChatMessages = [];
-    }
-
-    function startChatSubscription() {
-      stopChatSubscription();
-      const partnerUid = chatPartnerSelect.value;
-      if (!partnerUid) {
-        renderChatMessages();
-        return;
-      }
-
-      const key = chatKey(currentUser.uid, partnerUid);
-      const q = query(collection(db, "chats"), where("participantsKey", "==", key));
-
-      chatUnsubscribe = onSnapshot(q, (snapshot) => {
-        currentChatMessages = snapshot.docs
-          .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
-          .sort((a, b) => {
-            const aTime = a.createdAt?.seconds || 0;
-            const bTime = b.createdAt?.seconds || 0;
-            return aTime - bTime;
-          });
-
-        renderChatMessages();
-      });
     }
 
     function renderChatMessages() {
@@ -757,16 +656,12 @@
           <div class="chat-bubble ${mine ? "me" : "other"}">
             <div class="chat-name">${escapeHtml(usersCache.get(chat.fromUid)?.accountId || "unknown")}</div>
             ${nl2br(escapeHtml(chat.text))}
-            ${
-              mine
-                ? `
-                <div class="button-row" style="margin-top:8px;">
-                  <button class="button sub small" data-chat-edit="${chat.id}">編集</button>
-                  <button class="button sub small" data-chat-delete="${chat.id}">削除</button>
-                </div>
-              `
-                : ""
-            }
+            ${mine ? `
+              <div class="button-row" style="margin-top:8px;">
+                <button class="button sub small" data-chat-edit="${chat.id}">編集</button>
+                <button class="button sub small" data-chat-delete="${chat.id}">削除</button>
+              </div>
+            ` : ""}
           </div>
         `;
       }).join("");
@@ -793,11 +688,92 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    function startChatSubscription() {
+      stopChatSubscription();
+      const partnerUid = chatPartnerSelect.value;
+      if (!partnerUid) {
+        renderChatMessages();
+        return;
+      }
+
+      const q = query(collection(db, "chats"), where("participantsKey", "==", chatKey(currentUser.uid, partnerUid)));
+      chatUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const list = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+          .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+
+        for (const chat of list) {
+          if (!usersCache.has(chat.fromUid)) {
+            const u = await getUserByUid(chat.fromUid);
+            if (u) usersCache.set(chat.fromUid, u);
+          }
+        }
+
+        currentChatMessages = list;
+        renderChatMessages();
+      });
+    }
+
     function updateItemTypeFields() {
       const type = document.getElementById("itemType").value;
       document.getElementById("warningFields").classList.toggle("hidden", type !== "warning");
       document.getElementById("toggleFields").classList.toggle("hidden", type !== "toggle");
       document.getElementById("textFields").classList.toggle("hidden", type !== "text");
+    }
+
+    async function subscribePartners() {
+      if (typeof linksUnsubscribe === "function") linksUnsubscribe();
+
+      const q = currentUser.role === "parent"
+        ? query(collection(db, "links"), where("parentUid", "==", currentUser.uid))
+        : query(collection(db, "links"), where("childUid", "==", currentUser.uid));
+
+      linksUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const partnerUids = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return currentUser.role === "parent" ? data.childUid : data.parentUid;
+        });
+
+        const partners = [];
+        for (const uid of partnerUids) {
+          const partner = await getUserByUid(uid);
+          if (partner) partners.push(partner);
+        }
+
+        currentPartners = partners;
+        renderLinks();
+        renderChatPartnerOptions();
+        renderDashboard();
+      });
+    }
+
+    async function subscribeItems() {
+      if (typeof itemsUnsubscribe === "function") itemsUnsubscribe();
+
+      const q = currentUser.role === "parent"
+        ? query(collection(db, "managementItems"), where("parentUid", "==", currentUser.uid))
+        : query(collection(db, "managementItems"), where("childUid", "==", currentUser.uid));
+
+      itemsUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const items = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data()
+        }));
+
+        for (const item of items) {
+          if (!usersCache.has(item.parentUid)) {
+            const user = await getUserByUid(item.parentUid);
+            if (user) usersCache.set(item.parentUid, user);
+          }
+          if (!usersCache.has(item.childUid)) {
+            const user = await getUserByUid(item.childUid);
+            if (user) usersCache.set(item.childUid, user);
+          }
+        }
+
+        currentItems = items;
+        renderItems();
+        renderDashboard();
+      });
     }
 
     async function addManagementItems() {
@@ -846,8 +822,8 @@
       const childAccountId = normalizeAccountId(document.getElementById("linkChildId").value);
       if (!childAccountId) return alert("子供のアカウントIDを入力してください。");
 
-      const q = query(collection(db, "users"), where("accountId", "==", childAccountId));
-      const snapshot = await getDocs(q);
+      const childQuery = query(collection(db, "users"), where("accountId", "==", childAccountId));
+      const snapshot = await getDocs(childQuery);
       if (snapshot.empty) return alert("子供用アカウントが見つかりません。");
 
       const child = snapshot.docs[0].data();
@@ -891,14 +867,14 @@
       sidebarId.textContent = currentUser.accountId;
       welcomeRole.textContent = ROLE_LABELS[currentUser.role];
       welcomeTitle.textContent = `${ROLE_LABELS[currentUser.role]}アカウントでログイン中`;
-      renderAvatar(sidebarAvatar, currentUser);
 
+      renderAvatar(sidebarAvatar, currentUser);
       document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
       document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
 
       renderDashboard();
-      loadPartners();
-      subscribeItems();
+      await subscribePartners();
+      await subscribeItems();
     }
 
     document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
