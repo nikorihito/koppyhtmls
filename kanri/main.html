@@ -3,38 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>main.html</title>
+  <title>まもきっず - main</title>
   <style>
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
-
     .hidden { display: none !important; }
-
-    .page {
-      min-height: 100vh;
-      padding: 24px;
-    }
-
+    .page { min-height: 100vh; padding: 24px; }
     .app-shell {
       display: grid;
       grid-template-columns: 280px 1fr;
       min-height: calc(100vh - 48px);
       gap: 20px;
     }
-
     .sidebar, .main-panel {
       background: #fff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
       padding: 24px;
     }
-
     .profile-box {
       display: flex;
       gap: 14px;
@@ -44,28 +35,29 @@
       border-radius: 18px;
       margin-bottom: 18px;
     }
-
     .avatar {
       width: 60px;
       height: 60px;
       border-radius: 18px;
-      object-fit: cover;
       background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       color: #334155;
-      flex-shrink: 0;
       overflow: hidden;
+      flex-shrink: 0;
     }
-
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     .nav-title {
       font-size: 13px;
       color: #64748b;
       margin-bottom: 8px;
     }
-
     .menu-button {
       width: 100%;
       text-align: left;
@@ -77,11 +69,7 @@
       font-weight: 700;
       margin-bottom: 8px;
     }
-
-    .menu-button.active {
-      background: #e2e8f0;
-    }
-
+    .menu-button.active { background: #e2e8f0; }
     .panel-title {
       display: flex;
       justify-content: space-between;
@@ -89,27 +77,23 @@
       gap: 12px;
       margin-bottom: 18px;
     }
-
     .section {
       background: #f1f5f9;
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 16px;
     }
-
     .section-title {
       margin: 0 0 16px;
       font-size: 18px;
       font-weight: 700;
     }
-
     label {
       display: block;
       margin-bottom: 8px;
       font-size: 14px;
       font-weight: 700;
     }
-
     input[type="text"], select, textarea {
       width: 100%;
       border: 1px solid #cbd5e1;
@@ -119,23 +103,9 @@
       background: #fff;
       outline: none;
     }
-
-    input[type="text"], select {
-      height: 48px;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-      line-height: 1.6;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
+    input[type="text"], select { height: 48px; }
+    textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .button {
       min-height: 48px;
       border: none;
@@ -147,26 +117,10 @@
       cursor: pointer;
       padding: 12px 18px;
     }
-
     .button.full { width: 100%; }
-    .button.sub {
-      background: #fff;
-      color: #0f172a;
-      border: 1px solid #cbd5e1;
-    }
-
-    .button.ghost {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-
-    .button.small {
-      min-height: 40px;
-      padding: 8px 12px;
-      font-size: 13px;
-      border-radius: 12px;
-    }
-
+    .button.sub { background: #fff; color: #0f172a; border: 1px solid #cbd5e1; }
+    .button.ghost { background: #e2e8f0; color: #0f172a; }
+    .button.small { min-height: 40px; padding: 8px 12px; font-size: 13px; border-radius: 12px; }
     .item-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -174,25 +128,9 @@
       padding: 16px;
       margin-bottom: 12px;
     }
-
-    .item-card h4 {
-      margin: 0 0 8px;
-      font-size: 16px;
-    }
-
-    .item-meta {
-      color: #64748b;
-      font-size: 13px;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-
-    .item-value {
-      margin-top: 8px;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
+    .item-card h4 { margin: 0 0 8px; font-size: 16px; }
+    .item-meta { color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
+    .item-value { margin-top: 8px; font-size: 14px; line-height: 1.7; }
     .empty {
       padding: 18px;
       background: #f8fafc;
@@ -201,7 +139,6 @@
       color: #64748b;
       line-height: 1.7;
     }
-
     .badge {
       display: inline-block;
       padding: 6px 12px;
@@ -211,7 +148,6 @@
       font-weight: 700;
       margin-bottom: 10px;
     }
-
     .fab-chat {
       position: fixed;
       left: 20px;
@@ -227,7 +163,6 @@
       box-shadow: 0 16px 35px rgba(15, 23, 42, 0.2);
       z-index: 20;
     }
-
     .chat-modal {
       position: fixed;
       inset: 0;
@@ -238,35 +173,28 @@
       padding: 0;
       z-index: 30;
     }
-
     .chat-box {
       width: 100%;
       height: 100vh;
       background: #fff;
-      border-radius: 0;
-      box-shadow: none;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-
     .chat-header, .chat-footer {
       padding: 16px;
       border-bottom: 1px solid #e2e8f0;
     }
-
     .chat-footer {
       border-top: 1px solid #e2e8f0;
       border-bottom: none;
     }
-
     .chat-messages {
       flex: 1;
       overflow: auto;
       padding: 16px;
       background: #f8fafc;
     }
-
     .chat-bubble {
       max-width: 82%;
       padding: 10px 12px;
@@ -276,49 +204,36 @@
       font-size: 14px;
       white-space: pre-wrap;
     }
-
     .chat-bubble.me {
       background: #0f172a;
       color: #fff;
       margin-left: auto;
     }
-
     .chat-bubble.other {
       background: #fff;
       color: #0f172a;
       border: 1px solid #e2e8f0;
     }
-
     .chat-name {
       font-size: 11px;
       margin-bottom: 4px;
       color: #64748b;
     }
-
     .row-gap { margin-top: 14px; }
-
     .warning-red {
       border-left: 6px solid #dc2626;
       background: #fef2f2;
     }
-
     .warning-yellow {
       border-left: 6px solid #ca8a04;
       background: #fefce8;
     }
-
     @media (max-width: 900px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-      }
+      .app-shell { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 640px) {
       .page { padding: 14px; }
-      .sidebar, .main-panel {
-        padding: 20px;
-        border-radius: 20px;
-      }
+      .sidebar, .main-panel { padding: 20px; border-radius: 20px; }
     }
   </style>
 </head>
@@ -437,7 +352,7 @@
             </div>
           </div>
           <div class="section">
-            左下の 💬 ボタンから全画面チャットを開けます。保護者は連携済みの子供を選べます。子供は連携済みの保護者と会話できます。
+            左下の 💬 ボタンから全画面チャットを開けます。
           </div>
         </section>
       </main>
@@ -472,145 +387,173 @@
     </div>
   </div>
 
-  <script>
-    const roleLabels = {
-      child: "子供用",
-      parent: "保護者用"
-    };
+  <script type="module">
+    import {
+      auth,
+      db,
+      serverTimestamp,
+      ROLE_LABELS,
+      ITEM_TYPE_LABELS,
+      nl2br,
+      escapeHtml,
+      normalizeAccountId,
+      chatKey
+    } from "./firebase-config.js";
 
-    const itemTypeLabels = {
-      warning: "警告用ボタン管理",
-      toggle: "オンオフ管理（保護者操作）",
-      text: "子供記述式管理"
-    };
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+    import {
+      doc,
+      getDoc,
+      setDoc,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      collection,
+      query,
+      where,
+      onSnapshot,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
     let currentUser = null;
     let currentPanel = "dashboard";
+    let currentItems = [];
+    let currentPartners = [];
+    let currentChatMessages = [];
+    let chatUnsubscribe = null;
+    let usersCache = new Map();
 
-    function nl2br(value) {
-      return String(value || "").replace(/\n/g, "<br>");
-    }
+    const sidebarAvatar = document.getElementById("sidebarAvatar");
+    const sidebarRole = document.getElementById("sidebarRole");
+    const sidebarId = document.getElementById("sidebarId");
+    const welcomeRole = document.getElementById("welcomeRole");
+    const welcomeTitle = document.getElementById("welcomeTitle");
+    const dashboardSummary = document.getElementById("dashboardSummary");
+    const itemsContainer = document.getElementById("itemsContainer");
+    const linksContainer = document.getElementById("linksContainer");
+    const chatPartnerSelect = document.getElementById("chatPartnerSelect");
+    const chatMessages = document.getElementById("chatMessages");
 
-    function readJson(key, fallback) {
-      try {
-        return JSON.parse(localStorage.getItem(key)) ?? fallback;
-      } catch {
-        return fallback;
-      }
-    }
-
-    function writeJson(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    function getAccounts() {
-      return readJson("accounts", []);
-    }
-
-    function getManagementItems() {
-      return readJson("managementItems", []);
-    }
-
-    function getLinks() {
-      return readJson("links", []);
-    }
-
-    function getChats() {
-      return readJson("chats", []);
-    }
-
-    function getAccountById(id) {
-      return getAccounts().find((account) => account.id === id);
-    }
-
-    function renderAvatar(element, account) {
+    function renderAvatar(element, user) {
       element.innerHTML = "";
-      if (account && account.image) {
+      if (user?.imageUrl) {
         const img = document.createElement("img");
-        img.src = account.image;
-        img.alt = account.id;
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "cover";
+        img.src = user.imageUrl;
+        img.alt = user.accountId;
         element.appendChild(img);
       } else {
-        element.textContent = account?.id ? account.id.charAt(0).toUpperCase() : "?";
+        element.textContent = user?.accountId ? user.accountId.charAt(0).toUpperCase() : "?";
       }
     }
 
-    function getLinkedPartnerIds(userId) {
-      return getLinks()
-        .filter((link) => link.parentId === userId || link.childId === userId)
-        .map((link) => (link.parentId === userId ? link.childId : link.parentId));
-    }
-
-    function generateId(prefix) {
-      return `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    function setActivePanel(panelName) {
+      currentPanel = panelName;
+      document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.panel === panelName);
+      });
+      document.getElementById("panel-dashboard").classList.toggle("hidden", panelName !== "dashboard");
+      document.getElementById("panel-items").classList.toggle("hidden", panelName !== "items");
+      document.getElementById("panel-links").classList.toggle("hidden", panelName !== "links");
+      document.getElementById("panel-chatGuide").classList.toggle("hidden", panelName !== "chatGuide");
     }
 
     function renderDashboard() {
-      const summary = document.getElementById("dashboardSummary");
-      const linkedIds = getLinkedPartnerIds(currentUser.id);
-      const managementItems = getManagementItems();
-      const ownItems = currentUser.role === "parent"
-        ? managementItems.filter((item) => item.parentId === currentUser.id)
-        : managementItems.filter((item) => item.childId === currentUser.id);
+      const linkedCount = currentPartners.length;
+      const ownItemCount = currentItems.length;
 
-      summary.innerHTML = `
+      dashboardSummary.innerHTML = `
         <div class="badge">概要</div>
-        <p><strong>ログイン中の権限：</strong>${roleLabels[currentUser.role]}</p>
-        <p><strong>アカウントID：</strong>${currentUser.id}</p>
-        <p><strong>連携中ユーザー数：</strong>${linkedIds.length}</p>
-        <p><strong>確認できる管理項目数：</strong>${ownItems.length}</p>
+        <p><strong>ログイン中の権限：</strong>${ROLE_LABELS[currentUser.role]}</p>
+        <p><strong>アカウントID：</strong>${escapeHtml(currentUser.accountId)}</p>
+        <p><strong>連携中ユーザー数：</strong>${linkedCount}</p>
+        <p><strong>確認できる管理項目数：</strong>${ownItemCount}</p>
         <p style="margin-bottom:0;">左のメニューから管理項目や連携設定を確認できます。</p>
       `;
     }
 
-    function deleteItemById(itemId) {
-      const managementItems = getManagementItems().filter((item) => item.id !== itemId);
-      writeJson("managementItems", managementItems);
-      renderItems();
-      renderDashboard();
+    async function getUserByUid(uid) {
+      if (usersCache.has(uid)) return usersCache.get(uid);
+      const snap = await getDoc(doc(db, "users", uid));
+      if (!snap.exists()) return null;
+      const data = snap.data();
+      usersCache.set(uid, data);
+      return data;
     }
 
-    function renderItems() {
-      const container = document.getElementById("itemsContainer");
-      const managementItems = getManagementItems();
-      const items = currentUser.role === "parent"
-        ? managementItems.filter((item) => item.parentId === currentUser.id)
-        : managementItems.filter((item) => item.childId === currentUser.id);
+    async function loadPartners() {
+      if (!currentUser) return;
 
-      if (items.length === 0) {
-        container.innerHTML = `<div class="empty">まだ管理項目はありません。</div>`;
+      let linkQuery;
+      if (currentUser.role === "parent") {
+        linkQuery = query(collection(db, "links"), where("parentUid", "==", currentUser.uid));
+      } else {
+        linkQuery = query(collection(db, "links"), where("childUid", "==", currentUser.uid));
+      }
+
+      onSnapshot(linkQuery, async (snapshot) => {
+        const partnerUids = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return currentUser.role === "parent" ? data.childUid : data.parentUid;
+        });
+
+        const partners = [];
+        for (const uid of partnerUids) {
+          const partner = await getUserByUid(uid);
+          if (partner) partners.push(partner);
+        }
+
+        currentPartners = partners;
+        renderLinks();
+        renderChatPartnerOptions();
+        renderDashboard();
+      });
+    }
+
+    function renderLinks() {
+      if (currentPartners.length === 0) {
+        linksContainer.innerHTML = `<div class="empty">まだ連携はありません。</div>`;
         return;
       }
 
-      container.innerHTML = "";
+      linksContainer.innerHTML = currentPartners.map((partner) => `
+        <div class="item-card">
+          <h4>${escapeHtml(partner.accountId)}</h4>
+          <div class="item-meta">権限：${ROLE_LABELS[partner.role]}</div>
+        </div>
+      `).join("");
+    }
 
-      items.forEach((item) => {
-        const card = document.createElement("div");
-        card.className = "item-card";
+    function renderItems() {
+      if (currentItems.length === 0) {
+        itemsContainer.innerHTML = `<div class="empty">まだ管理項目はありません。</div>`;
+        return;
+      }
 
-        const child = getAccountById(item.childId);
-        const parent = getAccountById(item.parentId);
+      itemsContainer.innerHTML = currentItems.map((item) => {
+        const parentId = usersCache.get(item.parentUid)?.accountId || "-";
+        const childId = usersCache.get(item.childUid)?.accountId || "-";
+
+        let className = "item-card";
         let detailHtml = "";
         let actionHtml = "";
 
         if (item.type === "warning") {
-          const levelLabel = item.warningLevel === "red" ? "赤" : "黄";
-          card.classList.add(item.warningLevel === "red" ? "warning-red" : "warning-yellow");
+          className += item.warningLevel === "red" ? " warning-red" : " warning-yellow";
           detailHtml = `
             <div class="item-value">
-              <strong>警告レベル：</strong>${levelLabel}<br>
+              <strong>警告レベル：</strong>${item.warningLevel === "red" ? "赤" : "黄"}<br>
               <strong>警告文：</strong><br>
-              ${nl2br(item.message)}
+              ${nl2br(escapeHtml(item.message))}
             </div>
           `;
-
           if (currentUser.role === "parent") {
             actionHtml = `
               <div class="button-row row-gap">
-                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
+                <button class="button ghost small" data-delete-id="${item.id}">削除</button>
               </div>
             `;
           }
@@ -620,17 +563,16 @@
           detailHtml = `
             <div class="item-value">
               <strong>説明：</strong><br>
-              ${nl2br(item.message)}<br><br>
-              <strong>現在の状態：</strong>${item.childResponse || item.defaultValue || "OFF"}
+              ${nl2br(escapeHtml(item.message))}<br><br>
+              <strong>現在の状態：</strong>${escapeHtml(item.childResponse || item.defaultValue || "OFF")}
             </div>
           `;
-
           if (currentUser.role === "parent") {
             actionHtml = `
               <div class="button-row row-gap">
-                <button class="button small" data-action="toggleReply" data-value="ON" data-id="${item.id}">ONにする</button>
-                <button class="button sub small" data-action="toggleReply" data-value="OFF" data-id="${item.id}">OFFにする</button>
-                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
+                <button class="button small" data-toggle-id="${item.id}" data-value="ON">ONにする</button>
+                <button class="button sub small" data-toggle-id="${item.id}" data-value="OFF">OFFにする</button>
+                <button class="button ghost small" data-delete-id="${item.id}">削除</button>
               </div>
             `;
           }
@@ -640,367 +582,216 @@
           detailHtml = `
             <div class="item-value">
               <strong>記述依頼：</strong><br>
-              ${nl2br(item.requestText)}
+              ${nl2br(escapeHtml(item.requestText))}
             </div>
             <div class="item-value">
               <strong>子供からの記述：</strong><br>
-              ${item.childResponse ? nl2br(item.childResponse) : "まだ入力されていません。"}
+              ${item.childResponse ? nl2br(escapeHtml(item.childResponse)) : "まだ入力されていません。"}
             </div>
           `;
 
           if (currentUser.role === "child") {
             actionHtml = `
               <textarea id="reply-${item.id}" placeholder="依頼内容に対する記述を入力"></textarea>
-              <button class="button small row-gap" data-action="textReply" data-id="${item.id}">入力内容を送る</button>
+              <button class="button small row-gap" data-reply-id="${item.id}">入力内容を送る</button>
             `;
           }
 
           if (currentUser.role === "parent") {
             actionHtml += `
               <div class="button-row row-gap">
-                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
+                <button class="button ghost small" data-delete-id="${item.id}">削除</button>
               </div>
             `;
           }
         }
 
-        card.innerHTML = `
-          <h4>${item.name}</h4>
-          <div class="item-meta">
-            種類：${itemTypeLabels[item.type]}<br>
-            保護者：${parent ? parent.id : "-"}<br>
-            子供：${child ? child.id : "未連携"}
-          </div>
-          ${detailHtml}
-          ${actionHtml}
-        `;
-
-        container.appendChild(card);
-      });
-
-      container.querySelectorAll("[data-action='toggleReply']").forEach((button) => {
-        button.addEventListener("click", () => {
-          updateItemResponse(button.dataset.id, button.dataset.value);
-        });
-      });
-
-      container.querySelectorAll("[data-action='textReply']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const textarea = document.getElementById(`reply-${button.dataset.id}`);
-          updateItemResponse(button.dataset.id, textarea.value.trim() || "（空の記述）");
-        });
-      });
-
-      container.querySelectorAll("[data-action='deleteItem']").forEach((button) => {
-        button.addEventListener("click", () => {
-          if (!confirm("この管理項目を削除しますか？")) return;
-          deleteItemById(button.dataset.id);
-        });
-      });
-    }
-
-    function updateItemResponse(itemId, value) {
-      const managementItems = getManagementItems();
-      const target = managementItems.find((item) => item.id === itemId);
-      if (!target) return;
-
-      target.childResponse = value;
-      writeJson("managementItems", managementItems);
-      renderItems();
-      renderDashboard();
-    }
-
-    function renderLinks() {
-      const container = document.getElementById("linksContainer");
-      const linkedIds = getLinkedPartnerIds(currentUser.id);
-
-      if (linkedIds.length === 0) {
-        container.innerHTML = `<div class="empty">まだ連携はありません。</div>`;
-        return;
-      }
-
-      container.innerHTML = linkedIds.map((id) => {
-        const account = getAccountById(id);
-        if (!account) return "";
         return `
-          <div class="item-card">
-            <h4>${account.id}</h4>
-            <div class="item-meta">権限：${roleLabels[account.role]}</div>
+          <div class="${className}">
+            <h4>${escapeHtml(item.name)}</h4>
+            <div class="item-meta">
+              種類：${ITEM_TYPE_LABELS[item.type]}<br>
+              保護者：${escapeHtml(parentId)}<br>
+              子供：${escapeHtml(childId)}
+            </div>
+            ${detailHtml}
+            ${actionHtml}
           </div>
         `;
       }).join("");
+
+      itemsContainer.querySelectorAll("[data-toggle-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await updateDoc(doc(db, "managementItems", button.dataset.toggleId), {
+            childResponse: button.dataset.value,
+            updatedAt: serverTimestamp()
+          });
+        });
+      });
+
+      itemsContainer.querySelectorAll("[data-reply-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const itemId = button.dataset.replyId;
+          const textarea = document.getElementById(`reply-${itemId}`);
+          await updateDoc(doc(db, "managementItems", itemId), {
+            childResponse: textarea.value.trim() || "（空の記述）",
+            updatedAt: serverTimestamp()
+          });
+        });
+      });
+
+      itemsContainer.querySelectorAll("[data-delete-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("この管理項目を削除しますか？")) return;
+          await deleteDoc(doc(db, "managementItems", button.dataset.deleteId));
+        });
+      });
+    }
+
+    async function subscribeItems() {
+      let q;
+      if (currentUser.role === "parent") {
+        q = query(collection(db, "managementItems"), where("parentUid", "==", currentUser.uid));
+      } else {
+        q = query(collection(db, "managementItems"), where("childUid", "==", currentUser.uid));
+      }
+
+      onSnapshot(q, async (snapshot) => {
+        const items = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data()
+        }));
+
+        for (const item of items) {
+          if (!usersCache.has(item.parentUid)) {
+            const user = await getUserByUid(item.parentUid);
+            if (user) usersCache.set(item.parentUid, user);
+          }
+          if (!usersCache.has(item.childUid)) {
+            const user = await getUserByUid(item.childUid);
+            if (user) usersCache.set(item.childUid, user);
+          }
+        }
+
+        currentItems = items;
+        renderItems();
+        renderDashboard();
+      });
     }
 
     function renderChatPartnerOptions() {
-      const select = document.getElementById("chatPartnerSelect");
-      const partnerIds = getLinkedPartnerIds(currentUser.id);
-      const currentValue = select.value;
+      const currentValue = chatPartnerSelect.value;
+      chatPartnerSelect.innerHTML = "";
 
-      select.innerHTML = "";
-
-      if (partnerIds.length === 0) {
+      if (currentPartners.length === 0) {
         const option = document.createElement("option");
         option.value = "";
         option.textContent = "連携ユーザーがいません";
-        select.appendChild(option);
+        chatPartnerSelect.appendChild(option);
+        stopChatSubscription();
+        renderChatMessages();
         return;
       }
 
-      partnerIds.forEach((id) => {
-        const account = getAccountById(id);
-        if (!account) return;
-
+      currentPartners.forEach((partner) => {
         const option = document.createElement("option");
-        option.value = id;
-        option.textContent = `${account.id}（${roleLabels[account.role]}）`;
-        select.appendChild(option);
+        option.value = partner.uid;
+        option.textContent = `${partner.accountId}（${ROLE_LABELS[partner.role]}）`;
+        chatPartnerSelect.appendChild(option);
       });
 
-      if (partnerIds.includes(currentValue)) {
-        select.value = currentValue;
+      if (currentPartners.some((partner) => partner.uid === currentValue)) {
+        chatPartnerSelect.value = currentValue;
       }
+
+      startChatSubscription();
+    }
+
+    function stopChatSubscription() {
+      if (typeof chatUnsubscribe === "function") {
+        chatUnsubscribe();
+      }
+      chatUnsubscribe = null;
+      currentChatMessages = [];
+    }
+
+    function startChatSubscription() {
+      stopChatSubscription();
+      const partnerUid = chatPartnerSelect.value;
+      if (!partnerUid) {
+        renderChatMessages();
+        return;
+      }
+
+      const key = chatKey(currentUser.uid, partnerUid);
+      const q = query(collection(db, "chats"), where("participantsKey", "==", key));
+
+      chatUnsubscribe = onSnapshot(q, (snapshot) => {
+        currentChatMessages = snapshot.docs
+          .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+          .sort((a, b) => {
+            const aTime = a.createdAt?.seconds || 0;
+            const bTime = b.createdAt?.seconds || 0;
+            return aTime - bTime;
+          });
+
+        renderChatMessages();
+      });
     }
 
     function renderChatMessages() {
-      const partnerId = document.getElementById("chatPartnerSelect").value;
-      const chatMessages = document.getElementById("chatMessages");
-
-      if (!partnerId) {
+      const partnerUid = chatPartnerSelect.value;
+      if (!partnerUid) {
         chatMessages.innerHTML = `<div class="empty">会話相手がいません。</div>`;
         return;
       }
 
-      const thread = getChats().filter((chat) =>
-        (chat.fromId === currentUser.id && chat.toId === partnerId) ||
-        (chat.fromId === partnerId && chat.toId === currentUser.id)
-      );
-
-      if (thread.length === 0) {
+      if (currentChatMessages.length === 0) {
         chatMessages.innerHTML = `<div class="empty">まだ会話はありません。</div>`;
         return;
       }
 
-      chatMessages.innerHTML = "";
-
-      thread.forEach((chat) => {
-        const bubble = document.createElement("div");
-        bubble.className = `chat-bubble ${chat.fromId === currentUser.id ? "me" : "other"}`;
-
-        const menu = chat.fromId === currentUser.id
-          ? `
-            <div class="button-row" style="margin-top:8px;">
-              <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
-              <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
-            </div>
-          `
-          : "";
-
-        bubble.innerHTML = `
-          <div class="chat-name">${chat.fromId}</div>
-          ${nl2br(chat.text)}
-          ${menu}
+      chatMessages.innerHTML = currentChatMessages.map((chat) => {
+        const mine = chat.fromUid === currentUser.uid;
+        return `
+          <div class="chat-bubble ${mine ? "me" : "other"}">
+            <div class="chat-name">${escapeHtml(usersCache.get(chat.fromUid)?.accountId || "unknown")}</div>
+            ${nl2br(escapeHtml(chat.text))}
+            ${
+              mine
+                ? `
+                <div class="button-row" style="margin-top:8px;">
+                  <button class="button sub small" data-chat-edit="${chat.id}">編集</button>
+                  <button class="button sub small" data-chat-delete="${chat.id}">削除</button>
+                </div>
+              `
+                : ""
+            }
+          </div>
         `;
+      }).join("");
 
-        chatMessages.appendChild(bubble);
-      });
-
-      chatMessages.querySelectorAll("[data-chat-action='edit']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const chats = getChats();
-          const target = chats.find((chat) => chat.id === button.dataset.id);
+      chatMessages.querySelectorAll("[data-chat-edit]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const target = currentChatMessages.find((msg) => msg.id === button.dataset.chatEdit);
           if (!target) return;
-
           const nextText = prompt("メッセージを編集", target.text);
           if (nextText === null) return;
-
-          target.text = nextText.trim() || "（空メッセージ）";
-          writeJson("chats", chats);
-          renderChatMessages();
+          await updateDoc(doc(db, "chats", target.id), {
+            text: nextText.trim() || "（空メッセージ）",
+            updatedAt: serverTimestamp()
+          });
         });
       });
 
-      chatMessages.querySelectorAll("[data-chat-action='delete']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const chats = getChats().filter((chat) => chat.id !== button.dataset.id);
-          writeJson("chats", chats);
-          renderChatMessages();
+      chatMessages.querySelectorAll("[data-chat-delete]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await deleteDoc(doc(db, "chats", button.dataset.chatDelete));
         });
       });
 
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-
-    function renderMain() {
-      document.getElementById("sidebarRole").textContent = roleLabels[currentUser.role];
-      document.getElementById("sidebarId").textContent = currentUser.id;
-      document.getElementById("welcomeRole").textContent = roleLabels[currentUser.role];
-      document.getElementById("welcomeTitle").textContent = `${roleLabels[currentUser.role]}アカウントでログイン中：main.html`;
-      renderAvatar(document.getElementById("sidebarAvatar"), currentUser);
-
-      document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
-        button.classList.toggle("active", button.dataset.panel === currentPanel);
-      });
-
-      document.getElementById("panel-dashboard").classList.toggle("hidden", currentPanel !== "dashboard");
-      document.getElementById("panel-items").classList.toggle("hidden", currentPanel !== "items");
-      document.getElementById("panel-links").classList.toggle("hidden", currentPanel !== "links");
-      document.getElementById("panel-chatGuide").classList.toggle("hidden", currentPanel !== "chatGuide");
-
-      document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
-      document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
-
-      renderDashboard();
-      renderItems();
-      renderLinks();
-      renderChatPartnerOptions();
-      renderChatMessages();
-    }
-
-    function initializeUser() {
-      const currentUserId = sessionStorage.getItem("currentUserId");
-      if (!currentUserId) {
-        window.location.href = "index.html";
-        return false;
-      }
-
-      const account = getAccountById(currentUserId);
-      if (!account) {
-        sessionStorage.removeItem("currentUserId");
-        window.location.href = "index.html";
-        return false;
-      }
-
-      currentUser = account;
-      return true;
-    }
-
-    document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
-      button.addEventListener("click", () => {
-        currentPanel = button.dataset.panel;
-        renderMain();
-      });
-    });
-
-    document.getElementById("logoutButton").addEventListener("click", () => {
-      sessionStorage.removeItem("currentUserId");
-      window.location.href = "index.html";
-    });
-
-    document.getElementById("openAddItemButton").addEventListener("click", () => {
-      if (currentUser.role !== "parent") return;
-      document.getElementById("addItemSection").classList.remove("hidden");
-    });
-
-    document.getElementById("closeAddItemButton").addEventListener("click", () => {
-      document.getElementById("addItemSection").classList.add("hidden");
-    });
-
-    document.getElementById("addItemButton").addEventListener("click", () => {
-      if (currentUser.role !== "parent") return;
-
-      const name = document.getElementById("itemName").value.trim();
-      const type = document.getElementById("itemType").value;
-      const links = getLinks();
-      const linkedChildren = links
-        .filter((link) => link.parentId === currentUser.id)
-        .map((link) => link.childId);
-
-      if (!name) return alert("管理項目名を入力してください。");
-      if (linkedChildren.length === 0) return alert("先に子供アカウントと連携してください。");
-
-      const warningMessage = document.getElementById("warningMessage").value.trim();
-      const warningLevel = document.getElementById("warningLevel").value;
-      const toggleMessage = document.getElementById("toggleMessage").value.trim();
-      const toggleDefault = document.getElementById("toggleDefault").value;
-      const textRequest = document.getElementById("textRequest").value.trim();
-
-      if (type === "warning" && !warningMessage) return alert("警告文を入力してください。");
-      if (type === "toggle" && !toggleMessage) return alert("オンオフ項目の説明を入力してください。");
-      if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
-
-      const managementItems = getManagementItems();
-
-      linkedChildren.forEach((childId) => {
-        managementItems.push({
-          id: generateId("item"),
-          parentId: currentUser.id,
-          childId,
-          name,
-          type,
-          message: type === "warning" ? warningMessage : type === "toggle" ? toggleMessage : "",
-          warningLevel: type === "warning" ? warningLevel : "",
-          defaultValue: type === "toggle" ? toggleDefault : "",
-          requestText: type === "text" ? textRequest : "",
-          childResponse: type === "toggle" ? toggleDefault : ""
-        });
-      });
-
-      writeJson("managementItems", managementItems);
-
-      document.getElementById("itemName").value = "";
-      document.getElementById("itemType").value = "warning";
-      document.getElementById("warningMessage").value = "";
-      document.getElementById("warningLevel").value = "red";
-      document.getElementById("toggleMessage").value = "";
-      document.getElementById("toggleDefault").value = "OFF";
-      document.getElementById("textRequest").value = "";
-
-      updateItemTypeFields();
-      document.getElementById("addItemSection").classList.add("hidden");
-      renderMain();
-    });
-
-    document.getElementById("linkChildButton").addEventListener("click", () => {
-      if (currentUser.role !== "parent") return;
-
-      const childId = document.getElementById("linkChildId").value.trim();
-      if (!childId) return alert("子供のアカウントIDを入力してください。");
-
-      const child = getAccountById(childId);
-      if (!child || child.role !== "child") return alert("子供用アカウントが見つかりません。");
-
-      const links = getLinks();
-      const exists = links.some((link) => link.parentId === currentUser.id && link.childId === childId);
-      if (exists) return alert("すでに連携済みです。");
-
-      links.push({ parentId: currentUser.id, childId });
-      writeJson("links", links);
-
-      document.getElementById("linkChildId").value = "";
-      renderMain();
-    });
-
-    document.getElementById("chatFab").addEventListener("click", () => {
-      document.getElementById("chatModal").classList.remove("hidden");
-      renderChatPartnerOptions();
-      renderChatMessages();
-    });
-
-    document.getElementById("closeChatButton").addEventListener("click", () => {
-      document.getElementById("chatModal").classList.add("hidden");
-    });
-
-    document.getElementById("chatPartnerSelect").addEventListener("change", renderChatMessages);
-
-    document.getElementById("sendChatButton").addEventListener("click", () => {
-      const partnerId = document.getElementById("chatPartnerSelect").value;
-      const text = document.getElementById("chatInput").value.trim();
-
-      if (!partnerId) return alert("会話相手がいません。");
-      if (!text) return alert("メッセージを入力してください。");
-
-      const chats = getChats();
-      chats.push({
-        fromId: currentUser.id,
-        toId: partnerId,
-        text,
-        id: generateId("chat")
-      });
-
-      writeJson("chats", chats);
-      document.getElementById("chatInput").value = "";
-      renderChatMessages();
-    });
 
     function updateItemTypeFields() {
       const type = document.getElementById("itemType").value;
@@ -1009,29 +800,167 @@
       document.getElementById("textFields").classList.toggle("hidden", type !== "text");
     }
 
-    document.getElementById("itemType").addEventListener("change", updateItemTypeFields);
+    async function addManagementItems() {
+      const name = document.getElementById("itemName").value.trim();
+      const type = document.getElementById("itemType").value;
+      const warningMessage = document.getElementById("warningMessage").value.trim();
+      const warningLevel = document.getElementById("warningLevel").value;
+      const toggleMessage = document.getElementById("toggleMessage").value.trim();
+      const toggleDefault = document.getElementById("toggleDefault").value;
+      const textRequest = document.getElementById("textRequest").value.trim();
 
-    window.addEventListener("storage", (event) => {
-      if (["accounts", "managementItems", "links", "chats"].includes(event.key)) {
-        if (currentUser) {
-          const refreshed = getAccountById(currentUser.id);
+      if (!name) return alert("管理項目名を入力してください。");
+      if (currentPartners.length === 0) return alert("先に子供アカウントと連携してください。");
+      if (type === "warning" && !warningMessage) return alert("警告文を入力してください。");
+      if (type === "toggle" && !toggleMessage) return alert("オンオフ項目の説明を入力してください。");
+      if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
 
-          if (!refreshed) {
-            sessionStorage.removeItem("currentUserId");
-            window.location.href = "index.html";
-            return;
-          }
-
-          currentUser = refreshed;
-          renderMain();
-        }
+      for (const partner of currentPartners) {
+        await addDoc(collection(db, "managementItems"), {
+          parentUid: currentUser.uid,
+          childUid: partner.uid,
+          name,
+          type,
+          message: type === "warning" ? warningMessage : type === "toggle" ? toggleMessage : "",
+          warningLevel: type === "warning" ? warningLevel : "",
+          defaultValue: type === "toggle" ? toggleDefault : "",
+          requestText: type === "text" ? textRequest : "",
+          childResponse: type === "toggle" ? toggleDefault : "",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
       }
+
+      document.getElementById("itemName").value = "";
+      document.getElementById("itemType").value = "warning";
+      document.getElementById("warningMessage").value = "";
+      document.getElementById("warningLevel").value = "red";
+      document.getElementById("toggleMessage").value = "";
+      document.getElementById("toggleDefault").value = "OFF";
+      document.getElementById("textRequest").value = "";
+      updateItemTypeFields();
+      document.getElementById("addItemSection").classList.add("hidden");
+    }
+
+    async function linkChild() {
+      const childAccountId = normalizeAccountId(document.getElementById("linkChildId").value);
+      if (!childAccountId) return alert("子供のアカウントIDを入力してください。");
+
+      const q = query(collection(db, "users"), where("accountId", "==", childAccountId));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) return alert("子供用アカウントが見つかりません。");
+
+      const child = snapshot.docs[0].data();
+      if (child.role !== "child") return alert("子供用アカウントが見つかりません。");
+
+      const existsQuery = query(
+        collection(db, "links"),
+        where("parentUid", "==", currentUser.uid),
+        where("childUid", "==", child.uid)
+      );
+      const existsSnapshot = await getDocs(existsQuery);
+      if (!existsSnapshot.empty) return alert("すでに連携済みです。");
+
+      await addDoc(collection(db, "links"), {
+        parentUid: currentUser.uid,
+        childUid: child.uid,
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById("linkChildId").value = "";
+    }
+
+    async function loadCurrentUser(uid) {
+      const snap = await getDoc(doc(db, "users", uid));
+      if (!snap.exists()) {
+        alert("ユーザー情報が見つかりません。");
+        await signOut(auth);
+        location.href = "./index.html";
+        return;
+      }
+
+      currentUser = snap.data();
+      usersCache.set(currentUser.uid, currentUser);
+
+      if (currentUser.role === "admin") {
+        location.href = "./panel.html";
+        return;
+      }
+
+      sidebarRole.textContent = ROLE_LABELS[currentUser.role];
+      sidebarId.textContent = currentUser.accountId;
+      welcomeRole.textContent = ROLE_LABELS[currentUser.role];
+      welcomeTitle.textContent = `${ROLE_LABELS[currentUser.role]}アカウントでログイン中`;
+      renderAvatar(sidebarAvatar, currentUser);
+
+      document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
+      document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
+
+      renderDashboard();
+      loadPartners();
+      subscribeItems();
+    }
+
+    document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
+      button.addEventListener("click", () => setActivePanel(button.dataset.panel));
     });
 
-    if (initializeUser()) {
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+      await signOut(auth);
+      location.href = "./index.html";
+    });
+
+    document.getElementById("openAddItemButton").addEventListener("click", () => {
+      document.getElementById("addItemSection").classList.remove("hidden");
+    });
+
+    document.getElementById("closeAddItemButton").addEventListener("click", () => {
+      document.getElementById("addItemSection").classList.add("hidden");
+    });
+
+    document.getElementById("addItemButton").addEventListener("click", addManagementItems);
+    document.getElementById("linkChildButton").addEventListener("click", linkChild);
+    document.getElementById("itemType").addEventListener("change", updateItemTypeFields);
+
+    document.getElementById("chatFab").addEventListener("click", () => {
+      document.getElementById("chatModal").classList.remove("hidden");
+      startChatSubscription();
+    });
+
+    document.getElementById("closeChatButton").addEventListener("click", () => {
+      document.getElementById("chatModal").classList.add("hidden");
+    });
+
+    chatPartnerSelect.addEventListener("change", startChatSubscription);
+
+    document.getElementById("sendChatButton").addEventListener("click", async () => {
+      const partnerUid = chatPartnerSelect.value;
+      const text = document.getElementById("chatInput").value.trim();
+
+      if (!partnerUid) return alert("会話相手がいません。");
+      if (!text) return alert("メッセージを入力してください。");
+
+      await addDoc(collection(db, "chats"), {
+        participantsKey: chatKey(currentUser.uid, partnerUid),
+        fromUid: currentUser.uid,
+        toUid: partnerUid,
+        text,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      document.getElementById("chatInput").value = "";
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "./index.html";
+        return;
+      }
+      await loadCurrentUser(user.uid);
       updateItemTypeFields();
-      renderMain();
-    }
+      setActivePanel("dashboard");
+    });
   </script>
 </body>
 </html>
