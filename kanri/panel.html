@@ -3,38 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>panel.html</title>
+  <title>まもきっず - panel</title>
   <style>
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
-
     .hidden { display: none !important; }
-
-    .page {
-      min-height: 100vh;
-      padding: 24px;
-    }
-
+    .page { min-height: 100vh; padding: 24px; }
     .app-shell {
       display: grid;
       grid-template-columns: 280px 1fr;
       min-height: calc(100vh - 48px);
       gap: 20px;
     }
-
     .sidebar, .main-panel {
       background: #fff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
       padding: 24px;
     }
-
     .profile-box {
       display: flex;
       gap: 14px;
@@ -44,27 +35,6 @@
       border-radius: 18px;
       margin-bottom: 18px;
     }
-
-    .avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #334155;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
     .badge {
       display: inline-block;
       padding: 6px 12px;
@@ -74,13 +44,6 @@
       font-weight: 700;
       margin-bottom: 10px;
     }
-
-    .nav-title {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 8px;
-    }
-
     .menu-button {
       width: 100%;
       text-align: left;
@@ -92,11 +55,12 @@
       font-weight: 700;
       margin-bottom: 8px;
     }
-
-    .menu-button.active {
-      background: #e2e8f0;
+    .menu-button.active { background: #e2e8f0; }
+    .nav-title {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 8px;
     }
-
     .panel-title {
       display: flex;
       justify-content: space-between;
@@ -104,20 +68,22 @@
       gap: 12px;
       margin-bottom: 18px;
     }
-
     .section {
       background: #f1f5f9;
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 16px;
     }
-
-    .section-title {
-      margin: 0 0 16px;
-      font-size: 18px;
-      font-weight: 700;
+    .alert {
+      padding: 14px 16px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.6;
+      margin-bottom: 16px;
     }
-
     .button {
       min-height: 48px;
       border: none;
@@ -129,31 +95,22 @@
       cursor: pointer;
       padding: 12px 18px;
     }
-
     .button.sub {
       background: #fff;
       color: #0f172a;
       border: 1px solid #cbd5e1;
     }
-
-    .button.ghost {
-      background: #e2e8f0;
-      color: #0f172a;
-    }
-
     .button.small {
       min-height: 40px;
       padding: 8px 12px;
       font-size: 13px;
       border-radius: 12px;
     }
-
     .button-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-
     .item-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -161,19 +118,16 @@
       padding: 16px;
       margin-bottom: 12px;
     }
-
     .item-card h4 {
       margin: 0 0 8px;
       font-size: 16px;
     }
-
     .item-meta {
       color: #64748b;
       font-size: 13px;
       line-height: 1.7;
       margin-bottom: 12px;
     }
-
     .empty {
       padding: 18px;
       background: #f8fafc;
@@ -182,40 +136,20 @@
       color: #64748b;
       line-height: 1.7;
     }
-
-    .alert {
-      padding: 14px 16px;
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      font-size: 14px;
-      color: #334155;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-
     .warning-red {
       border-left: 6px solid #dc2626;
       background: #fef2f2;
     }
-
     .warning-yellow {
       border-left: 6px solid #ca8a04;
       background: #fefce8;
     }
-
     @media (max-width: 900px) {
-      .app-shell {
-        grid-template-columns: 1fr;
-      }
+      .app-shell { grid-template-columns: 1fr; }
     }
-
     @media (max-width: 640px) {
       .page { padding: 14px; }
-      .sidebar, .main-panel {
-        padding: 20px;
-        border-radius: 20px;
-      }
+      .sidebar, .main-panel { padding: 20px; border-radius: 20px; }
     }
   </style>
 </head>
@@ -224,7 +158,6 @@
     <div class="app-shell">
       <aside class="sidebar">
         <div class="profile-box">
-          <div class="avatar" id="adminAvatar">A</div>
           <div>
             <div class="badge">管理者</div>
             <div style="font-weight:700; font-size:18px;">panel.html</div>
@@ -236,7 +169,8 @@
         <button class="menu-button" data-panel="accounts">アカウント管理</button>
         <button class="menu-button" data-panel="items">管理項目の管理</button>
         <button class="menu-button" data-panel="chats">全ユーザーの会話管理</button>
-        <button class="menu-button" id="goIndexButton">index.htmlへ</button>
+        <button class="menu-button" id="goMainButton">main.htmlへ</button>
+        <button class="menu-button" id="logoutButton">ログアウトする</button>
       </aside>
 
       <main class="main-panel">
@@ -286,70 +220,64 @@
     </div>
   </div>
 
-  <script>
-    const roleLabels = {
-      child: "子供用",
-      parent: "保護者用"
-    };
+  <script type="module">
+    import {
+      auth,
+      db,
+      serverTimestamp,
+      ROLE_LABELS,
+      ITEM_TYPE_LABELS,
+      nl2br,
+      escapeHtml
+    } from "./firebase-config.js";
 
-    const itemTypeLabels = {
-      warning: "警告用ボタン管理",
-      toggle: "オンオフ管理（保護者操作）",
-      text: "子供記述式管理"
-    };
+    import {
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+    import {
+      doc,
+      getDoc,
+      updateDoc,
+      deleteDoc,
+      collection,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
     let currentPanel = "overview";
+    let currentUser = null;
+    let users = [];
+    let links = [];
+    let items = [];
+    let chats = [];
 
-    function nl2br(value) {
-      return String(value || "").replace(/\n/g, "<br>");
+    function setActivePanel(panelName) {
+      currentPanel = panelName;
+      document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.panel === panelName);
+      });
+      document.getElementById("panel-overview").classList.toggle("hidden", panelName !== "overview");
+      document.getElementById("panel-accounts").classList.toggle("hidden", panelName !== "accounts");
+      document.getElementById("panel-items").classList.toggle("hidden", panelName !== "items");
+      document.getElementById("panel-chats").classList.toggle("hidden", panelName !== "chats");
     }
 
-    function readJson(key, fallback) {
-      try {
-        return JSON.parse(localStorage.getItem(key)) ?? fallback;
-      } catch {
-        return fallback;
-      }
-    }
-
-    function writeJson(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    function getAccounts() {
-      return readJson("accounts", []);
-    }
-
-    function getLinks() {
-      return readJson("links", []);
-    }
-
-    function getManagementItems() {
-      return readJson("managementItems", []);
-    }
-
-    function getChats() {
-      return readJson("chats", []);
-    }
-
-    function getAccountById(id) {
-      return getAccounts().find((account) => account.id === id);
+    function getUserByUid(uid) {
+      return users.find((user) => user.uid === uid);
     }
 
     function renderOverview() {
-      const accounts = getAccounts();
-      const links = getLinks();
-      const items = getManagementItems();
-      const chats = getChats();
-
-      const parents = accounts.filter((a) => a.role === "parent").length;
-      const children = accounts.filter((a) => a.role === "child").length;
+      const parents = users.filter((a) => a.role === "parent").length;
+      const children = users.filter((a) => a.role === "child").length;
+      const admins = users.filter((a) => a.role === "admin").length;
 
       document.getElementById("overviewSummary").innerHTML = `
         <div class="badge">集計</div>
-        <p><strong>全アカウント数：</strong>${accounts.length}</p>
+        <p><strong>全アカウント数：</strong>${users.length}</p>
         <p><strong>保護者アカウント数：</strong>${parents}</p>
         <p><strong>子供アカウント数：</strong>${children}</p>
+        <p><strong>管理者アカウント数：</strong>${admins}</p>
         <p><strong>連携数：</strong>${links.length}</p>
         <p><strong>管理項目数：</strong>${items.length}</p>
         <p style="margin-bottom:0;"><strong>会話メッセージ数：</strong>${chats.length}</p>
@@ -357,68 +285,56 @@
     }
 
     function renderAccounts() {
-      const accounts = getAccounts();
       const container = document.getElementById("accountsContainer");
 
-      if (accounts.length === 0) {
+      if (users.length === 0) {
         container.innerHTML = `<div class="empty">アカウントはまだありません。</div>`;
         return;
       }
 
-      container.innerHTML = "";
-
-      accounts.forEach((account) => {
-        const linkedCount = getLinks().filter((link) =>
-          link.parentId === account.id || link.childId === account.id
-        ).length;
-
-        const card = document.createElement("div");
-        card.className = "item-card";
-
-        card.innerHTML = `
-          <h4>${account.id}</h4>
-          <div class="item-meta">
-            権限：${roleLabels[account.role] || account.role}<br>
-            連携数：${linkedCount}
-          </div>
-          <div class="button-row">
-            <button class="button sub small" data-account-action="toggleRole" data-id="${account.id}">権限変更</button>
-            <button class="button sub small" data-account-action="delete" data-id="${account.id}">削除</button>
+      container.innerHTML = users.map((user) => {
+        const linkedCount = links.filter((link) => link.parentUid === user.uid || link.childUid === user.uid).length;
+        return `
+          <div class="item-card">
+            <h4>${escapeHtml(user.accountId)}</h4>
+            <div class="item-meta">
+              権限：${ROLE_LABELS[user.role] || user.role}<br>
+              連携数：${linkedCount}
+            </div>
+            <div class="button-row">
+              <button class="button sub small" data-role-toggle="${user.uid}">権限変更</button>
+              <button class="button sub small" data-account-delete="${user.uid}">削除</button>
+            </div>
           </div>
         `;
+      }).join("");
 
-        container.appendChild(card);
-      });
-
-      container.querySelectorAll("[data-account-action='toggleRole']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const accounts = getAccounts();
-          const target = accounts.find((a) => a.id === button.dataset.id);
+      container.querySelectorAll("[data-role-toggle]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const target = getUserByUid(button.dataset.roleToggle);
           if (!target) return;
 
-          target.role = target.role === "parent" ? "child" : "parent";
-          writeJson("accounts", accounts);
-          renderAll();
+          let nextRole = "parent";
+          if (target.role === "parent") nextRole = "child";
+          else if (target.role === "child") nextRole = "parent";
+          else if (target.role === "admin") nextRole = "parent";
+
+          await updateDoc(doc(db, "users", target.uid), {
+            role: nextRole,
+            updatedAt: serverTimestamp()
+          });
         });
       });
 
-      container.querySelectorAll("[data-account-action='delete']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const id = button.dataset.id;
-          if (!confirm(`${id} を削除しますか？`)) return;
-
-          writeJson("accounts", getAccounts().filter((a) => a.id !== id));
-          writeJson("links", getLinks().filter((l) => l.parentId !== id && l.childId !== id));
-          writeJson("managementItems", getManagementItems().filter((i) => i.parentId !== id && i.childId !== id));
-          writeJson("chats", getChats().filter((c) => c.fromId !== id && c.toId !== id));
-
-          renderAll();
+      container.querySelectorAll("[data-account-delete]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("このアカウントを削除しますか？")) return;
+          await deleteDoc(doc(db, "users", button.dataset.accountDelete));
         });
       });
     }
 
     function renderItems() {
-      const items = getManagementItems();
       const container = document.getElementById("itemsContainer");
 
       if (items.length === 0) {
@@ -426,104 +342,95 @@
         return;
       }
 
-      container.innerHTML = "";
+      container.innerHTML = items.map((item) => {
+        const parent = getUserByUid(item.parentUid);
+        const child = getUserByUid(item.childUid);
 
-      items.forEach((item) => {
-        const parent = getAccountById(item.parentId);
-        const child = getAccountById(item.childId);
-
-        const card = document.createElement("div");
-        card.className = "item-card";
-
+        let className = "item-card";
         let details = "";
 
         if (item.type === "warning") {
-          const levelLabel = item.warningLevel === "red" ? "赤" : "黄";
-          card.classList.add(item.warningLevel === "red" ? "warning-red" : "warning-yellow");
+          className += item.warningLevel === "red" ? " warning-red" : " warning-yellow";
           details = `
-            警告レベル：${levelLabel}<br>
-            警告文：${nl2br(item.message)}
+            警告レベル：${item.warningLevel === "red" ? "赤" : "黄"}<br>
+            警告文：${nl2br(escapeHtml(item.message))}
           `;
         } else if (item.type === "toggle") {
           details = `
-            説明：${nl2br(item.message)}<br>
-            状態：${item.childResponse || item.defaultValue || "OFF"}
+            説明：${nl2br(escapeHtml(item.message))}<br>
+            状態：${escapeHtml(item.childResponse || item.defaultValue || "OFF")}
           `;
         } else {
           details = `
-            記述依頼：${nl2br(item.requestText)}<br>
-            子供の記述：${item.childResponse ? nl2br(item.childResponse) : "未入力"}
+            記述依頼：${nl2br(escapeHtml(item.requestText))}<br>
+            子供の記述：${item.childResponse ? nl2br(escapeHtml(item.childResponse)) : "未入力"}
           `;
         }
 
-        card.innerHTML = `
-          <h4>${item.name}</h4>
-          <div class="item-meta">
-            種類：${itemTypeLabels[item.type] || item.type}<br>
-            保護者：${parent ? parent.id : item.parentId}<br>
-            子供：${child ? child.id : item.childId}
-          </div>
-          <div class="item-meta">${details}</div>
-          <div class="button-row">
-            <button class="button sub small" data-item-action="edit" data-id="${item.id}">編集</button>
-            <button class="button sub small" data-item-action="delete" data-id="${item.id}">削除</button>
+        return `
+          <div class="${className}">
+            <h4>${escapeHtml(item.name)}</h4>
+            <div class="item-meta">
+              種類：${ITEM_TYPE_LABELS[item.type]}<br>
+              保護者：${escapeHtml(parent?.accountId || "-")}<br>
+              子供：${escapeHtml(child?.accountId || "-")}
+            </div>
+            <div class="item-meta">${details}</div>
+            <div class="button-row">
+              <button class="button sub small" data-item-edit="${item.id}">編集</button>
+              <button class="button sub small" data-item-delete="${item.id}">削除</button>
+            </div>
           </div>
         `;
+      }).join("");
 
-        container.appendChild(card);
-      });
+      container.querySelectorAll("[data-item-edit]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = items.find((i) => i.id === button.dataset.itemEdit);
+          if (!item) return;
 
-      container.querySelectorAll("[data-item-action='edit']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const items = getManagementItems();
-          const target = items.find((i) => i.id === button.dataset.id);
-          if (!target) return;
-
-          const nextName = prompt("管理項目名を編集", target.name);
+          const nextName = prompt("管理項目名を編集", item.name);
           if (nextName !== null && nextName.trim()) {
-            target.name = nextName.trim();
+            item.name = nextName.trim();
           }
 
-          if (target.type === "warning") {
-            const nextMessage = prompt("警告文を編集", target.message || "");
-            if (nextMessage !== null) target.message = nextMessage;
-
-            const nextLevel = prompt("警告レベルを入力（red / yellow）", target.warningLevel || "red");
-            if (nextLevel === "red" || nextLevel === "yellow") {
-              target.warningLevel = nextLevel;
-            }
-          } else if (target.type === "toggle") {
-            const nextMessage = prompt("オンオフ項目の説明を編集", target.message || "");
-            if (nextMessage !== null) target.message = nextMessage;
-
-            const nextValue = prompt("状態を入力（ON / OFF）", target.childResponse || target.defaultValue || "OFF");
-            if (nextValue === "ON" || nextValue === "OFF") {
-              target.childResponse = nextValue;
-            }
-          } else if (target.type === "text") {
-            const nextRequest = prompt("記述依頼を編集", target.requestText || "");
-            if (nextRequest !== null) target.requestText = nextRequest;
-
-            const nextResponse = prompt("子供の記述を編集", target.childResponse || "");
-            if (nextResponse !== null) target.childResponse = nextResponse;
+          if (item.type === "warning") {
+            const nextMessage = prompt("警告文を編集", item.message || "");
+            if (nextMessage !== null) item.message = nextMessage;
+            const nextLevel = prompt("警告レベルを入力（red / yellow）", item.warningLevel || "red");
+            if (nextLevel === "red" || nextLevel === "yellow") item.warningLevel = nextLevel;
           }
 
-          writeJson("managementItems", items);
-          renderAll();
+          if (item.type === "toggle") {
+            const nextMessage = prompt("オンオフ項目の説明を編集", item.message || "");
+            if (nextMessage !== null) item.message = nextMessage;
+            const nextState = prompt("状態を入力（ON / OFF）", item.childResponse || item.defaultValue || "OFF");
+            if (nextState === "ON" || nextState === "OFF") item.childResponse = nextState;
+          }
+
+          if (item.type === "text") {
+            const nextRequest = prompt("記述依頼を編集", item.requestText || "");
+            if (nextRequest !== null) item.requestText = nextRequest;
+            const nextResponse = prompt("子供の記述を編集", item.childResponse || "");
+            if (nextResponse !== null) item.childResponse = nextResponse;
+          }
+
+          await updateDoc(doc(db, "managementItems", item.id), {
+            ...item,
+            updatedAt: serverTimestamp()
+          });
         });
       });
 
-      container.querySelectorAll("[data-item-action='delete']").forEach((button) => {
-        button.addEventListener("click", () => {
+      container.querySelectorAll("[data-item-delete]").forEach((button) => {
+        button.addEventListener("click", async () => {
           if (!confirm("この管理項目を削除しますか？")) return;
-          writeJson("managementItems", getManagementItems().filter((i) => i.id !== button.dataset.id));
-          renderAll();
+          await deleteDoc(doc(db, "managementItems", button.dataset.itemDelete));
         });
       });
     }
 
     function renderChats() {
-      const chats = getChats();
       const container = document.getElementById("chatsContainer");
 
       if (chats.length === 0) {
@@ -531,88 +438,117 @@
         return;
       }
 
-      container.innerHTML = "";
+      const sorted = [...chats].sort((a, b) => {
+        const aTime = a.createdAt?.seconds || 0;
+        const bTime = b.createdAt?.seconds || 0;
+        return bTime - aTime;
+      });
 
-      chats.forEach((chat) => {
-        const card = document.createElement("div");
-        card.className = "item-card";
+      container.innerHTML = sorted.map((chat) => {
+        const fromUser = getUserByUid(chat.fromUid);
+        const toUser = getUserByUid(chat.toUid);
 
-        card.innerHTML = `
-          <h4>${chat.fromId} → ${chat.toId}</h4>
-          <div class="item-meta">
-            内容：${nl2br(chat.text || "")}
-          </div>
-          <div class="button-row">
-            <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
-            <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
+        return `
+          <div class="item-card">
+            <h4>${escapeHtml(fromUser?.accountId || "unknown")} → ${escapeHtml(toUser?.accountId || "unknown")}</h4>
+            <div class="item-meta">
+              内容：${nl2br(escapeHtml(chat.text || ""))}
+            </div>
+            <div class="button-row">
+              <button class="button sub small" data-chat-edit="${chat.id}">編集</button>
+              <button class="button sub small" data-chat-delete="${chat.id}">削除</button>
+            </div>
           </div>
         `;
+      }).join("");
 
-        container.appendChild(card);
-      });
+      container.querySelectorAll("[data-chat-edit]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const chat = chats.find((c) => c.id === button.dataset.chatEdit);
+          if (!chat) return;
 
-      container.querySelectorAll("[data-chat-action='edit']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const chats = getChats();
-          const target = chats.find((c) => c.id === button.dataset.id);
-          if (!target) return;
-
-          const nextText = prompt("会話内容を編集", target.text || "");
+          const nextText = prompt("会話内容を編集", chat.text || "");
           if (nextText === null) return;
 
-          target.text = nextText.trim() || "（空メッセージ）";
-          writeJson("chats", chats);
-          renderAll();
+          await updateDoc(doc(db, "chats", chat.id), {
+            text: nextText.trim() || "（空メッセージ）",
+            updatedAt: serverTimestamp()
+          });
         });
       });
 
-      container.querySelectorAll("[data-chat-action='delete']").forEach((button) => {
-        button.addEventListener("click", () => {
+      container.querySelectorAll("[data-chat-delete]").forEach((button) => {
+        button.addEventListener("click", async () => {
           if (!confirm("この会話を削除しますか？")) return;
-
-          writeJson("chats", getChats().filter((c) => c.id !== button.dataset.id));
-          renderAll();
+          await deleteDoc(doc(db, "chats", button.dataset.chatDelete));
         });
-      });
-    }
-
-    function renderPanelVisibility() {
-      document.getElementById("panel-overview").classList.toggle("hidden", currentPanel !== "overview");
-      document.getElementById("panel-accounts").classList.toggle("hidden", currentPanel !== "accounts");
-      document.getElementById("panel-items").classList.toggle("hidden", currentPanel !== "items");
-      document.getElementById("panel-chats").classList.toggle("hidden", currentPanel !== "chats");
-
-      document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
-        button.classList.toggle("active", button.dataset.panel === currentPanel);
       });
     }
 
     function renderAll() {
-      renderPanelVisibility();
       renderOverview();
       renderAccounts();
       renderItems();
       renderChats();
+      setActivePanel(currentPanel);
+    }
+
+    function subscribeAll() {
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        users = snapshot.docs.map((docSnap) => docSnap.data());
+        renderAll();
+      });
+
+      onSnapshot(collection(db, "links"), (snapshot) => {
+        links = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAll();
+      });
+
+      onSnapshot(collection(db, "managementItems"), (snapshot) => {
+        items = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAll();
+      });
+
+      onSnapshot(collection(db, "chats"), (snapshot) => {
+        chats = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAll();
+      });
     }
 
     document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
-      button.addEventListener("click", () => {
-        currentPanel = button.dataset.panel;
-        renderAll();
-      });
+      button.addEventListener("click", () => setActivePanel(button.dataset.panel));
     });
 
-    document.getElementById("goIndexButton").addEventListener("click", () => {
-      window.location.href = "index.html";
+    document.getElementById("goMainButton").addEventListener("click", () => {
+      location.href = "./main.html";
     });
 
-    window.addEventListener("storage", (event) => {
-      if (["accounts", "managementItems", "links", "chats"].includes(event.key)) {
-        renderAll();
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+      await signOut(auth);
+      location.href = "./index.html";
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "./index.html";
+        return;
       }
-    });
 
-    renderAll();
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) {
+        location.href = "./index.html";
+        return;
+      }
+
+      currentUser = snap.data();
+      if (currentUser.role !== "admin") {
+        location.href = "./main.html";
+        return;
+      }
+
+      subscribeAll();
+      setActivePanel("overview");
+    });
   </script>
 </body>
 </html>
