@@ -6,26 +6,35 @@
   <title>まもきっず - main</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
+
     .hidden { display: none !important; }
-    .page { min-height: 100vh; padding: 24px; }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px;
+    }
+
     .app-shell {
       display: grid;
       grid-template-columns: 280px 1fr;
       min-height: calc(100vh - 48px);
       gap: 20px;
     }
+
     .sidebar, .main-panel {
       background: #fff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
       padding: 24px;
     }
+
     .profile-box {
       display: flex;
       gap: 14px;
@@ -35,6 +44,7 @@
       border-radius: 18px;
       margin-bottom: 18px;
     }
+
     .avatar {
       width: 60px;
       height: 60px;
@@ -43,16 +53,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      color: #334155;
-      overflow: hidden;
+      font-size: 30px;
       flex-shrink: 0;
+      overflow: hidden;
     }
+
     .nav-title {
       font-size: 13px;
       color: #64748b;
       margin-bottom: 8px;
     }
+
     .menu-button {
       width: 100%;
       text-align: left;
@@ -63,8 +74,13 @@
       cursor: pointer;
       font-weight: 700;
       margin-bottom: 8px;
+      font-size: 15px;
     }
-    .menu-button.active { background: #e2e8f0; }
+
+    .menu-button.active {
+      background: #e2e8f0;
+    }
+
     .panel-title {
       display: flex;
       justify-content: space-between;
@@ -72,24 +88,31 @@
       gap: 12px;
       margin-bottom: 18px;
     }
+
     .section {
       background: #f1f5f9;
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 16px;
     }
+
     .section-title {
       margin: 0 0 16px;
       font-size: 18px;
       font-weight: 700;
     }
+
     label {
       display: block;
       margin-bottom: 8px;
       font-size: 14px;
       font-weight: 700;
     }
-    input[type="text"], select, textarea {
+
+    input[type="text"],
+    input[type="password"],
+    select,
+    textarea {
       width: 100%;
       border: 1px solid #cbd5e1;
       border-radius: 14px;
@@ -98,9 +121,25 @@
       background: #fff;
       outline: none;
     }
-    input[type="text"], select { height: 48px; }
-    textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
-    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      height: 48px;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .button {
       min-height: 48px;
       border: none;
@@ -112,10 +151,27 @@
       cursor: pointer;
       padding: 12px 18px;
     }
+
     .button.full { width: 100%; }
-    .button.sub { background: #fff; color: #0f172a; border: 1px solid #cbd5e1; }
-    .button.ghost { background: #e2e8f0; color: #0f172a; }
-    .button.small { min-height: 40px; padding: 8px 12px; font-size: 13px; border-radius: 12px; }
+
+    .button.sub {
+      background: #fff;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .button.ghost {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .button.small {
+      min-height: 40px;
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+
     .item-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -123,9 +179,25 @@
       padding: 16px;
       margin-bottom: 12px;
     }
-    .item-card h4 { margin: 0 0 8px; font-size: 16px; }
-    .item-meta { color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
-    .item-value { margin-top: 8px; font-size: 14px; line-height: 1.7; }
+
+    .item-card h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .item-meta {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .item-value {
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
     .empty {
       padding: 18px;
       background: #f8fafc;
@@ -134,6 +206,7 @@
       color: #64748b;
       line-height: 1.7;
     }
+
     .badge {
       display: inline-block;
       padding: 6px 12px;
@@ -143,6 +216,7 @@
       font-weight: 700;
       margin-bottom: 10px;
     }
+
     .fab-chat {
       position: fixed;
       left: 20px;
@@ -158,6 +232,25 @@
       box-shadow: 0 16px 35px rgba(15, 23, 42, 0.2);
       z-index: 20;
     }
+
+    .fab-logout {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      min-width: 120px;
+      height: 56px;
+      border-radius: 999px;
+      border: none;
+      background: #dc2626;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 16px 35px rgba(220, 38, 38, 0.28);
+      z-index: 20;
+      padding: 0 20px;
+    }
+
     .chat-modal {
       position: fixed;
       inset: 0;
@@ -168,6 +261,7 @@
       padding: 0;
       z-index: 30;
     }
+
     .chat-box {
       width: 100%;
       height: 100vh;
@@ -176,20 +270,24 @@
       flex-direction: column;
       overflow: hidden;
     }
+
     .chat-header, .chat-footer {
       padding: 16px;
       border-bottom: 1px solid #e2e8f0;
     }
+
     .chat-footer {
       border-top: 1px solid #e2e8f0;
       border-bottom: none;
     }
+
     .chat-messages {
       flex: 1;
       overflow: auto;
       padding: 16px;
       background: #f8fafc;
     }
+
     .chat-bubble {
       max-width: 82%;
       padding: 10px 12px;
@@ -199,45 +297,67 @@
       font-size: 14px;
       white-space: pre-wrap;
     }
+
     .chat-bubble.me {
       background: #0f172a;
       color: #fff;
       margin-left: auto;
     }
+
     .chat-bubble.other {
       background: #fff;
       color: #0f172a;
       border: 1px solid #e2e8f0;
     }
+
     .chat-name {
       font-size: 11px;
       margin-bottom: 4px;
       color: #64748b;
     }
-    .row-gap { margin-top: 14px; }
+
+    .row-gap {
+      margin-top: 14px;
+    }
+
     .warning-red {
       border-left: 6px solid #dc2626;
       background: #fef2f2;
     }
+
     .warning-yellow {
       border-left: 6px solid #ca8a04;
       background: #fefce8;
     }
+
     @media (max-width: 900px) {
-      .app-shell { grid-template-columns: 1fr; }
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
     }
+
     @media (max-width: 640px) {
       .page { padding: 14px; }
-      .sidebar, .main-panel { padding: 20px; border-radius: 20px; }
+
+      .sidebar, .main-panel {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .fab-logout {
+        min-width: 104px;
+        height: 50px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="page" id="mainPage">
+  <div class="page">
     <div class="app-shell">
       <aside class="sidebar">
         <div class="profile-box">
-          <div class="avatar" id="sidebarAvatar">?</div>
+          <div class="avatar" id="sidebarAvatar">🙂</div>
           <div>
             <div class="badge" id="sidebarRole">-</div>
             <div style="font-weight:700; font-size:18px;" id="sidebarId">-</div>
@@ -248,8 +368,8 @@
         <button class="menu-button active" data-panel="dashboard">ホーム</button>
         <button class="menu-button" data-panel="items">管理項目</button>
         <button class="menu-button" data-panel="links">連携</button>
-        <button class="menu-button" data-panel="chatGuide">会話</button>
-        <button class="menu-button" id="logoutButton">ログアウトする</button>
+        <button class="menu-button" data-panel="account">アカウント編集</button>
+        <button class="menu-button hidden" id="adminMenuButton" data-panel="admin">管理者パネル</button>
       </aside>
 
       <main class="main-panel">
@@ -257,7 +377,7 @@
           <div class="panel-title">
             <div>
               <div class="badge" id="welcomeRole">-</div>
-              <h2 id="welcomeTitle">main.html</h2>
+              <h2 id="welcomeTitle">ホーム</h2>
             </div>
           </div>
           <div class="section" id="dashboardSummary"></div>
@@ -339,15 +459,77 @@
           <div id="linksContainer"></div>
         </section>
 
-        <section id="panel-chatGuide" class="hidden">
+        <section id="panel-account" class="hidden">
           <div class="panel-title">
             <div>
-              <div class="badge">会話</div>
-              <h2>連携ユーザーとのチャット</h2>
+              <div class="badge">アカウント編集</div>
+              <h2>アカウント設定</h2>
             </div>
           </div>
+
           <div class="section">
-            左下の 💬 ボタンから全画面チャットを開けます。
+            <h3 class="section-title">絵文字アイコン変更</h3>
+            <label for="accountEmoji">アカウント絵文字</label>
+            <select id="accountEmoji">
+              <option value="">選択しない</option>
+              <option value="😀">😀</option>
+              <option value="😺">😺</option>
+              <option value="🐱">🐱</option>
+              <option value="🐶">🐶</option>
+              <option value="🐰">🐰</option>
+              <option value="🦊">🦊</option>
+              <option value="🐼">🐼</option>
+              <option value="🧒">🧒</option>
+              <option value="👦">👦</option>
+              <option value="👧">👧</option>
+              <option value="👩">👩</option>
+              <option value="👨">👨</option>
+              <option value="👪">👪</option>
+              <option value="🌟">🌟</option>
+              <option value="🎮">🎮</option>
+              <option value="📚">📚</option>
+              <option value="📝">📝</option>
+              <option value="🚀">🚀</option>
+              <option value="🍀">🍀</option>
+              <option value="🔧">🔧</option>
+            </select>
+            <button class="button row-gap" id="saveEmojiButton">絵文字を保存する</button>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">パスワード変更</h3>
+            <label for="newPassword">新しいパスワード</label>
+            <input id="newPassword" type="password" placeholder="6文字以上の新しいパスワード" />
+            <button class="button row-gap" id="changePasswordButton">パスワードを変更する</button>
+          </div>
+        </section>
+
+        <section id="panel-admin" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">管理者パネル</div>
+              <h2>全体管理</h2>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">概要</h3>
+            <div id="adminOverview"></div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">全アカウント一覧</h3>
+            <div id="adminAccountsContainer"></div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">全管理項目一覧</h3>
+            <div id="adminItemsContainer"></div>
+          </div>
+
+          <div class="section">
+            <h3 class="section-title">全チャット一覧</h3>
+            <div id="adminChatsContainer"></div>
           </div>
         </section>
       </main>
@@ -355,6 +537,7 @@
   </div>
 
   <button class="fab-chat" id="chatFab">💬</button>
+  <button class="fab-logout" id="logoutButton">ログアウト</button>
 
   <div class="chat-modal hidden" id="chatModal">
     <div class="chat-box">
@@ -397,7 +580,8 @@
 
     import {
       onAuthStateChanged,
-      signOut
+      signOut,
+      updatePassword
     } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
     import {
@@ -415,6 +599,7 @@
 
     let currentUser = null;
     let currentPanel = "dashboard";
+
     let currentItems = [];
     let currentPartners = [];
     let currentChatMessages = [];
@@ -422,6 +607,11 @@
     let usersCache = new Map();
     let linksUnsubscribe = null;
     let itemsUnsubscribe = null;
+
+    let adminUsers = [];
+    let adminLinks = [];
+    let adminItems = [];
+    let adminChats = [];
 
     const sidebarAvatar = document.getElementById("sidebarAvatar");
     const sidebarRole = document.getElementById("sidebarRole");
@@ -433,21 +623,34 @@
     const linksContainer = document.getElementById("linksContainer");
     const chatPartnerSelect = document.getElementById("chatPartnerSelect");
     const chatMessages = document.getElementById("chatMessages");
+    const adminMenuButton = document.getElementById("adminMenuButton");
+
+    function getDefaultAvatarEmoji(user) {
+      if (!user) return "❔";
+      if (user.role === "admin") return "🔧";
+      if (user.avatarEmoji && user.avatarEmoji.trim()) return user.avatarEmoji;
+      if (user.role === "parent") return "👪";
+      if (user.role === "child") return "🧒";
+      return "🙂";
+    }
 
     function renderAvatar(element, user) {
       element.innerHTML = "";
-      element.textContent = user?.accountId ? user.accountId.charAt(0).toUpperCase() : "?";
+      element.textContent = getDefaultAvatarEmoji(user);
     }
 
     function setActivePanel(panelName) {
       currentPanel = panelName;
+
       document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
         button.classList.toggle("active", button.dataset.panel === panelName);
       });
+
       document.getElementById("panel-dashboard").classList.toggle("hidden", panelName !== "dashboard");
       document.getElementById("panel-items").classList.toggle("hidden", panelName !== "items");
       document.getElementById("panel-links").classList.toggle("hidden", panelName !== "links");
-      document.getElementById("panel-chatGuide").classList.toggle("hidden", panelName !== "chatGuide");
+      document.getElementById("panel-account").classList.toggle("hidden", panelName !== "account");
+      document.getElementById("panel-admin").classList.toggle("hidden", panelName !== "admin");
     }
 
     function renderDashboard() {
@@ -457,14 +660,16 @@
         <p><strong>アカウントID：</strong>${escapeHtml(currentUser.accountId)}</p>
         <p><strong>連携中ユーザー数：</strong>${currentPartners.length}</p>
         <p><strong>確認できる管理項目数：</strong>${currentItems.length}</p>
-        <p style="margin-bottom:0;">左のメニューから管理項目や連携設定を確認できます。</p>
+        <p style="margin-bottom:0;">左のメニューから必要な機能を選べます。</p>
       `;
     }
 
     async function getUserByUid(uid) {
       if (usersCache.has(uid)) return usersCache.get(uid);
+
       const snap = await getDoc(doc(db, "users", uid));
       if (!snap.exists()) return null;
+
       const data = snap.data();
       usersCache.set(uid, data);
       return data;
@@ -640,6 +845,7 @@
 
     function renderChatMessages() {
       const partnerUid = chatPartnerSelect.value;
+
       if (!partnerUid) {
         chatMessages.innerHTML = `<div class="empty">会話相手がいません。</div>`;
         return;
@@ -670,8 +876,10 @@
         button.addEventListener("click", async () => {
           const target = currentChatMessages.find((msg) => msg.id === button.dataset.chatEdit);
           if (!target) return;
+
           const nextText = prompt("メッセージを編集", target.text);
           if (nextText === null) return;
+
           await updateDoc(doc(db, "chats", target.id), {
             text: nextText.trim() || "（空メッセージ）",
             updatedAt: serverTimestamp()
@@ -690,15 +898,21 @@
 
     function startChatSubscription() {
       stopChatSubscription();
+
       const partnerUid = chatPartnerSelect.value;
       if (!partnerUid) {
         renderChatMessages();
         return;
       }
 
-      const q = query(collection(db, "chats"), where("participantsKey", "==", chatKey(currentUser.uid, partnerUid)));
+      const q = query(
+        collection(db, "chats"),
+        where("participantsKey", "==", chatKey(currentUser.uid, partnerUid))
+      );
+
       chatUnsubscribe = onSnapshot(q, async (snapshot) => {
-        const list = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+        const list = snapshot.docs
+          .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
           .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
 
         for (const chat of list) {
@@ -824,6 +1038,7 @@
 
       const childQuery = query(collection(db, "users"), where("accountId", "==", childAccountId));
       const snapshot = await getDocs(childQuery);
+
       if (snapshot.empty) return alert("子供用アカウントが見つかりません。");
 
       const child = snapshot.docs[0].data();
@@ -835,6 +1050,7 @@
         where("childUid", "==", child.uid)
       );
       const existsSnapshot = await getDocs(existsQuery);
+
       if (!existsSnapshot.empty) return alert("すでに連携済みです。");
 
       await addDoc(collection(db, "links"), {
@@ -846,8 +1062,266 @@
       document.getElementById("linkChildId").value = "";
     }
 
+    function getAdminUserByUid(uid) {
+      return adminUsers.find((user) => user.uid === uid);
+    }
+
+    function renderAdminPanel() {
+      if (!currentUser || currentUser.role !== "admin") return;
+
+      const parents = adminUsers.filter((a) => a.role === "parent").length;
+      const children = adminUsers.filter((a) => a.role === "child").length;
+      const admins = adminUsers.filter((a) => a.role === "admin").length;
+
+      document.getElementById("adminOverview").innerHTML = `
+        <p><strong>全アカウント数：</strong>${adminUsers.length}</p>
+        <p><strong>保護者アカウント数：</strong>${parents}</p>
+        <p><strong>子供アカウント数：</strong>${children}</p>
+        <p><strong>管理者アカウント数：</strong>${admins}</p>
+        <p><strong>連携数：</strong>${adminLinks.length}</p>
+        <p><strong>管理項目数：</strong>${adminItems.length}</p>
+        <p><strong>会話メッセージ数：</strong>${adminChats.length}</p>
+      `;
+
+      renderAdminAccounts();
+      renderAdminItems();
+      renderAdminChats();
+    }
+
+    function renderAdminAccounts() {
+      const container = document.getElementById("adminAccountsContainer");
+
+      if (adminUsers.length === 0) {
+        container.innerHTML = `<div class="empty">アカウントはまだありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = adminUsers.map((user) => {
+        const linkedCount = adminLinks.filter((link) =>
+          link.parentUid === user.uid || link.childUid === user.uid
+        ).length;
+
+        return `
+          <div class="item-card">
+            <h4>${escapeHtml(user.accountId)}</h4>
+            <div class="item-meta">
+              権限：${ROLE_LABELS[user.role] || user.role}<br>
+              連携数：${linkedCount}
+            </div>
+            <div class="button-row">
+              <button class="button sub small" data-admin-role-toggle="${user.uid}">権限変更</button>
+              <button class="button sub small" data-admin-account-delete="${user.uid}">削除</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.querySelectorAll("[data-admin-role-toggle]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const target = adminUsers.find((u) => u.uid === button.dataset.adminRoleToggle);
+          if (!target) return;
+
+          let nextRole = "parent";
+          if (target.role === "parent") nextRole = "child";
+          else if (target.role === "child") nextRole = "parent";
+          else if (target.role === "admin") nextRole = "parent";
+
+          await updateDoc(doc(db, "users", target.uid), {
+            role: nextRole,
+            updatedAt: serverTimestamp()
+          });
+        });
+      });
+
+      container.querySelectorAll("[data-admin-account-delete]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("このアカウントを削除しますか？")) return;
+          await deleteDoc(doc(db, "users", button.dataset.adminAccountDelete));
+        });
+      });
+    }
+
+    function renderAdminItems() {
+      const container = document.getElementById("adminItemsContainer");
+
+      if (adminItems.length === 0) {
+        container.innerHTML = `<div class="empty">管理項目はまだありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = adminItems.map((item) => {
+        const parent = getAdminUserByUid(item.parentUid);
+        const child = getAdminUserByUid(item.childUid);
+
+        let className = "item-card";
+        let details = "";
+
+        if (item.type === "warning") {
+          className += item.warningLevel === "red" ? " warning-red" : " warning-yellow";
+          details = `
+            警告レベル：${item.warningLevel === "red" ? "赤" : "黄"}<br>
+            警告文：${nl2br(escapeHtml(item.message))}
+          `;
+        } else if (item.type === "toggle") {
+          details = `
+            説明：${nl2br(escapeHtml(item.message))}<br>
+            状態：${escapeHtml(item.childResponse || item.defaultValue || "OFF")}
+          `;
+        } else {
+          details = `
+            記述依頼：${nl2br(escapeHtml(item.requestText))}<br>
+            子供の記述：${item.childResponse ? nl2br(escapeHtml(item.childResponse)) : "未入力"}
+          `;
+        }
+
+        return `
+          <div class="${className}">
+            <h4>${escapeHtml(item.name)}</h4>
+            <div class="item-meta">
+              種類：${ITEM_TYPE_LABELS[item.type]}<br>
+              保護者：${escapeHtml(parent?.accountId || "-")}<br>
+              子供：${escapeHtml(child?.accountId || "-")}
+            </div>
+            <div class="item-meta">${details}</div>
+            <div class="button-row">
+              <button class="button sub small" data-admin-item-edit="${item.id}">編集</button>
+              <button class="button sub small" data-admin-item-delete="${item.id}">削除</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.querySelectorAll("[data-admin-item-edit]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const item = adminItems.find((i) => i.id === button.dataset.adminItemEdit);
+          if (!item) return;
+
+          const nextName = prompt("管理項目名を編集", item.name);
+          if (nextName !== null && nextName.trim()) item.name = nextName.trim();
+
+          if (item.type === "warning") {
+            const nextMessage = prompt("警告文を編集", item.message || "");
+            if (nextMessage !== null) item.message = nextMessage;
+
+            const nextLevel = prompt("警告レベルを入力（red / yellow）", item.warningLevel || "red");
+            if (nextLevel === "red" || nextLevel === "yellow") item.warningLevel = nextLevel;
+          }
+
+          if (item.type === "toggle") {
+            const nextMessage = prompt("オンオフ項目の説明を編集", item.message || "");
+            if (nextMessage !== null) item.message = nextMessage;
+
+            const nextState = prompt("状態を入力（ON / OFF）", item.childResponse || item.defaultValue || "OFF");
+            if (nextState === "ON" || nextState === "OFF") item.childResponse = nextState;
+          }
+
+          if (item.type === "text") {
+            const nextRequest = prompt("記述依頼を編集", item.requestText || "");
+            if (nextRequest !== null) item.requestText = nextRequest;
+
+            const nextResponse = prompt("子供の記述を編集", item.childResponse || "");
+            if (nextResponse !== null) item.childResponse = nextResponse;
+          }
+
+          await updateDoc(doc(db, "managementItems", item.id), {
+            name: item.name,
+            message: item.message || "",
+            warningLevel: item.warningLevel || "",
+            childResponse: item.childResponse || "",
+            requestText: item.requestText || "",
+            updatedAt: serverTimestamp()
+          });
+        });
+      });
+
+      container.querySelectorAll("[data-admin-item-delete]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("この管理項目を削除しますか？")) return;
+          await deleteDoc(doc(db, "managementItems", button.dataset.adminItemDelete));
+        });
+      });
+    }
+
+    function renderAdminChats() {
+      const container = document.getElementById("adminChatsContainer");
+
+      if (adminChats.length === 0) {
+        container.innerHTML = `<div class="empty">会話はまだありません。</div>`;
+        return;
+      }
+
+      const sorted = [...adminChats].sort((a, b) => {
+        const aTime = a.createdAt?.seconds || 0;
+        const bTime = b.createdAt?.seconds || 0;
+        return bTime - aTime;
+      });
+
+      container.innerHTML = sorted.map((chat) => {
+        const fromUser = getAdminUserByUid(chat.fromUid);
+        const toUser = getAdminUserByUid(chat.toUid);
+
+        return `
+          <div class="item-card">
+            <h4>${escapeHtml(fromUser?.accountId || "unknown")} → ${escapeHtml(toUser?.accountId || "unknown")}</h4>
+            <div class="item-meta">
+              内容：${nl2br(escapeHtml(chat.text || ""))}
+            </div>
+            <div class="button-row">
+              <button class="button sub small" data-admin-chat-edit="${chat.id}">編集</button>
+              <button class="button sub small" data-admin-chat-delete="${chat.id}">削除</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.querySelectorAll("[data-admin-chat-edit]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const chat = adminChats.find((c) => c.id === button.dataset.adminChatEdit);
+          if (!chat) return;
+
+          const nextText = prompt("会話内容を編集", chat.text || "");
+          if (nextText === null) return;
+
+          await updateDoc(doc(db, "chats", chat.id), {
+            text: nextText.trim() || "（空メッセージ）",
+            updatedAt: serverTimestamp()
+          });
+        });
+      });
+
+      container.querySelectorAll("[data-admin-chat-delete]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("この会話を削除しますか？")) return;
+          await deleteDoc(doc(db, "chats", button.dataset.adminChatDelete));
+        });
+      });
+    }
+
+    function subscribeAdminData() {
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        adminUsers = snapshot.docs.map((docSnap) => docSnap.data());
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "links"), (snapshot) => {
+        adminLinks = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "managementItems"), (snapshot) => {
+        adminItems = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "chats"), (snapshot) => {
+        adminChats = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAdminPanel();
+      });
+    }
+
     async function loadCurrentUser(uid) {
       const snap = await getDoc(doc(db, "users", uid));
+
       if (!snap.exists()) {
         alert("ユーザー情報が見つかりません。");
         await signOut(auth);
@@ -858,23 +1332,26 @@
       currentUser = snap.data();
       usersCache.set(currentUser.uid, currentUser);
 
-      if (currentUser.role === "admin") {
-        location.href = "./panel.html";
-        return;
-      }
-
       sidebarRole.textContent = ROLE_LABELS[currentUser.role];
       sidebarId.textContent = currentUser.accountId;
       welcomeRole.textContent = ROLE_LABELS[currentUser.role];
       welcomeTitle.textContent = `${ROLE_LABELS[currentUser.role]}アカウントでログイン中`;
 
       renderAvatar(sidebarAvatar, currentUser);
+
       document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
       document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
+      adminMenuButton.classList.toggle("hidden", currentUser.role !== "admin");
+
+      document.getElementById("accountEmoji").value = currentUser.avatarEmoji || "";
 
       renderDashboard();
       await subscribePartners();
       await subscribeItems();
+
+      if (currentUser.role === "admin") {
+        subscribeAdminData();
+      }
     }
 
     document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
@@ -928,11 +1405,43 @@
       document.getElementById("chatInput").value = "";
     });
 
+    document.getElementById("saveEmojiButton").addEventListener("click", async () => {
+      const avatarEmoji = document.getElementById("accountEmoji").value;
+
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        avatarEmoji: avatarEmoji || "",
+        updatedAt: serverTimestamp()
+      });
+
+      currentUser.avatarEmoji = avatarEmoji || "";
+      usersCache.set(currentUser.uid, currentUser);
+      renderAvatar(sidebarAvatar, currentUser);
+      alert("絵文字を保存しました。");
+    });
+
+    document.getElementById("changePasswordButton").addEventListener("click", async () => {
+      const newPassword = document.getElementById("newPassword").value;
+
+      if (!newPassword || newPassword.length < 6) {
+        alert("新しいパスワードは6文字以上にしてください。");
+        return;
+      }
+
+      try {
+        await updatePassword(auth.currentUser, newPassword);
+        document.getElementById("newPassword").value = "";
+        alert("パスワードを変更しました。");
+      } catch (error) {
+        alert("パスワード変更に失敗しました。再ログインが必要な場合があります。");
+      }
+    });
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         location.href = "./index.html";
         return;
       }
+
       await loadCurrentUser(user.uid);
       updateItemTypeFields();
       setActivePanel("dashboard");
