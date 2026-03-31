@@ -3,19 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>保護者用管理サイト - index.html</title>
+  <title>まもきっず - ログイン</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
-
     .page {
       min-height: 100vh;
       display: flex;
@@ -23,78 +19,69 @@
       justify-content: center;
       padding: 24px;
     }
-
     .card {
       width: 100%;
-      max-width: 560px;
+      max-width: 620px;
       background: #ffffff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
       padding: 32px;
     }
-
     h1 {
       margin: 0 0 8px;
       font-size: 30px;
       line-height: 1.3;
     }
-
     .description {
       margin: 0 0 24px;
       color: #475569;
       line-height: 1.7;
       font-size: 15px;
     }
-
     .section {
       background: #f1f5f9;
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 16px;
     }
-
     .section-title {
       margin: 0 0 16px;
       font-size: 18px;
       font-weight: 700;
     }
-
     label {
       display: block;
       margin-bottom: 8px;
       font-size: 14px;
       font-weight: 700;
     }
-
-    input[type="text"] {
+    input[type="text"],
+    input[type="password"],
+    input[type="file"] {
       width: 100%;
-      height: 48px;
       border: 1px solid #cbd5e1;
       border-radius: 14px;
-      padding: 0 14px;
+      padding: 12px 14px;
       font-size: 15px;
-      background: #ffffff;
+      background: #fff;
       outline: none;
     }
-
-    input[type="text"]:focus {
+    input[type="text"],
+    input[type="password"] {
+      height: 48px;
+      margin-bottom: 14px;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus {
       border-color: #334155;
       box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
     }
-
-    input[type="file"] {
-      width: 100%;
-      font-size: 14px;
-      margin-top: 4px;
-    }
-
     .role-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-top: 6px;
     }
-
     .role-option {
       border: 1px solid #cbd5e1;
       border-radius: 16px;
@@ -102,25 +89,20 @@
       padding: 14px;
       cursor: pointer;
       text-align: left;
-      transition: 0.2s ease;
     }
-
     .role-option.active {
       border-color: #0f172a;
       box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
     }
-
     .role-name {
       font-weight: 700;
       margin-bottom: 6px;
     }
-
     .role-text {
       color: #64748b;
       font-size: 13px;
       line-height: 1.5;
     }
-
     .button {
       width: 100%;
       min-height: 48px;
@@ -131,20 +113,14 @@
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 14px;
+      margin-top: 8px;
       padding: 12px 18px;
     }
-
     .button.sub {
       background: #ffffff;
       color: #0f172a;
       border: 1px solid #cbd5e1;
     }
-
-    .button:hover {
-      opacity: 0.92;
-    }
-
     .message {
       margin-top: 12px;
       padding: 14px 16px;
@@ -155,35 +131,35 @@
       color: #334155;
       line-height: 1.6;
       display: none;
+      white-space: pre-wrap;
     }
-
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
     @media (max-width: 640px) {
-      .card {
-        padding: 22px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
-      .role-grid {
-        grid-template-columns: 1fr;
-      }
+      .card { padding: 22px; }
+      h1 { font-size: 24px; }
+      .role-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="card">
-      <h1>保護者用管理サイト</h1>
+    <div class="card" id="appCard">
+      <h1>まもきっず</h1>
       <p class="description">
-        ホーム画面です。アカウント作成とログインができます。
+        保護者・子供のアカウント作成とログインができます。
       </p>
 
       <div class="section">
         <h2 class="section-title">ログイン</h2>
-        <label for="loginId">アカウントID</label>
-        <input id="loginId" type="text" placeholder="アカウントIDを入力" />
+        <label for="loginAccountId">アカウントID</label>
+        <input id="loginAccountId" type="text" placeholder="アカウントIDを入力" />
+
+        <label for="loginPassword">パスワード</label>
+        <input id="loginPassword" type="password" placeholder="パスワードを入力" />
+
         <button class="button" id="loginButton">ログインする</button>
       </div>
 
@@ -193,7 +169,10 @@
         <label for="newAccountId">新しいアカウントID</label>
         <input id="newAccountId" type="text" placeholder="新しいアカウントIDを入力" />
 
-        <label for="accountImage" style="margin-top:16px;">アカウント画像（任意）</label>
+        <label for="newPassword">パスワード</label>
+        <input id="newPassword" type="password" placeholder="6文字以上のパスワード" />
+
+        <label for="accountImage">アカウント画像（任意）</label>
         <input id="accountImage" type="file" accept="image/*" />
 
         <label style="margin-top:16px;">権限</label>
@@ -208,49 +187,57 @@
           </button>
         </div>
 
-        <button class="button sub" id="createButton">アカウント作成ボタン</button>
+        <button class="button sub" id="createButton">アカウント作成</button>
       </div>
 
       <div class="message" id="messageBox"></div>
     </div>
   </div>
 
-  <script>
-    const roleLabels = {
-      child: "子供用",
-      parent: "保護者用"
-    };
+  <script type="module">
+    import {
+      auth,
+      db,
+      storage,
+      serverTimestamp,
+      normalizeAccountId,
+      accountIdToEmail
+    } from "./firebase-config.js";
+
+    import {
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+    import {
+      doc,
+      setDoc,
+      getDocs,
+      query,
+      where,
+      collection
+    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+    import {
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
+
+    const messageBox = document.getElementById("messageBox");
+    const appCard = document.getElementById("appCard");
+    const roleOptions = document.querySelectorAll(".role-option");
 
     let selectedRole = "child";
-    let selectedImageData = "";
-
-    const roleOptions = document.querySelectorAll(".role-option");
-    const messageBox = document.getElementById("messageBox");
-
-    function readJson(key, fallback) {
-      try {
-        return JSON.parse(localStorage.getItem(key)) ?? fallback;
-      } catch {
-        return fallback;
-      }
-    }
-
-    function writeJson(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    function getAccounts() {
-      return readJson("accounts", []);
-    }
 
     function showMessage(text) {
-      if (!text) {
-        messageBox.style.display = "none";
-        messageBox.textContent = "";
-        return;
-      }
       messageBox.textContent = text;
-      messageBox.style.display = "block";
+      messageBox.style.display = text ? "block" : "none";
+    }
+
+    function setLoading(isLoading) {
+      appCard.classList.toggle("loading", isLoading);
     }
 
     roleOptions.forEach((button) => {
@@ -261,69 +248,93 @@
       });
     });
 
-    document.getElementById("accountImage").addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (!file) {
-        selectedImageData = "";
-        return;
-      }
+    async function accountIdExists(accountId) {
+      const q = query(collection(db, "users"), where("accountId", "==", accountId));
+      const snapshot = await getDocs(q);
+      return !snapshot.empty;
+    }
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        selectedImageData = reader.result;
-      };
-      reader.readAsDataURL(file);
+    async function uploadProfileImage(uid, file) {
+      if (!file) return "";
+      const imageRef = ref(storage, `profileImages/${uid}/${Date.now()}_${file.name}`);
+      await uploadBytes(imageRef, file);
+      return await getDownloadURL(imageRef);
+    }
+
+    document.getElementById("createButton").addEventListener("click", async () => {
+      const accountId = normalizeAccountId(document.getElementById("newAccountId").value);
+      const password = document.getElementById("newPassword").value;
+      const file = document.getElementById("accountImage").files[0];
+
+      try {
+        showMessage("");
+        if (!accountId) throw new Error("アカウントIDを入力してください。");
+        if (accountId.length < 3) throw new Error("アカウントIDは3文字以上にしてください。");
+        if (!password || password.length < 6) throw new Error("パスワードは6文字以上にしてください。");
+
+        setLoading(true);
+
+        if (await accountIdExists(accountId)) {
+          throw new Error("そのアカウントIDはすでに使われています。");
+        }
+
+        const email = accountIdToEmail(accountId);
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = credential.user.uid;
+
+        const imageUrl = await uploadProfileImage(uid, file);
+
+        await setDoc(doc(db, "users", uid), {
+          uid,
+          accountId,
+          role: selectedRole,
+          imageUrl,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        showMessage(`アカウントを作成しました。\nログインできます。`);
+        document.getElementById("newAccountId").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("accountImage").value = "";
+      } catch (error) {
+        showMessage(error.message || "アカウント作成に失敗しました。");
+      } finally {
+        setLoading(false);
+      }
     });
 
-    document.getElementById("createButton").addEventListener("click", () => {
-      const newId = document.getElementById("newAccountId").value.trim();
+    document.getElementById("loginButton").addEventListener("click", async () => {
+      const accountId = normalizeAccountId(document.getElementById("loginAccountId").value);
+      const password = document.getElementById("loginPassword").value;
 
-      if (!newId) {
-        showMessage("アカウントIDを入力してください。");
-        return;
+      try {
+        showMessage("");
+        if (!accountId) throw new Error("アカウントIDを入力してください。");
+        if (!password) throw new Error("パスワードを入力してください。");
+
+        setLoading(true);
+        const email = accountIdToEmail(accountId);
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        showMessage("ログインに失敗しました。アカウントIDまたはパスワードを確認してください。");
+      } finally {
+        setLoading(false);
       }
-
-      const accounts = getAccounts();
-      const exists = accounts.some((account) => account.id === newId);
-
-      if (exists) {
-        showMessage("そのアカウントIDはすでに使用されています。");
-        return;
-      }
-
-      accounts.push({
-        id: newId,
-        role: selectedRole,
-        image: selectedImageData || ""
-      });
-
-      writeJson("accounts", accounts);
-
-      document.getElementById("newAccountId").value = "";
-      document.getElementById("accountImage").value = "";
-      selectedImageData = "";
-
-      showMessage(`${roleLabels[selectedRole]}アカウントを作成しました：${newId}`);
     });
 
-    document.getElementById("loginButton").addEventListener("click", () => {
-      const loginId = document.getElementById("loginId").value.trim();
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      const userDocQuery = query(collection(db, "users"), where("uid", "==", user.uid));
+      const snapshot = await getDocs(userDocQuery);
+      if (snapshot.empty) return;
 
-      if (!loginId) {
-        showMessage("アカウントIDを入力してください。");
-        return;
+      const data = snapshot.docs[0].data();
+      if (data.role === "admin") {
+        location.href = "./panel.html";
+      } else {
+        location.href = "./main.html";
       }
-
-      const accounts = getAccounts();
-      const found = accounts.find((account) => account.id === loginId);
-
-      if (!found) {
-        showMessage("該当するアカウントが見つかりません。");
-        return;
-      }
-
-      sessionStorage.setItem("currentUserId", found.id);
-      window.location.href = "main.html";
     });
   </script>
 </body>
