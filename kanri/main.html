@@ -333,7 +333,7 @@
             </div>
           </div>
           <div class="section">
-            左下の 💬 ボタンから会話を開始できます。保護者は連携済みの子供を選べます。子供は連携済みの保護者と会話できます。
+            左下の 💬 ボタンから全画面チャットを開けます。保護者は連携済みの子供を選べます。子供は連携済みの保護者と会話できます。
           </div>
         </section>
       </main>
@@ -441,6 +441,13 @@
       `;
     }
 
+    function deleteItemById(itemId) {
+      const managementItems = getManagementItems().filter((item) => item.id !== itemId);
+      writeJson("managementItems", managementItems);
+      renderItems();
+      renderDashboard();
+    }
+
     function renderItems() {
       const container = document.getElementById("itemsContainer");
       const managementItems = getManagementItems();
@@ -496,7 +503,6 @@
               </div>`;
           }
         }
-        }
 
         if (item.type === "text") {
           detailHtml = `
@@ -519,7 +525,6 @@
                 <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
               </div>`;
           }
-        }
         }
 
         card.innerHTML = `
@@ -547,12 +552,8 @@
       container.querySelectorAll("[data-action='deleteItem']").forEach((button) => {
         button.addEventListener("click", () => {
           if (!confirm("この管理項目を削除しますか？")) return;
-          const managementItems = getManagementItems().filter((item) => item.id !== button.dataset.id);
-          writeJson("managementItems", managementItems);
-          renderItems();
-          renderDashboard();
+          deleteItemById(button.dataset.id);
         });
-      });
       });
     }
 
@@ -589,6 +590,7 @@
     function renderChatPartnerOptions() {
       const select = document.getElementById("chatPartnerSelect");
       const partnerIds = getLinkedPartnerIds(currentUser.id);
+      const currentValue = select.value;
       select.innerHTML = "";
 
       if (partnerIds.length === 0) {
@@ -607,6 +609,10 @@
         option.textContent = `${account.id}（${roleLabels[account.role]}）`;
         select.appendChild(option);
       });
+
+      if (partnerIds.includes(currentValue)) {
+        select.value = currentValue;
+      }
     }
 
     function renderChatMessages() {
@@ -663,7 +669,6 @@
           writeJson("chats", chats);
           renderChatMessages();
         });
-      });
       });
 
       chatMessages.scrollTop = chatMessages.scrollHeight;
