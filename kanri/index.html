@@ -55,24 +55,18 @@
       font-size: 14px;
       font-weight: 700;
     }
-    input[type="text"],
-    input[type="password"],
-    input[type="file"] {
+    input[type="text"], input[type="password"] {
       width: 100%;
+      height: 48px;
       border: 1px solid #cbd5e1;
       border-radius: 14px;
-      padding: 12px 14px;
+      padding: 0 14px;
       font-size: 15px;
       background: #fff;
       outline: none;
-    }
-    input[type="text"],
-    input[type="password"] {
-      height: 48px;
       margin-bottom: 14px;
     }
-    input[type="text"]:focus,
-    input[type="password"]:focus {
+    input:focus {
       border-color: #334155;
       box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
     }
@@ -148,9 +142,7 @@
   <div class="page">
     <div class="card" id="appCard">
       <h1>まもきっず</h1>
-      <p class="description">
-        保護者・子供のアカウント作成とログインができます。
-      </p>
+      <p class="description">保護者・子供のアカウント作成とログインができます。</p>
 
       <div class="section">
         <h2 class="section-title">ログイン</h2>
@@ -171,9 +163,6 @@
 
         <label for="newPassword">パスワード</label>
         <input id="newPassword" type="password" placeholder="6文字以上のパスワード" />
-
-        <label for="accountImage">アカウント画像（任意）</label>
-        <input id="accountImage" type="file" accept="image/*" />
 
         <label style="margin-top:16px;">権限</label>
         <div class="role-grid">
@@ -198,7 +187,6 @@
     import {
       auth,
       db,
-      storage,
       serverTimestamp,
       normalizeAccountId,
       accountIdToEmail
@@ -216,14 +204,9 @@
       getDocs,
       query,
       where,
-      collection
+      collection,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-    import {
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 
     const messageBox = document.getElementById("messageBox");
     const appCard = document.getElementById("appCard");
@@ -254,17 +237,9 @@
       return !snapshot.empty;
     }
 
-    async function uploadProfileImage(uid, file) {
-      if (!file) return "";
-      const imageRef = ref(storage, `profileImages/${uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(imageRef, file);
-      return await getDownloadURL(imageRef);
-    }
-
     document.getElementById("createButton").addEventListener("click", async () => {
       const accountId = normalizeAccountId(document.getElementById("newAccountId").value);
       const password = document.getElementById("newPassword").value;
-      const file = document.getElementById("accountImage").files[0];
 
       try {
         showMessage("");
@@ -282,21 +257,17 @@
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         const uid = credential.user.uid;
 
-        const imageUrl = await uploadProfileImage(uid, file);
-
         await setDoc(doc(db, "users", uid), {
           uid,
           accountId,
           role: selectedRole,
-          imageUrl,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });
 
-        showMessage(`アカウントを作成しました。\nログインできます。`);
+        showMessage("アカウントを作成しました。ログインできます。");
         document.getElementById("newAccountId").value = "";
         document.getElementById("newPassword").value = "";
-        document.getElementById("accountImage").value = "";
       } catch (error) {
         showMessage(error.message || "アカウント作成に失敗しました。");
       } finally {
@@ -314,8 +285,7 @@
         if (!password) throw new Error("パスワードを入力してください。");
 
         setLoading(true);
-        const email = accountIdToEmail(accountId);
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, accountIdToEmail(accountId), password);
       } catch (error) {
         showMessage("ログインに失敗しました。アカウントIDまたはパスワードを確認してください。");
       } finally {
@@ -325,11 +295,10 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return;
-      const userDocQuery = query(collection(db, "users"), where("uid", "==", user.uid));
-      const snapshot = await getDocs(userDocQuery);
-      if (snapshot.empty) return;
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) return;
 
-      const data = snapshot.docs[0].data();
+      const data = snap.data();
       if (data.role === "admin") {
         location.href = "./panel.html";
       } else {
