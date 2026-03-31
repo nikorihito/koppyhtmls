@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>panel.html</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .page { min-height: 100vh; padding: 24px; }
+    .app-shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 48px);
+      gap: 20px;
+    }
+    .sidebar, .main-panel {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+    .profile-box {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      background: #f8fafc;
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+    .avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #334155;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .nav-title {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .menu-button {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .menu-button.active { background: #e2e8f0; }
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .hidden { display: none !important; }
+    .section {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      background: #fff;
+      outline: none;
+    }
+    input[type="text"], select { height: 48px; }
+    textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
+    .button {
+      min-height: 48px;
+      border: none;
+      border-radius: 14px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 12px 18px;
+    }
+    .button.sub { background: #fff; color: #0f172a; border: 1px solid #cbd5e1; }
+    .button.ghost { background: #e2e8f0; color: #0f172a; }
+    .button.small { min-height: 40px; padding: 8px 12px; font-size: 13px; border-radius: 12px; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .row-gap { margin-top: 14px; }
+    .item-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .item-card h4 { margin: 0 0 8px; font-size: 16px; }
+    .item-meta { color: #64748b; font-size: 13px; line-height: 1.7; margin-bottom: 12px; }
+    .empty {
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+    .alert {
+      padding: 14px 16px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .page { padding: 14px; }
+      .sidebar, .main-panel { padding: 20px; border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="profile-box">
+          <div class="avatar" id="adminAvatar">A</div>
+          <div>
+            <div class="badge">管理者</div>
+            <div style="font-weight:700; font-size:18px;">panel.html</div>
+          </div>
+        </div>
+
+        <div class="nav-title">管理メニュー</div>
+        <button class="menu-button active" data-panel="overview">概要</button>
+        <button class="menu-button" data-panel="accounts">アカウント管理</button>
+        <button class="menu-button" data-panel="items">管理項目の管理</button>
+        <button class="menu-button" data-panel="chats">全ユーザーの会話管理</button>
+        <button class="menu-button" id="goIndexButton">index.htmlへ</button>
+      </aside>
+
+      <main class="main-panel">
+        <section id="panel-overview">
+          <div class="panel-title">
+            <div>
+              <div class="badge">概要</div>
+              <h2>管理者パネル</h2>
+            </div>
+          </div>
+          <div class="section" id="overviewSummary"></div>
+        </section>
+
+        <section id="panel-accounts" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">アカウント管理</div>
+              <h2>全アカウント一覧</h2>
+            </div>
+          </div>
+          <div class="alert">アカウントの削除と権限変更ができます。</div>
+          <div id="accountsContainer"></div>
+        </section>
+
+        <section id="panel-items" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">管理項目の管理</div>
+              <h2>全管理項目一覧</h2>
+            </div>
+          </div>
+          <div class="alert">全ユーザーの管理項目を一覧表示し、編集・削除できます。</div>
+          <div id="itemsContainer"></div>
+        </section>
+
+        <section id="panel-chats" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">全ユーザーの会話管理</div>
+              <h2>全チャット一覧</h2>
+            </div>
+          </div>
+          <div class="alert">全ユーザーの会話内容を確認し、編集・削除できます。</div>
+          <div id="chatsContainer"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const roleLabels = {
+      child: "子供用",
+      parent: "保護者用"
+    };
+
+    const itemTypeLabels = {
+      warning: "警告用ボタン管理",
+      toggle: "オンオフ管理（保護者操作）",
+      text: "子供記述式管理"
+    };
+
+    let currentPanel = "overview";
+
+    function readJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function writeJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getAccounts() { return readJson("accounts", []); }
+    function getLinks() { return readJson("links", []); }
+    function getManagementItems() { return readJson("managementItems", []); }
+    function getChats() { return readJson("chats", []); }
+    function getAccountById(id) { return getAccounts().find((account) => account.id === id); }
+
+    function renderOverview() {
+      const accounts = getAccounts();
+      const links = getLinks();
+      const items = getManagementItems();
+      const chats = getChats();
+      const parents = accounts.filter((a) => a.role === "parent").length;
+      const children = accounts.filter((a) => a.role === "child").length;
+
+      document.getElementById("overviewSummary").innerHTML = `
+        <div class="badge">集計</div>
+        <p><strong>全アカウント数：</strong>${accounts.length}</p>
+        <p><strong>保護者アカウント数：</strong>${parents}</p>
+        <p><strong>子供アカウント数：</strong>${children}</p>
+        <p><strong>連携数：</strong>${links.length}</p>
+        <p><strong>管理項目数：</strong>${items.length}</p>
+        <p style="margin-bottom:0;"><strong>会話メッセージ数：</strong>${chats.length}</p>
+      `;
+    }
+
+    function renderAccounts() {
+      const accounts = getAccounts();
+      const container = document.getElementById("accountsContainer");
+
+      if (accounts.length === 0) {
+        container.innerHTML = `<div class="empty">アカウントはまだありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      accounts.forEach((account) => {
+        const linkedCount = getLinks().filter((link) => link.parentId === account.id || link.childId === account.id).length;
+        const card = document.createElement("div");
+        card.className = "item-card";
+        card.innerHTML = `
+          <h4>${account.id}</h4>
+          <div class="item-meta">
+            権限：${roleLabels[account.role] || account.role}<br>
+            連携数：${linkedCount}
+          </div>
+          <div class="button-row">
+            <button class="button sub small" data-account-action="toggleRole" data-id="${account.id}">権限変更</button>
+            <button class="button sub small" data-account-action="delete" data-id="${account.id}">削除</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll("[data-account-action='toggleRole']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const accounts = getAccounts();
+          const target = accounts.find((a) => a.id === button.dataset.id);
+          if (!target) return;
+          target.role = target.role === "parent" ? "child" : "parent";
+          writeJson("accounts", accounts);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll("[data-account-action='delete']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.id;
+          if (!confirm(`${id} を削除しますか？`)) return;
+
+          writeJson("accounts", getAccounts().filter((a) => a.id !== id));
+          writeJson("links", getLinks().filter((l) => l.parentId !== id && l.childId !== id));
+          writeJson("managementItems", getManagementItems().filter((i) => i.parentId !== id && i.childId !== id));
+          writeJson("chats", getChats().filter((c) => c.fromId !== id && c.toId !== id));
+
+          renderAll();
+        });
+      });
+    }
+
+    function renderItems() {
+      const items = getManagementItems();
+      const container = document.getElementById("itemsContainer");
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="empty">管理項目はまだありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      items.forEach((item) => {
+        const parent = getAccountById(item.parentId);
+        const child = getAccountById(item.childId);
+        const card = document.createElement("div");
+        card.className = "item-card";
+
+        let details = "";
+        if (item.type === "warning") {
+          const levelLabel = item.warningLevel === "red" ? "赤" : "黄";
+          details = `警告レベル：${levelLabel}<br>警告文：${(item.message || "").replace(/\n/g, "<br>")}`;
+        } else if (item.type === "toggle") {
+          details = `説明：${(item.message || "").replace(/\n/g, "<br>")}<br>状態：${item.childResponse || item.defaultValue || "OFF"}`;
+        } else {
+          details = `記述依頼：${(item.requestText || "").replace(/\n/g, "<br>")}<br>子供の記述：${(item.childResponse || "未入力").replace(/\n/g, "<br>")}`;
+        }
+
+        card.innerHTML = `
+          <h4>${item.name}</h4>
+          <div class="item-meta">
+            種類：${itemTypeLabels[item.type] || item.type}<br>
+            保護者：${parent ? parent.id : item.parentId}<br>
+            子供：${child ? child.id : item.childId}
+          </div>
+          <div class="item-meta">${details}</div>
+          <div class="button-row">
+            <button class="button sub small" data-item-action="edit" data-id="${item.id}">編集</button>
+            <button class="button sub small" data-item-action="delete" data-id="${item.id}">削除</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll("[data-item-action='edit']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const items = getManagementItems();
+          const target = items.find((i) => i.id === button.dataset.id);
+          if (!target) return;
+
+          const nextName = prompt("管理項目名を編集", target.name);
+          if (nextName === null) return;
+          target.name = nextName.trim() || target.name;
+
+          if (target.type === "warning") {
+            const nextMessage = prompt("警告文を編集", target.message || "");
+            if (nextMessage !== null) target.message = nextMessage;
+            const nextLevel = prompt("警告レベルを入力（red / yellow）", target.warningLevel || "red");
+            if (nextLevel === "red" || nextLevel === "yellow") target.warningLevel = nextLevel;
+          } else if (target.type === "toggle") {
+            const nextMessage = prompt("オンオフ項目の説明を編集", target.message || "");
+            if (nextMessage !== null) target.message = nextMessage;
+            const nextValue = prompt("状態を入力（ON / OFF）", target.childResponse || target.defaultValue || "OFF");
+            if (nextValue === "ON" || nextValue === "OFF") target.childResponse = nextValue;
+          } else if (target.type === "text") {
+            const nextRequest = prompt("記述依頼を編集", target.requestText || "");
+            if (nextRequest !== null) target.requestText = nextRequest;
+            const nextResponse = prompt("子供の記述を編集", target.childResponse || "");
+            if (nextResponse !== null) target.childResponse = nextResponse;
+          }
+
+          writeJson("managementItems", items);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll("[data-item-action='delete']").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!confirm("この管理項目を削除しますか？")) return;
+          writeJson("managementItems", getManagementItems().filter((i) => i.id !== button.dataset.id));
+          renderAll();
+        });
+      });
+    }
+
+    function renderChats() {
+      const chats = getChats();
+      const container = document.getElementById("chatsContainer");
+
+      if (chats.length === 0) {
+        container.innerHTML = `<div class="empty">会話はまだありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      chats.forEach((chat) => {
+        const card = document.createElement("div");
+        card.className = "item-card";
+        const reactions = Array.isArray(chat.reactions) && chat.reactions.length ? chat.reactions.join(" ") : "なし";
+        card.innerHTML = `
+          <h4>${chat.fromId} → ${chat.toId}</h4>
+          <div class="item-meta">
+            内容：${(chat.text || "").replace(/\n/g, "<br>")}<br>
+            リアクション：${reactions}
+          </div>
+          <div class="button-row">
+            <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
+            <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll("[data-chat-action='edit']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const chats = getChats();
+          const target = chats.find((c) => c.id === button.dataset.id);
+          if (!target) return;
+          const nextText = prompt("会話内容を編集", target.text || "");
+          if (nextText === null) return;
+          target.text = nextText.trim() || "（空メッセージ）";
+          writeJson("chats", chats);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll("[data-chat-action='delete']").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!confirm("この会話を削除しますか？")) return;
+          writeJson("chats", getChats().filter((c) => c.id !== button.dataset.id));
+          renderAll();
+        });
+      });
+    }
+
+    function renderPanelVisibility() {
+      document.getElementById("panel-overview").classList.toggle("hidden", currentPanel !== "overview");
+      document.getElementById("panel-accounts").classList.toggle("hidden", currentPanel !== "accounts");
+      document.getElementById("panel-items").classList.toggle("hidden", currentPanel !== "items");
+      document.getElementById("panel-chats").classList.toggle("hidden", currentPanel !== "chats");
+
+      document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.panel === currentPanel);
+      });
+    }
+
+    function renderAll() {
+      renderPanelVisibility();
+      renderOverview();
+      renderAccounts();
+      renderItems();
+      renderChats();
+    }
+
+    document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
+      button.addEventListener("click", () => {
+        currentPanel = button.dataset.panel;
+        renderAll();
+      });
+    });
+
+    document.getElementById("goIndexButton").addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
