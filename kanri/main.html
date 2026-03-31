@@ -164,17 +164,17 @@
       inset: 0;
       background: rgba(15, 23, 42, 0.36);
       display: flex;
-      align-items: flex-end;
-      justify-content: flex-start;
-      padding: 20px;
+      align-items: stretch;
+      justify-content: stretch;
+      padding: 0;
       z-index: 30;
     }
     .chat-box {
-      width: min(420px, 100%);
-      height: min(560px, 78vh);
+      width: 100%;
+      height: 100vh;
       background: #fff;
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+      border-radius: 0;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -472,6 +472,12 @@
               <strong>警告文：</strong><br>
               ${nl2br(item.message)}
             </div>`;
+          if (currentUser.role === "parent") {
+            actionHtml = `
+              <div class="button-row row-gap">
+                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
+              </div>`;
+          }
         }
 
         if (item.type === "toggle") {
@@ -486,8 +492,10 @@
               <div class="button-row row-gap">
                 <button class="button small" data-action="toggleReply" data-value="ON" data-id="${item.id}">ONにする</button>
                 <button class="button sub small" data-action="toggleReply" data-value="OFF" data-id="${item.id}">OFFにする</button>
+                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
               </div>`;
           }
+        }
         }
 
         if (item.type === "text") {
@@ -505,6 +513,13 @@
               <textarea id="reply-${item.id}" placeholder="依頼内容に対する記述を入力"></textarea>
               <button class="button small row-gap" data-action="textReply" data-id="${item.id}">入力内容を送る</button>`;
           }
+          if (currentUser.role === "parent") {
+            actionHtml += `
+              <div class="button-row row-gap">
+                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
+              </div>`;
+          }
+        }
         }
 
         card.innerHTML = `
@@ -528,6 +543,16 @@
           const textarea = document.getElementById(`reply-${button.dataset.id}`);
           updateItemResponse(button.dataset.id, textarea.value.trim() || "（空の記述）");
         });
+      });
+      container.querySelectorAll("[data-action='deleteItem']").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!confirm("この管理項目を削除しますか？")) return;
+          const managementItems = getManagementItems().filter((item) => item.id !== button.dataset.id);
+          writeJson("managementItems", managementItems);
+          renderItems();
+          renderDashboard();
+        });
+      });
       });
     }
 
@@ -607,27 +632,15 @@
         const bubble = document.createElement("div");
         bubble.className = `chat-bubble ${chat.fromId === currentUser.id ? "me" : "other"}`;
 
-        const reactions = (chat.reactions || []).length
-          ? `<div style="margin-top:8px; font-size:18px;">${chat.reactions.join(" ")}</div>`
-          : "";
-
         const menu = chat.fromId === currentUser.id
           ? `
             <div class="button-row" style="margin-top:8px;">
               <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
               <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
-              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="👍">👍</button>
-              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="❤️">❤️</button>
-              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="😊">😊</button>
             </div>`
-          : `
-            <div class="button-row" style="margin-top:8px;">
-              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="👍">👍</button>
-              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="❤️">❤️</button>
-              <button class="button sub small" data-chat-action="react" data-id="${chat.id}" data-emoji="😊">😊</button>
-            </div>`;
+          : "";
 
-        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${nl2br(chat.text)}${reactions}${menu}`;
+        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${nl2br(chat.text)}${menu}`;
         chatMessages.appendChild(bubble);
       });
 
@@ -651,17 +664,6 @@
           renderChatMessages();
         });
       });
-
-      chatMessages.querySelectorAll("[data-chat-action='react']").forEach((button) => {
-        button.addEventListener("click", () => {
-          const chats = getChats();
-          const target = chats.find((chat) => chat.id === button.dataset.id);
-          if (!target) return;
-          if (!Array.isArray(target.reactions)) target.reactions = [];
-          target.reactions.push(button.dataset.emoji);
-          writeJson("chats", chats);
-          renderChatMessages();
-        });
       });
 
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -808,7 +810,7 @@
       if (!partnerId) return alert("会話相手がいません。");
       if (!text) return alert("メッセージを入力してください。");
       const chats = getChats();
-      chats.push({ fromId: currentUser.id, toId: partnerId, text, id: generateId("chat"), reactions: [] });
+      chats.push({ fromId: currentUser.id, toId: partnerId, text, id: generateId("chat") });
       writeJson("chats", chats);
       document.getElementById("chatInput").value = "";
       renderChatMessages();
@@ -822,6 +824,21 @@
     }
 
     document.getElementById("itemType").addEventListener("change", updateItemTypeFields);
+
+    window.addEventListener("storage", (event) => {
+      if (["accounts", "managementItems", "links", "chats"].includes(event.key)) {
+        if (currentUser) {
+          const refreshed = getAccountById(currentUser.id);
+          if (!refreshed) {
+            sessionStorage.removeItem("currentUserId");
+            window.location.href = "index.html";
+            return;
+          }
+          currentUser = refreshed;
+          renderMain();
+        }
+      }
+    });
 
     if (initializeUser()) {
       updateItemTypeFields();
