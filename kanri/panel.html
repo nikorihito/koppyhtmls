@@ -3,29 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>main.html</title>
+  <title>panel.html</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
       background: #f8fafc;
       color: #0f172a;
     }
+
     .hidden { display: none !important; }
-    .page { min-height: 100vh; padding: 24px; }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px;
+    }
+
     .app-shell {
       display: grid;
       grid-template-columns: 280px 1fr;
       min-height: calc(100vh - 48px);
       gap: 20px;
     }
+
     .sidebar, .main-panel {
       background: #fff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
       padding: 24px;
     }
+
     .profile-box {
       display: flex;
       gap: 14px;
@@ -35,25 +44,43 @@
       border-radius: 18px;
       margin-bottom: 18px;
     }
+
     .avatar {
       width: 60px;
       height: 60px;
       border-radius: 18px;
-      object-fit: cover;
       background: linear-gradient(135deg, #cbd5e1, #e2e8f0);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       color: #334155;
-      flex-shrink: 0;
       overflow: hidden;
+      flex-shrink: 0;
     }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
     .nav-title {
       font-size: 13px;
       color: #64748b;
       margin-bottom: 8px;
     }
+
     .menu-button {
       width: 100%;
       text-align: left;
@@ -65,7 +92,11 @@
       font-weight: 700;
       margin-bottom: 8px;
     }
-    .menu-button.active { background: #e2e8f0; }
+
+    .menu-button.active {
+      background: #e2e8f0;
+    }
+
     .panel-title {
       display: flex;
       justify-content: space-between;
@@ -73,35 +104,20 @@
       gap: 12px;
       margin-bottom: 18px;
     }
+
     .section {
       background: #f1f5f9;
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 16px;
     }
+
     .section-title {
       margin: 0 0 16px;
       font-size: 18px;
       font-weight: 700;
     }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-    input[type="text"], select, textarea {
-      width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 15px;
-      background: #fff;
-      outline: none;
-    }
-    input[type="text"], select { height: 48px; }
-    textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
-    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
     .button {
       min-height: 48px;
       border: none;
@@ -113,10 +129,31 @@
       cursor: pointer;
       padding: 12px 18px;
     }
-    .button.full { width: 100%; }
-    .button.sub { background: #fff; color: #0f172a; border: 1px solid #cbd5e1; }
-    .button.ghost { background: #e2e8f0; color: #0f172a; }
-    .button.small { min-height: 40px; padding: 8px 12px; font-size: 13px; border-radius: 12px; }
+
+    .button.sub {
+      background: #fff;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .button.ghost {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .button.small {
+      min-height: 40px;
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .item-card {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -124,9 +161,19 @@
       padding: 16px;
       margin-bottom: 12px;
     }
-    .item-card h4 { margin: 0 0 8px; font-size: 16px; }
-    .item-meta { color: #64748b; font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
-    .item-value { margin-top: 8px; font-size: 14px; line-height: 1.7; }
+
+    .item-card h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .item-meta {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
     .empty {
       padding: 18px;
       background: #f8fafc;
@@ -135,246 +182,123 @@
       color: #64748b;
       line-height: 1.7;
     }
-    .badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: #e2e8f0;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .fab-chat {
-      position: fixed;
-      left: 20px;
-      bottom: 20px;
-      width: 64px;
-      height: 64px;
-      border-radius: 999px;
-      border: none;
-      background: #0f172a;
-      color: #fff;
-      font-size: 28px;
-      cursor: pointer;
-      box-shadow: 0 16px 35px rgba(15, 23, 42, 0.2);
-      z-index: 20;
-    }
-    .chat-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.36);
-      display: flex;
-      align-items: stretch;
-      justify-content: stretch;
-      padding: 0;
-      z-index: 30;
-    }
-    .chat-box {
-      width: 100%;
-      height: 100vh;
+
+    .alert {
+      padding: 14px 16px;
       background: #fff;
-      border-radius: 0;
-      box-shadow: none;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .chat-header, .chat-footer {
-      padding: 16px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .chat-footer { border-top: 1px solid #e2e8f0; border-bottom: none; }
-    .chat-messages {
-      flex: 1;
-      overflow: auto;
-      padding: 16px;
-      background: #f8fafc;
-    }
-    .chat-bubble {
-      max-width: 82%;
-      padding: 10px 12px;
-      border-radius: 16px;
-      margin-bottom: 10px;
-      line-height: 1.6;
-      font-size: 14px;
-      white-space: pre-wrap;
-    }
-    .chat-bubble.me {
-      background: #0f172a;
-      color: #fff;
-      margin-left: auto;
-    }
-    .chat-bubble.other {
-      background: #fff;
-      color: #0f172a;
       border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.6;
+      margin-bottom: 16px;
     }
-    .chat-name { font-size: 11px; margin-bottom: 4px; color: #64748b; }
-    .row-gap { margin-top: 14px; }
+
     .warning-red {
       border-left: 6px solid #dc2626;
       background: #fef2f2;
     }
+
     .warning-yellow {
       border-left: 6px solid #ca8a04;
       background: #fefce8;
     }
-    @media (max-width: 900px) { .app-shell { grid-template-columns: 1fr; } }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 640px) {
       .page { padding: 14px; }
-      .sidebar, .main-panel { padding: 20px; border-radius: 20px; }
+      .sidebar, .main-panel {
+        padding: 20px;
+        border-radius: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="page" id="mainPage">
+  <div class="page">
     <div class="app-shell">
       <aside class="sidebar">
         <div class="profile-box">
-          <div class="avatar" id="sidebarAvatar">?</div>
+          <div class="avatar" id="adminAvatar">A</div>
           <div>
-            <div class="badge" id="sidebarRole">-</div>
-            <div style="font-weight:700; font-size:18px;" id="sidebarId">-</div>
+            <div class="badge">管理者</div>
+            <div style="font-weight:700; font-size:18px;">panel.html</div>
           </div>
         </div>
-        <div class="nav-title">メニュー</div>
-        <button class="menu-button active" data-panel="dashboard">ホーム</button>
-        <button class="menu-button" data-panel="items">管理項目</button>
-        <button class="menu-button" data-panel="links">連携</button>
-        <button class="menu-button" data-panel="chatGuide">会話</button>
-        <button class="menu-button" id="logoutButton">ログアウトする</button>
+
+        <div class="nav-title">管理メニュー</div>
+        <button class="menu-button active" data-panel="overview">概要</button>
+        <button class="menu-button" data-panel="accounts">アカウント管理</button>
+        <button class="menu-button" data-panel="items">管理項目の管理</button>
+        <button class="menu-button" data-panel="chats">全ユーザーの会話管理</button>
+        <button class="menu-button" id="goIndexButton">index.htmlへ</button>
       </aside>
 
       <main class="main-panel">
-        <section id="panel-dashboard">
+        <section id="panel-overview">
           <div class="panel-title">
             <div>
-              <div class="badge" id="welcomeRole">-</div>
-              <h2 id="welcomeTitle">main.html</h2>
+              <div class="badge">概要</div>
+              <h2>管理者パネル</h2>
             </div>
           </div>
-          <div class="section" id="dashboardSummary"></div>
+          <div class="section" id="overviewSummary"></div>
+        </section>
+
+        <section id="panel-accounts" class="hidden">
+          <div class="panel-title">
+            <div>
+              <div class="badge">アカウント管理</div>
+              <h2>全アカウント一覧</h2>
+            </div>
+          </div>
+          <div class="alert">アカウントの削除と権限変更ができます。</div>
+          <div id="accountsContainer"></div>
         </section>
 
         <section id="panel-items" class="hidden">
           <div class="panel-title">
             <div>
-              <div class="badge">管理項目</div>
-              <h2>管理項目の確認</h2>
-            </div>
-            <button class="button" id="openAddItemButton">管理項目を追加する</button>
-          </div>
-          <div class="section hidden" id="addItemSection">
-            <h3 class="section-title">管理項目を追加</h3>
-            <label for="itemName">名前</label>
-            <input id="itemName" type="text" placeholder="例：帰宅報告、宿題チェック" />
-
-            <label for="itemType" style="margin-top:16px;">管理項目の種類</label>
-            <select id="itemType">
-              <option value="warning">警告用ボタン管理</option>
-              <option value="toggle">オンオフ管理（保護者操作）</option>
-              <option value="text">子供記述式管理</option>
-            </select>
-
-            <div id="warningFields" class="row-gap">
-              <label for="warningMessage">警告文</label>
-              <textarea id="warningMessage" placeholder="子供に送る警告文を入力"></textarea>
-              <label for="warningLevel" style="margin-top:16px;">警告レベル</label>
-              <select id="warningLevel">
-                <option value="red">赤</option>
-                <option value="yellow">黄</option>
-              </select>
-            </div>
-
-            <div id="toggleFields" class="row-gap hidden">
-              <label for="toggleMessage">オンオフ項目の説明</label>
-              <textarea id="toggleMessage" placeholder="例：ゲーム時間を許可するかどうか"></textarea>
-              <label for="toggleDefault" style="margin-top:16px;">初期状態</label>
-              <select id="toggleDefault">
-                <option value="OFF">OFF</option>
-                <option value="ON">ON</option>
-              </select>
-            </div>
-
-            <div id="textFields" class="row-gap hidden">
-              <label for="textRequest">子供への記述依頼</label>
-              <textarea id="textRequest" placeholder="例：今日がんばったことを1つ書いてね"></textarea>
-            </div>
-
-            <div class="button-row row-gap">
-              <button class="button" id="addItemButton">追加する</button>
-              <button class="button ghost" id="closeAddItemButton">閉じる</button>
+              <div class="badge">管理項目の管理</div>
+              <h2>全管理項目一覧</h2>
             </div>
           </div>
+          <div class="alert">全ユーザーの管理項目を一覧表示し、編集・削除できます。</div>
           <div id="itemsContainer"></div>
         </section>
 
-        <section id="panel-links" class="hidden">
+        <section id="panel-chats" class="hidden">
           <div class="panel-title">
             <div>
-              <div class="badge">連携</div>
-              <h2>子供と連携する</h2>
+              <div class="badge">全ユーザーの会話管理</div>
+              <h2>全チャット一覧</h2>
             </div>
           </div>
-          <div class="section" id="linkParentSection">
-            <h3 class="section-title">連携設定</h3>
-            <label for="linkChildId">子供のアカウントID</label>
-            <input id="linkChildId" type="text" placeholder="子供のアカウントIDを入力" />
-            <button class="button full row-gap" id="linkChildButton">連携する</button>
-          </div>
-          <div id="linksContainer"></div>
-        </section>
-
-        <section id="panel-chatGuide" class="hidden">
-          <div class="panel-title">
-            <div>
-              <div class="badge">会話</div>
-              <h2>連携ユーザーとのチャット</h2>
-            </div>
-          </div>
-          <div class="section">
-            左下の 💬 ボタンから会話を開始できます。保護者は連携済みの子供を選べます。子供は連携済みの保護者と会話できます。
-          </div>
+          <div class="alert">全ユーザーの会話内容を確認し、編集・削除できます。</div>
+          <div id="chatsContainer"></div>
         </section>
       </main>
     </div>
   </div>
 
-  <button class="fab-chat" id="chatFab">💬</button>
-
-  <div class="chat-modal hidden" id="chatModal">
-    <div class="chat-box">
-      <div class="chat-header">
-        <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
-          <div>
-            <div class="badge">チャット</div>
-            <div style="font-weight:700; font-size:18px;">連携ユーザーと会話</div>
-          </div>
-          <button class="button ghost small" id="closeChatButton">閉じる</button>
-        </div>
-        <div class="row-gap">
-          <label for="chatPartnerSelect">相手</label>
-          <select id="chatPartnerSelect"></select>
-        </div>
-      </div>
-      <div class="chat-messages" id="chatMessages"></div>
-      <div class="chat-footer">
-        <textarea id="chatInput" placeholder="メッセージを入力"></textarea>
-        <button class="button full row-gap" id="sendChatButton">送信する</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const roleLabels = { child: "子供用", parent: "保護者用" };
+    const roleLabels = {
+      child: "子供用",
+      parent: "保護者用"
+    };
+
     const itemTypeLabels = {
       warning: "警告用ボタン管理",
       toggle: "オンオフ管理（保護者操作）",
       text: "子供記述式管理"
     };
 
-    let currentUser = null;
-    let currentPanel = "dashboard";
+    let currentPanel = "overview";
 
     function nl2br(value) {
       return String(value || "").replace(/\n/g, "<br>");
@@ -392,458 +316,303 @@
       localStorage.setItem(key, JSON.stringify(value));
     }
 
-    function getAccounts() { return readJson("accounts", []); }
-    function getManagementItems() { return readJson("managementItems", []); }
-    function getLinks() { return readJson("links", []); }
-    function getChats() { return readJson("chats", []); }
-    function getAccountById(id) { return getAccounts().find((account) => account.id === id); }
-
-    function renderAvatar(element, account) {
-      element.innerHTML = "";
-      if (account && account.image) {
-        const img = document.createElement("img");
-        img.src = account.image;
-        img.alt = account.id;
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "cover";
-        element.appendChild(img);
-      } else {
-        element.textContent = account?.id ? account.id.charAt(0).toUpperCase() : "?";
-      }
+    function getAccounts() {
+      return readJson("accounts", []);
     }
 
-    function getLinkedPartnerIds(userId) {
-      return getLinks()
-        .filter((link) => link.parentId === userId || link.childId === userId)
-        .map((link) => link.parentId === userId ? link.childId : link.parentId);
+    function getLinks() {
+      return readJson("links", []);
     }
 
-    function generateId(prefix) {
-      return `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    function getManagementItems() {
+      return readJson("managementItems", []);
     }
 
-    function renderDashboard() {
-      const summary = document.getElementById("dashboardSummary");
-      const linkedIds = getLinkedPartnerIds(currentUser.id);
-      const managementItems = getManagementItems();
-      const ownItems = currentUser.role === "parent"
-        ? managementItems.filter((item) => item.parentId === currentUser.id)
-        : managementItems.filter((item) => item.childId === currentUser.id);
+    function getChats() {
+      return readJson("chats", []);
+    }
 
-      summary.innerHTML = `
-        <div class="badge">概要</div>
-        <p><strong>ログイン中の権限：</strong>${roleLabels[currentUser.role]}</p>
-        <p><strong>アカウントID：</strong>${currentUser.id}</p>
-        <p><strong>連携中ユーザー数：</strong>${linkedIds.length}</p>
-        <p><strong>確認できる管理項目数：</strong>${ownItems.length}</p>
-        <p style="margin-bottom:0;">左のメニューから管理項目や連携設定を確認できます。</p>
+    function getAccountById(id) {
+      return getAccounts().find((account) => account.id === id);
+    }
+
+    function renderOverview() {
+      const accounts = getAccounts();
+      const links = getLinks();
+      const items = getManagementItems();
+      const chats = getChats();
+
+      const parents = accounts.filter((a) => a.role === "parent").length;
+      const children = accounts.filter((a) => a.role === "child").length;
+
+      document.getElementById("overviewSummary").innerHTML = `
+        <div class="badge">集計</div>
+        <p><strong>全アカウント数：</strong>${accounts.length}</p>
+        <p><strong>保護者アカウント数：</strong>${parents}</p>
+        <p><strong>子供アカウント数：</strong>${children}</p>
+        <p><strong>連携数：</strong>${links.length}</p>
+        <p><strong>管理項目数：</strong>${items.length}</p>
+        <p style="margin-bottom:0;"><strong>会話メッセージ数：</strong>${chats.length}</p>
       `;
     }
 
-    function renderItems() {
-      const container = document.getElementById("itemsContainer");
-      const managementItems = getManagementItems();
-      const items = currentUser.role === "parent"
-        ? managementItems.filter((item) => item.parentId === currentUser.id)
-        : managementItems.filter((item) => item.childId === currentUser.id);
+    function renderAccounts() {
+      const accounts = getAccounts();
+      const container = document.getElementById("accountsContainer");
 
-      if (items.length === 0) {
-        container.innerHTML = `<div class="empty">まだ管理項目はありません。</div>`;
+      if (accounts.length === 0) {
+        container.innerHTML = `<div class="empty">アカウントはまだありません。</div>`;
         return;
       }
 
       container.innerHTML = "";
-      items.forEach((item) => {
+
+      accounts.forEach((account) => {
+        const linkedCount = getLinks().filter((link) =>
+          link.parentId === account.id || link.childId === account.id
+        ).length;
+
         const card = document.createElement("div");
         card.className = "item-card";
 
-        const child = getAccountById(item.childId);
+        card.innerHTML = `
+          <h4>${account.id}</h4>
+          <div class="item-meta">
+            権限：${roleLabels[account.role] || account.role}<br>
+            連携数：${linkedCount}
+          </div>
+          <div class="button-row">
+            <button class="button sub small" data-account-action="toggleRole" data-id="${account.id}">権限変更</button>
+            <button class="button sub small" data-account-action="delete" data-id="${account.id}">削除</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll("[data-account-action='toggleRole']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const accounts = getAccounts();
+          const target = accounts.find((a) => a.id === button.dataset.id);
+          if (!target) return;
+
+          target.role = target.role === "parent" ? "child" : "parent";
+          writeJson("accounts", accounts);
+          renderAll();
+        });
+      });
+
+      container.querySelectorAll("[data-account-action='delete']").forEach((button) => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.id;
+          if (!confirm(`${id} を削除しますか？`)) return;
+
+          writeJson("accounts", getAccounts().filter((a) => a.id !== id));
+          writeJson("links", getLinks().filter((l) => l.parentId !== id && l.childId !== id));
+          writeJson("managementItems", getManagementItems().filter((i) => i.parentId !== id && i.childId !== id));
+          writeJson("chats", getChats().filter((c) => c.fromId !== id && c.toId !== id));
+
+          renderAll();
+        });
+      });
+    }
+
+    function renderItems() {
+      const items = getManagementItems();
+      const container = document.getElementById("itemsContainer");
+
+      if (items.length === 0) {
+        container.innerHTML = `<div class="empty">管理項目はまだありません。</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+
+      items.forEach((item) => {
         const parent = getAccountById(item.parentId);
-        let detailHtml = "";
-        let actionHtml = "";
+        const child = getAccountById(item.childId);
+
+        const card = document.createElement("div");
+        card.className = "item-card";
+
+        let details = "";
 
         if (item.type === "warning") {
           const levelLabel = item.warningLevel === "red" ? "赤" : "黄";
           card.classList.add(item.warningLevel === "red" ? "warning-red" : "warning-yellow");
-          detailHtml = `
-            <div class="item-value">
-              <strong>警告レベル：</strong>${levelLabel}<br>
-              <strong>警告文：</strong><br>
-              ${nl2br(item.message)}
-            </div>`;
-          if (currentUser.role === "parent") {
-            actionHtml = `
-              <div class="button-row row-gap">
-                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
-              </div>`;
-          }
-        }
-
-        if (item.type === "toggle") {
-          detailHtml = `
-            <div class="item-value">
-              <strong>説明：</strong><br>
-              ${nl2br(item.message)}<br><br>
-              <strong>現在の状態：</strong>${item.childResponse || item.defaultValue || "OFF"}
-            </div>`;
-          if (currentUser.role === "parent") {
-            actionHtml = `
-              <div class="button-row row-gap">
-                <button class="button small" data-action="toggleReply" data-value="ON" data-id="${item.id}">ONにする</button>
-                <button class="button sub small" data-action="toggleReply" data-value="OFF" data-id="${item.id}">OFFにする</button>
-                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
-              </div>`;
-          }
-        }
-        }
-
-        if (item.type === "text") {
-          detailHtml = `
-            <div class="item-value">
-              <strong>記述依頼：</strong><br>
-              ${nl2br(item.requestText)}
-            </div>
-            <div class="item-value">
-              <strong>子供からの記述：</strong><br>
-              ${item.childResponse ? nl2br(item.childResponse) : "まだ入力されていません。"}
-            </div>`;
-          if (currentUser.role === "child") {
-            actionHtml = `
-              <textarea id="reply-${item.id}" placeholder="依頼内容に対する記述を入力"></textarea>
-              <button class="button small row-gap" data-action="textReply" data-id="${item.id}">入力内容を送る</button>`;
-          }
-          if (currentUser.role === "parent") {
-            actionHtml += `
-              <div class="button-row row-gap">
-                <button class="button ghost small" data-action="deleteItem" data-id="${item.id}">削除</button>
-              </div>`;
-          }
-        }
+          details = `
+            警告レベル：${levelLabel}<br>
+            警告文：${nl2br(item.message)}
+          `;
+        } else if (item.type === "toggle") {
+          details = `
+            説明：${nl2br(item.message)}<br>
+            状態：${item.childResponse || item.defaultValue || "OFF"}
+          `;
+        } else {
+          details = `
+            記述依頼：${nl2br(item.requestText)}<br>
+            子供の記述：${item.childResponse ? nl2br(item.childResponse) : "未入力"}
+          `;
         }
 
         card.innerHTML = `
           <h4>${item.name}</h4>
           <div class="item-meta">
-            種類：${itemTypeLabels[item.type]}<br>
-            保護者：${parent ? parent.id : "-"}<br>
-            子供：${child ? child.id : "未連携"}
+            種類：${itemTypeLabels[item.type] || item.type}<br>
+            保護者：${parent ? parent.id : item.parentId}<br>
+            子供：${child ? child.id : item.childId}
           </div>
-          ${detailHtml}
-          ${actionHtml}`;
+          <div class="item-meta">${details}</div>
+          <div class="button-row">
+            <button class="button sub small" data-item-action="edit" data-id="${item.id}">編集</button>
+            <button class="button sub small" data-item-action="delete" data-id="${item.id}">削除</button>
+          </div>
+        `;
 
         container.appendChild(card);
       });
 
-      container.querySelectorAll("[data-action='toggleReply']").forEach((button) => {
-        button.addEventListener("click", () => updateItemResponse(button.dataset.id, button.dataset.value));
-      });
-      container.querySelectorAll("[data-action='textReply']").forEach((button) => {
+      container.querySelectorAll("[data-item-action='edit']").forEach((button) => {
         button.addEventListener("click", () => {
-          const textarea = document.getElementById(`reply-${button.dataset.id}`);
-          updateItemResponse(button.dataset.id, textarea.value.trim() || "（空の記述）");
+          const items = getManagementItems();
+          const target = items.find((i) => i.id === button.dataset.id);
+          if (!target) return;
+
+          const nextName = prompt("管理項目名を編集", target.name);
+          if (nextName !== null && nextName.trim()) {
+            target.name = nextName.trim();
+          }
+
+          if (target.type === "warning") {
+            const nextMessage = prompt("警告文を編集", target.message || "");
+            if (nextMessage !== null) target.message = nextMessage;
+
+            const nextLevel = prompt("警告レベルを入力（red / yellow）", target.warningLevel || "red");
+            if (nextLevel === "red" || nextLevel === "yellow") {
+              target.warningLevel = nextLevel;
+            }
+          } else if (target.type === "toggle") {
+            const nextMessage = prompt("オンオフ項目の説明を編集", target.message || "");
+            if (nextMessage !== null) target.message = nextMessage;
+
+            const nextValue = prompt("状態を入力（ON / OFF）", target.childResponse || target.defaultValue || "OFF");
+            if (nextValue === "ON" || nextValue === "OFF") {
+              target.childResponse = nextValue;
+            }
+          } else if (target.type === "text") {
+            const nextRequest = prompt("記述依頼を編集", target.requestText || "");
+            if (nextRequest !== null) target.requestText = nextRequest;
+
+            const nextResponse = prompt("子供の記述を編集", target.childResponse || "");
+            if (nextResponse !== null) target.childResponse = nextResponse;
+          }
+
+          writeJson("managementItems", items);
+          renderAll();
         });
       });
-      container.querySelectorAll("[data-action='deleteItem']").forEach((button) => {
+
+      container.querySelectorAll("[data-item-action='delete']").forEach((button) => {
         button.addEventListener("click", () => {
           if (!confirm("この管理項目を削除しますか？")) return;
-          const managementItems = getManagementItems().filter((item) => item.id !== button.dataset.id);
-          writeJson("managementItems", managementItems);
-          renderItems();
-          renderDashboard();
+          writeJson("managementItems", getManagementItems().filter((i) => i.id !== button.dataset.id));
+          renderAll();
         });
       });
-      });
     }
 
-    function updateItemResponse(itemId, value) {
-      const managementItems = getManagementItems();
-      const target = managementItems.find((item) => item.id === itemId);
-      if (!target) return;
-      target.childResponse = value;
-      writeJson("managementItems", managementItems);
-      renderItems();
-      renderDashboard();
-    }
+    function renderChats() {
+      const chats = getChats();
+      const container = document.getElementById("chatsContainer");
 
-    function renderLinks() {
-      const container = document.getElementById("linksContainer");
-      const linkedIds = getLinkedPartnerIds(currentUser.id);
-
-      if (linkedIds.length === 0) {
-        container.innerHTML = `<div class="empty">まだ連携はありません。</div>`;
+      if (chats.length === 0) {
+        container.innerHTML = `<div class="empty">会話はまだありません。</div>`;
         return;
       }
 
-      container.innerHTML = linkedIds.map((id) => {
-        const account = getAccountById(id);
-        if (!account) return "";
-        return `
-          <div class="item-card">
-            <h4>${account.id}</h4>
-            <div class="item-meta">権限：${roleLabels[account.role]}</div>
-          </div>`;
-      }).join("");
-    }
+      container.innerHTML = "";
 
-    function renderChatPartnerOptions() {
-      const select = document.getElementById("chatPartnerSelect");
-      const partnerIds = getLinkedPartnerIds(currentUser.id);
-      select.innerHTML = "";
+      chats.forEach((chat) => {
+        const card = document.createElement("div");
+        card.className = "item-card";
 
-      if (partnerIds.length === 0) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "連携ユーザーがいません";
-        select.appendChild(option);
-        return;
-      }
+        card.innerHTML = `
+          <h4>${chat.fromId} → ${chat.toId}</h4>
+          <div class="item-meta">
+            内容：${nl2br(chat.text || "")}
+          </div>
+          <div class="button-row">
+            <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
+            <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
+          </div>
+        `;
 
-      partnerIds.forEach((id) => {
-        const account = getAccountById(id);
-        if (!account) return;
-        const option = document.createElement("option");
-        option.value = id;
-        option.textContent = `${account.id}（${roleLabels[account.role]}）`;
-        select.appendChild(option);
-      });
-    }
-
-    function renderChatMessages() {
-      const partnerId = document.getElementById("chatPartnerSelect").value;
-      const chatMessages = document.getElementById("chatMessages");
-      if (!partnerId) {
-        chatMessages.innerHTML = `<div class="empty">会話相手がいません。</div>`;
-        return;
-      }
-
-      const thread = getChats().filter((chat) =>
-        (chat.fromId === currentUser.id && chat.toId === partnerId) ||
-        (chat.fromId === partnerId && chat.toId === currentUser.id)
-      );
-
-      if (thread.length === 0) {
-        chatMessages.innerHTML = `<div class="empty">まだ会話はありません。</div>`;
-        return;
-      }
-
-      chatMessages.innerHTML = "";
-      thread.forEach((chat) => {
-        const bubble = document.createElement("div");
-        bubble.className = `chat-bubble ${chat.fromId === currentUser.id ? "me" : "other"}`;
-
-        const menu = chat.fromId === currentUser.id
-          ? `
-            <div class="button-row" style="margin-top:8px;">
-              <button class="button sub small" data-chat-action="edit" data-id="${chat.id}">編集</button>
-              <button class="button sub small" data-chat-action="delete" data-id="${chat.id}">削除</button>
-            </div>`
-          : "";
-
-        bubble.innerHTML = `<div class="chat-name">${chat.fromId}</div>${nl2br(chat.text)}${menu}`;
-        chatMessages.appendChild(bubble);
+        container.appendChild(card);
       });
 
-      chatMessages.querySelectorAll("[data-chat-action='edit']").forEach((button) => {
+      container.querySelectorAll("[data-chat-action='edit']").forEach((button) => {
         button.addEventListener("click", () => {
           const chats = getChats();
-          const target = chats.find((chat) => chat.id === button.dataset.id);
+          const target = chats.find((c) => c.id === button.dataset.id);
           if (!target) return;
-          const nextText = prompt("メッセージを編集", target.text);
+
+          const nextText = prompt("会話内容を編集", target.text || "");
           if (nextText === null) return;
+
           target.text = nextText.trim() || "（空メッセージ）";
           writeJson("chats", chats);
-          renderChatMessages();
+          renderAll();
         });
       });
 
-      chatMessages.querySelectorAll("[data-chat-action='delete']").forEach((button) => {
+      container.querySelectorAll("[data-chat-action='delete']").forEach((button) => {
         button.addEventListener("click", () => {
-          const chats = getChats().filter((chat) => chat.id !== button.dataset.id);
-          writeJson("chats", chats);
-          renderChatMessages();
+          if (!confirm("この会話を削除しますか？")) return;
+
+          writeJson("chats", getChats().filter((c) => c.id !== button.dataset.id));
+          renderAll();
         });
       });
-      });
-
-      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function renderMain() {
-      document.getElementById("sidebarRole").textContent = roleLabels[currentUser.role];
-      document.getElementById("sidebarId").textContent = currentUser.id;
-      document.getElementById("welcomeRole").textContent = roleLabels[currentUser.role];
-      document.getElementById("welcomeTitle").textContent = `${roleLabels[currentUser.role]}アカウントでログイン中：main.html`;
-      renderAvatar(document.getElementById("sidebarAvatar"), currentUser);
+    function renderPanelVisibility() {
+      document.getElementById("panel-overview").classList.toggle("hidden", currentPanel !== "overview");
+      document.getElementById("panel-accounts").classList.toggle("hidden", currentPanel !== "accounts");
+      document.getElementById("panel-items").classList.toggle("hidden", currentPanel !== "items");
+      document.getElementById("panel-chats").classList.toggle("hidden", currentPanel !== "chats");
 
       document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
         button.classList.toggle("active", button.dataset.panel === currentPanel);
       });
-      document.getElementById("panel-dashboard").classList.toggle("hidden", currentPanel !== "dashboard");
-      document.getElementById("panel-items").classList.toggle("hidden", currentPanel !== "items");
-      document.getElementById("panel-links").classList.toggle("hidden", currentPanel !== "links");
-      document.getElementById("panel-chatGuide").classList.toggle("hidden", currentPanel !== "chatGuide");
-      document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
-      document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
-      renderDashboard();
-      renderItems();
-      renderLinks();
-      renderChatPartnerOptions();
-      renderChatMessages();
     }
 
-    function initializeUser() {
-      const currentUserId = sessionStorage.getItem("currentUserId");
-      if (!currentUserId) {
-        window.location.href = "index.html";
-        return false;
-      }
-      const account = getAccountById(currentUserId);
-      if (!account) {
-        sessionStorage.removeItem("currentUserId");
-        window.location.href = "index.html";
-        return false;
-      }
-      currentUser = account;
-      return true;
+    function renderAll() {
+      renderPanelVisibility();
+      renderOverview();
+      renderAccounts();
+      renderItems();
+      renderChats();
     }
 
     document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
       button.addEventListener("click", () => {
         currentPanel = button.dataset.panel;
-        renderMain();
+        renderAll();
       });
     });
 
-    document.getElementById("logoutButton").addEventListener("click", () => {
-      sessionStorage.removeItem("currentUserId");
+    document.getElementById("goIndexButton").addEventListener("click", () => {
       window.location.href = "index.html";
     });
 
-    document.getElementById("openAddItemButton").addEventListener("click", () => {
-      if (currentUser.role !== "parent") return;
-      document.getElementById("addItemSection").classList.remove("hidden");
-    });
-
-    document.getElementById("closeAddItemButton").addEventListener("click", () => {
-      document.getElementById("addItemSection").classList.add("hidden");
-    });
-
-    document.getElementById("addItemButton").addEventListener("click", () => {
-      if (currentUser.role !== "parent") return;
-      const name = document.getElementById("itemName").value.trim();
-      const type = document.getElementById("itemType").value;
-      const links = getLinks();
-      const linkedChildren = links.filter((link) => link.parentId === currentUser.id).map((link) => link.childId);
-      if (!name) return alert("管理項目名を入力してください。");
-      if (linkedChildren.length === 0) return alert("先に子供アカウントと連携してください。");
-
-      const warningMessage = document.getElementById("warningMessage").value.trim();
-      const warningLevel = document.getElementById("warningLevel").value;
-      const toggleMessage = document.getElementById("toggleMessage").value.trim();
-      const toggleDefault = document.getElementById("toggleDefault").value;
-      const textRequest = document.getElementById("textRequest").value.trim();
-
-      if (type === "warning" && !warningMessage) return alert("警告文を入力してください。");
-      if (type === "toggle" && !toggleMessage) return alert("オンオフ項目の説明を入力してください。");
-      if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
-
-      const managementItems = getManagementItems();
-      linkedChildren.forEach((childId) => {
-        managementItems.push({
-          id: generateId("item"),
-          parentId: currentUser.id,
-          childId,
-          name,
-          type,
-          message: type === "warning" ? warningMessage : type === "toggle" ? toggleMessage : "",
-          warningLevel: type === "warning" ? warningLevel : "",
-          defaultValue: type === "toggle" ? toggleDefault : "",
-          requestText: type === "text" ? textRequest : "",
-          childResponse: type === "toggle" ? toggleDefault : ""
-        });
-      });
-      writeJson("managementItems", managementItems);
-      document.getElementById("itemName").value = "";
-      document.getElementById("itemType").value = "warning";
-      document.getElementById("warningMessage").value = "";
-      document.getElementById("warningLevel").value = "red";
-      document.getElementById("toggleMessage").value = "";
-      document.getElementById("toggleDefault").value = "OFF";
-      document.getElementById("textRequest").value = "";
-      updateItemTypeFields();
-      document.getElementById("addItemSection").classList.add("hidden");
-      renderMain();
-    });
-
-    document.getElementById("linkChildButton").addEventListener("click", () => {
-      if (currentUser.role !== "parent") return;
-      const childId = document.getElementById("linkChildId").value.trim();
-      if (!childId) return alert("子供のアカウントIDを入力してください。");
-      const child = getAccountById(childId);
-      if (!child || child.role !== "child") return alert("子供用アカウントが見つかりません。");
-
-      const links = getLinks();
-      const exists = links.some((link) => link.parentId === currentUser.id && link.childId === childId);
-      if (exists) return alert("すでに連携済みです。");
-      links.push({ parentId: currentUser.id, childId });
-      writeJson("links", links);
-      document.getElementById("linkChildId").value = "";
-      renderMain();
-    });
-
-    document.getElementById("chatFab").addEventListener("click", () => {
-      document.getElementById("chatModal").classList.remove("hidden");
-      renderChatPartnerOptions();
-      renderChatMessages();
-    });
-
-    document.getElementById("closeChatButton").addEventListener("click", () => {
-      document.getElementById("chatModal").classList.add("hidden");
-    });
-
-    document.getElementById("chatPartnerSelect").addEventListener("change", renderChatMessages);
-
-    document.getElementById("sendChatButton").addEventListener("click", () => {
-      const partnerId = document.getElementById("chatPartnerSelect").value;
-      const text = document.getElementById("chatInput").value.trim();
-      if (!partnerId) return alert("会話相手がいません。");
-      if (!text) return alert("メッセージを入力してください。");
-      const chats = getChats();
-      chats.push({ fromId: currentUser.id, toId: partnerId, text, id: generateId("chat") });
-      writeJson("chats", chats);
-      document.getElementById("chatInput").value = "";
-      renderChatMessages();
-    });
-
-    function updateItemTypeFields() {
-      const type = document.getElementById("itemType").value;
-      document.getElementById("warningFields").classList.toggle("hidden", type !== "warning");
-      document.getElementById("toggleFields").classList.toggle("hidden", type !== "toggle");
-      document.getElementById("textFields").classList.toggle("hidden", type !== "text");
-    }
-
-    document.getElementById("itemType").addEventListener("change", updateItemTypeFields);
-
     window.addEventListener("storage", (event) => {
       if (["accounts", "managementItems", "links", "chats"].includes(event.key)) {
-        if (currentUser) {
-          const refreshed = getAccountById(currentUser.id);
-          if (!refreshed) {
-            sessionStorage.removeItem("currentUserId");
-            window.location.href = "index.html";
-            return;
-          }
-          currentUser = refreshed;
-          renderMain();
-        }
+        renderAll();
       }
     });
 
-    if (initializeUser()) {
-      updateItemTypeFields();
-      renderMain();
-    }
+    renderAll();
   </script>
 </body>
 </html>
