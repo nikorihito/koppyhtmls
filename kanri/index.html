@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>保護者用管理サイト</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      padding: 32px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.3;
+    }
+
+    .description {
+      margin: 0 0 28px;
+      color: #475569;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .section {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 0 14px;
+      font-size: 15px;
+      background: #ffffff;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #334155;
+      box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .role-option {
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .role-option.active {
+      border-color: #0f172a;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    .role-name {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .role-text {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .button {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 14px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+
+    .button.sub {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .button:hover {
+      opacity: 0.92;
+    }
+
+    .message {
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .success-screen {
+      display: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .success-title {
+      margin: 0 0 12px;
+      font-size: 28px;
+      line-height: 1.5;
+    }
+
+    .success-box {
+      background: #f1f5f9;
+      border-radius: 18px;
+      padding: 20px;
+      margin-top: 18px;
+    }
+
+    .success-box p {
+      margin: 6px 0;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .success-title {
+        font-size: 22px;
+      }
+
+      .role-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card" id="homeScreen">
+      <h1>保護者用管理サイト</h1>
+      <p class="description">
+        まずはホーム画面の試作です。アカウント作成とログインの基本動作だけを確認できるようにしています。
+      </p>
+
+      <div class="section">
+        <h2 class="section-title">ログイン</h2>
+        <label for="loginId">アカウントID</label>
+        <input id="loginId" type="text" placeholder="アカウントIDを入力" />
+        <button class="button" id="loginButton">ログインする</button>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">アカウント作成</h2>
+        <label for="newAccountId">新しいアカウントID</label>
+        <input id="newAccountId" type="text" placeholder="新しいアカウントIDを入力" />
+
+        <label style="margin-top: 16px;">権限</label>
+        <div class="role-grid">
+          <button type="button" class="role-option active" data-role="child">
+            <div class="role-name">子供用</div>
+            <div class="role-text">子供が使うアカウント</div>
+          </button>
+          <button type="button" class="role-option" data-role="parent">
+            <div class="role-name">保護者用</div>
+            <div class="role-text">保護者が使うアカウント</div>
+          </button>
+        </div>
+
+        <button class="button sub" id="createButton">アカウント作成ボタン</button>
+      </div>
+
+      <div class="message" id="messageBox" style="display: none;"></div>
+    </div>
+
+    <div class="card success-screen" id="successScreen">
+      <div class="badge" id="successBadge"></div>
+      <h2 class="success-title" id="successTitle"></h2>
+      <div class="success-box">
+        <p id="successId"></p>
+        <p id="successRole"></p>
+      </div>
+      <button class="button" id="logoutButton">ログアウトする</button>
+    </div>
+  </div>
+
+  <script>
+    const accounts = [];
+    let selectedRole = "child";
+    let loggedInAccount = null;
+
+    const roleOptions = document.querySelectorAll(".role-option");
+    const homeScreen = document.getElementById("homeScreen");
+    const successScreen = document.getElementById("successScreen");
+    const loginIdInput = document.getElementById("loginId");
+    const newAccountIdInput = document.getElementById("newAccountId");
+    const messageBox = document.getElementById("messageBox");
+    const successBadge = document.getElementById("successBadge");
+    const successTitle = document.getElementById("successTitle");
+    const successId = document.getElementById("successId");
+    const successRole = document.getElementById("successRole");
+
+    const roleLabels = {
+      child: "子供用",
+      parent: "保護者用"
+    };
+
+    roleOptions.forEach((button) => {
+      button.addEventListener("click", () => {
+        selectedRole = button.dataset.role;
+        roleOptions.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+      });
+    });
+
+    function showMessage(text) {
+      messageBox.textContent = text;
+      messageBox.style.display = "block";
+    }
+
+    function hideMessage() {
+      messageBox.style.display = "none";
+      messageBox.textContent = "";
+    }
+
+    function showSuccess(account) {
+      successBadge.textContent = roleLabels[account.role];
+      successTitle.textContent = `${roleLabels[account.role]}アカウントでログイン成功：${account.id}`;
+      successId.textContent = `アカウントID：${account.id}`;
+      successRole.textContent = `権限：${roleLabels[account.role]}`;
+
+      homeScreen.style.display = "none";
+      successScreen.style.display = "block";
+    }
+
+    function showHome() {
+      successScreen.style.display = "none";
+      homeScreen.style.display = "block";
+    }
+
+    document.getElementById("createButton").addEventListener("click", () => {
+      const newId = newAccountIdInput.value.trim();
+
+      if (!newId) {
+        showMessage("アカウントIDを入力してください。");
+        return;
+      }
+
+      const exists = accounts.some((account) => account.id === newId);
+      if (exists) {
+        showMessage("そのアカウントIDはすでに使用されています。");
+        return;
+      }
+
+      accounts.push({
+        id: newId,
+        role: selectedRole
+      });
+
+      newAccountIdInput.value = "";
+      showMessage(`${roleLabels[selectedRole]}アカウントを作成しました：${newId}`);
+    });
+
+    document.getElementById("loginButton").addEventListener("click", () => {
+      const loginId = loginIdInput.value.trim();
+
+      if (!loginId) {
+        showMessage("アカウントIDを入力してください。");
+        return;
+      }
+
+      const found = accounts.find((account) => account.id === loginId);
+      if (!found) {
+        showMessage("該当するアカウントが見つかりません。");
+        return;
+      }
+
+      loggedInAccount = found;
+      loginIdInput.value = "";
+      hideMessage();
+      showSuccess(loggedInAccount);
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", () => {
+      loggedInAccount = null;
+      showHome();
+      showMessage("ログアウトしました。");
+    });
+  </script>
+</body>
+</html>
