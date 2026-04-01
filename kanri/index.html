@@ -24,7 +24,7 @@
 
     .card {
       width: 100%;
-      max-width: 620px;
+      max-width: 720px;
       background: #ffffff;
       border-radius: 24px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
@@ -65,8 +65,7 @@
     }
 
     input[type="text"],
-    input[type="password"],
-    select {
+    input[type="password"] {
       width: 100%;
       height: 48px;
       border: 1px solid #cbd5e1;
@@ -78,15 +77,14 @@
       margin-bottom: 14px;
     }
 
-    input:focus,
-    select:focus {
+    input:focus {
       border-color: #334155;
       box-shadow: 0 0 0 3px rgba(51, 65, 85, 0.12);
     }
 
     .role-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
       margin-top: 6px;
       margin-bottom: 14px;
@@ -117,6 +115,53 @@
       line-height: 1.5;
     }
 
+    .emoji-preview-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .emoji-preview {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .emoji-help {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .emoji-button {
+      height: 48px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      border-radius: 14px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .emoji-button.active {
+      border-color: #0f172a;
+      background: #e2e8f0;
+    }
+
     .button {
       width: 100%;
       min-height: 48px;
@@ -133,6 +178,12 @@
 
     .button.sub {
       background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+    }
+
+    .button.ghost {
+      background: #e2e8f0;
       color: #0f172a;
       border: 1px solid #cbd5e1;
     }
@@ -175,7 +226,7 @@
     <div class="card" id="appCard">
       <h1>まもきっず</h1>
       <p class="description">
-        保護者・子供のアカウント作成とログインができます。
+        保護者・子供・管理者のアカウント作成とログインができます。
       </p>
 
       <div class="section">
@@ -199,31 +250,6 @@
         <label for="newPassword">パスワード</label>
         <input id="newPassword" type="password" placeholder="6文字以上のパスワード" />
 
-        <label for="avatarEmoji">アカウント絵文字（任意）</label>
-        <select id="avatarEmoji">
-          <option value="">選択しない</option>
-          <option value="😀">😀</option>
-          <option value="😺">😺</option>
-          <option value="🐱">🐱</option>
-          <option value="🐶">🐶</option>
-          <option value="🐰">🐰</option>
-          <option value="🦊">🦊</option>
-          <option value="🐼">🐼</option>
-          <option value="🧒">🧒</option>
-          <option value="👦">👦</option>
-          <option value="👧">👧</option>
-          <option value="👩">👩</option>
-          <option value="👨">👨</option>
-          <option value="👪">👪</option>
-          <option value="🌟">🌟</option>
-          <option value="🎮">🎮</option>
-          <option value="📚">📚</option>
-          <option value="📝">📝</option>
-          <option value="🚀">🚀</option>
-          <option value="🍀">🍀</option>
-          <option value="🔧">🔧</option>
-        </select>
-
         <label style="margin-top:16px;">権限</label>
         <div class="role-grid">
           <button type="button" class="role-option active" data-role="child">
@@ -234,8 +260,56 @@
             <div class="role-name">保護者用</div>
             <div class="role-text">保護者が使うアカウント</div>
           </button>
+          <button type="button" class="role-option" data-role="admin">
+            <div class="role-name">管理者用</div>
+            <div class="role-text">全体管理を行うアカウント</div>
+          </button>
         </div>
 
+        <label for="avatarEmojiInput">アカウント絵文字（任意）</label>
+        <div class="emoji-preview-wrap">
+          <div class="emoji-preview" id="emojiPreview">🧒</div>
+          <div class="emoji-help">
+            下の候補から選ぶか、入力欄に好きな絵文字を直接入力できます。<br>
+            未入力なら権限ごとの既定絵文字が使われます。
+          </div>
+        </div>
+        <input id="avatarEmojiInput" type="text" placeholder="例：🐱 や 🚀 や 😀" maxlength="8" />
+
+        <div class="emoji-grid" id="emojiGrid">
+          <button type="button" class="emoji-button" data-emoji="😀">😀</button>
+          <button type="button" class="emoji-button" data-emoji="😺">😺</button>
+          <button type="button" class="emoji-button" data-emoji="🐱">🐱</button>
+          <button type="button" class="emoji-button" data-emoji="🐶">🐶</button>
+          <button type="button" class="emoji-button" data-emoji="🐰">🐰</button>
+          <button type="button" class="emoji-button" data-emoji="🦊">🦊</button>
+          <button type="button" class="emoji-button" data-emoji="🐼">🐼</button>
+          <button type="button" class="emoji-button" data-emoji="🧒">🧒</button>
+          <button type="button" class="emoji-button" data-emoji="👦">👦</button>
+          <button type="button" class="emoji-button" data-emoji="👧">👧</button>
+          <button type="button" class="emoji-button" data-emoji="👩">👩</button>
+          <button type="button" class="emoji-button" data-emoji="👨">👨</button>
+          <button type="button" class="emoji-button" data-emoji="👪">👪</button>
+          <button type="button" class="emoji-button" data-emoji="🌟">🌟</button>
+          <button type="button" class="emoji-button" data-emoji="🎮">🎮</button>
+          <button type="button" class="emoji-button" data-emoji="📚">📚</button>
+          <button type="button" class="emoji-button" data-emoji="📝">📝</button>
+          <button type="button" class="emoji-button" data-emoji="🚀">🚀</button>
+          <button type="button" class="emoji-button" data-emoji="🍀">🍀</button>
+          <button type="button" class="emoji-button" data-emoji="🔧">🔧</button>
+          <button type="button" class="emoji-button" data-emoji="🎵">🎵</button>
+          <button type="button" class="emoji-button" data-emoji="💡">💡</button>
+          <button type="button" class="emoji-button" data-emoji="🛠️">🛠️</button>
+          <button type="button" class="emoji-button" data-emoji="🏆">🏆</button>
+          <button type="button" class="emoji-button" data-emoji="🎨">🎨</button>
+          <button type="button" class="emoji-button" data-emoji="📦">📦</button>
+          <button type="button" class="emoji-button" data-emoji="🧠">🧠</button>
+          <button type="button" class="emoji-button" data-emoji="⚡">⚡</button>
+          <button type="button" class="emoji-button" data-emoji="🌈">🌈</button>
+          <button type="button" class="emoji-button" data-emoji="🧸">🧸</button>
+        </div>
+
+        <button class="button ghost" id="clearEmojiButton" type="button">絵文字をクリア</button>
         <button class="button sub" id="createButton">アカウント作成</button>
       </div>
 
@@ -271,6 +345,9 @@
     const messageBox = document.getElementById("messageBox");
     const appCard = document.getElementById("appCard");
     const roleOptions = document.querySelectorAll(".role-option");
+    const emojiButtons = document.querySelectorAll(".emoji-button");
+    const avatarEmojiInput = document.getElementById("avatarEmojiInput");
+    const emojiPreview = document.getElementById("emojiPreview");
 
     let selectedRole = "child";
 
@@ -283,12 +360,42 @@
       appCard.classList.toggle("loading", isLoading);
     }
 
+    function getDefaultAvatarByRole(role) {
+      if (role === "admin") return "🔧";
+      if (role === "parent") return "👪";
+      return "🧒";
+    }
+
+    function renderEmojiPreview() {
+      const value = avatarEmojiInput.value.trim();
+      emojiPreview.textContent = value || getDefaultAvatarByRole(selectedRole);
+
+      emojiButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.emoji === value);
+      });
+    }
+
     roleOptions.forEach((button) => {
       button.addEventListener("click", () => {
         selectedRole = button.dataset.role;
         roleOptions.forEach((item) => item.classList.remove("active"));
         button.classList.add("active");
+        renderEmojiPreview();
       });
+    });
+
+    emojiButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        avatarEmojiInput.value = button.dataset.emoji;
+        renderEmojiPreview();
+      });
+    });
+
+    avatarEmojiInput.addEventListener("input", renderEmojiPreview);
+
+    document.getElementById("clearEmojiButton").addEventListener("click", () => {
+      avatarEmojiInput.value = "";
+      renderEmojiPreview();
     });
 
     async function accountIdExists(accountId) {
@@ -300,7 +407,7 @@
     document.getElementById("createButton").addEventListener("click", async () => {
       const accountId = normalizeAccountId(document.getElementById("newAccountId").value);
       const password = document.getElementById("newPassword").value;
-      const avatarEmoji = document.getElementById("avatarEmoji").value;
+      const avatarEmoji = avatarEmojiInput.value.trim();
 
       try {
         showMessage("");
@@ -331,7 +438,11 @@
         showMessage("アカウントを作成しました。ログインできます。");
         document.getElementById("newAccountId").value = "";
         document.getElementById("newPassword").value = "";
-        document.getElementById("avatarEmoji").value = "";
+        avatarEmojiInput.value = "";
+        selectedRole = "child";
+        roleOptions.forEach((item) => item.classList.remove("active"));
+        document.querySelector('.role-option[data-role="child"]').classList.add("active");
+        renderEmojiPreview();
       } catch (error) {
         showMessage(error.message || "アカウント作成に失敗しました。");
       } finally {
@@ -370,6 +481,8 @@
         location.href = "./main.html";
       }
     });
+
+    renderEmojiPreview();
   </script>
 </body>
 </html>
