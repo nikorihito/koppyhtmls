@@ -379,6 +379,53 @@
       line-height: 1.6;
     }
 
+    .emoji-preview-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .emoji-preview {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .emoji-help {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .emoji-button {
+      height: 48px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      border-radius: 14px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .emoji-button.active {
+      border-color: #0f172a;
+      background: #e2e8f0;
+    }
+
     @media (max-width: 900px) {
       .app-shell {
         grid-template-columns: 1fr;
@@ -482,11 +529,11 @@
               <div class="inline-two row-gap">
                 <div>
                   <label for="toggleOnLabel">ON時の表示</label>
-                  <input id="toggleOnLabel" type="text" placeholder="例：許可中" />
+                  <input id="toggleOnLabel" type="text" placeholder="例：●●" />
                 </div>
                 <div>
                   <label for="toggleOffLabel">OFF時の表示</label>
-                  <input id="toggleOffLabel" type="text" placeholder="例：停止中" />
+                  <input id="toggleOffLabel" type="text" placeholder="例：○○" />
                 </div>
               </div>
 
@@ -539,31 +586,54 @@
 
           <div class="section">
             <h3 class="section-title">絵文字アイコン変更</h3>
-            <label for="accountEmoji">アカウント絵文字</label>
-            <select id="accountEmoji">
-              <option value="">選択しない</option>
-              <option value="😀">😀</option>
-              <option value="😺">😺</option>
-              <option value="🐱">🐱</option>
-              <option value="🐶">🐶</option>
-              <option value="🐰">🐰</option>
-              <option value="🦊">🦊</option>
-              <option value="🐼">🐼</option>
-              <option value="🧒">🧒</option>
-              <option value="👦">👦</option>
-              <option value="👧">👧</option>
-              <option value="👩">👩</option>
-              <option value="👨">👨</option>
-              <option value="👪">👪</option>
-              <option value="🌟">🌟</option>
-              <option value="🎮">🎮</option>
-              <option value="📚">📚</option>
-              <option value="📝">📝</option>
-              <option value="🚀">🚀</option>
-              <option value="🍀">🍀</option>
-              <option value="🔧">🔧</option>
-            </select>
-            <button class="button row-gap" id="saveEmojiButton">絵文字を保存する</button>
+            <div class="emoji-preview-wrap">
+              <div class="emoji-preview" id="accountEmojiPreview">🧒</div>
+              <div class="emoji-help">
+                候補から選ぶか、入力欄に直接好きな絵文字を入力できます。<br>
+                空欄なら権限ごとの既定絵文字になります。
+              </div>
+            </div>
+
+            <label for="accountEmojiInput">アカウント絵文字</label>
+            <input id="accountEmojiInput" type="text" placeholder="例：🐱 や 🚀 や 😀" maxlength="8" />
+
+            <div class="emoji-grid" id="accountEmojiGrid">
+              <button type="button" class="emoji-button" data-emoji="😀">😀</button>
+              <button type="button" class="emoji-button" data-emoji="😺">😺</button>
+              <button type="button" class="emoji-button" data-emoji="🐱">🐱</button>
+              <button type="button" class="emoji-button" data-emoji="🐶">🐶</button>
+              <button type="button" class="emoji-button" data-emoji="🐰">🐰</button>
+              <button type="button" class="emoji-button" data-emoji="🦊">🦊</button>
+              <button type="button" class="emoji-button" data-emoji="🐼">🐼</button>
+              <button type="button" class="emoji-button" data-emoji="🧒">🧒</button>
+              <button type="button" class="emoji-button" data-emoji="👦">👦</button>
+              <button type="button" class="emoji-button" data-emoji="👧">👧</button>
+              <button type="button" class="emoji-button" data-emoji="👩">👩</button>
+              <button type="button" class="emoji-button" data-emoji="👨">👨</button>
+              <button type="button" class="emoji-button" data-emoji="👪">👪</button>
+              <button type="button" class="emoji-button" data-emoji="🌟">🌟</button>
+              <button type="button" class="emoji-button" data-emoji="🎮">🎮</button>
+              <button type="button" class="emoji-button" data-emoji="📚">📚</button>
+              <button type="button" class="emoji-button" data-emoji="📝">📝</button>
+              <button type="button" class="emoji-button" data-emoji="🚀">🚀</button>
+              <button type="button" class="emoji-button" data-emoji="🍀">🍀</button>
+              <button type="button" class="emoji-button" data-emoji="🔧">🔧</button>
+              <button type="button" class="emoji-button" data-emoji="🎵">🎵</button>
+              <button type="button" class="emoji-button" data-emoji="💡">💡</button>
+              <button type="button" class="emoji-button" data-emoji="🛠️">🛠️</button>
+              <button type="button" class="emoji-button" data-emoji="🏆">🏆</button>
+              <button type="button" class="emoji-button" data-emoji="🎨">🎨</button>
+              <button type="button" class="emoji-button" data-emoji="📦">📦</button>
+              <button type="button" class="emoji-button" data-emoji="🧠">🧠</button>
+              <button type="button" class="emoji-button" data-emoji="⚡">⚡</button>
+              <button type="button" class="emoji-button" data-emoji="🌈">🌈</button>
+              <button type="button" class="emoji-button" data-emoji="🧸">🧸</button>
+            </div>
+
+            <div class="button-row row-gap">
+              <button class="button ghost" id="clearEmojiButton" type="button">絵文字をクリア</button>
+              <button class="button" id="saveEmojiButton">絵文字を保存する</button>
+            </div>
           </div>
 
           <div class="section">
@@ -704,8 +774,12 @@
     const toastBox = document.getElementById("toastBox");
     const adminMenuButton = document.getElementById("adminMenuButton");
 
+    const accountEmojiInput = document.getElementById("accountEmojiInput");
+    const accountEmojiPreview = document.getElementById("accountEmojiPreview");
+    const accountEmojiButtons = Array.from(document.querySelectorAll("#accountEmojiGrid .emoji-button"));
+
     function showToast(message) {
-      toastBox.innerHTML = escapeHtml(message);
+      toastBox.textContent = message;
       toastBox.classList.remove("hidden");
       clearTimeout(showToast._timer);
       showToast._timer = setTimeout(() => {
@@ -724,6 +798,14 @@
 
     function renderAvatar(element, user) {
       element.textContent = getDefaultAvatarEmoji(user);
+    }
+
+    function renderAccountEmojiEditor() {
+      const value = accountEmojiInput.value.trim();
+      accountEmojiPreview.textContent = value || getDefaultAvatarEmoji(currentUser);
+      accountEmojiButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.emoji === value);
+      });
     }
 
     function setActivePanel(panelName) {
@@ -752,6 +834,11 @@
     }
 
     function renderWarnings() {
+      if (currentUser.role !== "child") {
+        warningListContainer.innerHTML = `<div class="empty">この権限では警告一覧は表示されません。</div>`;
+        return;
+      }
+
       if (currentWarnings.length === 0) {
         warningListContainer.innerHTML = `<div class="empty">警告はまだありません。</div>`;
         return;
@@ -1003,7 +1090,7 @@
           if (currentUser.role === "parent") {
             actionHtml += `
               <div class="button-row row-gap">
-                <button class="button small" data-request-id="${item.id}">
+                <button class="button small" data-request-id="${item.id}" ${item.requestActive ? "disabled" : ""}>
                   ${item.requestActive ? "要請中" : "要請する"}
                 </button>
                 <button class="button ghost small" data-delete-id="${item.id}">削除</button>
@@ -1603,7 +1690,8 @@
       document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
       adminMenuButton.classList.toggle("hidden", currentUser.role !== "admin");
 
-      document.getElementById("accountEmoji").value = currentUser.avatarEmoji || "";
+      accountEmojiInput.value = currentUser.avatarEmoji || "";
+      renderAccountEmojiEditor();
 
       renderDashboard();
       await subscribePartners();
@@ -1666,8 +1754,22 @@
       document.getElementById("chatInput").value = "";
     });
 
+    accountEmojiButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        accountEmojiInput.value = button.dataset.emoji;
+        renderAccountEmojiEditor();
+      });
+    });
+
+    accountEmojiInput.addEventListener("input", renderAccountEmojiEditor);
+
+    document.getElementById("clearEmojiButton").addEventListener("click", () => {
+      accountEmojiInput.value = "";
+      renderAccountEmojiEditor();
+    });
+
     document.getElementById("saveEmojiButton").addEventListener("click", async () => {
-      const avatarEmoji = document.getElementById("accountEmoji").value;
+      const avatarEmoji = accountEmojiInput.value.trim();
 
       await updateDoc(doc(db, "users", currentUser.uid), {
         avatarEmoji: avatarEmoji || "",
@@ -1677,6 +1779,7 @@
       currentUser.avatarEmoji = avatarEmoji || "";
       usersCache.set(currentUser.uid, currentUser);
       renderAvatar(sidebarAvatar, currentUser);
+      renderAccountEmojiEditor();
       alert("絵文字を保存しました。");
     });
 
