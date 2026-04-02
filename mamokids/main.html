@@ -796,7 +796,7 @@
           <label for="groupRoomSelect">グループ</label>
           <select id="groupRoomSelect"></select>
 
-          <div class="section row-gap" id="groupCreateSection" style="margin-bottom:12px;">
+          <div class="section row-gap hidden" id="groupCreateSection" style="margin-bottom:12px;">
             <h3 class="section-title">グループ作成</h3>
             <label for="groupNameInput">グループ名</label>
             <input id="groupNameInput" type="text" placeholder="例：家族連絡、宿題連絡" />
@@ -807,7 +807,7 @@
             <button class="button row-gap" id="createGroupButton">グループを作成する</button>
           </div>
 
-          <div class="section row-gap" id="groupEditSection" style="margin-bottom:0;">
+          <div class="section row-gap hidden" id="groupEditSection" style="margin-bottom:0;">
             <h3 class="section-title">グループ編集</h3>
             <label for="editGroupNameInput">グループ名</label>
             <input id="editGroupNameInput" type="text" placeholder="グループ名を変更" />
@@ -869,8 +869,6 @@
     } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
     let currentUser = null;
-    let currentPanel = "dashboard";
-
     let currentItems = [];
     let currentPartners = [];
     let currentWarnings = [];
@@ -951,8 +949,6 @@
     }
 
     function setActivePanel(panelName) {
-      currentPanel = panelName;
-
       document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
         button.classList.toggle("active", button.dataset.panel === panelName);
       });
@@ -1085,6 +1081,7 @@
 
       if (!currentUser || currentUser.role !== "parent") {
         extraParentGroupMembers = [];
+        renderLinks();
         renderGroupMemberOptions();
         renderEditGroupMembers();
         return;
@@ -1106,6 +1103,7 @@
         }
 
         extraParentGroupMembers = members;
+        renderLinks();
         renderGroupMemberOptions();
         renderEditGroupMembers();
       });
@@ -1219,24 +1217,77 @@
         linksTitle.textContent = "連携一覧";
       }
 
-      if (!Array.isArray(currentPartners) || currentPartners.length === 0) {
-        linksContainer.innerHTML = `<div class="empty">まだ連携はありません。</div>`;
+      const childAccounts = [];
+      const parentAccounts = [];
+
+      const linkedUidSet = new Set((currentPartners || []).map((u) => u.uid));
+
+      (currentPartners || []).forEach((user) => {
+        if (user.role === "child") {
+          childAccounts.push({ ...user, relationType: "linked" });
+        } else if (user.role === "parent") {
+          parentAccounts.push({ ...user, relationType: "linked" });
+        }
+      });
+
+      (extraParentGroupMembers || []).forEach((user) => {
+        if (user.role === "parent" && !linkedUidSet.has(user.uid)) {
+          parentAccounts.push({ ...user, relationType: "group_candidate" });
+        }
+      });
+
+      if (childAccounts.length === 0 && parentAccounts.length === 0) {
+        linksContainer.innerHTML = `<div class="empty">まだ登録された相手はいません。</div>`;
         return;
       }
 
-      linksContainer.innerHTML = currentPartners.map((partner) => `
-        <div class="item-card">
-          <div class="link-card">
-            <div class="avatar" style="width:56px;height:56px;font-size:28px;">${escapeHtml(getDefaultAvatarEmoji(partner))}</div>
-            <div>
-              <h4 style="margin:0 0 6px;">${escapeHtml(partner.accountId || "unknown")}</h4>
-              <div class="item-meta" style="margin:0;">
-                権限：${ROLE_LABELS[partner.role] || partner.role || "-"}
+      function renderUserCard(user) {
+        let relationBadge = "";
+        if (user.relationType === "linked") {
+          relationBadge = `<span class="badge" style="margin:0 0 0 8px;">連携中</span>`;
+        } else if (user.relationType === "group_candidate") {
+          relationBadge = `<span class="badge" style="margin:0 0 0 8px;">グループ候補</span>`;
+        }
+
+        return `
+          <div class="item-card">
+            <div class="link-card">
+              <div class="avatar" style="width:56px;height:56px;font-size:28px;">${escapeHtml(getDefaultAvatarEmoji(user))}</div>
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+                  <h4 style="margin:0;">${escapeHtml(user.accountId || "unknown")}</h4>
+                  ${relationBadge}
+                </div>
+                <div class="item-meta" style="margin:6px 0 0;">
+                  権限：${ROLE_LABELS[user.role] || user.role || "-"}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      `).join("");
+        `;
+      }
+
+      let html = "";
+
+      if (childAccounts.length > 0) {
+        html += `
+          <div class="section">
+            <h3 class="section-title">子供アカウント</h3>
+            ${childAccounts.map(renderUserCard).join("")}
+          </div>
+        `;
+      }
+
+      if (parentAccounts.length > 0) {
+        html += `
+          <div class="section">
+            <h3 class="section-title">保護者アカウント</h3>
+            ${parentAccounts.map(renderUserCard).join("")}
+          </div>
+        `;
+      }
+
+      linksContainer.innerHTML = html;
     }
 
     function getGroupCandidates() {
@@ -1718,7 +1769,22 @@
 
       document.getElementById("editGroupNameInput").value = room.name || "";
 
-      const candidates = getGroupCandidates();
+      const candidateMap = new Map();
+
+      getGroupCandidates().forEach((user) => {
+        if (user?.uid && user.uid !== currentUser?.uid) {
+          candidateMap.set(user.uid, user);
+        }
+      });
+
+      (room.members || []).forEach((uid) => {
+        if (uid && uid !== currentUser?.uid && !candidateMap.has(uid)) {
+          const cached = usersCache.get(uid);
+          if (cached) candidateMap.set(uid, cached);
+        }
+      });
+
+      const candidates = Array.from(candidateMap.values());
 
       if (candidates.length === 0) {
         editGroupMemberContainer.innerHTML = `<div class="item-meta">編集可能なメンバー候補がいません。</div>`;
@@ -1832,7 +1898,12 @@
       }
 
       if (kind === "group") {
+        const canManageGroup = currentUser?.role === "parent" || currentUser?.role === "admin";
+        document.getElementById("groupCreateSection").classList.toggle("hidden", !canManageGroup);
+        document.getElementById("groupEditSection").classList.toggle("hidden", !canManageGroup);
+
         renderEditGroupMembers();
+
         const roomId = groupRoomSelect.value || "";
         if (!roomId) {
           stopChatMessageSubscription();
@@ -2454,6 +2525,7 @@
       usersCache.set(currentUser.uid, currentUser);
       renderAvatar(sidebarAvatar, currentUser);
       renderAccountEmojiEditor();
+      renderLinks();
       alert("絵文字を保存しました。");
     });
 
