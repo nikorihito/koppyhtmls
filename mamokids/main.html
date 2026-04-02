@@ -365,40 +365,6 @@
       border-color: #0f172a;
     }
 
-    .chat-room-list {
-      margin-top: 12px;
-      max-height: 220px;
-      overflow: auto;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      background: #fff;
-    }
-
-    .chat-room-item {
-      padding: 12px 14px;
-      border-bottom: 1px solid #e2e8f0;
-      cursor: pointer;
-    }
-
-    .chat-room-item:last-child {
-      border-bottom: none;
-    }
-
-    .chat-room-item.active {
-      background: #eff6ff;
-    }
-
-    .chat-room-title {
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .chat-room-meta {
-      color: #64748b;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
     .chat-messages {
       flex: 1;
       overflow: auto;
@@ -899,7 +865,6 @@
 
     let currentChatKind = "direct";
     let currentRooms = [];
-    let currentSelectedRoomId = null;
     let currentRoomMessages = [];
 
     const sidebarAvatar = document.getElementById("sidebarAvatar");
@@ -946,8 +911,10 @@
     }
 
     function renderAccountEmojiEditor() {
-      const value = accountEmojiInput.value.trim();
-      accountEmojiPreview.textContent = value || getDefaultAvatarEmoji(currentUser);
+      const value = (accountEmojiInput?.value || "").trim();
+      const fallbackEmoji = currentUser ? getDefaultAvatarEmoji(currentUser) : "🙂";
+
+      accountEmojiPreview.textContent = value || fallbackEmoji;
       accountEmojiButtons.forEach((button) => {
         button.classList.toggle("active", button.dataset.emoji === value);
       });
@@ -968,23 +935,25 @@
     }
 
     function renderDashboard() {
+      if (!currentUser) return;
+
       dashboardSummary.innerHTML = `
         <div class="badge">概要</div>
-        <p><strong>ログイン中の権限：</strong>${ROLE_LABELS[currentUser.role]}</p>
-        <p><strong>アカウントID：</strong>${escapeHtml(currentUser.accountId)}</p>
-        <p><strong>連携中ユーザー数：</strong>${currentPartners.length}</p>
-        <p><strong>確認できる管理項目数：</strong>${currentItems.length}</p>
+        <p><strong>ログイン中の権限：</strong>${ROLE_LABELS[currentUser.role] || currentUser.role || "-"}</p>
+        <p><strong>アカウントID：</strong>${escapeHtml(currentUser.accountId || "-")}</p>
+        <p><strong>連携中ユーザー数：</strong>${Array.isArray(currentPartners) ? currentPartners.length : 0}</p>
+        <p><strong>確認できる管理項目数：</strong>${Array.isArray(currentItems) ? currentItems.length : 0}</p>
         <p style="margin-bottom:0;">左のメニューから必要な機能を選べます。</p>
       `;
     }
 
     function renderWarnings() {
-      if (currentUser.role !== "child") {
+      if (!currentUser || currentUser.role !== "child") {
         warningListContainer.innerHTML = `<div class="empty">この権限では警告一覧は表示されません。</div>`;
         return;
       }
 
-      if (currentWarnings.length === 0) {
+      if (!Array.isArray(currentWarnings) || currentWarnings.length === 0) {
         warningListContainer.innerHTML = `<div class="empty">警告はまだありません。</div>`;
         return;
       }
@@ -1001,30 +970,51 @@
           <div class="warning-box ${warning.level === "red" ? "red" : "yellow"}">
             <strong>${warning.level === "red" ? "赤警告" : "黄警告"}</strong><br>
             送信者：${escapeHtml(fromUser?.accountId || "保護者")}<br>
-            内容：${nl2br(escapeHtml(warning.message))}
+            内容：${nl2br(escapeHtml(warning.message || ""))}
           </div>
         `;
       }).join("");
     }
 
     async function getUserByUid(uid) {
+      if (!uid) return null;
       if (usersCache.has(uid)) return usersCache.get(uid);
 
       const snap = await getDoc(doc(db, "users", uid));
       if (!snap.exists()) return null;
 
-      const data = snap.data();
-      usersCache.set(uid, data);
-      return data;
+      const raw = snap.data() || {};
+      const user = {
+        uid: raw.uid || uid,
+        accountId: raw.accountId || "unknown",
+        role: raw.role || "child",
+        avatarEmoji: raw.avatarEmoji || ""
+      };
+
+      usersCache.set(uid, user);
+      return user;
     }
 
     async function subscribePartners() {
       if (typeof partnerUnsubscribe === "function") partnerUnsubscribe();
 
+      if (!currentUser) return;
+
       if (currentUser.role === "admin") {
         const q = query(collection(db, "users"), where("role", "==", "child"));
         partnerUnsubscribe = onSnapshot(q, (snapshot) => {
-          const partners = snapshot.docs.map((docSnap) => docSnap.data()).filter((u) => u.uid !== currentUser.uid);
+          const partners = snapshot.docs
+            .map((docSnap) => {
+              const raw = docSnap.data() || {};
+              return {
+                uid: raw.uid || docSnap.id,
+                accountId: raw.accountId || "unknown",
+                role: raw.role || "child",
+                avatarEmoji: raw.avatarEmoji || ""
+              };
+            })
+            .filter((u) => u.uid !== currentUser.uid);
+
           partners.forEach((user) => usersCache.set(user.uid, user));
           currentPartners = partners;
           renderLinks();
@@ -1041,7 +1031,7 @@
 
       partnerUnsubscribe = onSnapshot(q, async (snapshot) => {
         const partnerUids = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
+          const data = docSnap.data() || {};
           return currentUser.role === "parent" ? data.childUid : data.parentUid;
         });
 
@@ -1062,7 +1052,7 @@
     async function subscribeWarnings() {
       if (typeof warningsUnsubscribe === "function") warningsUnsubscribe();
 
-      if (currentUser.role !== "child") {
+      if (!currentUser || currentUser.role !== "child") {
         currentWarnings = [];
         renderWarnings();
         return;
@@ -1070,10 +1060,20 @@
 
       const q = query(collection(db, "warnings"), where("childUid", "==", currentUser.uid));
       warningsUnsubscribe = onSnapshot(q, async (snapshot) => {
-        const list = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        const list = snapshot.docs.map((docSnap) => {
+          const d = docSnap.data() || {};
+          return {
+            id: docSnap.id,
+            parentUid: d.parentUid || "",
+            childUid: d.childUid || "",
+            level: d.level || "red",
+            message: d.message || "",
+            createdAt: d.createdAt || null
+          };
+        });
 
         for (const warning of list) {
-          if (!usersCache.has(warning.parentUid)) {
+          if (warning.parentUid && !usersCache.has(warning.parentUid)) {
             const user = await getUserByUid(warning.parentUid);
             if (user) usersCache.set(warning.parentUid, user);
           }
@@ -1086,6 +1086,7 @@
 
     async function subscribeItems() {
       if (typeof itemsUnsubscribe === "function") itemsUnsubscribe();
+      if (!currentUser) return;
 
       let q;
       if (currentUser.role === "admin") {
@@ -1097,17 +1098,33 @@
       }
 
       itemsUnsubscribe = onSnapshot(q, async (snapshot) => {
-        const items = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...docSnap.data()
-        }));
+        const items = snapshot.docs.map((docSnap) => {
+          const d = docSnap.data() || {};
+          return {
+            id: docSnap.id,
+            parentUid: d.parentUid || "",
+            childUid: d.childUid || "",
+            name: d.name || "無題",
+            type: d.type || "text",
+            message: d.message || "",
+            warningLevel: d.warningLevel || "red",
+            defaultValue: d.defaultValue || "OFF",
+            onLabel: d.onLabel || "ON",
+            offLabel: d.offLabel || "OFF",
+            requestText: d.requestText || "",
+            childResponse: d.childResponse || "",
+            requestActive: d.requestActive === true,
+            createdAt: d.createdAt || null,
+            updatedAt: d.updatedAt || null
+          };
+        });
 
         for (const item of items) {
-          if (!usersCache.has(item.parentUid)) {
+          if (item.parentUid && !usersCache.has(item.parentUid)) {
             const user = await getUserByUid(item.parentUid);
             if (user) usersCache.set(item.parentUid, user);
           }
-          if (!usersCache.has(item.childUid)) {
+          if (item.childUid && !usersCache.has(item.childUid)) {
             const user = await getUserByUid(item.childUid);
             if (user) usersCache.set(item.childUid, user);
           }
@@ -1130,27 +1147,27 @@
     }
 
     function renderLinks() {
-      if (currentPartners.length === 0) {
+      if (!Array.isArray(currentPartners) || currentPartners.length === 0) {
         linksContainer.innerHTML = `<div class="empty">まだ連携はありません。</div>`;
         return;
       }
 
       linksContainer.innerHTML = currentPartners.map((partner) => `
         <div class="item-card">
-          <h4>${escapeHtml(partner.accountId)}</h4>
-          <div class="item-meta">権限：${ROLE_LABELS[partner.role]}</div>
+          <h4>${escapeHtml(partner.accountId || "unknown")}</h4>
+          <div class="item-meta">権限：${ROLE_LABELS[partner.role] || partner.role || "-"}</div>
         </div>
       `).join("");
     }
 
     function buildWarningTargetOptions(itemId) {
-      if (currentPartners.length === 0) {
+      if (!Array.isArray(currentPartners) || currentPartners.length === 0) {
         return `<option value="">連携ユーザーなし</option>`;
       }
 
       const options = [`<option value="all">全員</option>`];
       currentPartners.forEach((partner) => {
-        options.push(`<option value="${partner.uid}">${escapeHtml(partner.accountId)}</option>`);
+        options.push(`<option value="${partner.uid}">${escapeHtml(partner.accountId || "unknown")}</option>`);
       });
 
       return `
@@ -1162,7 +1179,7 @@
     }
 
     function renderItems() {
-      if (currentItems.length === 0) {
+      if (!Array.isArray(currentItems) || currentItems.length === 0) {
         itemsContainer.innerHTML = `<div class="empty">まだ管理項目はありません。</div>`;
         return;
       }
@@ -1177,11 +1194,12 @@
 
         if (item.type === "warning") {
           className += item.warningLevel === "red" ? " warning-red" : " warning-yellow";
+
           detailHtml = `
             <div class="item-value">
               <strong>警告レベル：</strong>${item.warningLevel === "red" ? "赤" : "黄"}<br>
               <strong>警告文：</strong><br>
-              ${nl2br(escapeHtml(item.message))}
+              ${nl2br(escapeHtml(item.message || ""))}
             </div>
           `;
 
@@ -1209,7 +1227,7 @@
           detailHtml = `
             <div class="item-value">
               <strong>説明：</strong><br>
-              ${nl2br(escapeHtml(item.message))}
+              ${nl2br(escapeHtml(item.message || ""))}
             </div>
             <div class="state-card ${currentState === "ON" ? "state-on" : "state-off"}">
               <div class="state-label">現在の状態</div>
@@ -1235,7 +1253,7 @@
           detailHtml = `
             <div class="item-value">
               <strong>記述依頼：</strong><br>
-              ${nl2br(escapeHtml(item.requestText))}
+              ${nl2br(escapeHtml(item.requestText || ""))}
             </div>
             <div class="state-card ${item.requestActive ? "state-request" : "state-waiting"}">
               <div class="state-label">現在の状態</div>
@@ -1273,9 +1291,9 @@
 
         return `
           <div class="${className}">
-            <h4>${escapeHtml(item.name)}</h4>
+            <h4>${escapeHtml(item.name || "無題")}</h4>
             <div class="item-meta">
-              種類：${ITEM_TYPE_LABELS[item.type]}<br>
+              種類：${ITEM_TYPE_LABELS[item.type] || item.type || "-"}<br>
               保護者：${escapeHtml(parentId)}<br>
               子供：${escapeHtml(childId)}
             </div>
@@ -1298,7 +1316,7 @@
         button.addEventListener("click", async () => {
           const itemId = button.dataset.replyId;
           const textarea = document.getElementById(`reply-${itemId}`);
-          const text = textarea.value.trim();
+          const text = textarea?.value?.trim() || "";
 
           await updateDoc(doc(db, "managementItems", itemId), {
             childResponse: text || "（空の記述）",
@@ -1370,7 +1388,7 @@
       const currentValue = chatPartnerSelect.value;
       chatPartnerSelect.innerHTML = "";
 
-      if (currentPartners.length === 0) {
+      if (!Array.isArray(currentPartners) || currentPartners.length === 0) {
         const option = document.createElement("option");
         option.value = "";
         option.textContent = "連携ユーザーがいません";
@@ -1381,7 +1399,7 @@
       currentPartners.forEach((partner) => {
         const option = document.createElement("option");
         option.value = partner.uid;
-        option.textContent = `${partner.accountId}（${ROLE_LABELS[partner.role]}）`;
+        option.textContent = `${partner.accountId || "unknown"}（${ROLE_LABELS[partner.role] || partner.role || "-" }）`;
         chatPartnerSelect.appendChild(option);
       });
 
@@ -1391,12 +1409,12 @@
     }
 
     function renderGroupMemberOptions() {
-      if (!(currentUser.role === "parent" || currentUser.role === "admin")) {
+      if (!(currentUser?.role === "parent" || currentUser?.role === "admin")) {
         groupMemberContainer.innerHTML = `<div class="item-meta">この権限ではグループ作成できません。</div>`;
         return;
       }
 
-      if (currentPartners.length === 0) {
+      if (!Array.isArray(currentPartners) || currentPartners.length === 0) {
         groupMemberContainer.innerHTML = `<div class="item-meta">連携済みユーザーがいません。</div>`;
         return;
       }
@@ -1404,29 +1422,13 @@
       groupMemberContainer.innerHTML = currentPartners.map((partner) => `
         <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:400;">
           <input type="checkbox" class="group-member-checkbox" value="${partner.uid}" />
-          <span>${escapeHtml(partner.accountId)}（${ROLE_LABELS[partner.role]}）</span>
+          <span>${escapeHtml(partner.accountId || "unknown")}（${ROLE_LABELS[partner.role] || partner.role || "-" }）</span>
         </label>
       `).join("");
     }
 
-    function getRoomTitle(room) {
-      if (!room) return "";
-      if (room.type === "memo") return "マイメモ";
-      if (room.type === "group") return room.name || "グループ";
-      const otherUid = (room.members || []).find((uid) => uid !== currentUser.uid);
-      const other = usersCache.get(otherUid);
-      return other ? other.accountId : (room.name || "個別チャット");
-    }
-
-    function getRoomMeta(room) {
-      if (!room) return "";
-      if (room.type === "memo") return "自分専用";
-      if (room.type === "group") return `メンバー数：${(room.members || []).length}`;
-      return "1対1チャット";
-    }
-
     function getSelectedRoomIdByKind() {
-      if (currentChatKind === "direct") return document.getElementById("chatPartnerSelect").dataset.roomId || "";
+      if (currentChatKind === "direct") return chatPartnerSelect.dataset.roomId || "";
       if (currentChatKind === "group") return groupRoomSelect.value || "";
       if (currentChatKind === "memo") {
         const memoRoom = currentRooms.find((room) => room.type === "memo");
@@ -1436,7 +1438,7 @@
     }
 
     function setSelectedRoomIdForDirect(roomId) {
-      document.getElementById("chatPartnerSelect").dataset.roomId = roomId || "";
+      chatPartnerSelect.dataset.roomId = roomId || "";
     }
 
     async function ensureDirectRoom(partnerUid) {
@@ -1503,11 +1505,21 @@
       const q = query(collection(db, "chatMessages"), where("roomId", "==", roomId));
       chatMessagesUnsubscribe = onSnapshot(q, async (snapshot) => {
         const list = snapshot.docs
-          .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+          .map((docSnap) => {
+            const d = docSnap.data() || {};
+            return {
+              id: docSnap.id,
+              roomId: d.roomId || "",
+              fromUid: d.fromUid || "",
+              text: d.text || "",
+              createdAt: d.createdAt || null,
+              updatedAt: d.updatedAt || null
+            };
+          })
           .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
 
         for (const msg of list) {
-          if (!usersCache.has(msg.fromUid)) {
+          if (msg.fromUid && !usersCache.has(msg.fromUid)) {
             const user = await getUserByUid(msg.fromUid);
             if (user) usersCache.set(msg.fromUid, user);
           }
@@ -1526,7 +1538,7 @@
         return;
       }
 
-      if (currentRoomMessages.length === 0) {
+      if (!Array.isArray(currentRoomMessages) || currentRoomMessages.length === 0) {
         chatMessages.innerHTML = `<div class="empty">まだメッセージはありません。</div>`;
         return;
       }
@@ -1536,7 +1548,7 @@
         return `
           <div class="chat-bubble ${mine ? "me" : "other"}">
             <div class="chat-name">${escapeHtml(usersCache.get(chat.fromUid)?.accountId || "unknown")}</div>
-            ${nl2br(escapeHtml(chat.text))}
+            ${nl2br(escapeHtml(chat.text || ""))}
             ${mine ? `
               <div class="button-row" style="margin-top:8px;">
                 <button class="button sub small" data-chat-edit="${chat.id}">編集</button>
@@ -1587,7 +1599,7 @@
       groupRooms.forEach((room) => {
         const option = document.createElement("option");
         option.value = room.id;
-        option.textContent = `${getRoomTitle(room)}（${(room.members || []).length}人）`;
+        option.textContent = `${room.name || "グループ"}（${Array.isArray(room.members) ? room.members.length : 0}人）`;
         groupRoomSelect.appendChild(option);
       });
 
@@ -1598,15 +1610,27 @@
 
     async function subscribeRooms() {
       if (typeof chatRoomsUnsubscribe === "function") chatRoomsUnsubscribe();
+      if (!currentUser) return;
 
-      chatRoomsUnsubscribe = onSnapshot(collection(db, "chatRooms"), async (snapshot) => {
-        const rooms = snapshot.docs
-          .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
-          .filter((room) => Array.isArray(room.members) && room.members.includes(currentUser.uid));
+      const q = query(collection(db, "chatRooms"), where("members", "array-contains", currentUser.uid));
+
+      chatRoomsUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const rooms = snapshot.docs.map((docSnap) => {
+          const d = docSnap.data() || {};
+          return {
+            id: docSnap.id,
+            type: d.type || "direct",
+            name: d.name || "",
+            members: Array.isArray(d.members) ? d.members : [],
+            createdBy: d.createdBy || "",
+            createdAt: d.createdAt || null,
+            updatedAt: d.updatedAt || null
+          };
+        });
 
         for (const room of rooms) {
-          for (const uid of room.members || []) {
-            if (!usersCache.has(uid)) {
+          for (const uid of room.members) {
+            if (uid && !usersCache.has(uid)) {
               const user = await getUserByUid(uid);
               if (user) usersCache.set(uid, user);
             }
@@ -1688,6 +1712,41 @@
       }
     }
 
+    function subscribeAdminData() {
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        adminUsers = snapshot.docs.map((docSnap) => {
+          const d = docSnap.data() || {};
+          return {
+            uid: d.uid || docSnap.id,
+            accountId: d.accountId || "unknown",
+            role: d.role || "child",
+            avatarEmoji: d.avatarEmoji || ""
+          };
+        });
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "links"), (snapshot) => {
+        adminLinks = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...(docSnap.data() || {}) }));
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "managementItems"), (snapshot) => {
+        adminItems = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...(docSnap.data() || {}) }));
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "chatRooms"), (snapshot) => {
+        adminRooms = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...(docSnap.data() || {}) }));
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "chatMessages"), (snapshot) => {
+        adminMessages = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...(docSnap.data() || {}) }));
+        renderAdminPanel();
+      });
+    }
+
     function renderAdminPanel() {
       if (!currentUser || currentUser.role !== "admin") return;
 
@@ -1726,9 +1785,9 @@
 
         return `
           <div class="item-card">
-            <h4>${escapeHtml(user.accountId)}</h4>
+            <h4>${escapeHtml(user.accountId || "unknown")}</h4>
             <div class="item-meta">
-              権限：${ROLE_LABELS[user.role] || user.role}<br>
+              権限：${ROLE_LABELS[user.role] || user.role || "-"}<br>
               連携数：${linkedCount}
             </div>
             <div class="button-row">
@@ -1783,7 +1842,7 @@
           className += item.warningLevel === "red" ? " warning-red" : " warning-yellow";
           details = `
             警告レベル：${item.warningLevel === "red" ? "赤" : "黄"}<br>
-            警告文：${nl2br(escapeHtml(item.message))}
+            警告文：${nl2br(escapeHtml(item.message || ""))}
           `;
         } else if (item.type === "toggle") {
           const label = (item.childResponse || item.defaultValue || "OFF") === "ON"
@@ -1791,22 +1850,22 @@
             : (item.offLabel || "OFF");
 
           details = `
-            説明：${nl2br(escapeHtml(item.message))}<br>
+            説明：${nl2br(escapeHtml(item.message || ""))}<br>
             状態：${escapeHtml(label)}<br>
             ON表示：${escapeHtml(item.onLabel || "ON")} / OFF表示：${escapeHtml(item.offLabel || "OFF")}
           `;
         } else {
           details = `
-            記述依頼：${nl2br(escapeHtml(item.requestText))}<br>
+            記述依頼：${nl2br(escapeHtml(item.requestText || ""))}<br>
             子供の記述：${item.childResponse ? nl2br(escapeHtml(item.childResponse)) : "未入力"}
           `;
         }
 
         return `
           <div class="${className}">
-            <h4>${escapeHtml(item.name)}</h4>
+            <h4>${escapeHtml(item.name || "無題")}</h4>
             <div class="item-meta">
-              種類：${ITEM_TYPE_LABELS[item.type]}<br>
+              種類：${ITEM_TYPE_LABELS[item.type] || item.type || "-"}<br>
               保護者：${escapeHtml(parent?.accountId || "-")}<br>
               子供：${escapeHtml(child?.accountId || "-")}
             </div>
@@ -1836,10 +1895,10 @@
 
       container.innerHTML = adminRooms.map((room) => `
         <div class="item-card">
-          <h4>${escapeHtml(room.type === "memo" ? "マイメモ" : (room.name || room.type))}</h4>
+          <h4>${escapeHtml(room.type === "memo" ? "マイメモ" : (room.name || room.type || "room"))}</h4>
           <div class="item-meta">
-            種類：${escapeHtml(room.type)}<br>
-            メンバー数：${(room.members || []).length}
+            種類：${escapeHtml(room.type || "-")}<br>
+            メンバー数：${Array.isArray(room.members) ? room.members.length : 0}
           </div>
           <div class="button-row">
             <button class="button sub small" data-admin-room-delete="${room.id}">ルーム削除</button>
@@ -1855,33 +1914,6 @@
       });
     }
 
-    function subscribeAdminData() {
-      onSnapshot(collection(db, "users"), (snapshot) => {
-        adminUsers = snapshot.docs.map((docSnap) => docSnap.data());
-        renderAdminPanel();
-      });
-
-      onSnapshot(collection(db, "links"), (snapshot) => {
-        adminLinks = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
-        renderAdminPanel();
-      });
-
-      onSnapshot(collection(db, "managementItems"), (snapshot) => {
-        adminItems = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
-        renderAdminPanel();
-      });
-
-      onSnapshot(collection(db, "chatRooms"), (snapshot) => {
-        adminRooms = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
-        renderAdminPanel();
-      });
-
-      onSnapshot(collection(db, "chatMessages"), (snapshot) => {
-        adminMessages = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
-        renderAdminPanel();
-      });
-    }
-
     async function loadCurrentUser(uid) {
       const snap = await getDoc(doc(db, "users", uid));
 
@@ -1889,16 +1921,23 @@
         alert("ユーザー情報が見つかりません。");
         await signOut(auth);
         location.href = "./index.html";
-        return;
+        return false;
       }
 
-      currentUser = snap.data();
+      const raw = snap.data() || {};
+      currentUser = {
+        uid: raw.uid || uid,
+        accountId: raw.accountId || "unknown",
+        role: raw.role || "child",
+        avatarEmoji: raw.avatarEmoji || ""
+      };
+
       usersCache.set(currentUser.uid, currentUser);
 
-      sidebarRole.textContent = ROLE_LABELS[currentUser.role];
-      sidebarId.textContent = currentUser.accountId;
-      welcomeRole.textContent = ROLE_LABELS[currentUser.role];
-      welcomeTitle.textContent = `${ROLE_LABELS[currentUser.role]}アカウントでログイン中`;
+      sidebarRole.textContent = ROLE_LABELS[currentUser.role] || currentUser.role || "-";
+      sidebarId.textContent = currentUser.accountId || "-";
+      welcomeRole.textContent = ROLE_LABELS[currentUser.role] || currentUser.role || "-";
+      welcomeTitle.textContent = `${ROLE_LABELS[currentUser.role] || currentUser.role || "不明"}アカウントでログイン中`;
 
       renderAvatar(sidebarAvatar, currentUser);
 
@@ -1909,15 +1948,15 @@
 
       document.getElementById("linkParentSection").classList.toggle(
         "hidden",
-        !(currentUser.role === "parent")
+        currentUser.role !== "parent"
       );
 
       adminMenuButton.classList.toggle("hidden", currentUser.role !== "admin");
 
       accountEmojiInput.value = currentUser.avatarEmoji || "";
       renderAccountEmojiEditor();
-
       renderDashboard();
+
       await subscribePartners();
       await subscribeItems();
       await subscribeWarnings();
@@ -1926,6 +1965,102 @@
       if (currentUser.role === "admin") {
         subscribeAdminData();
       }
+
+      return true;
+    }
+
+    function updateItemTypeFields() {
+      const type = document.getElementById("itemType").value;
+      document.getElementById("warningFields").classList.toggle("hidden", type !== "warning");
+      document.getElementById("toggleFields").classList.toggle("hidden", type !== "toggle");
+      document.getElementById("textFields").classList.toggle("hidden", type !== "text");
+    }
+
+    async function addManagementItems() {
+      const name = document.getElementById("itemName").value.trim();
+      const type = document.getElementById("itemType").value;
+      const warningMessage = document.getElementById("warningMessage").value.trim();
+      const warningLevel = document.getElementById("warningLevel").value;
+      const toggleMessage = document.getElementById("toggleMessage").value.trim();
+      const toggleDefault = document.getElementById("toggleDefault").value;
+      const toggleOnLabel = document.getElementById("toggleOnLabel").value.trim();
+      const toggleOffLabel = document.getElementById("toggleOffLabel").value.trim();
+      const textRequest = document.getElementById("textRequest").value.trim();
+
+      if (!name) return alert("管理項目名を入力してください。");
+      if (!Array.isArray(currentPartners) || currentPartners.length === 0) return alert("先に対象ユーザーを用意してください。");
+      if (type === "warning" && !warningMessage) return alert("警告文を入力してください。");
+      if (type === "toggle" && !toggleMessage) return alert("ON/OFF項目の説明を入力してください。");
+      if (type === "toggle" && !toggleOnLabel) return alert("ON時の表示を入力してください。");
+      if (type === "toggle" && !toggleOffLabel) return alert("OFF時の表示を入力してください。");
+      if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
+
+      for (const partner of currentPartners) {
+        await addDoc(collection(db, "managementItems"), {
+          parentUid: currentUser.uid,
+          childUid: partner.uid,
+          name,
+          type,
+          message: type === "warning" ? warningMessage : type === "toggle" ? toggleMessage : "",
+          warningLevel: type === "warning" ? warningLevel : "",
+          defaultValue: type === "toggle" ? toggleDefault : "",
+          onLabel: type === "toggle" ? toggleOnLabel : "",
+          offLabel: type === "toggle" ? toggleOffLabel : "",
+          requestText: type === "text" ? textRequest : "",
+          childResponse: type === "toggle" ? toggleDefault : "",
+          requestActive: false,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      }
+
+      document.getElementById("itemName").value = "";
+      document.getElementById("itemType").value = "warning";
+      document.getElementById("warningMessage").value = "";
+      document.getElementById("warningLevel").value = "red";
+      document.getElementById("toggleMessage").value = "";
+      document.getElementById("toggleDefault").value = "OFF";
+      document.getElementById("toggleOnLabel").value = "";
+      document.getElementById("toggleOffLabel").value = "";
+      document.getElementById("textRequest").value = "";
+      updateItemTypeFields();
+      document.getElementById("addItemSection").classList.add("hidden");
+    }
+
+    async function linkChild() {
+      const childAccountId = (document.getElementById("linkChildId").value || "").trim().toLowerCase();
+      if (!childAccountId) return alert("子供のアカウントIDを入力してください。");
+
+      const childQuery = query(collection(db, "users"), where("accountId", "==", childAccountId));
+      const snapshot = await getDocs(childQuery);
+
+      if (snapshot.empty) return alert("子供用アカウントが見つかりません。");
+
+      const raw = snapshot.docs[0].data() || {};
+      const child = {
+        uid: raw.uid || snapshot.docs[0].id,
+        accountId: raw.accountId || "unknown",
+        role: raw.role || "child"
+      };
+
+      if (child.role !== "child") return alert("子供用アカウントが見つかりません。");
+
+      const existsQuery = query(
+        collection(db, "links"),
+        where("parentUid", "==", currentUser.uid),
+        where("childUid", "==", child.uid)
+      );
+      const existsSnapshot = await getDocs(existsQuery);
+
+      if (!existsSnapshot.empty) return alert("すでに連携済みです。");
+
+      await addDoc(collection(db, "links"), {
+        parentUid: currentUser.uid,
+        childUid: child.uid,
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById("linkChildId").value = "";
     }
 
     document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
@@ -1989,12 +2124,12 @@
     });
 
     document.getElementById("createGroupButton").addEventListener("click", async () => {
-      if (!(currentUser.role === "parent" || currentUser.role === "admin")) {
+      if (!(currentUser?.role === "parent" || currentUser?.role === "admin")) {
         alert("この権限ではグループ作成できません。");
         return;
       }
 
-      const name = document.getElementById("groupNameInput").value.trim();
+      const name = (document.getElementById("groupNameInput").value || "").trim();
       if (!name) {
         alert("グループ名を入力してください。");
         return;
@@ -2023,7 +2158,7 @@
     });
 
     document.getElementById("sendChatButton").addEventListener("click", async () => {
-      const text = document.getElementById("chatInput").value.trim();
+      const text = (document.getElementById("chatInput").value || "").trim();
       if (!text) {
         alert("メッセージを入力してください。");
         return;
@@ -2076,7 +2211,7 @@
     });
 
     document.getElementById("saveEmojiButton").addEventListener("click", async () => {
-      const avatarEmoji = accountEmojiInput.value.trim();
+      const avatarEmoji = (accountEmojiInput.value || "").trim();
 
       await updateDoc(doc(db, "users", currentUser.uid), {
         avatarEmoji: avatarEmoji || "",
@@ -2108,14 +2243,21 @@
     });
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        location.href = "./index.html";
-        return;
-      }
+      try {
+        if (!user) {
+          location.href = "./index.html";
+          return;
+        }
 
-      await loadCurrentUser(user.uid);
-      updateItemTypeFields();
-      setActivePanel("dashboard");
+        const ok = await loadCurrentUser(user.uid);
+        if (!ok) return;
+
+        updateItemTypeFields();
+        setActivePanel("dashboard");
+      } catch (error) {
+        console.error(error);
+        alert("画面の初期化中にエラーが発生しました。コンソールを確認してください。");
+      }
     });
   </script>
 </body>
