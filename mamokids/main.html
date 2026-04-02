@@ -208,6 +208,56 @@
       line-height: 1.7;
     }
 
+    .state-card {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+    }
+
+    .state-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .state-value {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    .state-sub {
+      margin-top: 8px;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .state-on {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+
+    .state-off {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+
+    .state-waiting {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+
+    .state-request {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+
     .empty {
       padding: 18px;
       background: #f8fafc;
@@ -289,6 +339,64 @@
     .chat-footer {
       border-top: 1px solid #e2e8f0;
       border-bottom: none;
+    }
+
+    .chat-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .chat-tab {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chat-tab.active {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
+
+    .chat-room-list {
+      margin-top: 12px;
+      max-height: 220px;
+      overflow: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .chat-room-item {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+
+    .chat-room-item:last-child {
+      border-bottom: none;
+    }
+
+    .chat-room-item.active {
+      background: #eff6ff;
+    }
+
+    .chat-room-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .chat-room-meta {
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .chat-messages {
@@ -448,6 +556,10 @@
 
       .inline-two {
         grid-template-columns: 1fr;
+      }
+
+      .state-value {
+        font-size: 24px;
       }
     }
   </style>
@@ -668,8 +780,8 @@
           </div>
 
           <div class="section">
-            <h3 class="section-title">全チャット一覧</h3>
-            <div id="adminChatsContainer"></div>
+            <h3 class="section-title">全チャットルーム一覧</h3>
+            <div id="adminRoomsContainer"></div>
           </div>
         </section>
       </main>
@@ -685,14 +797,40 @@
         <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
           <div>
             <div class="badge">チャット</div>
-            <div style="font-weight:700; font-size:18px;">連携ユーザーと会話</div>
+            <div style="font-weight:700; font-size:18px;">チャット</div>
           </div>
           <button class="button ghost small" id="closeChatButton">閉じる</button>
         </div>
 
-        <div class="row-gap">
+        <div class="chat-tabs">
+          <button class="chat-tab active" data-chat-kind="direct">個別</button>
+          <button class="chat-tab" data-chat-kind="group">グループ</button>
+          <button class="chat-tab" data-chat-kind="memo">メモ</button>
+        </div>
+
+        <div id="chatDirectControls" class="row-gap">
           <label for="chatPartnerSelect">相手</label>
           <select id="chatPartnerSelect"></select>
+        </div>
+
+        <div id="chatGroupControls" class="row-gap hidden">
+          <label for="groupRoomSelect">グループ</label>
+          <select id="groupRoomSelect"></select>
+
+          <div class="section row-gap" id="groupCreateSection" style="margin-bottom:0;">
+            <h3 class="section-title">グループ作成</h3>
+            <label for="groupNameInput">グループ名</label>
+            <input id="groupNameInput" type="text" placeholder="例：家族連絡、宿題連絡" />
+
+            <label style="margin-top:16px;">参加メンバー</label>
+            <div id="groupMemberContainer"></div>
+
+            <button class="button row-gap" id="createGroupButton">グループを作成する</button>
+          </div>
+        </div>
+
+        <div id="chatMemoControls" class="row-gap hidden">
+          <div class="item-meta">自分専用のメモチャットです。</div>
         </div>
       </div>
 
@@ -715,9 +853,7 @@
       ROLE_LABELS,
       ITEM_TYPE_LABELS,
       nl2br,
-      escapeHtml,
-      normalizeAccountId,
-      chatKey
+      escapeHtml
     } from "./firebase-config.js";
 
     import {
@@ -744,13 +880,13 @@
 
     let currentItems = [];
     let currentPartners = [];
-    let currentChatMessages = [];
     let currentWarnings = [];
 
-    let chatUnsubscribe = null;
-    let linksUnsubscribe = null;
+    let partnerUnsubscribe = null;
     let itemsUnsubscribe = null;
     let warningsUnsubscribe = null;
+    let chatRoomsUnsubscribe = null;
+    let chatMessagesUnsubscribe = null;
 
     let usersCache = new Map();
     let lastRequestStateMap = new Map();
@@ -758,7 +894,13 @@
     let adminUsers = [];
     let adminLinks = [];
     let adminItems = [];
-    let adminChats = [];
+    let adminRooms = [];
+    let adminMessages = [];
+
+    let currentChatKind = "direct";
+    let currentRooms = [];
+    let currentSelectedRoomId = null;
+    let currentRoomMessages = [];
 
     const sidebarAvatar = document.getElementById("sidebarAvatar");
     const sidebarRole = document.getElementById("sidebarRole");
@@ -768,8 +910,6 @@
     const dashboardSummary = document.getElementById("dashboardSummary");
     const itemsContainer = document.getElementById("itemsContainer");
     const linksContainer = document.getElementById("linksContainer");
-    const chatPartnerSelect = document.getElementById("chatPartnerSelect");
-    const chatMessages = document.getElementById("chatMessages");
     const warningListContainer = document.getElementById("warningListContainer");
     const toastBox = document.getElementById("toastBox");
     const adminMenuButton = document.getElementById("adminMenuButton");
@@ -777,6 +917,11 @@
     const accountEmojiInput = document.getElementById("accountEmojiInput");
     const accountEmojiPreview = document.getElementById("accountEmojiPreview");
     const accountEmojiButtons = Array.from(document.querySelectorAll("#accountEmojiGrid .emoji-button"));
+
+    const chatPartnerSelect = document.getElementById("chatPartnerSelect");
+    const chatMessages = document.getElementById("chatMessages");
+    const groupRoomSelect = document.getElementById("groupRoomSelect");
+    const groupMemberContainer = document.getElementById("groupMemberContainer");
 
     function showToast(message) {
       toastBox.textContent = message;
@@ -874,13 +1019,27 @@
     }
 
     async function subscribePartners() {
-      if (typeof linksUnsubscribe === "function") linksUnsubscribe();
+      if (typeof partnerUnsubscribe === "function") partnerUnsubscribe();
+
+      if (currentUser.role === "admin") {
+        const q = query(collection(db, "users"), where("role", "==", "child"));
+        partnerUnsubscribe = onSnapshot(q, (snapshot) => {
+          const partners = snapshot.docs.map((docSnap) => docSnap.data()).filter((u) => u.uid !== currentUser.uid);
+          partners.forEach((user) => usersCache.set(user.uid, user));
+          currentPartners = partners;
+          renderLinks();
+          renderChatPartnerOptions();
+          renderGroupMemberOptions();
+          renderDashboard();
+        });
+        return;
+      }
 
       const q = currentUser.role === "parent"
         ? query(collection(db, "links"), where("parentUid", "==", currentUser.uid))
         : query(collection(db, "links"), where("childUid", "==", currentUser.uid));
 
-      linksUnsubscribe = onSnapshot(q, async (snapshot) => {
+      partnerUnsubscribe = onSnapshot(q, async (snapshot) => {
         const partnerUids = snapshot.docs.map((docSnap) => {
           const data = docSnap.data();
           return currentUser.role === "parent" ? data.childUid : data.parentUid;
@@ -895,6 +1054,7 @@
         currentPartners = partners;
         renderLinks();
         renderChatPartnerOptions();
+        renderGroupMemberOptions();
         renderDashboard();
       });
     }
@@ -927,9 +1087,14 @@
     async function subscribeItems() {
       if (typeof itemsUnsubscribe === "function") itemsUnsubscribe();
 
-      const q = currentUser.role === "parent"
-        ? query(collection(db, "managementItems"), where("parentUid", "==", currentUser.uid))
-        : query(collection(db, "managementItems"), where("childUid", "==", currentUser.uid));
+      let q;
+      if (currentUser.role === "admin") {
+        q = collection(db, "managementItems");
+      } else {
+        q = currentUser.role === "parent"
+          ? query(collection(db, "managementItems"), where("parentUid", "==", currentUser.uid))
+          : query(collection(db, "managementItems"), where("childUid", "==", currentUser.uid));
+      }
 
       itemsUnsubscribe = onSnapshot(q, async (snapshot) => {
         const items = snapshot.docs.map((docSnap) => ({
@@ -1012,7 +1177,6 @@
 
         if (item.type === "warning") {
           className += item.warningLevel === "red" ? " warning-red" : " warning-yellow";
-
           detailHtml = `
             <div class="item-value">
               <strong>警告レベル：</strong>${item.warningLevel === "red" ? "赤" : "黄"}<br>
@@ -1021,7 +1185,7 @@
             </div>
           `;
 
-          if (currentUser.role === "parent") {
+          if (currentUser.role === "parent" || currentUser.role === "admin") {
             actionHtml = `
               <div class="row-gap">
                 ${buildWarningTargetOptions(item.id)}
@@ -1045,14 +1209,18 @@
           detailHtml = `
             <div class="item-value">
               <strong>説明：</strong><br>
-              ${nl2br(escapeHtml(item.message))}<br><br>
-              <strong>現在の状態：</strong>${escapeHtml(displayLabel)}<br>
-              <strong>ON時の表示：</strong>${escapeHtml(onLabel)}<br>
-              <strong>OFF時の表示：</strong>${escapeHtml(offLabel)}
+              ${nl2br(escapeHtml(item.message))}
+            </div>
+            <div class="state-card ${currentState === "ON" ? "state-on" : "state-off"}">
+              <div class="state-label">現在の状態</div>
+              <div class="state-value">${escapeHtml(displayLabel)}</div>
+              <div class="state-sub">
+                ON時の表示：${escapeHtml(onLabel)} ／ OFF時の表示：${escapeHtml(offLabel)}
+              </div>
             </div>
           `;
 
-          if (currentUser.role === "parent") {
+          if (currentUser.role === "parent" || currentUser.role === "admin") {
             actionHtml = `
               <div class="button-row row-gap">
                 <button class="button small" data-toggle-id="${item.id}" data-value="ON">ONにする</button>
@@ -1069,8 +1237,12 @@
               <strong>記述依頼：</strong><br>
               ${nl2br(escapeHtml(item.requestText))}
             </div>
-            <div class="item-value">
-              <strong>現在状態：</strong>${item.requestActive ? "記述依頼中" : "待機中"}
+            <div class="state-card ${item.requestActive ? "state-request" : "state-waiting"}">
+              <div class="state-label">現在の状態</div>
+              <div class="state-value">${item.requestActive ? "入力待ち" : "待機中"}</div>
+              <div class="state-sub">
+                ${item.requestActive ? "子供の入力を待っています。" : "保護者が要請すると入力欄が有効になります。"}
+              </div>
             </div>
             <div class="item-value">
               <strong>子供からの記述：</strong><br>
@@ -1087,7 +1259,7 @@
             `;
           }
 
-          if (currentUser.role === "parent") {
+          if (currentUser.role === "parent" || currentUser.role === "admin") {
             actionHtml += `
               <div class="button-row row-gap">
                 <button class="button small" data-request-id="${item.id}" ${item.requestActive ? "disabled" : ""}>
@@ -1203,8 +1375,6 @@
         option.value = "";
         option.textContent = "連携ユーザーがいません";
         chatPartnerSelect.appendChild(option);
-        stopChatSubscription();
-        renderChatMessages();
         return;
       }
 
@@ -1218,30 +1388,150 @@
       if (currentPartners.some((partner) => partner.uid === currentValue)) {
         chatPartnerSelect.value = currentValue;
       }
-
-      startChatSubscription();
     }
 
-    function stopChatSubscription() {
-      if (typeof chatUnsubscribe === "function") chatUnsubscribe();
-      chatUnsubscribe = null;
-      currentChatMessages = [];
+    function renderGroupMemberOptions() {
+      if (!(currentUser.role === "parent" || currentUser.role === "admin")) {
+        groupMemberContainer.innerHTML = `<div class="item-meta">この権限ではグループ作成できません。</div>`;
+        return;
+      }
+
+      if (currentPartners.length === 0) {
+        groupMemberContainer.innerHTML = `<div class="item-meta">連携済みユーザーがいません。</div>`;
+        return;
+      }
+
+      groupMemberContainer.innerHTML = currentPartners.map((partner) => `
+        <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:400;">
+          <input type="checkbox" class="group-member-checkbox" value="${partner.uid}" />
+          <span>${escapeHtml(partner.accountId)}（${ROLE_LABELS[partner.role]}）</span>
+        </label>
+      `).join("");
+    }
+
+    function getRoomTitle(room) {
+      if (!room) return "";
+      if (room.type === "memo") return "マイメモ";
+      if (room.type === "group") return room.name || "グループ";
+      const otherUid = (room.members || []).find((uid) => uid !== currentUser.uid);
+      const other = usersCache.get(otherUid);
+      return other ? other.accountId : (room.name || "個別チャット");
+    }
+
+    function getRoomMeta(room) {
+      if (!room) return "";
+      if (room.type === "memo") return "自分専用";
+      if (room.type === "group") return `メンバー数：${(room.members || []).length}`;
+      return "1対1チャット";
+    }
+
+    function getSelectedRoomIdByKind() {
+      if (currentChatKind === "direct") return document.getElementById("chatPartnerSelect").dataset.roomId || "";
+      if (currentChatKind === "group") return groupRoomSelect.value || "";
+      if (currentChatKind === "memo") {
+        const memoRoom = currentRooms.find((room) => room.type === "memo");
+        return memoRoom ? memoRoom.id : "";
+      }
+      return "";
+    }
+
+    function setSelectedRoomIdForDirect(roomId) {
+      document.getElementById("chatPartnerSelect").dataset.roomId = roomId || "";
+    }
+
+    async function ensureDirectRoom(partnerUid) {
+      if (!partnerUid) return "";
+
+      const existing = currentRooms.find((room) =>
+        room.type === "direct" &&
+        Array.isArray(room.members) &&
+        room.members.length === 2 &&
+        room.members.includes(currentUser.uid) &&
+        room.members.includes(partnerUid)
+      );
+
+      if (existing) return existing.id;
+
+      const roomRef = await addDoc(collection(db, "chatRooms"), {
+        type: "direct",
+        name: "",
+        members: [currentUser.uid, partnerUid],
+        createdBy: currentUser.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      return roomRef.id;
+    }
+
+    async function ensureMemoRoom() {
+      const existing = currentRooms.find((room) =>
+        room.type === "memo" &&
+        Array.isArray(room.members) &&
+        room.members.length === 1 &&
+        room.members[0] === currentUser.uid
+      );
+
+      if (existing) return existing.id;
+
+      const roomRef = await addDoc(collection(db, "chatRooms"), {
+        type: "memo",
+        name: "マイメモ",
+        members: [currentUser.uid],
+        createdBy: currentUser.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      return roomRef.id;
+    }
+
+    function stopChatMessageSubscription() {
+      if (typeof chatMessagesUnsubscribe === "function") chatMessagesUnsubscribe();
+      chatMessagesUnsubscribe = null;
+      currentRoomMessages = [];
+    }
+
+    async function subscribeChatMessages(roomId) {
+      stopChatMessageSubscription();
+
+      if (!roomId) {
+        renderChatMessages();
+        return;
+      }
+
+      const q = query(collection(db, "chatMessages"), where("roomId", "==", roomId));
+      chatMessagesUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const list = snapshot.docs
+          .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+          .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+
+        for (const msg of list) {
+          if (!usersCache.has(msg.fromUid)) {
+            const user = await getUserByUid(msg.fromUid);
+            if (user) usersCache.set(msg.fromUid, user);
+          }
+        }
+
+        currentRoomMessages = list;
+        renderChatMessages();
+      });
     }
 
     function renderChatMessages() {
-      const partnerUid = chatPartnerSelect.value;
+      const roomId = getSelectedRoomIdByKind();
 
-      if (!partnerUid) {
-        chatMessages.innerHTML = `<div class="empty">会話相手がいません。</div>`;
+      if (!roomId) {
+        chatMessages.innerHTML = `<div class="empty">チャットルームを選択してください。</div>`;
         return;
       }
 
-      if (currentChatMessages.length === 0) {
-        chatMessages.innerHTML = `<div class="empty">まだ会話はありません。</div>`;
+      if (currentRoomMessages.length === 0) {
+        chatMessages.innerHTML = `<div class="empty">まだメッセージはありません。</div>`;
         return;
       }
 
-      chatMessages.innerHTML = currentChatMessages.map((chat) => {
+      chatMessages.innerHTML = currentRoomMessages.map((chat) => {
         const mine = chat.fromUid === currentUser.uid;
         return `
           <div class="chat-bubble ${mine ? "me" : "other"}">
@@ -1259,13 +1549,13 @@
 
       chatMessages.querySelectorAll("[data-chat-edit]").forEach((button) => {
         button.addEventListener("click", async () => {
-          const target = currentChatMessages.find((msg) => msg.id === button.dataset.chatEdit);
+          const target = currentRoomMessages.find((msg) => msg.id === button.dataset.chatEdit);
           if (!target) return;
 
           const nextText = prompt("メッセージを編集", target.text);
           if (nextText === null) return;
 
-          await updateDoc(doc(db, "chats", target.id), {
+          await updateDoc(doc(db, "chatMessages", target.id), {
             text: nextText.trim() || "（空メッセージ）",
             updatedAt: serverTimestamp()
           });
@@ -1274,134 +1564,128 @@
 
       chatMessages.querySelectorAll("[data-chat-delete]").forEach((button) => {
         button.addEventListener("click", async () => {
-          await deleteDoc(doc(db, "chats", button.dataset.chatDelete));
+          await deleteDoc(doc(db, "chatMessages", button.dataset.chatDelete));
         });
       });
 
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function startChatSubscription() {
-      stopChatSubscription();
+    function renderGroupRoomSelect() {
+      const currentValue = groupRoomSelect.value;
+      const groupRooms = currentRooms.filter((room) => room.type === "group");
+      groupRoomSelect.innerHTML = "";
 
-      const partnerUid = chatPartnerSelect.value;
-      if (!partnerUid) {
-        renderChatMessages();
+      if (groupRooms.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "グループがありません";
+        groupRoomSelect.appendChild(option);
         return;
       }
 
-      const q = query(
-        collection(db, "chats"),
-        where("participantsKey", "==", chatKey(currentUser.uid, partnerUid))
-      );
+      groupRooms.forEach((room) => {
+        const option = document.createElement("option");
+        option.value = room.id;
+        option.textContent = `${getRoomTitle(room)}（${(room.members || []).length}人）`;
+        groupRoomSelect.appendChild(option);
+      });
 
-      chatUnsubscribe = onSnapshot(q, async (snapshot) => {
-        const list = snapshot.docs
+      if (groupRooms.some((room) => room.id === currentValue)) {
+        groupRoomSelect.value = currentValue;
+      }
+    }
+
+    async function subscribeRooms() {
+      if (typeof chatRoomsUnsubscribe === "function") chatRoomsUnsubscribe();
+
+      chatRoomsUnsubscribe = onSnapshot(collection(db, "chatRooms"), async (snapshot) => {
+        const rooms = snapshot.docs
           .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
-          .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+          .filter((room) => Array.isArray(room.members) && room.members.includes(currentUser.uid));
 
-        for (const chat of list) {
-          if (!usersCache.has(chat.fromUid)) {
-            const u = await getUserByUid(chat.fromUid);
-            if (u) usersCache.set(chat.fromUid, u);
+        for (const room of rooms) {
+          for (const uid of room.members || []) {
+            if (!usersCache.has(uid)) {
+              const user = await getUserByUid(uid);
+              if (user) usersCache.set(uid, user);
+            }
           }
         }
 
-        currentChatMessages = list;
-        renderChatMessages();
+        currentRooms = rooms;
+        renderGroupRoomSelect();
+
+        if (currentChatKind === "memo") {
+          const memoRoomId = await ensureMemoRoom();
+          await subscribeChatMessages(memoRoomId);
+          return;
+        }
+
+        if (currentChatKind === "direct") {
+          const partnerUid = chatPartnerSelect.value;
+          if (partnerUid) {
+            const roomId = await ensureDirectRoom(partnerUid);
+            setSelectedRoomIdForDirect(roomId);
+            await subscribeChatMessages(roomId);
+          } else {
+            stopChatMessageSubscription();
+            renderChatMessages();
+          }
+          return;
+        }
+
+        if (currentChatKind === "group") {
+          const roomId = groupRoomSelect.value || "";
+          if (roomId) {
+            await subscribeChatMessages(roomId);
+          } else {
+            stopChatMessageSubscription();
+            renderChatMessages();
+          }
+        }
       });
     }
 
-    function updateItemTypeFields() {
-      const type = document.getElementById("itemType").value;
-      document.getElementById("warningFields").classList.toggle("hidden", type !== "warning");
-      document.getElementById("toggleFields").classList.toggle("hidden", type !== "toggle");
-      document.getElementById("textFields").classList.toggle("hidden", type !== "text");
-    }
+    async function setChatKind(kind) {
+      currentChatKind = kind;
 
-    async function addManagementItems() {
-      const name = document.getElementById("itemName").value.trim();
-      const type = document.getElementById("itemType").value;
-      const warningMessage = document.getElementById("warningMessage").value.trim();
-      const warningLevel = document.getElementById("warningLevel").value;
-      const toggleMessage = document.getElementById("toggleMessage").value.trim();
-      const toggleDefault = document.getElementById("toggleDefault").value;
-      const toggleOnLabel = document.getElementById("toggleOnLabel").value.trim();
-      const toggleOffLabel = document.getElementById("toggleOffLabel").value.trim();
-      const textRequest = document.getElementById("textRequest").value.trim();
+      document.querySelectorAll(".chat-tab").forEach((button) => {
+        button.classList.toggle("active", button.dataset.chatKind === kind);
+      });
 
-      if (!name) return alert("管理項目名を入力してください。");
-      if (currentPartners.length === 0) return alert("先に子供アカウントと連携してください。");
-      if (type === "warning" && !warningMessage) return alert("警告文を入力してください。");
-      if (type === "toggle" && !toggleMessage) return alert("ON/OFF項目の説明を入力してください。");
-      if (type === "toggle" && !toggleOnLabel) return alert("ON時の表示を入力してください。");
-      if (type === "toggle" && !toggleOffLabel) return alert("OFF時の表示を入力してください。");
-      if (type === "text" && !textRequest) return alert("子供への記述依頼を入力してください。");
+      document.getElementById("chatDirectControls").classList.toggle("hidden", kind !== "direct");
+      document.getElementById("chatGroupControls").classList.toggle("hidden", kind !== "group");
+      document.getElementById("chatMemoControls").classList.toggle("hidden", kind !== "memo");
 
-      for (const partner of currentPartners) {
-        await addDoc(collection(db, "managementItems"), {
-          parentUid: currentUser.uid,
-          childUid: partner.uid,
-          name,
-          type,
-          message: type === "warning" ? warningMessage : type === "toggle" ? toggleMessage : "",
-          warningLevel: type === "warning" ? warningLevel : "",
-          defaultValue: type === "toggle" ? toggleDefault : "",
-          onLabel: type === "toggle" ? toggleOnLabel : "",
-          offLabel: type === "toggle" ? toggleOffLabel : "",
-          requestText: type === "text" ? textRequest : "",
-          childResponse: type === "toggle" ? toggleDefault : "",
-          requestActive: false,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
+      if (kind === "memo") {
+        const roomId = await ensureMemoRoom();
+        await subscribeChatMessages(roomId);
+        return;
       }
 
-      document.getElementById("itemName").value = "";
-      document.getElementById("itemType").value = "warning";
-      document.getElementById("warningMessage").value = "";
-      document.getElementById("warningLevel").value = "red";
-      document.getElementById("toggleMessage").value = "";
-      document.getElementById("toggleDefault").value = "OFF";
-      document.getElementById("toggleOnLabel").value = "";
-      document.getElementById("toggleOffLabel").value = "";
-      document.getElementById("textRequest").value = "";
-      updateItemTypeFields();
-      document.getElementById("addItemSection").classList.add("hidden");
-    }
+      if (kind === "direct") {
+        const partnerUid = chatPartnerSelect.value;
+        if (!partnerUid) {
+          stopChatMessageSubscription();
+          renderChatMessages();
+          return;
+        }
+        const roomId = await ensureDirectRoom(partnerUid);
+        setSelectedRoomIdForDirect(roomId);
+        await subscribeChatMessages(roomId);
+        return;
+      }
 
-    async function linkChild() {
-      const childAccountId = normalizeAccountId(document.getElementById("linkChildId").value);
-      if (!childAccountId) return alert("子供のアカウントIDを入力してください。");
-
-      const childQuery = query(collection(db, "users"), where("accountId", "==", childAccountId));
-      const snapshot = await getDocs(childQuery);
-
-      if (snapshot.empty) return alert("子供用アカウントが見つかりません。");
-
-      const child = snapshot.docs[0].data();
-      if (child.role !== "child") return alert("子供用アカウントが見つかりません。");
-
-      const existsQuery = query(
-        collection(db, "links"),
-        where("parentUid", "==", currentUser.uid),
-        where("childUid", "==", child.uid)
-      );
-      const existsSnapshot = await getDocs(existsQuery);
-
-      if (!existsSnapshot.empty) return alert("すでに連携済みです。");
-
-      await addDoc(collection(db, "links"), {
-        parentUid: currentUser.uid,
-        childUid: child.uid,
-        createdAt: serverTimestamp()
-      });
-
-      document.getElementById("linkChildId").value = "";
-    }
-
-    function getAdminUserByUid(uid) {
-      return adminUsers.find((user) => user.uid === uid);
+      if (kind === "group") {
+        const roomId = groupRoomSelect.value || "";
+        if (!roomId) {
+          stopChatMessageSubscription();
+          renderChatMessages();
+          return;
+        }
+        await subscribeChatMessages(roomId);
+      }
     }
 
     function renderAdminPanel() {
@@ -1418,12 +1702,13 @@
         <p><strong>管理者アカウント数：</strong>${admins}</p>
         <p><strong>連携数：</strong>${adminLinks.length}</p>
         <p><strong>管理項目数：</strong>${adminItems.length}</p>
-        <p><strong>会話メッセージ数：</strong>${adminChats.length}</p>
+        <p><strong>チャットルーム数：</strong>${adminRooms.length}</p>
+        <p><strong>チャットメッセージ数：</strong>${adminMessages.length}</p>
       `;
 
       renderAdminAccounts();
       renderAdminItems();
-      renderAdminChats();
+      renderAdminRooms();
     }
 
     function renderAdminAccounts() {
@@ -1488,8 +1773,8 @@
       }
 
       container.innerHTML = adminItems.map((item) => {
-        const parent = getAdminUserByUid(item.parentUid);
-        const child = getAdminUserByUid(item.childUid);
+        const parent = adminUsers.find((u) => u.uid === item.parentUid);
+        const child = adminUsers.find((u) => u.uid === item.childUid);
 
         let className = "item-card";
         let details = "";
@@ -1501,9 +1786,13 @@
             警告文：${nl2br(escapeHtml(item.message))}
           `;
         } else if (item.type === "toggle") {
+          const label = (item.childResponse || item.defaultValue || "OFF") === "ON"
+            ? (item.onLabel || "ON")
+            : (item.offLabel || "OFF");
+
           details = `
             説明：${nl2br(escapeHtml(item.message))}<br>
-            状態：${escapeHtml((item.childResponse || item.defaultValue || "OFF") === "ON" ? (item.onLabel || "ON") : (item.offLabel || "OFF"))}<br>
+            状態：${escapeHtml(label)}<br>
             ON表示：${escapeHtml(item.onLabel || "ON")} / OFF表示：${escapeHtml(item.offLabel || "OFF")}
           `;
         } else {
@@ -1523,63 +1812,11 @@
             </div>
             <div class="item-meta">${details}</div>
             <div class="button-row">
-              <button class="button sub small" data-admin-item-edit="${item.id}">編集</button>
               <button class="button sub small" data-admin-item-delete="${item.id}">削除</button>
             </div>
           </div>
         `;
       }).join("");
-
-      container.querySelectorAll("[data-admin-item-edit]").forEach((button) => {
-        button.addEventListener("click", async () => {
-          const item = adminItems.find((i) => i.id === button.dataset.adminItemEdit);
-          if (!item) return;
-
-          const nextName = prompt("管理項目名を編集", item.name);
-          if (nextName !== null && nextName.trim()) item.name = nextName.trim();
-
-          if (item.type === "warning") {
-            const nextMessage = prompt("警告文を編集", item.message || "");
-            if (nextMessage !== null) item.message = nextMessage;
-
-            const nextLevel = prompt("警告レベルを入力（red / yellow）", item.warningLevel || "red");
-            if (nextLevel === "red" || nextLevel === "yellow") item.warningLevel = nextLevel;
-          }
-
-          if (item.type === "toggle") {
-            const nextMessage = prompt("ON/OFF項目の説明を編集", item.message || "");
-            if (nextMessage !== null) item.message = nextMessage;
-
-            const nextOnLabel = prompt("ON時の表示を編集", item.onLabel || "ON");
-            if (nextOnLabel !== null) item.onLabel = nextOnLabel;
-
-            const nextOffLabel = prompt("OFF時の表示を編集", item.offLabel || "OFF");
-            if (nextOffLabel !== null) item.offLabel = nextOffLabel;
-
-            const nextState = prompt("状態を入力（ON / OFF）", item.childResponse || item.defaultValue || "OFF");
-            if (nextState === "ON" || nextState === "OFF") item.childResponse = nextState;
-          }
-
-          if (item.type === "text") {
-            const nextRequest = prompt("記述依頼を編集", item.requestText || "");
-            if (nextRequest !== null) item.requestText = nextRequest;
-
-            const nextResponse = prompt("子供の記述を編集", item.childResponse || "");
-            if (nextResponse !== null) item.childResponse = nextResponse;
-          }
-
-          await updateDoc(doc(db, "managementItems", item.id), {
-            name: item.name,
-            message: item.message || "",
-            warningLevel: item.warningLevel || "",
-            childResponse: item.childResponse || "",
-            requestText: item.requestText || "",
-            onLabel: item.onLabel || "",
-            offLabel: item.offLabel || "",
-            updatedAt: serverTimestamp()
-          });
-        });
-      });
 
       container.querySelectorAll("[data-admin-item-delete]").forEach((button) => {
         button.addEventListener("click", async () => {
@@ -1589,57 +1826,31 @@
       });
     }
 
-    function renderAdminChats() {
-      const container = document.getElementById("adminChatsContainer");
+    function renderAdminRooms() {
+      const container = document.getElementById("adminRoomsContainer");
 
-      if (adminChats.length === 0) {
-        container.innerHTML = `<div class="empty">会話はまだありません。</div>`;
+      if (adminRooms.length === 0) {
+        container.innerHTML = `<div class="empty">チャットルームはまだありません。</div>`;
         return;
       }
 
-      const sorted = [...adminChats].sort((a, b) => {
-        const aTime = a.createdAt?.seconds || 0;
-        const bTime = b.createdAt?.seconds || 0;
-        return bTime - aTime;
-      });
-
-      container.innerHTML = sorted.map((chat) => {
-        const fromUser = getAdminUserByUid(chat.fromUid);
-        const toUser = getAdminUserByUid(chat.toUid);
-
-        return `
-          <div class="item-card">
-            <h4>${escapeHtml(fromUser?.accountId || "unknown")} → ${escapeHtml(toUser?.accountId || "unknown")}</h4>
-            <div class="item-meta">
-              内容：${nl2br(escapeHtml(chat.text || ""))}
-            </div>
-            <div class="button-row">
-              <button class="button sub small" data-admin-chat-edit="${chat.id}">編集</button>
-              <button class="button sub small" data-admin-chat-delete="${chat.id}">削除</button>
-            </div>
+      container.innerHTML = adminRooms.map((room) => `
+        <div class="item-card">
+          <h4>${escapeHtml(room.type === "memo" ? "マイメモ" : (room.name || room.type))}</h4>
+          <div class="item-meta">
+            種類：${escapeHtml(room.type)}<br>
+            メンバー数：${(room.members || []).length}
           </div>
-        `;
-      }).join("");
+          <div class="button-row">
+            <button class="button sub small" data-admin-room-delete="${room.id}">ルーム削除</button>
+          </div>
+        </div>
+      `).join("");
 
-      container.querySelectorAll("[data-admin-chat-edit]").forEach((button) => {
+      container.querySelectorAll("[data-admin-room-delete]").forEach((button) => {
         button.addEventListener("click", async () => {
-          const chat = adminChats.find((c) => c.id === button.dataset.adminChatEdit);
-          if (!chat) return;
-
-          const nextText = prompt("会話内容を編集", chat.text || "");
-          if (nextText === null) return;
-
-          await updateDoc(doc(db, "chats", chat.id), {
-            text: nextText.trim() || "（空メッセージ）",
-            updatedAt: serverTimestamp()
-          });
-        });
-      });
-
-      container.querySelectorAll("[data-admin-chat-delete]").forEach((button) => {
-        button.addEventListener("click", async () => {
-          if (!confirm("この会話を削除しますか？")) return;
-          await deleteDoc(doc(db, "chats", button.dataset.adminChatDelete));
+          if (!confirm("このチャットルームを削除しますか？")) return;
+          await deleteDoc(doc(db, "chatRooms", button.dataset.adminRoomDelete));
         });
       });
     }
@@ -1660,8 +1871,13 @@
         renderAdminPanel();
       });
 
-      onSnapshot(collection(db, "chats"), (snapshot) => {
-        adminChats = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+      onSnapshot(collection(db, "chatRooms"), (snapshot) => {
+        adminRooms = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        renderAdminPanel();
+      });
+
+      onSnapshot(collection(db, "chatMessages"), (snapshot) => {
+        adminMessages = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
         renderAdminPanel();
       });
     }
@@ -1686,8 +1902,16 @@
 
       renderAvatar(sidebarAvatar, currentUser);
 
-      document.getElementById("openAddItemButton").classList.toggle("hidden", currentUser.role !== "parent");
-      document.getElementById("linkParentSection").classList.toggle("hidden", currentUser.role !== "parent");
+      document.getElementById("openAddItemButton").classList.toggle(
+        "hidden",
+        !(currentUser.role === "parent" || currentUser.role === "admin")
+      );
+
+      document.getElementById("linkParentSection").classList.toggle(
+        "hidden",
+        !(currentUser.role === "parent")
+      );
+
       adminMenuButton.classList.toggle("hidden", currentUser.role !== "admin");
 
       accountEmojiInput.value = currentUser.avatarEmoji || "";
@@ -1697,6 +1921,7 @@
       await subscribePartners();
       await subscribeItems();
       await subscribeWarnings();
+      await subscribeRooms();
 
       if (currentUser.role === "admin") {
         subscribeAdminData();
@@ -1724,28 +1949,110 @@
     document.getElementById("linkChildButton").addEventListener("click", linkChild);
     document.getElementById("itemType").addEventListener("change", updateItemTypeFields);
 
-    document.getElementById("chatFab").addEventListener("click", () => {
+    document.getElementById("chatFab").addEventListener("click", async () => {
       document.getElementById("chatModal").classList.remove("hidden");
-      startChatSubscription();
+      await setChatKind(currentChatKind);
     });
 
     document.getElementById("closeChatButton").addEventListener("click", () => {
       document.getElementById("chatModal").classList.add("hidden");
     });
 
-    chatPartnerSelect.addEventListener("change", startChatSubscription);
+    document.querySelectorAll(".chat-tab").forEach((button) => {
+      button.addEventListener("click", async () => {
+        await setChatKind(button.dataset.chatKind);
+      });
+    });
+
+    chatPartnerSelect.addEventListener("change", async () => {
+      if (currentChatKind !== "direct") return;
+      const partnerUid = chatPartnerSelect.value;
+      if (!partnerUid) {
+        stopChatMessageSubscription();
+        renderChatMessages();
+        return;
+      }
+      const roomId = await ensureDirectRoom(partnerUid);
+      setSelectedRoomIdForDirect(roomId);
+      await subscribeChatMessages(roomId);
+    });
+
+    groupRoomSelect.addEventListener("change", async () => {
+      if (currentChatKind !== "group") return;
+      const roomId = groupRoomSelect.value || "";
+      if (!roomId) {
+        stopChatMessageSubscription();
+        renderChatMessages();
+        return;
+      }
+      await subscribeChatMessages(roomId);
+    });
+
+    document.getElementById("createGroupButton").addEventListener("click", async () => {
+      if (!(currentUser.role === "parent" || currentUser.role === "admin")) {
+        alert("この権限ではグループ作成できません。");
+        return;
+      }
+
+      const name = document.getElementById("groupNameInput").value.trim();
+      if (!name) {
+        alert("グループ名を入力してください。");
+        return;
+      }
+
+      const checked = Array.from(document.querySelectorAll(".group-member-checkbox:checked")).map((el) => el.value);
+      if (checked.length === 0) {
+        alert("参加メンバーを1人以上選んでください。");
+        return;
+      }
+
+      const members = Array.from(new Set([currentUser.uid, ...checked]));
+
+      await addDoc(collection(db, "chatRooms"), {
+        type: "group",
+        name,
+        members,
+        createdBy: currentUser.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      document.getElementById("groupNameInput").value = "";
+      document.querySelectorAll(".group-member-checkbox").forEach((el) => el.checked = false);
+      alert("グループを作成しました。");
+    });
 
     document.getElementById("sendChatButton").addEventListener("click", async () => {
-      const partnerUid = chatPartnerSelect.value;
       const text = document.getElementById("chatInput").value.trim();
+      if (!text) {
+        alert("メッセージを入力してください。");
+        return;
+      }
 
-      if (!partnerUid) return alert("会話相手がいません。");
-      if (!text) return alert("メッセージを入力してください。");
+      let roomId = getSelectedRoomIdByKind();
 
-      await addDoc(collection(db, "chats"), {
-        participantsKey: chatKey(currentUser.uid, partnerUid),
+      if (currentChatKind === "direct") {
+        const partnerUid = chatPartnerSelect.value;
+        if (!partnerUid) {
+          alert("相手を選んでください。");
+          return;
+        }
+        roomId = await ensureDirectRoom(partnerUid);
+        setSelectedRoomIdForDirect(roomId);
+      }
+
+      if (currentChatKind === "memo") {
+        roomId = await ensureMemoRoom();
+      }
+
+      if (currentChatKind === "group" && !roomId) {
+        alert("グループを選んでください。");
+        return;
+      }
+
+      await addDoc(collection(db, "chatMessages"), {
+        roomId,
         fromUid: currentUser.uid,
-        toUid: partnerUid,
         text,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
