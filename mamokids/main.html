@@ -500,6 +500,12 @@
       background: #e2e8f0;
     }
 
+    .link-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
     @media (max-width: 900px) {
       .app-shell {
         grid-template-columns: 1fr;
@@ -640,15 +646,22 @@
           <div class="panel-title">
             <div>
               <div class="badge">連携</div>
-              <h2>子供と連携する</h2>
+              <h2 id="linksTitle">連携一覧</h2>
             </div>
           </div>
 
           <div class="section" id="linkParentSection">
-            <h3 class="section-title">連携設定</h3>
+            <h3 class="section-title">子供と連携する</h3>
             <label for="linkChildId">子供のアカウントID</label>
             <input id="linkChildId" type="text" placeholder="子供のアカウントIDを入力" />
             <button class="button full row-gap" id="linkChildButton">連携する</button>
+          </div>
+
+          <div class="section" id="linkParentToParentSection">
+            <h3 class="section-title">保護者をグループ候補に追加する</h3>
+            <label for="linkParentId">保護者のアカウントID</label>
+            <input id="linkParentId" type="text" placeholder="保護者のアカウントIDを入力" />
+            <button class="button full row-gap" id="linkParentButton">追加する</button>
           </div>
 
           <div id="linksContainer"></div>
@@ -783,7 +796,7 @@
           <label for="groupRoomSelect">グループ</label>
           <select id="groupRoomSelect"></select>
 
-          <div class="section row-gap" id="groupCreateSection" style="margin-bottom:0;">
+          <div class="section row-gap" id="groupCreateSection" style="margin-bottom:12px;">
             <h3 class="section-title">グループ作成</h3>
             <label for="groupNameInput">グループ名</label>
             <input id="groupNameInput" type="text" placeholder="例：家族連絡、宿題連絡" />
@@ -792,6 +805,20 @@
             <div id="groupMemberContainer"></div>
 
             <button class="button row-gap" id="createGroupButton">グループを作成する</button>
+          </div>
+
+          <div class="section row-gap" id="groupEditSection" style="margin-bottom:0;">
+            <h3 class="section-title">グループ編集</h3>
+            <label for="editGroupNameInput">グループ名</label>
+            <input id="editGroupNameInput" type="text" placeholder="グループ名を変更" />
+
+            <label style="margin-top:16px;">メンバー追加・削除</label>
+            <div id="editGroupMemberContainer"></div>
+
+            <div class="button-row row-gap">
+              <button class="button" id="saveGroupEditButton">グループを更新する</button>
+              <button class="button sub" id="deleteGroupButton">グループを削除する</button>
+            </div>
           </div>
         </div>
 
@@ -847,12 +874,14 @@
     let currentItems = [];
     let currentPartners = [];
     let currentWarnings = [];
+    let extraParentGroupMembers = [];
 
     let partnerUnsubscribe = null;
     let itemsUnsubscribe = null;
     let warningsUnsubscribe = null;
     let chatRoomsUnsubscribe = null;
     let chatMessagesUnsubscribe = null;
+    let extraParentMembersUnsubscribe = null;
 
     let usersCache = new Map();
     let lastRequestStateMap = new Map();
@@ -887,6 +916,7 @@
     const chatMessages = document.getElementById("chatMessages");
     const groupRoomSelect = document.getElementById("groupRoomSelect");
     const groupMemberContainer = document.getElementById("groupMemberContainer");
+    const editGroupMemberContainer = document.getElementById("editGroupMemberContainer");
 
     function showToast(message) {
       toastBox.textContent = message;
@@ -900,7 +930,7 @@
     function getDefaultAvatarEmoji(user) {
       if (!user) return "❔";
       if (user.role === "admin") return "🔧";
-      if (user.avatarEmoji && user.avatarEmoji.trim()) return user.avatarEmoji;
+      if (user.avatarEmoji && String(user.avatarEmoji).trim()) return user.avatarEmoji;
       if (user.role === "parent") return "👪";
       if (user.role === "child") return "🧒";
       return "🙂";
@@ -913,8 +943,8 @@
     function renderAccountEmojiEditor() {
       const value = (accountEmojiInput?.value || "").trim();
       const fallbackEmoji = currentUser ? getDefaultAvatarEmoji(currentUser) : "🙂";
-
       accountEmojiPreview.textContent = value || fallbackEmoji;
+
       accountEmojiButtons.forEach((button) => {
         button.classList.toggle("active", button.dataset.emoji === value);
       });
@@ -997,7 +1027,6 @@
 
     async function subscribePartners() {
       if (typeof partnerUnsubscribe === "function") partnerUnsubscribe();
-
       if (!currentUser) return;
 
       if (currentUser.role === "admin") {
@@ -1046,6 +1075,39 @@
         renderChatPartnerOptions();
         renderGroupMemberOptions();
         renderDashboard();
+      });
+    }
+
+    async function subscribeExtraParentMembers() {
+      if (typeof extraParentMembersUnsubscribe === "function") {
+        extraParentMembersUnsubscribe();
+      }
+
+      if (!currentUser || currentUser.role !== "parent") {
+        extraParentGroupMembers = [];
+        renderGroupMemberOptions();
+        renderEditGroupMembers();
+        return;
+      }
+
+      const q = query(collection(db, "parentGroupLinks"), where("ownerUid", "==", currentUser.uid));
+      extraParentMembersUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const parentUids = snapshot.docs
+          .map((docSnap) => {
+            const data = docSnap.data() || {};
+            return data.parentUid || "";
+          })
+          .filter(Boolean);
+
+        const members = [];
+        for (const uid of parentUids) {
+          const user = await getUserByUid(uid);
+          if (user) members.push(user);
+        }
+
+        extraParentGroupMembers = members;
+        renderGroupMemberOptions();
+        renderEditGroupMembers();
       });
     }
 
@@ -1147,6 +1209,16 @@
     }
 
     function renderLinks() {
+      const linksTitle = document.getElementById("linksTitle");
+
+      if (currentUser?.role === "child") {
+        linksTitle.textContent = "保護者一覧";
+      } else if (currentUser?.role === "admin") {
+        linksTitle.textContent = "管理対象一覧";
+      } else {
+        linksTitle.textContent = "連携一覧";
+      }
+
       if (!Array.isArray(currentPartners) || currentPartners.length === 0) {
         linksContainer.innerHTML = `<div class="empty">まだ連携はありません。</div>`;
         return;
@@ -1154,9 +1226,51 @@
 
       linksContainer.innerHTML = currentPartners.map((partner) => `
         <div class="item-card">
-          <h4>${escapeHtml(partner.accountId || "unknown")}</h4>
-          <div class="item-meta">権限：${ROLE_LABELS[partner.role] || partner.role || "-"}</div>
+          <div class="link-card">
+            <div class="avatar" style="width:56px;height:56px;font-size:28px;">${escapeHtml(getDefaultAvatarEmoji(partner))}</div>
+            <div>
+              <h4 style="margin:0 0 6px;">${escapeHtml(partner.accountId || "unknown")}</h4>
+              <div class="item-meta" style="margin:0;">
+                権限：${ROLE_LABELS[partner.role] || partner.role || "-"}
+              </div>
+            </div>
+          </div>
         </div>
+      `).join("");
+    }
+
+    function getGroupCandidates() {
+      const baseMembers = Array.isArray(currentPartners) ? currentPartners : [];
+      const extraMembers = Array.isArray(extraParentGroupMembers) ? extraParentGroupMembers : [];
+
+      const mergedMap = new Map();
+      [...baseMembers, ...extraMembers].forEach((user) => {
+        if (user?.uid && user.uid !== currentUser?.uid) {
+          mergedMap.set(user.uid, user);
+        }
+      });
+
+      return Array.from(mergedMap.values());
+    }
+
+    function renderGroupMemberOptions() {
+      if (!(currentUser?.role === "parent" || currentUser?.role === "admin")) {
+        groupMemberContainer.innerHTML = `<div class="item-meta">この権限ではグループ作成できません。</div>`;
+        return;
+      }
+
+      const candidates = getGroupCandidates();
+
+      if (candidates.length === 0) {
+        groupMemberContainer.innerHTML = `<div class="item-meta">グループ候補がいません。</div>`;
+        return;
+      }
+
+      groupMemberContainer.innerHTML = candidates.map((user) => `
+        <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:400;">
+          <input type="checkbox" class="group-member-checkbox" value="${user.uid}" />
+          <span>${escapeHtml(getDefaultAvatarEmoji(user))} ${escapeHtml(user.accountId || "unknown")}（${ROLE_LABELS[user.role] || user.role || "-" }）</span>
+        </label>
       `).join("");
     }
 
@@ -1408,25 +1522,6 @@
       }
     }
 
-    function renderGroupMemberOptions() {
-      if (!(currentUser?.role === "parent" || currentUser?.role === "admin")) {
-        groupMemberContainer.innerHTML = `<div class="item-meta">この権限ではグループ作成できません。</div>`;
-        return;
-      }
-
-      if (!Array.isArray(currentPartners) || currentPartners.length === 0) {
-        groupMemberContainer.innerHTML = `<div class="item-meta">連携済みユーザーがいません。</div>`;
-        return;
-      }
-
-      groupMemberContainer.innerHTML = currentPartners.map((partner) => `
-        <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:400;">
-          <input type="checkbox" class="group-member-checkbox" value="${partner.uid}" />
-          <span>${escapeHtml(partner.accountId || "unknown")}（${ROLE_LABELS[partner.role] || partner.role || "-" }）</span>
-        </label>
-      `).join("");
-    }
-
     function getSelectedRoomIdByKind() {
       if (currentChatKind === "direct") return chatPartnerSelect.dataset.roomId || "";
       if (currentChatKind === "group") return groupRoomSelect.value || "";
@@ -1593,6 +1688,7 @@
         option.value = "";
         option.textContent = "グループがありません";
         groupRoomSelect.appendChild(option);
+        renderEditGroupMembers();
         return;
       }
 
@@ -1606,6 +1702,40 @@
       if (groupRooms.some((room) => room.id === currentValue)) {
         groupRoomSelect.value = currentValue;
       }
+
+      renderEditGroupMembers();
+    }
+
+    function renderEditGroupMembers() {
+      const roomId = groupRoomSelect.value || "";
+      const room = currentRooms.find((r) => r.id === roomId && r.type === "group");
+
+      if (!room) {
+        editGroupMemberContainer.innerHTML = `<div class="item-meta">編集対象のグループを選択してください。</div>`;
+        document.getElementById("editGroupNameInput").value = "";
+        return;
+      }
+
+      document.getElementById("editGroupNameInput").value = room.name || "";
+
+      const candidates = getGroupCandidates();
+
+      if (candidates.length === 0) {
+        editGroupMemberContainer.innerHTML = `<div class="item-meta">編集可能なメンバー候補がいません。</div>`;
+        return;
+      }
+
+      editGroupMemberContainer.innerHTML = candidates.map((user) => `
+        <label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; font-weight:400;">
+          <input
+            type="checkbox"
+            class="edit-group-member-checkbox"
+            value="${user.uid}"
+            ${Array.isArray(room.members) && room.members.includes(user.uid) ? "checked" : ""}
+          />
+          <span>${escapeHtml(getDefaultAvatarEmoji(user))} ${escapeHtml(user.accountId || "unknown")}（${ROLE_LABELS[user.role] || user.role || "-" }）</span>
+        </label>
+      `).join("");
     }
 
     async function subscribeRooms() {
@@ -1702,6 +1832,7 @@
       }
 
       if (kind === "group") {
+        renderEditGroupMembers();
         const roomId = groupRoomSelect.value || "";
         if (!roomId) {
           stopChatMessageSubscription();
@@ -1951,6 +2082,11 @@
         currentUser.role !== "parent"
       );
 
+      document.getElementById("linkParentToParentSection").classList.toggle(
+        "hidden",
+        currentUser.role !== "parent"
+      );
+
       adminMenuButton.classList.toggle("hidden", currentUser.role !== "admin");
 
       accountEmojiInput.value = currentUser.avatarEmoji || "";
@@ -1958,6 +2094,7 @@
       renderDashboard();
 
       await subscribePartners();
+      await subscribeExtraParentMembers();
       await subscribeItems();
       await subscribeWarnings();
       await subscribeRooms();
@@ -2063,6 +2200,94 @@
       document.getElementById("linkChildId").value = "";
     }
 
+    async function linkParentForGroups() {
+      const parentAccountId = (document.getElementById("linkParentId").value || "").trim().toLowerCase();
+      if (!parentAccountId) return alert("保護者のアカウントIDを入力してください。");
+
+      const parentQuery = query(collection(db, "users"), where("accountId", "==", parentAccountId));
+      const snapshot = await getDocs(parentQuery);
+
+      if (snapshot.empty) return alert("保護者用アカウントが見つかりません。");
+
+      const raw = snapshot.docs[0].data() || {};
+      const parentUser = {
+        uid: raw.uid || snapshot.docs[0].id,
+        accountId: raw.accountId || "unknown",
+        role: raw.role || "child"
+      };
+
+      if (parentUser.role !== "parent") {
+        return alert("保護者用アカウントが見つかりません。");
+      }
+
+      if (parentUser.uid === currentUser.uid) {
+        return alert("自分自身は追加できません。");
+      }
+
+      const existsQuery = query(
+        collection(db, "parentGroupLinks"),
+        where("ownerUid", "==", currentUser.uid),
+        where("parentUid", "==", parentUser.uid)
+      );
+      const existsSnapshot = await getDocs(existsQuery);
+
+      if (!existsSnapshot.empty) return alert("すでに追加済みです。");
+
+      await addDoc(collection(db, "parentGroupLinks"), {
+        ownerUid: currentUser.uid,
+        parentUid: parentUser.uid,
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById("linkParentId").value = "";
+      alert("保護者をグループ候補に追加しました。");
+    }
+
+    async function saveGroupEdit() {
+      const roomId = groupRoomSelect.value || "";
+      const room = currentRooms.find((r) => r.id === roomId && r.type === "group");
+      if (!room) {
+        alert("編集するグループを選択してください。");
+        return;
+      }
+
+      const newName = (document.getElementById("editGroupNameInput").value || "").trim();
+      if (!newName) {
+        alert("グループ名を入力してください。");
+        return;
+      }
+
+      const checked = Array.from(document.querySelectorAll(".edit-group-member-checkbox:checked")).map((el) => el.value);
+      const members = Array.from(new Set([currentUser.uid, ...checked]));
+
+      if (members.length < 2) {
+        alert("自分以外のメンバーを1人以上選んでください。");
+        return;
+      }
+
+      await updateDoc(doc(db, "chatRooms", roomId), {
+        name: newName,
+        members,
+        updatedAt: serverTimestamp()
+      });
+
+      alert("グループを更新しました。");
+    }
+
+    async function deleteGroupRoom() {
+      const roomId = groupRoomSelect.value || "";
+      const room = currentRooms.find((r) => r.id === roomId && r.type === "group");
+      if (!room) {
+        alert("削除するグループを選択してください。");
+        return;
+      }
+
+      if (!confirm("このグループを削除しますか？")) return;
+
+      await deleteDoc(doc(db, "chatRooms", roomId));
+      alert("グループを削除しました。");
+    }
+
     document.querySelectorAll(".menu-button[data-panel]").forEach((button) => {
       button.addEventListener("click", () => setActivePanel(button.dataset.panel));
     });
@@ -2082,6 +2307,7 @@
 
     document.getElementById("addItemButton").addEventListener("click", addManagementItems);
     document.getElementById("linkChildButton").addEventListener("click", linkChild);
+    document.getElementById("linkParentButton").addEventListener("click", linkParentForGroups);
     document.getElementById("itemType").addEventListener("change", updateItemTypeFields);
 
     document.getElementById("chatFab").addEventListener("click", async () => {
@@ -2114,6 +2340,9 @@
 
     groupRoomSelect.addEventListener("change", async () => {
       if (currentChatKind !== "group") return;
+
+      renderEditGroupMembers();
+
       const roomId = groupRoomSelect.value || "";
       if (!roomId) {
         stopChatMessageSubscription();
@@ -2156,6 +2385,9 @@
       document.querySelectorAll(".group-member-checkbox").forEach((el) => el.checked = false);
       alert("グループを作成しました。");
     });
+
+    document.getElementById("saveGroupEditButton").addEventListener("click", saveGroupEdit);
+    document.getElementById("deleteGroupButton").addEventListener("click", deleteGroupRoom);
 
     document.getElementById("sendChatButton").addEventListener("click", async () => {
       const text = (document.getElementById("chatInput").value || "").trim();
