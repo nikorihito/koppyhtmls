@@ -1,15 +1,37 @@
-{
-  "name": "こっぴーのマイクラひとやすみ",
-  "link": "https://nikorihito.github.io/koppyblog/",
-  "color": "yellow"
-},
-{
-  "name": "ニコリマインドマップ",
-  "link": "https://nikorihito.github.io/koppyhtmls/mindmap.html",
-  "color": "blue"
-},
-{
-  "name": "楽々！pdfメーカー",
-  "link": "https://nikorihito.github.io/koppyhtmls/pdf_maker.html",
-  "color": "red"
-}
+[
+  {
+    "name": "こっぴーのマイクラひとやすみ",
+    "link": "https://nikorihito.github.io/koppyblog/",
+    "color": "yellow",
+    "description": "Minecraft関連の記事や配布物をまとめたブログサイトです。",
+    "type": "big"
+  },
+  {
+    "name": "ニコリマインドマップ",
+    "link": "https://nikorihito.github.io/koppyhtmls/mindmap.html",
+    "color": "blue",
+    "description": "アイデア整理や構成設計に使えるマインドマップツールです。",
+    "type": "normal"
+  },
+  {
+    "name": "楽々！pdfメーカー",
+    "link": "https://nikorihito.github.io/koppyhtmls/pdf_maker.html",
+    "color": "red",
+    "description": "PDFを手軽に作成・出力するためのツールです。",
+    "type": "mini"
+  },
+  {
+    "name": "サンプルリスト表示",
+    "link": "https://example.com/",
+    "color": "green",
+    "description": "リスト形式で並べたい項目です。",
+    "type": "list"
+  },
+  {
+    "name": "サンプルブック表示",
+    "link": "https://example.com/book",
+    "color": "purple",
+    "description": "本の表紙のような雰囲気で見せたい項目です。",
+    "type": "book"
+  }
+]
