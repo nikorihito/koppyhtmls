@@ -6,13 +6,12 @@
   <title>こっぴーが作ったサイト類</title>
   <style>
     :root {
-      --theme-color: #e53935;
-      --bg-color: #f7f8fb;
+      --bg-main: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
       --card-bg: #ffffff;
       --text-main: #1f2937;
       --text-sub: #6b7280;
-      --shadow: 0 10px 30px rgba(0,0,0,0.08);
-      --radius: 20px;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      --radius: 22px;
     }
 
     * {
@@ -23,71 +22,129 @@
       margin: 0;
       min-height: 100vh;
       font-family: "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
-      background: linear-gradient(135deg, #eef2ff 0%, var(--bg-color) 100%);
+      background: var(--bg-main);
       color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      padding: 32px 20px 56px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.15;
+      letter-spacing: 0.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: clamp(15px, 2vw, 18px);
+      color: var(--text-sub);
+      line-height: 1.8;
+    }
+
+    .status {
+      margin: 20px auto 0;
+      max-width: 700px;
+      font-size: 14px;
+      color: var(--text-sub);
+      white-space: pre-wrap;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
     }
 
     .card {
-      width: 100%;
-      max-width: 560px;
       background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 32px;
-      border-top: 8px solid var(--theme-color);
+      padding: 24px;
+      border-top: 10px solid var(--site-color, #facc15);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 6px 12px;
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
       border-radius: 999px;
-      background: color-mix(in srgb, var(--theme-color) 15%, white);
-      color: var(--theme-color);
-      font-size: 13px;
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 700;
-      margin-bottom: 16px;
+      background: rgba(0, 0, 0, 0.06);
+      color: #374151;
     }
 
-    h1 {
-      margin: 0 0 12px;
-      font-size: clamp(28px, 5vw, 40px);
-      line-height: 1.2;
+    .card h2 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.35;
     }
 
-    p {
-      margin: 0 0 24px;
+    .description {
+      margin: 0;
       color: var(--text-sub);
-      line-height: 1.7;
+      line-height: 1.8;
+      min-height: 3.6em;
+    }
+
+    .link-row {
+      margin-top: auto;
+      padding-top: 6px;
     }
 
     .link-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 14px 22px;
-      border-radius: 14px;
-      background: var(--theme-color);
-      color: #fff;
       text-decoration: none;
+      color: #ffffff;
+      background: var(--site-color, #facc15);
       font-weight: 700;
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      padding: 14px 20px;
+      border-radius: 14px;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      width: 100%;
     }
 
     .link-button:hover {
-      transform: translateY(-2px);
       opacity: 0.92;
+      transform: translateY(-1px);
     }
 
-    .status {
-      margin-top: 18px;
-      font-size: 14px;
+    .empty {
+      text-align: center;
       color: var(--text-sub);
-      white-space: pre-wrap;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
     }
 
     code {
@@ -95,64 +152,131 @@
       padding: 2px 6px;
       border-radius: 8px;
     }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 24px 16px 40px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .card h2 {
+        font-size: 22px;
+      }
+    }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">site.json 連動</div>
-    <h1 id="siteName">読み込み中...</h1>
-    <p id="siteDescription">同じフォルダにある <code>site.json</code> の内容を読み込んで表示します。</p>
-    <a id="siteLink" class="link-button" href="#" target="_blank" rel="noopener noreferrer">サイトを開く</a>
-    <div id="status" class="status"></div>
-  </main>
+  <div class="container">
+    <header class="hero">
+      <h1>こっぴーが作ったサイト類</h1>
+      <p>
+        同じフォルダにある <code>site.json</code> を読み込み、
+        サイト一覧を自動表示します。
+      </p>
+      <div id="status" class="status"></div>
+    </header>
+
+    <main id="siteGrid" class="grid">
+      <div class="empty">読み込み中...</div>
+    </main>
+  </div>
 
   <script>
-    const statusEl = document.getElementById('status');
-    const nameEl = document.getElementById('siteName');
-    const linkEl = document.getElementById('siteLink');
+    const statusEl = document.getElementById("status");
+    const siteGridEl = document.getElementById("siteGrid");
 
-    function normalizeColor(colorValue) {
-      return colorValue && String(colorValue).trim() ? String(colorValue).trim() : '#e53935';
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    function applySiteData(data) {
-      const name = data?.name ?? '名称未設定';
-      const link = data?.link ?? '#';
-      const color = normalizeColor(data?.color);
+    function normalizeColor(colorValue) {
+      const value = String(colorValue ?? "").trim();
+      return value || "#eab308";
+    }
 
-      document.title = name;
-      nameEl.textContent = name;
-      linkEl.href = link;
-      document.documentElement.style.setProperty('--theme-color', color);
+    function normalizeType(typeValue) {
+      const value = String(typeValue ?? "").trim();
+      return value || "未分類";
+    }
 
-      statusEl.textContent = 'site.json を読み込みました。\n値を変更して再読み込みすると表示も変わります。';
+    function buildCard(site) {
+      const name = escapeHtml(site.name || "名称未設定");
+      const link = escapeHtml(site.link || "#");
+      const color = normalizeColor(site.color);
+      const description = escapeHtml(site.description || "説明はまだ設定されていません。");
+      const type = escapeHtml(normalizeType(site.type));
+
+      return `
+        <article class="card" style="--site-color: ${color};">
+          <div class="chips">
+            <span class="chip">${type}</span>
+            <span class="chip">${escapeHtml(color)}</span>
+          </div>
+          <h2>${name}</h2>
+          <p class="description">${description}</p>
+          <div class="link-row">
+            <a class="link-button" href="${link}" target="_blank" rel="noopener noreferrer">
+              サイトを開く
+            </a>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderSites(sites) {
+      if (!Array.isArray(sites) || sites.length === 0) {
+        siteGridEl.innerHTML = `<div class="empty">site.json に表示できるサイト情報がありません。</div>`;
+        return;
+      }
+
+      siteGridEl.innerHTML = sites.map(buildCard).join("");
     }
 
     async function loadSiteJson() {
       try {
-        const response = await fetch('./site.json?ts=' + Date.now(), { cache: 'no-store' });
+        const response = await fetch("./site.json?ts=" + Date.now(), {
+          cache: "no-store"
+        });
+
         if (!response.ok) {
-          throw new Error('site.json の読み込みに失敗しました。HTTP ' + response.status);
+          throw new Error("site.json の読み込みに失敗しました。HTTP " + response.status);
         }
 
         const data = await response.json();
-        applySiteData(data);
+
+        if (!Array.isArray(data)) {
+          throw new Error("site.json は配列形式で書いてください。");
+        }
+
+        renderSites(data);
+        statusEl.textContent = "site.json を読み込みました。内容を変更して再読み込みすると反映されます。";
       } catch (error) {
-        nameEl.textContent = 'site.json を読み込めませんでした';
-        linkEl.textContent = '設定ファイルを確認';
-        linkEl.href = '#';
+        siteGridEl.innerHTML = `
+          <div class="empty">
+            <strong>site.json を読み込めませんでした。</strong><br><br>
+            同じフォルダに <code>site.json</code> があるか、JSONの書式が正しいか確認してください。
+          </div>
+        `;
+
         statusEl.textContent = [
-          '原因候補:',
-          '1. 同じフォルダに site.json がない',
-          '2. JSONの書式が崩れている',
-          '3. HTMLを file:// で直接開いていて fetch が制限されている',
-          '',
-          '対処:',
-          'ローカルサーバー上で開いてください。',
-          '例: VS Code の Live Server / Python簡易サーバー',
-          '',
-          '詳細: ' + error.message
-        ].join('\n');
+          "原因候補:",
+          "1. site.json が存在しない",
+          "2. JSON の書式が崩れている",
+          "3. file:// で直接開いていて fetch が制限されている",
+          "",
+          "対処例:",
+          "VS Code の Live Server や Python 簡易サーバーで開く",
+          "",
+          "詳細: " + error.message
+        ].join("\n");
       }
     }
 
