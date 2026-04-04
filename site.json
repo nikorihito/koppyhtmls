@@ -1,5 +1,15 @@
 {
+  "name": "こっぴーのマイクラひとやすみ",
+  "link": "https://nikorihito.github.io/koppyblog/",
+  "color": "yellow"
+},
+{
   "name": "ニコリマインドマップ",
   "link": "https://nikorihito.github.io/koppyhtmls/mindmap.html",
   "color": "blue"
+},
+{
+  "name": "楽々！pdfメーカー",
+  "link": "https://nikorihito.github.io/koppyhtmls/pdf_maker.html",
+  "color": "red"
 }
