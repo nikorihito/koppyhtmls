@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Koppy Site</title>
+  <style>
+    :root {
+      --theme-color: #e53935;
+      --bg-color: #f7f8fb;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-sub: #6b7280;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
+      background: linear-gradient(135deg, #eef2ff 0%, var(--bg-color) 100%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px;
+      border-top: 8px solid var(--theme-color);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--theme-color) 15%, white);
+      color: var(--theme-color);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 40px);
+      line-height: 1.2;
+    }
+
+    p {
+      margin: 0 0 24px;
+      color: var(--text-sub);
+      line-height: 1.7;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 22px;
+      border-radius: 14px;
+      background: var(--theme-color);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .link-button:hover {
+      transform: translateY(-2px);
+      opacity: 0.92;
+    }
+
+    .status {
+      margin-top: 18px;
+      font-size: 14px;
+      color: var(--text-sub);
+      white-space: pre-wrap;
+    }
+
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="badge">site.json 連動</div>
+    <h1 id="siteName">読み込み中...</h1>
+    <p id="siteDescription">同じフォルダにある <code>site.json</code> の内容を読み込んで表示します。</p>
+    <a id="siteLink" class="link-button" href="#" target="_blank" rel="noopener noreferrer">サイトを開く</a>
+    <div id="status" class="status"></div>
+  </main>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const nameEl = document.getElementById('siteName');
+    const linkEl = document.getElementById('siteLink');
+
+    function normalizeColor(colorValue) {
+      return colorValue && String(colorValue).trim() ? String(colorValue).trim() : '#e53935';
+    }
+
+    function applySiteData(data) {
+      const name = data?.name ?? '名称未設定';
+      const link = data?.link ?? '#';
+      const color = normalizeColor(data?.color);
+
+      document.title = name;
+      nameEl.textContent = name;
+      linkEl.href = link;
+      document.documentElement.style.setProperty('--theme-color', color);
+
+      statusEl.textContent = 'site.json を読み込みました。\n値を変更して再読み込みすると表示も変わります。';
+    }
+
+    async function loadSiteJson() {
+      try {
+        const response = await fetch('./site.json?ts=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error('site.json の読み込みに失敗しました。HTTP ' + response.status);
+        }
+
+        const data = await response.json();
+        applySiteData(data);
+      } catch (error) {
+        nameEl.textContent = 'site.json を読み込めませんでした';
+        linkEl.textContent = '設定ファイルを確認';
+        linkEl.href = '#';
+        statusEl.textContent = [
+          '原因候補:',
+          '1. 同じフォルダに site.json がない',
+          '2. JSONの書式が崩れている',
+          '3. HTMLを file:// で直接開いていて fetch が制限されている',
+          '',
+          '対処:',
+          'ローカルサーバー上で開いてください。',
+          '例: VS Code の Live Server / Python簡易サーバー',
+          '',
+          '詳細: ' + error.message
+        ].join('\n');
+      }
+    }
+
+    loadSiteJson();
+  </script>
+</body>
+</html>
