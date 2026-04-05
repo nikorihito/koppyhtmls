@@ -6,12 +6,15 @@
   <title>こっぴーが作ったサイト類</title>
   <style>
     :root {
-      --bg-main: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-      --card-bg: #ffffff;
+      --bg-main: linear-gradient(135deg, #f6f8fc 0%, #eef3fb 100%);
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
       --text-main: #1f2937;
-      --text-sub: #6b7280;
-      --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-      --radius: 22px;
+      --text-sub: #667085;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      --shadow-hover: 0 22px 44px rgba(15, 23, 42, 0.12);
+      --radius: 24px;
+      --border: rgba(148, 163, 184, 0.18);
     }
 
     * {
@@ -24,25 +27,26 @@
       font-family: "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
       background: var(--bg-main);
       color: var(--text-main);
-      padding: 32px 20px 56px;
+      padding: 28px 20px 56px;
     }
 
     .container {
       width: 100%;
-      max-width: 1120px;
+      max-width: 1220px;
       margin: 0 auto;
     }
 
     .hero {
       text-align: center;
-      margin-bottom: 36px;
+      margin-bottom: 34px;
     }
 
     .hero h1 {
       margin: 0 0 12px;
-      font-size: clamp(36px, 6vw, 64px);
-      line-height: 1.15;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: 1.12;
       letter-spacing: 0.03em;
+      color: #14213d;
     }
 
     .hero p {
@@ -53,35 +57,62 @@
     }
 
     .status {
-      margin: 20px auto 0;
-      max-width: 700px;
+      margin: 14px auto 0;
+      max-width: 760px;
       font-size: 14px;
-      color: var(--text-sub);
+      color: #64748b;
       white-space: pre-wrap;
       text-align: center;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 22px;
+      align-items: stretch;
     }
 
     .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px;
-      border-top: 10px solid var(--site-color, #facc15);
+      position: relative;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-height: 220px;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
     }
 
     .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 8px;
+      background: var(--accent, #94a3b8);
+    }
+
+    .card h2 {
+      margin: 0;
+      line-height: 1.35;
+      color: #1e293b;
+      word-break: break-word;
+    }
+
+    .description {
+      margin: 0;
+      color: var(--text-sub);
+      line-height: 1.8;
+      word-break: break-word;
     }
 
     .chips {
@@ -93,77 +124,286 @@
     .chip {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       border-radius: 999px;
-      padding: 6px 12px;
+      padding: 6px 11px;
       font-size: 12px;
       font-weight: 700;
-      background: rgba(0, 0, 0, 0.06);
-      color: #374151;
-    }
-
-    .card h2 {
-      margin: 0;
-      font-size: 26px;
-      line-height: 1.35;
-    }
-
-    .description {
-      margin: 0;
-      color: var(--text-sub);
-      line-height: 1.8;
-      min-height: 3.6em;
+      letter-spacing: 0.01em;
+      background: var(--chip-bg, #eef2ff);
+      color: var(--chip-text, #334155);
+      border: 1px solid rgba(148, 163, 184, 0.14);
     }
 
     .link-row {
       margin-top: auto;
-      padding-top: 6px;
+      padding-top: 4px;
     }
 
     .link-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      text-decoration: none;
-      color: #ffffff;
-      background: var(--site-color, #facc15);
-      font-weight: 700;
-      padding: 14px 20px;
-      border-radius: 14px;
-      transition: opacity 0.2s ease, transform 0.2s ease;
       width: 100%;
+      min-height: 48px;
+      text-decoration: none;
+      border-radius: 14px;
+      padding: 13px 18px;
+      font-weight: 700;
+      color: #ffffff;
+      background: var(--button, #64748b);
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.08);
+      transition: transform 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
     }
 
     .link-button:hover {
-      opacity: 0.92;
       transform: translateY(-1px);
+      opacity: 0.96;
+      filter: brightness(1.02);
     }
 
     .empty {
+      grid-column: 1 / -1;
       text-align: center;
       color: var(--text-sub);
-      background: rgba(255, 255, 255, 0.7);
-      padding: 32px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 34px;
       border-radius: 20px;
+      border: 1px solid var(--border);
       box-shadow: var(--shadow);
     }
 
+    /* big: 横長 */
+    .card.big {
+      grid-column: span 12;
+      min-height: 250px;
+      padding: 30px;
+      justify-content: center;
+      background:
+        linear-gradient(135deg, var(--soft, #f8fafc) 0%, #ffffff 58%);
+    }
+
+    .card.big h2 {
+      font-size: clamp(30px, 4vw, 42px);
+    }
+
+    .card.big .description {
+      max-width: 70ch;
+      font-size: 17px;
+    }
+
+    .card.big .link-row {
+      max-width: 280px;
+    }
+
+    /* normal: 通常 */
+    .card.normal {
+      grid-column: span 6;
+      min-height: 230px;
+      background:
+        linear-gradient(180deg, var(--soft, #f8fafc) 0%, #ffffff 100%);
+    }
+
+    .card.normal h2 {
+      font-size: 28px;
+    }
+
+    /* mini: 小さめ */
+    .card.mini {
+      grid-column: span 4;
+      min-height: 180px;
+      padding: 18px;
+      gap: 10px;
+      border-radius: 18px;
+    }
+
+    .card.mini::before {
+      height: 6px;
+    }
+
+    .card.mini h2 {
+      font-size: 19px;
+    }
+
+    .card.mini .description {
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .card.mini .chip {
+      font-size: 11px;
+      padding: 5px 10px;
+    }
+
+    .card.mini .link-button {
+      min-height: 42px;
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 12px;
+    }
+
+    /* list: リスト型 */
+    .card.list {
+      grid-column: span 12;
+      min-height: unset;
+      padding: 18px 20px;
+      flex-direction: row;
+      align-items: center;
+      gap: 18px;
+      border-radius: 18px;
+      background: #ffffff;
+    }
+
+    .card.list::before {
+      width: 8px;
+      height: 100%;
+      inset: 0 auto 0 0;
+    }
+
+    .card.list .chips {
+      min-width: 120px;
+      max-width: 120px;
+      justify-content: flex-start;
+      align-self: stretch;
+      align-items: center;
+    }
+
+    .card.list .content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .card.list h2 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .card.list .description {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .card.list .link-row {
+      width: 200px;
+      margin-top: 0;
+      padding-top: 0;
+      flex-shrink: 0;
+    }
+
+    /* book: 本風 */
+    .card.book {
+      grid-column: span 4;
+      min-height: 320px;
+      padding: 24px 20px 24px 30px;
+      border-radius: 10px 22px 22px 10px;
+      background:
+        linear-gradient(180deg, var(--book-top, #f8fafc) 0%, var(--book-bottom, #ffffff) 100%);
+      box-shadow:
+        0 18px 36px rgba(15, 23, 42, 0.12),
+        inset 8px 0 0 rgba(255,255,255,0.35);
+    }
+
+    .card.book::before {
+      width: 16px;
+      height: 100%;
+      inset: 0 auto 0 0;
+      background: var(--accent, #94a3b8);
+    }
+
+    .card.book::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 18px;
+      width: 2px;
+      height: 100%;
+      background: rgba(255,255,255,0.5);
+      pointer-events: none;
+    }
+
+    .card.book h2 {
+      font-size: 25px;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .card.book .description {
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .card.book .chips {
+      gap: 6px;
+    }
+
     code {
-      background: #f3f4f6;
+      background: #eef2f7;
       padding: 2px 6px;
       border-radius: 8px;
     }
 
-    @media (max-width: 640px) {
-      body {
-        padding: 24px 16px 40px;
+    @media (max-width: 1020px) {
+      .card.normal {
+        grid-column: span 12;
       }
 
-      .card {
+      .card.mini,
+      .card.book {
+        grid-column: span 6;
+      }
+
+      .card.big .description {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 22px 14px 40px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card.big,
+      .card.normal,
+      .card.mini,
+      .card.list,
+      .card.book {
+        grid-column: auto;
+      }
+
+      .card.list {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .card.list .chips {
+        min-width: 0;
+        max-width: none;
+      }
+
+      .card.list .link-row {
+        width: 100%;
+      }
+
+      .card,
+      .card.big,
+      .card.normal,
+      .card.book {
         padding: 20px;
       }
 
-      .card h2 {
-        font-size: 22px;
+      .card.big h2,
+      .card.normal h2,
+      .card.list h2,
+      .card.book h2 {
+        font-size: 24px;
+      }
+
+      .card.mini {
+        padding: 16px;
       }
     }
   </style>
@@ -172,10 +412,7 @@
   <div class="container">
     <header class="hero">
       <h1>こっぴーが作ったサイト類</h1>
-      <p>
-        同じフォルダにある <code>site.json</code> を読み込み、
-        サイト一覧を自動表示します。
-      </p>
+      <p>同じフォルダにある <code>site.json</code> を読み込み、サイト一覧を自動表示します。</p>
       <div id="status" class="status"></div>
     </header>
 
@@ -197,36 +434,165 @@
         .replaceAll("'", "&#039;");
     }
 
-    function normalizeColor(colorValue) {
-      const value = String(colorValue ?? "").trim();
-      return value || "#eab308";
+    function normalizeType(typeValue) {
+      const value = String(typeValue ?? "").trim().toLowerCase();
+      const allowed = ["big", "normal", "mini", "list", "book"];
+      return allowed.includes(value) ? value : "normal";
     }
 
-    function normalizeType(typeValue) {
-      const value = String(typeValue ?? "").trim();
-      return value || "未分類";
+    function resolvePalette(colorValue) {
+      const value = String(colorValue ?? "").trim().toLowerCase();
+
+      const map = {
+        yellow: {
+          accent: "#e8d55f",
+          button: "#c7ad2d",
+          soft: "#fffbea",
+          chipBg: "#faf3cf",
+          chipText: "#7a6618",
+          bookTop: "#fff8db",
+          bookBottom: "#fffdf3"
+        },
+        blue: {
+          accent: "#7aa7e8",
+          button: "#4f79c7",
+          soft: "#eef5ff",
+          chipBg: "#ddeafe",
+          chipText: "#35558e",
+          bookTop: "#e7f0ff",
+          bookBottom: "#f8fbff"
+        },
+        red: {
+          accent: "#e49a9a",
+          button: "#c76a6a",
+          soft: "#fff1f1",
+          chipBg: "#fde2e2",
+          chipText: "#8d4545",
+          bookTop: "#ffe9e9",
+          bookBottom: "#fff8f8"
+        },
+        green: {
+          accent: "#86c6a0",
+          button: "#5a9f79",
+          soft: "#effaf3",
+          chipBg: "#dff3e7",
+          chipText: "#3f7656",
+          bookTop: "#e7f8ee",
+          bookBottom: "#f8fdf9"
+        },
+        purple: {
+          accent: "#b39adf",
+          button: "#8664c2",
+          soft: "#f5f0ff",
+          chipBg: "#ebe2ff",
+          chipText: "#61458f",
+          bookTop: "#f1eaff",
+          bookBottom: "#fbf9ff"
+        },
+        pink: {
+          accent: "#e6a2c9",
+          button: "#c56b9c",
+          soft: "#fff2f8",
+          chipBg: "#fde4f1",
+          chipText: "#8e4568",
+          bookTop: "#ffeaf4",
+          bookBottom: "#fff9fc"
+        },
+        orange: {
+          accent: "#ecb27c",
+          button: "#cb8450",
+          soft: "#fff5ed",
+          chipBg: "#fee7d4",
+          chipText: "#8a5832",
+          bookTop: "#ffeedf",
+          bookBottom: "#fffaf6"
+        },
+        gray: {
+          accent: "#b0bac8",
+          button: "#7b8797",
+          soft: "#f5f7fa",
+          chipBg: "#e7ebf0",
+          chipText: "#4b5563",
+          bookTop: "#f0f3f7",
+          bookBottom: "#fbfcfd"
+        }
+      };
+
+      return map[value] || {
+        accent: "#94a3b8",
+        button: "#64748b",
+        soft: "#f8fafc",
+        chipBg: "#eef2f7",
+        chipText: "#475569",
+        bookTop: "#f5f7fb",
+        bookBottom: "#ffffff"
+      };
+    }
+
+    function typeLabel(type) {
+      if (type === "big") return "横長";
+      if (type === "mini") return "小さめ";
+      if (type === "list") return "リスト";
+      if (type === "book") return "本風";
+      return "通常";
+    }
+
+    function buildStyleVars(palette) {
+      return [
+        `--accent:${palette.accent}`,
+        `--button:${palette.button}`,
+        `--soft:${palette.soft}`,
+        `--chip-bg:${palette.chipBg}`,
+        `--chip-text:${palette.chipText}`,
+        `--book-top:${palette.bookTop}`,
+        `--book-bottom:${palette.bookBottom}`
+      ].join(";");
+    }
+
+    function buildCommonInner(name, description, link, type, colorLabel) {
+      return `
+        <div class="chips">
+          <span class="chip">${typeLabel(type)}</span>
+          <span class="chip">${escapeHtml(colorLabel)}</span>
+        </div>
+        <h2>${name}</h2>
+        <p class="description">${description}</p>
+        <div class="link-row">
+          <a class="link-button" href="${link}" target="_blank" rel="noopener noreferrer">サイトを開く</a>
+        </div>
+      `;
     }
 
     function buildCard(site) {
       const name = escapeHtml(site.name || "名称未設定");
       const link = escapeHtml(site.link || "#");
-      const color = normalizeColor(site.color);
       const description = escapeHtml(site.description || "説明はまだ設定されていません。");
-      const type = escapeHtml(normalizeType(site.type));
+      const type = normalizeType(site.type);
+      const colorLabel = String(site.color || "default");
+      const palette = resolvePalette(site.color);
+      const styleVars = buildStyleVars(palette);
+
+      if (type === "list") {
+        return `
+          <article class="card list" style="${styleVars}">
+            <div class="chips">
+              <span class="chip">${typeLabel(type)}</span>
+              <span class="chip">${escapeHtml(colorLabel)}</span>
+            </div>
+            <div class="content">
+              <h2>${name}</h2>
+              <p class="description">${description}</p>
+            </div>
+            <div class="link-row">
+              <a class="link-button" href="${link}" target="_blank" rel="noopener noreferrer">サイトを開く</a>
+            </div>
+          </article>
+        `;
+      }
 
       return `
-        <article class="card" style="--site-color: ${color};">
-          <div class="chips">
-            <span class="chip">${type}</span>
-            <span class="chip">${escapeHtml(color)}</span>
-          </div>
-          <h2>${name}</h2>
-          <p class="description">${description}</p>
-          <div class="link-row">
-            <a class="link-button" href="${link}" target="_blank" rel="noopener noreferrer">
-              サイトを開く
-            </a>
-          </div>
+        <article class="card ${type}" style="${styleVars}">
+          ${buildCommonInner(name, description, link, type, colorLabel)}
         </article>
       `;
     }
