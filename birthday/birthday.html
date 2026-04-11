@@ -1,276 +1,530 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { Settings, Music2, X, Plus, Minus } from "lucide-react";
-
-function randomBetween(min, max) {
-  return Math.random() * (max - min) + min;
-}
-
-function createBalloon(id) {
-  return {
-    id,
-    left: randomBetween(0, 96),
-    size: randomBetween(28, 74),
-    duration: randomBetween(4.8, 9.5),
-    delay: randomBetween(0, 2),
-    sway: randomBetween(-24, 24),
-    opacity: randomBetween(0.55, 0.95),
-    hue: randomBetween(0, 360),
-  };
-}
-
-function Balloon({ balloon }) {
-  return (
-    <motion.div
-      className="absolute -top-28"
-      initial={{ y: -160, x: 0, rotate: randomBetween(-10, 10) }}
-      animate={{
-        y: [0, 1400],
-        x: [0, balloon.sway, -balloon.sway, balloon.sway / 2],
-        rotate: [0, 5, -5, 2],
-      }}
-      transition={{
-        duration: balloon.duration,
-        repeat: Infinity,
-        ease: "linear",
-        delay: balloon.delay,
-      }}
-      style={{ left: `${balloon.left}%`, opacity: balloon.opacity }}
-    >
-      <div
-        className="relative rounded-full shadow-xl"
-        style={{
-          width: balloon.size,
-          height: balloon.size * 1.2,
-          background: `radial-gradient(circle at 30% 25%, rgba(255,255,255,.85), rgba(255,255,255,.25) 18%, transparent 19%), linear-gradient(180deg, hsla(${balloon.hue}, 95%, 88%, .95), hsla(${balloon.hue}, 85%, 72%, .9))`,
-        }}
-      >
-        <div className="absolute left-1/2 top-full h-16 w-px -translate-x-1/2 bg-white/80" />
-      </div>
-    </motion.div>
-  );
-}
-
-export default function BirthdayClickerSite() {
-  const [count, setCount] = useState(0);
-  const [perClick, setPerClick] = useState(1);
-  const [showSettings, setShowSettings] = useState(false);
-  const [personName, setPersonName] = useState("おともだち");
-  const [age, setAge] = useState(8);
-  const [theme, setTheme] = useState("from-pink-200 via-rose-100 to-yellow-100");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [bursts, setBursts] = useState([]);
-  const audioRef = useRef(null);
-  const timeoutRefs = useRef([]);
-
-  const balloons = useMemo(() => {
-    return Array.from({ length: 64 }, (_, i) => createBalloon(i + 1));
-  }, []);
-
-  useEffect(() => {
-    const audio = new Audio("./birthday.mp3");
-    audio.loop = true;
-    audioRef.current = audio;
-
-    return () => {
-      audio.pause();
-      timeoutRefs.current.forEach(clearTimeout);
-      timeoutRefs.current = [];
-    };
-  }, []);
-
-  const handleCakeClick = () => {
-    setCount((prev) => prev + perClick);
-
-    const burst = {
-      id: `${Date.now()}-${Math.random()}`,
-      left: randomBetween(40, 60),
-      top: randomBetween(42, 58),
-      label: `+${perClick}`,
-      emoji: ["🎉", "✨", "🍰", "🎈"][Math.floor(Math.random() * 4)],
-    };
-
-    setBursts((prev) => [...prev, burst]);
-
-    const timeoutId = setTimeout(() => {
-      setBursts((prev) => prev.filter((item) => item.id !== burst.id));
-    }, 900);
-
-    timeoutRefs.current.push(timeoutId);
-  };
-
-  const toggleMusic = async () => {
-    if (!audioRef.current) return;
-
-    try {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        await audioRef.current.play();
-        setIsPlaying(true);
-      }
-    } catch (error) {
-      console.error("birthday.mp3 の再生に失敗しました", error);
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>誕生日クリッカー</title>
+  <style>
+    * {
+      box-sizing: border-box;
     }
-  };
 
-  const themeOptions = [
-    { label: "ピンク", value: "from-pink-200 via-rose-100 to-yellow-100", swatch: "bg-rose-300" },
-    { label: "ブルー", value: "from-sky-200 via-cyan-100 to-indigo-100", swatch: "bg-sky-300" },
-    { label: "パープル", value: "from-violet-200 via-fuchsia-100 to-pink-100", swatch: "bg-violet-300" },
-    { label: "ミント", value: "from-emerald-200 via-teal-100 to-cyan-100", swatch: "bg-emerald-300" },
-  ];
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      background: linear-gradient(135deg, #ffd6e7, #ffe6c7, #fff6b8);
+      min-height: 100vh;
+    }
 
-  return (
-    <div className={`relative min-h-screen overflow-hidden bg-gradient-to-br ${theme}`}>
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {balloons.map((balloon) => (
-          <Balloon key={balloon.id} balloon={balloon} />
-        ))}
-      </div>
+    .balloon-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-10">
-        <div className="mb-5 rounded-full bg-white/75 px-5 py-2 text-base font-black text-slate-700 shadow-lg backdrop-blur-md sm:text-xl">
-          🎂 {personName} {age > 0 ? `${age}さい` : ""}
-        </div>
+    .balloon {
+      position: absolute;
+      top: -120px;
+      border-radius: 50%;
+      opacity: 0.9;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
 
-        <div className="mb-4 rounded-[2rem] bg-white/80 px-8 py-4 text-center shadow-2xl backdrop-blur-md">
-          <div className="text-xs font-bold tracking-[0.2em] text-slate-400">CAKE</div>
-          <div className="text-5xl font-black text-slate-800 sm:text-7xl">{count}</div>
-        </div>
+    .balloon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      width: 1px;
+      height: 60px;
+      background: rgba(255,255,255,0.9);
+      transform: translateX(-50%);
+    }
 
-        <motion.button
-          onClick={handleCakeClick}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.92, rotate: [-1, 1, -1, 0] }}
-          className="rounded-[2.5rem] bg-white/82 px-10 py-8 text-7xl shadow-2xl backdrop-blur-md transition sm:px-16 sm:py-12 sm:text-9xl"
-          aria-label="ケーキをクリック"
-        >
-          🎂
-        </motion.button>
+    @keyframes fall {
+      0% {
+        transform: translateY(-140px) translateX(0) rotate(0deg);
+      }
+      25% {
+        transform: translateY(25vh) translateX(20px) rotate(4deg);
+      }
+      50% {
+        transform: translateY(50vh) translateX(-18px) rotate(-4deg);
+      }
+      75% {
+        transform: translateY(75vh) translateX(14px) rotate(3deg);
+      }
+      100% {
+        transform: translateY(120vh) translateX(-8px) rotate(-2deg);
+      }
+    }
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <button
-            onClick={toggleMusic}
-            className="flex items-center gap-2 rounded-2xl bg-white/82 px-5 py-3 text-sm font-bold text-slate-700 shadow-lg transition hover:scale-105"
-          >
-            <Music2 size={18} />
-            {isPlaying ? "曲を止める" : "曲を流す"}
-          </button>
+    .main {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
 
-          <button
-            onClick={() => setPerClick((v) => Math.max(1, v - 1))}
-            className="rounded-2xl bg-white/82 p-3 shadow-lg transition hover:scale-105"
-            aria-label="クリック値を下げる"
-          >
-            <Minus size={18} />
-          </button>
+    .name-badge {
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(8px);
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 24px;
+      color: #444;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+      margin-bottom: 18px;
+    }
 
-          <div className="rounded-2xl bg-white/82 px-4 py-3 text-sm font-black text-slate-700 shadow-lg">
-            +{perClick}
-          </div>
+    .score-box {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 18px 34px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.14);
+      text-align: center;
+      margin-bottom: 18px;
+    }
 
-          <button
-            onClick={() => setPerClick((v) => Math.min(99, v + 1))}
-            className="rounded-2xl bg-white/82 p-3 shadow-lg transition hover:scale-105"
-            aria-label="クリック値を上げる"
-          >
-            <Plus size={18} />
-          </button>
-        </div>
+    .score-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      color: #888;
+    }
 
-        {bursts.map((burst) => (
-          <motion.div
-            key={burst.id}
-            initial={{ opacity: 0, y: 10, scale: 0.8 }}
-            animate={{ opacity: 1, y: -36, scale: 1.14 }}
-            transition={{ duration: 0.85, ease: "easeOut" }}
-            className="pointer-events-none absolute flex items-center gap-2 text-3xl font-black text-pink-600 drop-shadow-lg"
-            style={{ left: `${burst.left}%`, top: `${burst.top}%` }}
-          >
-            <span>{burst.emoji}</span>
-            <span>{burst.label}</span>
-          </motion.div>
-        ))}
-      </div>
+    .score {
+      font-size: 72px;
+      font-weight: 900;
+      color: #333;
+      line-height: 1.1;
+    }
 
-      <div className="fixed bottom-5 right-5 z-20">
-        {!showSettings ? (
-          <button
-            onClick={() => setShowSettings(true)}
-            className="rounded-full bg-white/86 p-4 shadow-2xl backdrop-blur-md transition hover:scale-105"
-            aria-label="設定を開く"
-          >
-            <Settings size={24} className="text-slate-700" />
-          </button>
-        ) : (
-          <div className="w-[320px] rounded-[2rem] bg-white/88 p-5 shadow-2xl backdrop-blur-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="text-base font-black text-slate-800">設定</div>
-              <button
-                onClick={() => setShowSettings(false)}
-                className="rounded-full p-2 transition hover:bg-slate-100"
-                aria-label="設定を閉じる"
-              >
-                <X size={18} className="text-slate-600" />
-              </button>
-            </div>
+    .cake-button {
+      border: none;
+      border-radius: 38px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      font-size: 110px;
+      padding: 24px 42px;
+      cursor: pointer;
+      box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+      transition: transform 0.12s ease;
+    }
 
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1 block text-sm font-bold text-slate-600">だれを祝う？</label>
-                <input
-                  value={personName}
-                  onChange={(e) => setPersonName(e.target.value)}
-                  placeholder="なまえ"
-                  className="w-full rounded-2xl border border-white/70 bg-white/85 px-4 py-3 text-sm outline-none"
-                />
-              </div>
+    .cake-button:hover {
+      transform: scale(1.04);
+    }
 
-              <div>
-                <label className="mb-1 block text-sm font-bold text-slate-600">年齢</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="150"
-                  value={age}
-                  onChange={(e) => setAge(Number(e.target.value || 0))}
-                  className="w-full rounded-2xl border border-white/70 bg-white/85 px-4 py-3 text-sm outline-none"
-                />
-              </div>
+    .cake-button:active {
+      transform: scale(0.92);
+    }
 
-              <div>
-                <label className="mb-2 block text-sm font-bold text-slate-600">テーマカラー</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {themeOptions.map((option) => {
-                    const active = theme === option.value;
-                    return (
-                      <button
-                        key={option.value}
-                        onClick={() => setTheme(option.value)}
-                        className={`h-12 rounded-2xl ${option.swatch} transition ${active ? "ring-4 ring-slate-400/60" : ""}`}
-                        aria-label={option.label}
-                        title={option.label}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
 
-              <button
-                onClick={() => {
-                  setCount(0);
-                  setPerClick(1);
-                }}
-                className="w-full rounded-2xl bg-slate-800 px-4 py-3 text-sm font-black text-white shadow-lg transition hover:opacity-90"
-              >
-                リセット
-              </button>
-            </div>
-          </div>
-        )}
+    .btn {
+      border: none;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.85);
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #444;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+      transition: transform 0.12s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .small-box {
+      border-radius: 18px;
+      background: rgba(255,255,255,0.85);
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #444;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    .burst {
+      position: fixed;
+      font-size: 34px;
+      font-weight: 900;
+      color: #e91e63;
+      pointer-events: none;
+      z-index: 15;
+      animation: burstUp 0.9s ease-out forwards;
+      text-shadow: 0 4px 10px rgba(255,255,255,0.8);
+    }
+
+    @keyframes burstUp {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.8);
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-45px) scale(1.15);
+      }
+    }
+
+    .settings-toggle {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 20;
+      width: 62px;
+      height: 62px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.16);
+    }
+
+    .settings-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 21;
+      width: 320px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+      padding: 18px;
+      display: none;
+    }
+
+    .settings-panel.open {
+      display: block;
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 900;
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #333;
+    }
+
+    .close-btn {
+      border: none;
+      background: transparent;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid #eee;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 15px;
+      background: rgba(255,255,255,0.92);
+      outline: none;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .color-btn {
+      height: 46px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4);
+    }
+
+    .color-btn.active {
+      outline: 4px solid rgba(80,80,80,0.35);
+    }
+
+    .reset-btn {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 13px 16px;
+      background: #2f3640;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .score {
+        font-size: 54px;
+      }
+
+      .cake-button {
+        font-size: 88px;
+        padding: 20px 30px;
+      }
+
+      .name-badge {
+        font-size: 18px;
+      }
+
+      .settings-panel {
+        width: calc(100vw - 24px);
+        right: 12px;
+        bottom: 12px;
+      }
+
+      .settings-toggle {
+        right: 12px;
+        bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="balloon-layer" id="balloonLayer"></div>
+
+  <div class="main">
+    <div class="name-badge" id="nameBadge">🎂 おともだち 8さい</div>
+
+    <div class="score-box">
+      <div class="score-label">CAKE</div>
+      <div class="score" id="score">0</div>
+    </div>
+
+    <button class="cake-button" id="cakeButton">🎂</button>
+
+    <div class="controls">
+      <button class="btn" id="musicButton">🎵 曲を流す</button>
+      <button class="btn" id="minusButton">－</button>
+      <div class="small-box" id="perClickBox">+1</div>
+      <button class="btn" id="plusButton">＋</button>
+    </div>
+  </div>
+
+  <button class="settings-toggle" id="settingsToggle">⚙</button>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <span>設定</span>
+      <button class="close-btn" id="closeSettings">×</button>
+    </div>
+
+    <div class="field">
+      <label for="personName">だれを祝う？</label>
+      <input id="personName" type="text" value="おともだち">
+    </div>
+
+    <div class="field">
+      <label for="ageInput">年齢</label>
+      <input id="ageInput" type="number" min="0" max="150" value="8">
+    </div>
+
+    <div class="field">
+      <label>テーマカラー</label>
+      <div class="color-grid">
+        <button class="color-btn active" data-theme="pink" style="background:#f7a8c4;"></button>
+        <button class="color-btn" data-theme="blue" style="background:#8fd3ff;"></button>
+        <button class="color-btn" data-theme="purple" style="background:#c7a3ff;"></button>
+        <button class="color-btn" data-theme="mint" style="background:#8fe3c2;"></button>
       </div>
     </div>
-  );
-}
+
+    <button class="reset-btn" id="resetButton">リセット</button>
+  </div>
+
+  <audio id="birthdayMusic" src="./birthday.mp3" loop></audio>
+
+  <script>
+    const balloonLayer = document.getElementById("balloonLayer");
+    const scoreEl = document.getElementById("score");
+    const cakeButton = document.getElementById("cakeButton");
+    const musicButton = document.getElementById("musicButton");
+    const minusButton = document.getElementById("minusButton");
+    const plusButton = document.getElementById("plusButton");
+    const perClickBox = document.getElementById("perClickBox");
+    const settingsToggle = document.getElementById("settingsToggle");
+    const settingsPanel = document.getElementById("settingsPanel");
+    const closeSettings = document.getElementById("closeSettings");
+    const personNameInput = document.getElementById("personName");
+    const ageInput = document.getElementById("ageInput");
+    const nameBadge = document.getElementById("nameBadge");
+    const resetButton = document.getElementById("resetButton");
+    const colorButtons = document.querySelectorAll(".color-btn");
+    const music = document.getElementById("birthdayMusic");
+
+    let count = 0;
+    let perClick = 1;
+    let playing = false;
+
+    function updateScore() {
+      scoreEl.textContent = count;
+    }
+
+    function updatePerClick() {
+      perClickBox.textContent = "+" + perClick;
+    }
+
+    function updateBadge() {
+      const name = personNameInput.value || "おともだち";
+      const age = Number(ageInput.value || 0);
+      nameBadge.textContent = "🎂 " + name + (age > 0 ? " " + age + "さい" : "");
+    }
+
+    function createBalloon() {
+      const balloon = document.createElement("div");
+      balloon.className = "balloon";
+
+      const size = 28 + Math.random() * 46;
+      const left = Math.random() * 96;
+      const duration = 4.8 + Math.random() * 4.7;
+      const hue = Math.floor(Math.random() * 360);
+      const delay = Math.random() * 2;
+
+      balloon.style.width = size + "px";
+      balloon.style.height = size * 1.2 + "px";
+      balloon.style.left = left + "%";
+      balloon.style.animationDuration = duration + "s";
+      balloon.style.animationDelay = delay + "s";
+      balloon.style.background =
+        `radial-gradient(circle at 30% 25%, rgba(255,255,255,.9), rgba(255,255,255,.28) 18%, transparent 19%), linear-gradient(180deg, hsla(${hue},95%,88%,.96), hsla(${hue},85%,72%,.92))`;
+
+      balloonLayer.appendChild(balloon);
+    }
+
+    for (let i = 0; i < 64; i++) {
+      createBalloon();
+    }
+
+    function createBurst() {
+      const burst = document.createElement("div");
+      burst.className = "burst";
+      const emojis = ["🎉", "✨", "🍰", "🎈"];
+      const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+      burst.textContent = emoji + " +" + perClick;
+      burst.style.left = (window.innerWidth * (0.42 + Math.random() * 0.16)) + "px";
+      burst.style.top = (window.innerHeight * (0.44 + Math.random() * 0.12)) + "px";
+      document.body.appendChild(burst);
+
+      setTimeout(() => {
+        burst.remove();
+      }, 900);
+    }
+
+    cakeButton.addEventListener("click", () => {
+      count += perClick;
+      updateScore();
+      createBurst();
+    });
+
+    minusButton.addEventListener("click", () => {
+      perClick = Math.max(1, perClick - 1);
+      updatePerClick();
+    });
+
+    plusButton.addEventListener("click", () => {
+      perClick = Math.min(99, perClick + 1);
+      updatePerClick();
+    });
+
+    musicButton.addEventListener("click", async () => {
+      try {
+        if (playing) {
+          music.pause();
+          playing = false;
+          musicButton.textContent = "🎵 曲を流す";
+        } else {
+          await music.play();
+          playing = true;
+          musicButton.textContent = "⏸ 曲を止める";
+        }
+      } catch (e) {
+        alert("birthday.mp3 が見つからないか、再生できません。");
+      }
+    });
+
+    settingsToggle.addEventListener("click", () => {
+      settingsPanel.classList.add("open");
+      settingsToggle.style.display = "none";
+    });
+
+    closeSettings.addEventListener("click", () => {
+      settingsPanel.classList.remove("open");
+      settingsToggle.style.display = "block";
+    });
+
+    personNameInput.addEventListener("input", updateBadge);
+    ageInput.addEventListener("input", updateBadge);
+
+    resetButton.addEventListener("click", () => {
+      count = 0;
+      perClick = 1;
+      updateScore();
+      updatePerClick();
+    });
+
+    const themes = {
+      pink: "linear-gradient(135deg, #ffd6e7, #ffe6c7, #fff6b8)",
+      blue: "linear-gradient(135deg, #d6f0ff, #d8e8ff, #eef3ff)",
+      purple: "linear-gradient(135deg, #efd8ff, #ffdff6, #ffe7ea)",
+      mint: "linear-gradient(135deg, #d9fff2, #dcfff9, #e6faff)"
+    };
+
+    colorButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        colorButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const theme = btn.dataset.theme;
+        document.body.style.background = themes[theme];
+      });
+    });
+
+    updateScore();
+    updatePerClick();
+    updateBadge();
+  </script>
+</body>
+</html>
