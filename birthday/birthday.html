@@ -1,1 +1,276 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Settings, Music2, X, Plus, Minus } from "lucide-react";
 
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function createBalloon(id) {
+  return {
+    id,
+    left: randomBetween(0, 96),
+    size: randomBetween(28, 74),
+    duration: randomBetween(4.8, 9.5),
+    delay: randomBetween(0, 2),
+    sway: randomBetween(-24, 24),
+    opacity: randomBetween(0.55, 0.95),
+    hue: randomBetween(0, 360),
+  };
+}
+
+function Balloon({ balloon }) {
+  return (
+    <motion.div
+      className="absolute -top-28"
+      initial={{ y: -160, x: 0, rotate: randomBetween(-10, 10) }}
+      animate={{
+        y: [0, 1400],
+        x: [0, balloon.sway, -balloon.sway, balloon.sway / 2],
+        rotate: [0, 5, -5, 2],
+      }}
+      transition={{
+        duration: balloon.duration,
+        repeat: Infinity,
+        ease: "linear",
+        delay: balloon.delay,
+      }}
+      style={{ left: `${balloon.left}%`, opacity: balloon.opacity }}
+    >
+      <div
+        className="relative rounded-full shadow-xl"
+        style={{
+          width: balloon.size,
+          height: balloon.size * 1.2,
+          background: `radial-gradient(circle at 30% 25%, rgba(255,255,255,.85), rgba(255,255,255,.25) 18%, transparent 19%), linear-gradient(180deg, hsla(${balloon.hue}, 95%, 88%, .95), hsla(${balloon.hue}, 85%, 72%, .9))`,
+        }}
+      >
+        <div className="absolute left-1/2 top-full h-16 w-px -translate-x-1/2 bg-white/80" />
+      </div>
+    </motion.div>
+  );
+}
+
+export default function BirthdayClickerSite() {
+  const [count, setCount] = useState(0);
+  const [perClick, setPerClick] = useState(1);
+  const [showSettings, setShowSettings] = useState(false);
+  const [personName, setPersonName] = useState("おともだち");
+  const [age, setAge] = useState(8);
+  const [theme, setTheme] = useState("from-pink-200 via-rose-100 to-yellow-100");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [bursts, setBursts] = useState([]);
+  const audioRef = useRef(null);
+  const timeoutRefs = useRef([]);
+
+  const balloons = useMemo(() => {
+    return Array.from({ length: 64 }, (_, i) => createBalloon(i + 1));
+  }, []);
+
+  useEffect(() => {
+    const audio = new Audio("./birthday.mp3");
+    audio.loop = true;
+    audioRef.current = audio;
+
+    return () => {
+      audio.pause();
+      timeoutRefs.current.forEach(clearTimeout);
+      timeoutRefs.current = [];
+    };
+  }, []);
+
+  const handleCakeClick = () => {
+    setCount((prev) => prev + perClick);
+
+    const burst = {
+      id: `${Date.now()}-${Math.random()}`,
+      left: randomBetween(40, 60),
+      top: randomBetween(42, 58),
+      label: `+${perClick}`,
+      emoji: ["🎉", "✨", "🍰", "🎈"][Math.floor(Math.random() * 4)],
+    };
+
+    setBursts((prev) => [...prev, burst]);
+
+    const timeoutId = setTimeout(() => {
+      setBursts((prev) => prev.filter((item) => item.id !== burst.id));
+    }, 900);
+
+    timeoutRefs.current.push(timeoutId);
+  };
+
+  const toggleMusic = async () => {
+    if (!audioRef.current) return;
+
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error("birthday.mp3 の再生に失敗しました", error);
+    }
+  };
+
+  const themeOptions = [
+    { label: "ピンク", value: "from-pink-200 via-rose-100 to-yellow-100", swatch: "bg-rose-300" },
+    { label: "ブルー", value: "from-sky-200 via-cyan-100 to-indigo-100", swatch: "bg-sky-300" },
+    { label: "パープル", value: "from-violet-200 via-fuchsia-100 to-pink-100", swatch: "bg-violet-300" },
+    { label: "ミント", value: "from-emerald-200 via-teal-100 to-cyan-100", swatch: "bg-emerald-300" },
+  ];
+
+  return (
+    <div className={`relative min-h-screen overflow-hidden bg-gradient-to-br ${theme}`}>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {balloons.map((balloon) => (
+          <Balloon key={balloon.id} balloon={balloon} />
+        ))}
+      </div>
+
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-10">
+        <div className="mb-5 rounded-full bg-white/75 px-5 py-2 text-base font-black text-slate-700 shadow-lg backdrop-blur-md sm:text-xl">
+          🎂 {personName} {age > 0 ? `${age}さい` : ""}
+        </div>
+
+        <div className="mb-4 rounded-[2rem] bg-white/80 px-8 py-4 text-center shadow-2xl backdrop-blur-md">
+          <div className="text-xs font-bold tracking-[0.2em] text-slate-400">CAKE</div>
+          <div className="text-5xl font-black text-slate-800 sm:text-7xl">{count}</div>
+        </div>
+
+        <motion.button
+          onClick={handleCakeClick}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.92, rotate: [-1, 1, -1, 0] }}
+          className="rounded-[2.5rem] bg-white/82 px-10 py-8 text-7xl shadow-2xl backdrop-blur-md transition sm:px-16 sm:py-12 sm:text-9xl"
+          aria-label="ケーキをクリック"
+        >
+          🎂
+        </motion.button>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button
+            onClick={toggleMusic}
+            className="flex items-center gap-2 rounded-2xl bg-white/82 px-5 py-3 text-sm font-bold text-slate-700 shadow-lg transition hover:scale-105"
+          >
+            <Music2 size={18} />
+            {isPlaying ? "曲を止める" : "曲を流す"}
+          </button>
+
+          <button
+            onClick={() => setPerClick((v) => Math.max(1, v - 1))}
+            className="rounded-2xl bg-white/82 p-3 shadow-lg transition hover:scale-105"
+            aria-label="クリック値を下げる"
+          >
+            <Minus size={18} />
+          </button>
+
+          <div className="rounded-2xl bg-white/82 px-4 py-3 text-sm font-black text-slate-700 shadow-lg">
+            +{perClick}
+          </div>
+
+          <button
+            onClick={() => setPerClick((v) => Math.min(99, v + 1))}
+            className="rounded-2xl bg-white/82 p-3 shadow-lg transition hover:scale-105"
+            aria-label="クリック値を上げる"
+          >
+            <Plus size={18} />
+          </button>
+        </div>
+
+        {bursts.map((burst) => (
+          <motion.div
+            key={burst.id}
+            initial={{ opacity: 0, y: 10, scale: 0.8 }}
+            animate={{ opacity: 1, y: -36, scale: 1.14 }}
+            transition={{ duration: 0.85, ease: "easeOut" }}
+            className="pointer-events-none absolute flex items-center gap-2 text-3xl font-black text-pink-600 drop-shadow-lg"
+            style={{ left: `${burst.left}%`, top: `${burst.top}%` }}
+          >
+            <span>{burst.emoji}</span>
+            <span>{burst.label}</span>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="fixed bottom-5 right-5 z-20">
+        {!showSettings ? (
+          <button
+            onClick={() => setShowSettings(true)}
+            className="rounded-full bg-white/86 p-4 shadow-2xl backdrop-blur-md transition hover:scale-105"
+            aria-label="設定を開く"
+          >
+            <Settings size={24} className="text-slate-700" />
+          </button>
+        ) : (
+          <div className="w-[320px] rounded-[2rem] bg-white/88 p-5 shadow-2xl backdrop-blur-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="text-base font-black text-slate-800">設定</div>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="rounded-full p-2 transition hover:bg-slate-100"
+                aria-label="設定を閉じる"
+              >
+                <X size={18} className="text-slate-600" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-bold text-slate-600">だれを祝う？</label>
+                <input
+                  value={personName}
+                  onChange={(e) => setPersonName(e.target.value)}
+                  placeholder="なまえ"
+                  className="w-full rounded-2xl border border-white/70 bg-white/85 px-4 py-3 text-sm outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-bold text-slate-600">年齢</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="150"
+                  value={age}
+                  onChange={(e) => setAge(Number(e.target.value || 0))}
+                  className="w-full rounded-2xl border border-white/70 bg-white/85 px-4 py-3 text-sm outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold text-slate-600">テーマカラー</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {themeOptions.map((option) => {
+                    const active = theme === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setTheme(option.value)}
+                        className={`h-12 rounded-2xl ${option.swatch} transition ${active ? "ring-4 ring-slate-400/60" : ""}`}
+                        aria-label={option.label}
+                        title={option.label}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setCount(0);
+                  setPerClick(1);
+                }}
+                className="w-full rounded-2xl bg-slate-800 px-4 py-3 text-sm font-black text-white shadow-lg transition hover:opacity-90"
+              >
+                リセット
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
