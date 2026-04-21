@@ -238,14 +238,15 @@
   <div class="container">
     <section class="hero">
       <h1>漢字しらべ</h1>
-      <p>最大5文字までまとめて調べられます。ひらがなを入力した場合は、同じ読みの候補を一覧表示して選べます。</p>
+      <p>最大15文字までまとめて調べられます。ひらがなを入力した場合は、同じ読みの候補を一覧表示して選べます。</p>
       <div class="search-box">
-        <input id="searchInput" type="text" placeholder="例：森空海 / あい / かい" maxlength="20" />
+        <input id="searchInput" type="text" placeholder="例：森空海山川花鳥風月 / あい / かい" maxlength="30" />
         <button id="searchButton">検索</button>
       </div>
       <div class="hint">
-        漢字入力：最大5文字まで同時表示<br />
+        漢字入力：最大15文字まで同時表示<br />
         ひらがな入力：同じ読みの候補を一覧表示<br />
+        未登録漢字：拡大表示し、詳細はすべて「不明」<br />
         データ本体：<code class="inline">kanji.json</code>
       </div>
     </section>
@@ -258,8 +259,7 @@
 
       <main class="card" id="detailCard">
         <div class="notice">
-          漢字データは <strong>kanji.json</strong> に分離しています。<br />
-          小学1年生の学習漢字から、難読漢字・漢検系の漢字まで幅広く追加できる設計です。
+          漢字データは <strong>kanji.json</strong> から読み込みます。未登録の漢字でも結果カードは表示されます。
         </div>
         <div class="empty">左の漢字、または上の検索欄から入力すると詳細が表示されます。</div>
       </main>
@@ -319,9 +319,23 @@
       });
     }
 
+    function createUnknownItem(kanji) {
+      return {
+        kanji,
+        onyomi: [],
+        kunyomi: [],
+        bushu: "不明",
+        kakusu: "不明",
+        grade: "不明",
+        kanken: "不明",
+        meaning: "不明",
+        isUnknown: true
+      };
+    }
+
     function renderMultiKanjiDetails(kanjiList) {
-      const safeList = kanjiList.slice(0, 5);
-      const items = safeList.map((kanji) => kanjiData[kanji]).filter(Boolean);
+      const safeList = kanjiList.slice(0, 15);
+      const items = safeList.map((kanji) => kanjiData[kanji] || createUnknownItem(kanji));
 
       if (items.length === 0) {
         detailCard.innerHTML = `<div class="empty">該当する漢字データが見つかりませんでした。</div>`;
@@ -331,7 +345,7 @@
       detailCard.innerHTML = `
         <div class="result-header">
           <h2 class="section-title" style="margin:0;">検索結果</h2>
-          <div class="result-count">${items.length}文字を表示中（最大5文字）</div>
+          <div class="result-count">${items.length}文字を表示中（最大15文字）</div>
         </div>
         <div class="detail-list">
           ${items.map((item) => `
@@ -341,18 +355,18 @@
                 <div>
                   <div style="font-size: 28px; font-weight: 800;">${item.kanji}</div>
                   <div class="reading">
-                    <span class="pill">音読み：${(item.onyomi || []).join("、") || "-"}</span>
-                    <span class="pill">訓読み：${(item.kunyomi || []).join("、") || "-"}</span>
+                    <span class="pill">音読み：${item.isUnknown ? "不明" : ((item.onyomi || []).join("、") || "-" )}</span>
+                    <span class="pill">訓読み：${item.isUnknown ? "不明" : ((item.kunyomi || []).join("、") || "-" )}</span>
                   </div>
                 </div>
               </div>
               <div class="info-grid">
-                <div class="info-box"><div class="label">部首</div><div class="value">${item.bushu || "-"}</div></div>
-                <div class="info-box"><div class="label">画数</div><div class="value">${item.kakusu || "-"}${item.kakusu ? "画" : ""}</div></div>
-                <div class="info-box"><div class="label">学年目安</div><div class="value">${item.grade || "-"}</div></div>
-                <div class="info-box"><div class="label">漢検目安</div><div class="value">${item.kanken || "-"}</div></div>
+                <div class="info-box"><div class="label">部首</div><div class="value">${item.bushu || "不明"}</div></div>
+                <div class="info-box"><div class="label">画数</div><div class="value">${typeof item.kakusu === "number" ? `${item.kakusu}画` : "不明"}</div></div>
+                <div class="info-box"><div class="label">学年目安</div><div class="value">${item.grade || "不明"}</div></div>
+                <div class="info-box"><div class="label">漢検目安</div><div class="value">${item.kanken || "不明"}</div></div>
               </div>
-              <div class="meaning"><strong>意味</strong><br />${item.meaning || "説明なし"}</div>
+              <div class="meaning"><strong>意味</strong><br />${item.meaning || "不明"}</div>
             </section>
           `).join("")}
         </div>
@@ -396,7 +410,7 @@
         return;
       }
 
-      const chars = [...value].filter((char) => char.trim()).slice(0, 5);
+      const chars = [...value].filter((char) => char.trim()).slice(0, 15);
       renderMultiKanjiDetails(chars);
     }
 
