@@ -180,7 +180,9 @@
     "onyomi": [
       "ショウ"
     ],
-    "kunyomi": [],
+    "kunyomi": [
+      "たくみ"
+    ],
     "searchReadings": [
       "しょう",
       "たくみ"
@@ -261,6 +263,2811 @@
     "grade": "配当外",
     "kanken": "3級",
     "meaning": "長生き、めでたいこと。"
+  },
+  "一": {
+    "kanji": "一",
+    "onyomi": [],
+    "kunyomi": [
+      "一"
+    ],
+    "searchReadings": [
+      "一"
+    ],
+    "bushu": "一",
+    "kakusu": 1,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ひとつ。"
+  },
+  "二": {
+    "kanji": "二",
+    "onyomi": [],
+    "kunyomi": [
+      "二"
+    ],
+    "searchReadings": [
+      "二"
+    ],
+    "bushu": "二",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ふたつ。"
+  },
+  "三": {
+    "kanji": "三",
+    "onyomi": [],
+    "kunyomi": [
+      "三"
+    ],
+    "searchReadings": [
+      "三"
+    ],
+    "bushu": "一",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "みっつ。"
+  },
+  "四": {
+    "kanji": "四",
+    "onyomi": [],
+    "kunyomi": [
+      "四"
+    ],
+    "searchReadings": [
+      "四"
+    ],
+    "bushu": "囗",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "よっつ。"
+  },
+  "五": {
+    "kanji": "五",
+    "onyomi": [],
+    "kunyomi": [
+      "五"
+    ],
+    "searchReadings": [
+      "五"
+    ],
+    "bushu": "二",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "いつつ。"
+  },
+  "六": {
+    "kanji": "六",
+    "onyomi": [],
+    "kunyomi": [
+      "六"
+    ],
+    "searchReadings": [
+      "六"
+    ],
+    "bushu": "八",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "むっつ。"
+  },
+  "七": {
+    "kanji": "七",
+    "onyomi": [],
+    "kunyomi": [
+      "七"
+    ],
+    "searchReadings": [
+      "七"
+    ],
+    "bushu": "一",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ななつ。"
+  },
+  "八": {
+    "kanji": "八",
+    "onyomi": [],
+    "kunyomi": [
+      "八"
+    ],
+    "searchReadings": [
+      "八"
+    ],
+    "bushu": "八",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "やっつ。"
+  },
+  "九": {
+    "kanji": "九",
+    "onyomi": [],
+    "kunyomi": [
+      "九"
+    ],
+    "searchReadings": [
+      "九"
+    ],
+    "bushu": "乙",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ここのつ。"
+  },
+  "十": {
+    "kanji": "十",
+    "onyomi": [],
+    "kunyomi": [
+      "十"
+    ],
+    "searchReadings": [
+      "十"
+    ],
+    "bushu": "十",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "とお。"
+  },
+  "百": {
+    "kanji": "百",
+    "onyomi": [],
+    "kunyomi": [
+      "百"
+    ],
+    "searchReadings": [
+      "百"
+    ],
+    "bushu": "白",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "100。"
+  },
+  "千": {
+    "kanji": "千",
+    "onyomi": [],
+    "kunyomi": [
+      "千"
+    ],
+    "searchReadings": [
+      "千"
+    ],
+    "bushu": "十",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "1000。"
+  },
+  "上": {
+    "kanji": "上",
+    "onyomi": [],
+    "kunyomi": [
+      "上"
+    ],
+    "searchReadings": [
+      "上"
+    ],
+    "bushu": "一",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "うえ。"
+  },
+  "下": {
+    "kanji": "下",
+    "onyomi": [],
+    "kunyomi": [
+      "下"
+    ],
+    "searchReadings": [
+      "下"
+    ],
+    "bushu": "一",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "した。"
+  },
+  "左": {
+    "kanji": "左",
+    "onyomi": [],
+    "kunyomi": [
+      "左"
+    ],
+    "searchReadings": [
+      "左"
+    ],
+    "bushu": "工",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ひだり。"
+  },
+  "右": {
+    "kanji": "右",
+    "onyomi": [],
+    "kunyomi": [
+      "右"
+    ],
+    "searchReadings": [
+      "右"
+    ],
+    "bushu": "口",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "みぎ。"
+  },
+  "中": {
+    "kanji": "中",
+    "onyomi": [],
+    "kunyomi": [
+      "中"
+    ],
+    "searchReadings": [
+      "中"
+    ],
+    "bushu": "丨",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "なか。"
+  },
+  "大": {
+    "kanji": "大",
+    "onyomi": [],
+    "kunyomi": [
+      "大"
+    ],
+    "searchReadings": [
+      "大"
+    ],
+    "bushu": "大",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "おおきい。"
+  },
+  "小": {
+    "kanji": "小",
+    "onyomi": [],
+    "kunyomi": [
+      "小"
+    ],
+    "searchReadings": [
+      "小"
+    ],
+    "bushu": "小",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ちいさい。"
+  },
+  "月": {
+    "kanji": "月",
+    "onyomi": [],
+    "kunyomi": [
+      "月"
+    ],
+    "searchReadings": [
+      "月"
+    ],
+    "bushu": "月",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "つき。"
+  },
+  "日": {
+    "kanji": "日",
+    "onyomi": [],
+    "kunyomi": [
+      "日"
+    ],
+    "searchReadings": [
+      "日"
+    ],
+    "bushu": "日",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ひ、にち。"
+  },
+  "木": {
+    "kanji": "木",
+    "onyomi": [],
+    "kunyomi": [
+      "木"
+    ],
+    "searchReadings": [
+      "木"
+    ],
+    "bushu": "木",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "き。"
+  },
+  "水": {
+    "kanji": "水",
+    "onyomi": [],
+    "kunyomi": [
+      "水"
+    ],
+    "searchReadings": [
+      "水"
+    ],
+    "bushu": "水",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "みず。"
+  },
+  "金": {
+    "kanji": "金",
+    "onyomi": [],
+    "kunyomi": [
+      "金"
+    ],
+    "searchReadings": [
+      "金"
+    ],
+    "bushu": "金",
+    "kakusu": 8,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "かね。"
+  },
+  "土": {
+    "kanji": "土",
+    "onyomi": [],
+    "kunyomi": [
+      "土"
+    ],
+    "searchReadings": [
+      "土"
+    ],
+    "bushu": "土",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "つち。"
+  },
+  "山": {
+    "kanji": "山",
+    "onyomi": [],
+    "kunyomi": [
+      "山"
+    ],
+    "searchReadings": [
+      "山"
+    ],
+    "bushu": "山",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "やま。"
+  },
+  "川": {
+    "kanji": "川",
+    "onyomi": [],
+    "kunyomi": [
+      "川"
+    ],
+    "searchReadings": [
+      "川"
+    ],
+    "bushu": "川",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "かわ。"
+  },
+  "田": {
+    "kanji": "田",
+    "onyomi": [],
+    "kunyomi": [
+      "田"
+    ],
+    "searchReadings": [
+      "田"
+    ],
+    "bushu": "田",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "た。"
+  },
+  "天": {
+    "kanji": "天",
+    "onyomi": [],
+    "kunyomi": [
+      "天"
+    ],
+    "searchReadings": [
+      "天"
+    ],
+    "bushu": "大",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "そら、あま。"
+  },
+  "気": {
+    "kanji": "気",
+    "onyomi": [],
+    "kunyomi": [
+      "気"
+    ],
+    "searchReadings": [
+      "気"
+    ],
+    "bushu": "气",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "きもち、くうきのき。"
+  },
+  "花": {
+    "kanji": "花",
+    "onyomi": [],
+    "kunyomi": [
+      "花"
+    ],
+    "searchReadings": [
+      "花"
+    ],
+    "bushu": "艸",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "はな。"
+  },
+  "草": {
+    "kanji": "草",
+    "onyomi": [],
+    "kunyomi": [
+      "草"
+    ],
+    "searchReadings": [
+      "草"
+    ],
+    "bushu": "艸",
+    "kakusu": 9,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "くさ。"
+  },
+  "竹": {
+    "kanji": "竹",
+    "onyomi": [],
+    "kunyomi": [
+      "竹"
+    ],
+    "searchReadings": [
+      "竹"
+    ],
+    "bushu": "竹",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "たけ。"
+  },
+  "虫": {
+    "kanji": "虫",
+    "onyomi": [],
+    "kunyomi": [
+      "虫"
+    ],
+    "searchReadings": [
+      "虫"
+    ],
+    "bushu": "虫",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "むし。"
+  },
+  "犬": {
+    "kanji": "犬",
+    "onyomi": [],
+    "kunyomi": [
+      "犬"
+    ],
+    "searchReadings": [
+      "犬"
+    ],
+    "bushu": "犬",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "いぬ。"
+  },
+  "人": {
+    "kanji": "人",
+    "onyomi": [],
+    "kunyomi": [
+      "人"
+    ],
+    "searchReadings": [
+      "人"
+    ],
+    "bushu": "人",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ひと。"
+  },
+  "名": {
+    "kanji": "名",
+    "onyomi": [],
+    "kunyomi": [
+      "名"
+    ],
+    "searchReadings": [
+      "名"
+    ],
+    "bushu": "口",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "なまえ。"
+  },
+  "女": {
+    "kanji": "女",
+    "onyomi": [],
+    "kunyomi": [
+      "女"
+    ],
+    "searchReadings": [
+      "女"
+    ],
+    "bushu": "女",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "おんな。"
+  },
+  "男": {
+    "kanji": "男",
+    "onyomi": [],
+    "kunyomi": [
+      "男"
+    ],
+    "searchReadings": [
+      "男"
+    ],
+    "bushu": "田",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "おとこ。"
+  },
+  "子": {
+    "kanji": "子",
+    "onyomi": [],
+    "kunyomi": [
+      "子"
+    ],
+    "searchReadings": [
+      "子"
+    ],
+    "bushu": "子",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "こども。"
+  },
+  "目": {
+    "kanji": "目",
+    "onyomi": [],
+    "kunyomi": [
+      "目"
+    ],
+    "searchReadings": [
+      "目"
+    ],
+    "bushu": "目",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "め。"
+  },
+  "耳": {
+    "kanji": "耳",
+    "onyomi": [],
+    "kunyomi": [
+      "耳"
+    ],
+    "searchReadings": [
+      "耳"
+    ],
+    "bushu": "耳",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "みみ。"
+  },
+  "口": {
+    "kanji": "口",
+    "onyomi": [],
+    "kunyomi": [
+      "口"
+    ],
+    "searchReadings": [
+      "口"
+    ],
+    "bushu": "口",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "くち。"
+  },
+  "手": {
+    "kanji": "手",
+    "onyomi": [],
+    "kunyomi": [
+      "手"
+    ],
+    "searchReadings": [
+      "手"
+    ],
+    "bushu": "手",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "て。"
+  },
+  "足": {
+    "kanji": "足",
+    "onyomi": [],
+    "kunyomi": [
+      "足"
+    ],
+    "searchReadings": [
+      "足"
+    ],
+    "bushu": "足",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "あし。"
+  },
+  "見": {
+    "kanji": "見",
+    "onyomi": [],
+    "kunyomi": [
+      "見"
+    ],
+    "searchReadings": [
+      "見"
+    ],
+    "bushu": "見",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "みる。"
+  },
+  "早": {
+    "kanji": "早",
+    "onyomi": [],
+    "kunyomi": [
+      "早"
+    ],
+    "searchReadings": [
+      "早"
+    ],
+    "bushu": "日",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "はやい。"
+  },
+  "正": {
+    "kanji": "正",
+    "onyomi": [],
+    "kunyomi": [
+      "正"
+    ],
+    "searchReadings": [
+      "正"
+    ],
+    "bushu": "止",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ただしい。"
+  },
+  "赤": {
+    "kanji": "赤",
+    "onyomi": [],
+    "kunyomi": [
+      "赤"
+    ],
+    "searchReadings": [
+      "赤"
+    ],
+    "bushu": "赤",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "あか。"
+  },
+  "青": {
+    "kanji": "青",
+    "onyomi": [],
+    "kunyomi": [
+      "青"
+    ],
+    "searchReadings": [
+      "青"
+    ],
+    "bushu": "青",
+    "kakusu": 8,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "あお。"
+  },
+  "白": {
+    "kanji": "白",
+    "onyomi": [],
+    "kunyomi": [
+      "白"
+    ],
+    "searchReadings": [
+      "白"
+    ],
+    "bushu": "白",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "しろ。"
+  },
+  "立": {
+    "kanji": "立",
+    "onyomi": [],
+    "kunyomi": [
+      "立"
+    ],
+    "searchReadings": [
+      "立"
+    ],
+    "bushu": "立",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "たつ。"
+  },
+  "石": {
+    "kanji": "石",
+    "onyomi": [],
+    "kunyomi": [
+      "石"
+    ],
+    "searchReadings": [
+      "石"
+    ],
+    "bushu": "石",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "いし。"
+  },
+  "夕": {
+    "kanji": "夕",
+    "onyomi": [],
+    "kunyomi": [
+      "夕"
+    ],
+    "searchReadings": [
+      "夕"
+    ],
+    "bushu": "夕",
+    "kakusu": 3,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ゆうべ。"
+  },
+  "力": {
+    "kanji": "力",
+    "onyomi": [],
+    "kunyomi": [
+      "力"
+    ],
+    "searchReadings": [
+      "力"
+    ],
+    "bushu": "力",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ちから。"
+  },
+  "林": {
+    "kanji": "林",
+    "onyomi": [],
+    "kunyomi": [
+      "林"
+    ],
+    "searchReadings": [
+      "林"
+    ],
+    "bushu": "木",
+    "kakusu": 8,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "はやし。"
+  },
+  "村": {
+    "kanji": "村",
+    "onyomi": [],
+    "kunyomi": [
+      "村"
+    ],
+    "searchReadings": [
+      "村"
+    ],
+    "bushu": "木",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "むら。"
+  },
+  "町": {
+    "kanji": "町",
+    "onyomi": [],
+    "kunyomi": [
+      "町"
+    ],
+    "searchReadings": [
+      "町"
+    ],
+    "bushu": "田",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "まち。"
+  },
+  "車": {
+    "kanji": "車",
+    "onyomi": [],
+    "kunyomi": [
+      "車"
+    ],
+    "searchReadings": [
+      "車"
+    ],
+    "bushu": "車",
+    "kakusu": 7,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "くるま。"
+  },
+  "校": {
+    "kanji": "校",
+    "onyomi": [],
+    "kunyomi": [
+      "校"
+    ],
+    "searchReadings": [
+      "校"
+    ],
+    "bushu": "木",
+    "kakusu": 10,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "学校のこう。"
+  },
+  "雨": {
+    "kanji": "雨",
+    "onyomi": [],
+    "kunyomi": [
+      "雨"
+    ],
+    "searchReadings": [
+      "雨"
+    ],
+    "bushu": "雨",
+    "kakusu": 8,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "あめ。"
+  },
+  "円": {
+    "kanji": "円",
+    "onyomi": [],
+    "kunyomi": [
+      "円"
+    ],
+    "searchReadings": [
+      "円"
+    ],
+    "bushu": "冂",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "まる、えん。"
+  },
+  "入": {
+    "kanji": "入",
+    "onyomi": [],
+    "kunyomi": [
+      "入"
+    ],
+    "searchReadings": [
+      "入"
+    ],
+    "bushu": "入",
+    "kakusu": 2,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "はいる。"
+  },
+  "出": {
+    "kanji": "出",
+    "onyomi": [],
+    "kunyomi": [
+      "出"
+    ],
+    "searchReadings": [
+      "出"
+    ],
+    "bushu": "凵",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "でる。"
+  },
+  "本": {
+    "kanji": "本",
+    "onyomi": [],
+    "kunyomi": [
+      "本"
+    ],
+    "searchReadings": [
+      "本"
+    ],
+    "bushu": "木",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ほん。"
+  },
+  "休": {
+    "kanji": "休",
+    "onyomi": [],
+    "kunyomi": [
+      "休"
+    ],
+    "searchReadings": [
+      "休"
+    ],
+    "bushu": "人",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "やすむ。"
+  },
+  "文": {
+    "kanji": "文",
+    "onyomi": [],
+    "kunyomi": [
+      "文"
+    ],
+    "searchReadings": [
+      "文"
+    ],
+    "bushu": "文",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "ぶん、もん。"
+  },
+  "字": {
+    "kanji": "字",
+    "onyomi": [],
+    "kunyomi": [
+      "字"
+    ],
+    "searchReadings": [
+      "字"
+    ],
+    "bushu": "子",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "もじ。"
+  },
+  "玉": {
+    "kanji": "玉",
+    "onyomi": [],
+    "kunyomi": [
+      "玉"
+    ],
+    "searchReadings": [
+      "玉"
+    ],
+    "bushu": "玉",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "たま。"
+  },
+  "生": {
+    "kanji": "生",
+    "onyomi": [],
+    "kunyomi": [
+      "生"
+    ],
+    "searchReadings": [
+      "生"
+    ],
+    "bushu": "生",
+    "kakusu": 5,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "いきる。"
+  },
+  "先": {
+    "kanji": "先",
+    "onyomi": [],
+    "kunyomi": [
+      "先"
+    ],
+    "searchReadings": [
+      "先"
+    ],
+    "bushu": "儿",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "さき。"
+  },
+  "王": {
+    "kanji": "王",
+    "onyomi": [],
+    "kunyomi": [
+      "王"
+    ],
+    "searchReadings": [
+      "王"
+    ],
+    "bushu": "玉",
+    "kakusu": 4,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "おう。"
+  },
+  "年": {
+    "kanji": "年",
+    "onyomi": [],
+    "kunyomi": [
+      "年"
+    ],
+    "searchReadings": [
+      "年"
+    ],
+    "bushu": "干",
+    "kakusu": 6,
+    "grade": "小学校1年",
+    "kanken": "10級",
+    "meaning": "とし。"
+  },
+  "会": {
+    "kanji": "会",
+    "onyomi": [],
+    "kunyomi": [
+      "会"
+    ],
+    "searchReadings": [
+      "会"
+    ],
+    "bushu": "人",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "あう。"
+  },
+  "同": {
+    "kanji": "同",
+    "onyomi": [],
+    "kunyomi": [
+      "同"
+    ],
+    "searchReadings": [
+      "同"
+    ],
+    "bushu": "口",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "おなじ。"
+  },
+  "今": {
+    "kanji": "今",
+    "onyomi": [],
+    "kunyomi": [
+      "今"
+    ],
+    "searchReadings": [
+      "今"
+    ],
+    "bushu": "人",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "いま。"
+  },
+  "寺": {
+    "kanji": "寺",
+    "onyomi": [],
+    "kunyomi": [
+      "寺"
+    ],
+    "searchReadings": [
+      "寺"
+    ],
+    "bushu": "寸",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "てら。"
+  },
+  "時": {
+    "kanji": "時",
+    "onyomi": [],
+    "kunyomi": [
+      "時"
+    ],
+    "searchReadings": [
+      "時"
+    ],
+    "bushu": "日",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "とき。"
+  },
+  "分": {
+    "kanji": "分",
+    "onyomi": [],
+    "kunyomi": [
+      "分"
+    ],
+    "searchReadings": [
+      "分"
+    ],
+    "bushu": "刀",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "わける。"
+  },
+  "半": {
+    "kanji": "半",
+    "onyomi": [],
+    "kunyomi": [
+      "半"
+    ],
+    "searchReadings": [
+      "半"
+    ],
+    "bushu": "十",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "なかば。"
+  },
+  "刀": {
+    "kanji": "刀",
+    "onyomi": [],
+    "kunyomi": [
+      "刀"
+    ],
+    "searchReadings": [
+      "刀"
+    ],
+    "bushu": "刀",
+    "kakusu": 2,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "かたな。"
+  },
+  "午": {
+    "kanji": "午",
+    "onyomi": [],
+    "kunyomi": [
+      "午"
+    ],
+    "searchReadings": [
+      "午"
+    ],
+    "bushu": "十",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ひる。"
+  },
+  "前": {
+    "kanji": "前",
+    "onyomi": [],
+    "kunyomi": [
+      "前"
+    ],
+    "searchReadings": [
+      "前"
+    ],
+    "bushu": "刀",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "まえ。"
+  },
+  "後": {
+    "kanji": "後",
+    "onyomi": [],
+    "kunyomi": [
+      "後"
+    ],
+    "searchReadings": [
+      "後"
+    ],
+    "bushu": "彳",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "あと、うしろ。"
+  },
+  "内": {
+    "kanji": "内",
+    "onyomi": [],
+    "kunyomi": [
+      "内"
+    ],
+    "searchReadings": [
+      "内"
+    ],
+    "bushu": "入",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "うち。"
+  },
+  "外": {
+    "kanji": "外",
+    "onyomi": [],
+    "kunyomi": [
+      "外"
+    ],
+    "searchReadings": [
+      "外"
+    ],
+    "bushu": "夕",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "そと。"
+  },
+  "北": {
+    "kanji": "北",
+    "onyomi": [],
+    "kunyomi": [
+      "北"
+    ],
+    "searchReadings": [
+      "北"
+    ],
+    "bushu": "匕",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "きた。"
+  },
+  "南": {
+    "kanji": "南",
+    "onyomi": [],
+    "kunyomi": [
+      "南"
+    ],
+    "searchReadings": [
+      "南"
+    ],
+    "bushu": "十",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "みなみ。"
+  },
+  "東": {
+    "kanji": "東",
+    "onyomi": [],
+    "kunyomi": [
+      "東"
+    ],
+    "searchReadings": [
+      "東"
+    ],
+    "bushu": "木",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ひがし。"
+  },
+  "西": {
+    "kanji": "西",
+    "onyomi": [],
+    "kunyomi": [
+      "西"
+    ],
+    "searchReadings": [
+      "西"
+    ],
+    "bushu": "襾",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "にし。"
+  },
+  "国": {
+    "kanji": "国",
+    "onyomi": [],
+    "kunyomi": [
+      "国"
+    ],
+    "searchReadings": [
+      "国"
+    ],
+    "bushu": "囗",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "くに。"
+  },
+  "店": {
+    "kanji": "店",
+    "onyomi": [],
+    "kunyomi": [
+      "店"
+    ],
+    "searchReadings": [
+      "店"
+    ],
+    "bushu": "广",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "みせ。"
+  },
+  "来": {
+    "kanji": "来",
+    "onyomi": [],
+    "kunyomi": [
+      "来"
+    ],
+    "searchReadings": [
+      "来"
+    ],
+    "bushu": "木",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "くる。"
+  },
+  "帰": {
+    "kanji": "帰",
+    "onyomi": [],
+    "kunyomi": [
+      "帰"
+    ],
+    "searchReadings": [
+      "帰"
+    ],
+    "bushu": "巾",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "かえる。"
+  },
+  "食": {
+    "kanji": "食",
+    "onyomi": [],
+    "kunyomi": [
+      "食"
+    ],
+    "searchReadings": [
+      "食"
+    ],
+    "bushu": "食",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "たべる。"
+  },
+  "飲": {
+    "kanji": "飲",
+    "onyomi": [],
+    "kunyomi": [
+      "飲"
+    ],
+    "searchReadings": [
+      "飲"
+    ],
+    "bushu": "食",
+    "kakusu": 12,
+    "grade": "小学校3年",
+    "kanken": "8級",
+    "meaning": "のむ。"
+  },
+  "買": {
+    "kanji": "買",
+    "onyomi": [],
+    "kunyomi": [
+      "買"
+    ],
+    "searchReadings": [
+      "買"
+    ],
+    "bushu": "貝",
+    "kakusu": 12,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "かう。"
+  },
+  "売": {
+    "kanji": "売",
+    "onyomi": [],
+    "kunyomi": [
+      "売"
+    ],
+    "searchReadings": [
+      "売"
+    ],
+    "bushu": "士",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "うる。"
+  },
+  "走": {
+    "kanji": "走",
+    "onyomi": [],
+    "kunyomi": [
+      "走"
+    ],
+    "searchReadings": [
+      "走"
+    ],
+    "bushu": "走",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "はしる。"
+  },
+  "歩": {
+    "kanji": "歩",
+    "onyomi": [],
+    "kunyomi": [
+      "歩"
+    ],
+    "searchReadings": [
+      "歩"
+    ],
+    "bushu": "止",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "あるく。"
+  },
+  "自": {
+    "kanji": "自",
+    "onyomi": [],
+    "kunyomi": [
+      "自"
+    ],
+    "searchReadings": [
+      "自"
+    ],
+    "bushu": "自",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "みずから。"
+  },
+  "直": {
+    "kanji": "直",
+    "onyomi": [],
+    "kunyomi": [
+      "直"
+    ],
+    "searchReadings": [
+      "直"
+    ],
+    "bushu": "目",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "なおる、ただちに。"
+  },
+  "体": {
+    "kanji": "体",
+    "onyomi": [],
+    "kunyomi": [
+      "体"
+    ],
+    "searchReadings": [
+      "体"
+    ],
+    "bushu": "人",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "からだ。"
+  },
+  "何": {
+    "kanji": "何",
+    "onyomi": [],
+    "kunyomi": [
+      "何"
+    ],
+    "searchReadings": [
+      "何"
+    ],
+    "bushu": "人",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "なに。"
+  },
+  "作": {
+    "kanji": "作",
+    "onyomi": [],
+    "kunyomi": [
+      "作"
+    ],
+    "searchReadings": [
+      "作"
+    ],
+    "bushu": "人",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "つくる。"
+  },
+  "元": {
+    "kanji": "元",
+    "onyomi": [],
+    "kunyomi": [
+      "元"
+    ],
+    "searchReadings": [
+      "元"
+    ],
+    "bushu": "儿",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "もと。"
+  },
+  "兄": {
+    "kanji": "兄",
+    "onyomi": [],
+    "kunyomi": [
+      "兄"
+    ],
+    "searchReadings": [
+      "兄"
+    ],
+    "bushu": "儿",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "あに。"
+  },
+  "姉": {
+    "kanji": "姉",
+    "onyomi": [],
+    "kunyomi": [
+      "姉"
+    ],
+    "searchReadings": [
+      "姉"
+    ],
+    "bushu": "女",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "あね。"
+  },
+  "弟": {
+    "kanji": "弟",
+    "onyomi": [],
+    "kunyomi": [
+      "弟"
+    ],
+    "searchReadings": [
+      "弟"
+    ],
+    "bushu": "弓",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "おとうと。"
+  },
+  "妹": {
+    "kanji": "妹",
+    "onyomi": [],
+    "kunyomi": [
+      "妹"
+    ],
+    "searchReadings": [
+      "妹"
+    ],
+    "bushu": "女",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "いもうと。"
+  },
+  "父": {
+    "kanji": "父",
+    "onyomi": [],
+    "kunyomi": [
+      "父"
+    ],
+    "searchReadings": [
+      "父"
+    ],
+    "bushu": "父",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ちち。"
+  },
+  "母": {
+    "kanji": "母",
+    "onyomi": [],
+    "kunyomi": [
+      "母"
+    ],
+    "searchReadings": [
+      "母"
+    ],
+    "bushu": "毋",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "はは。"
+  },
+  "友": {
+    "kanji": "友",
+    "onyomi": [],
+    "kunyomi": [
+      "友"
+    ],
+    "searchReadings": [
+      "友"
+    ],
+    "bushu": "又",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ともだち。"
+  },
+  "毎": {
+    "kanji": "毎",
+    "onyomi": [],
+    "kunyomi": [
+      "毎"
+    ],
+    "searchReadings": [
+      "毎"
+    ],
+    "bushu": "毋",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "まい。"
+  },
+  "春": {
+    "kanji": "春",
+    "onyomi": [],
+    "kunyomi": [
+      "春"
+    ],
+    "searchReadings": [
+      "春"
+    ],
+    "bushu": "日",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "はる。"
+  },
+  "夏": {
+    "kanji": "夏",
+    "onyomi": [],
+    "kunyomi": [
+      "夏"
+    ],
+    "searchReadings": [
+      "夏"
+    ],
+    "bushu": "夂",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "なつ。"
+  },
+  "秋": {
+    "kanji": "秋",
+    "onyomi": [],
+    "kunyomi": [
+      "秋"
+    ],
+    "searchReadings": [
+      "秋"
+    ],
+    "bushu": "禾",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "あき。"
+  },
+  "冬": {
+    "kanji": "冬",
+    "onyomi": [],
+    "kunyomi": [
+      "冬"
+    ],
+    "searchReadings": [
+      "冬"
+    ],
+    "bushu": "夂",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ふゆ。"
+  },
+  "昼": {
+    "kanji": "昼",
+    "onyomi": [],
+    "kunyomi": [
+      "昼"
+    ],
+    "searchReadings": [
+      "昼"
+    ],
+    "bushu": "日",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ひる。"
+  },
+  "朝": {
+    "kanji": "朝",
+    "onyomi": [],
+    "kunyomi": [
+      "朝"
+    ],
+    "searchReadings": [
+      "朝"
+    ],
+    "bushu": "月",
+    "kakusu": 12,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "あさ。"
+  },
+  "雪": {
+    "kanji": "雪",
+    "onyomi": [],
+    "kunyomi": [
+      "雪"
+    ],
+    "searchReadings": [
+      "雪"
+    ],
+    "bushu": "雨",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ゆき。"
+  },
+  "雲": {
+    "kanji": "雲",
+    "onyomi": [],
+    "kunyomi": [
+      "雲"
+    ],
+    "searchReadings": [
+      "雲"
+    ],
+    "bushu": "雨",
+    "kakusu": 12,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "くも。"
+  },
+  "風": {
+    "kanji": "風",
+    "onyomi": [],
+    "kunyomi": [
+      "風"
+    ],
+    "searchReadings": [
+      "風"
+    ],
+    "bushu": "風",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "かぜ。"
+  },
+  "星": {
+    "kanji": "星",
+    "onyomi": [],
+    "kunyomi": [
+      "星"
+    ],
+    "searchReadings": [
+      "星"
+    ],
+    "bushu": "日",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ほし。"
+  },
+  "室": {
+    "kanji": "室",
+    "onyomi": [],
+    "kunyomi": [
+      "室"
+    ],
+    "searchReadings": [
+      "室"
+    ],
+    "bushu": "宀",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "へや。"
+  },
+  "家": {
+    "kanji": "家",
+    "onyomi": [],
+    "kunyomi": [
+      "家"
+    ],
+    "searchReadings": [
+      "家"
+    ],
+    "bushu": "宀",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "いえ。"
+  },
+  "門": {
+    "kanji": "門",
+    "onyomi": [],
+    "kunyomi": [
+      "門"
+    ],
+    "searchReadings": [
+      "門"
+    ],
+    "bushu": "門",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "もん。"
+  },
+  "戸": {
+    "kanji": "戸",
+    "onyomi": [],
+    "kunyomi": [
+      "戸"
+    ],
+    "searchReadings": [
+      "戸"
+    ],
+    "bushu": "戸",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "と。"
+  },
+  "道": {
+    "kanji": "道",
+    "onyomi": [],
+    "kunyomi": [
+      "道"
+    ],
+    "searchReadings": [
+      "道"
+    ],
+    "bushu": "辵",
+    "kakusu": 12,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "みち。"
+  },
+  "野": {
+    "kanji": "野",
+    "onyomi": [],
+    "kunyomi": [
+      "野"
+    ],
+    "searchReadings": [
+      "野"
+    ],
+    "bushu": "里",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "の。"
+  },
+  "原": {
+    "kanji": "原",
+    "onyomi": [],
+    "kunyomi": [
+      "原"
+    ],
+    "searchReadings": [
+      "原"
+    ],
+    "bushu": "厂",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "はら。"
+  },
+  "岩": {
+    "kanji": "岩",
+    "onyomi": [],
+    "kunyomi": [
+      "岩"
+    ],
+    "searchReadings": [
+      "岩"
+    ],
+    "bushu": "山",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "いわ。"
+  },
+  "谷": {
+    "kanji": "谷",
+    "onyomi": [],
+    "kunyomi": [
+      "谷"
+    ],
+    "searchReadings": [
+      "谷"
+    ],
+    "bushu": "谷",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "たに。"
+  },
+  "場": {
+    "kanji": "場",
+    "onyomi": [],
+    "kunyomi": [
+      "場"
+    ],
+    "searchReadings": [
+      "場"
+    ],
+    "bushu": "土",
+    "kakusu": 12,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ばしょ。"
+  },
+  "地": {
+    "kanji": "地",
+    "onyomi": [],
+    "kunyomi": [
+      "地"
+    ],
+    "searchReadings": [
+      "地"
+    ],
+    "bushu": "土",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "じめん。"
+  },
+  "池": {
+    "kanji": "池",
+    "onyomi": [],
+    "kunyomi": [
+      "池"
+    ],
+    "searchReadings": [
+      "池"
+    ],
+    "bushu": "水",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "いけ。"
+  },
+  "多": {
+    "kanji": "多",
+    "onyomi": [],
+    "kunyomi": [
+      "多"
+    ],
+    "searchReadings": [
+      "多"
+    ],
+    "bushu": "夕",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "おおい。"
+  },
+  "少": {
+    "kanji": "少",
+    "onyomi": [],
+    "kunyomi": [
+      "少"
+    ],
+    "searchReadings": [
+      "少"
+    ],
+    "bushu": "小",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "すくない。"
+  },
+  "広": {
+    "kanji": "広",
+    "onyomi": [],
+    "kunyomi": [
+      "広"
+    ],
+    "searchReadings": [
+      "広"
+    ],
+    "bushu": "广",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ひろい。"
+  },
+  "長": {
+    "kanji": "長",
+    "onyomi": [],
+    "kunyomi": [
+      "長"
+    ],
+    "searchReadings": [
+      "長"
+    ],
+    "bushu": "長",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ながい。"
+  },
+  "高": {
+    "kanji": "高",
+    "onyomi": [],
+    "kunyomi": [
+      "高"
+    ],
+    "searchReadings": [
+      "高"
+    ],
+    "bushu": "高",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "たかい。"
+  },
+  "明": {
+    "kanji": "明",
+    "onyomi": [],
+    "kunyomi": [
+      "明"
+    ],
+    "searchReadings": [
+      "明"
+    ],
+    "bushu": "日",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "あかるい。"
+  },
+  "強": {
+    "kanji": "強",
+    "onyomi": [],
+    "kunyomi": [
+      "強"
+    ],
+    "searchReadings": [
+      "強"
+    ],
+    "bushu": "弓",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "つよい。"
+  },
+  "弱": {
+    "kanji": "弱",
+    "onyomi": [],
+    "kunyomi": [
+      "弱"
+    ],
+    "searchReadings": [
+      "弱"
+    ],
+    "bushu": "弓",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "よわい。"
+  },
+  "近": {
+    "kanji": "近",
+    "onyomi": [],
+    "kunyomi": [
+      "近"
+    ],
+    "searchReadings": [
+      "近"
+    ],
+    "bushu": "辵",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ちかい。"
+  },
+  "太": {
+    "kanji": "太",
+    "onyomi": [],
+    "kunyomi": [
+      "太"
+    ],
+    "searchReadings": [
+      "太"
+    ],
+    "bushu": "大",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ふとい。"
+  },
+  "細": {
+    "kanji": "細",
+    "onyomi": [],
+    "kunyomi": [
+      "細"
+    ],
+    "searchReadings": [
+      "細"
+    ],
+    "bushu": "糸",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ほそい。"
+  },
+  "心": {
+    "kanji": "心",
+    "onyomi": [],
+    "kunyomi": [
+      "心"
+    ],
+    "searchReadings": [
+      "心"
+    ],
+    "bushu": "心",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "こころ。"
+  },
+  "思": {
+    "kanji": "思",
+    "onyomi": [],
+    "kunyomi": [
+      "思"
+    ],
+    "searchReadings": [
+      "思"
+    ],
+    "bushu": "心",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "おもう。"
+  },
+  "考": {
+    "kanji": "考",
+    "onyomi": [],
+    "kunyomi": [
+      "考"
+    ],
+    "searchReadings": [
+      "考"
+    ],
+    "bushu": "老",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "かんがえる。"
+  },
+  "知": {
+    "kanji": "知",
+    "onyomi": [],
+    "kunyomi": [
+      "知"
+    ],
+    "searchReadings": [
+      "知"
+    ],
+    "bushu": "矢",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "しる。"
+  },
+  "教": {
+    "kanji": "教",
+    "onyomi": [],
+    "kunyomi": [
+      "教"
+    ],
+    "searchReadings": [
+      "教"
+    ],
+    "bushu": "攴",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "おしえる。"
+  },
+  "記": {
+    "kanji": "記",
+    "onyomi": [],
+    "kunyomi": [
+      "記"
+    ],
+    "searchReadings": [
+      "記"
+    ],
+    "bushu": "言",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "しるす。"
+  },
+  "言": {
+    "kanji": "言",
+    "onyomi": [],
+    "kunyomi": [
+      "言"
+    ],
+    "searchReadings": [
+      "言"
+    ],
+    "bushu": "言",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "いう。"
+  },
+  "声": {
+    "kanji": "声",
+    "onyomi": [],
+    "kunyomi": [
+      "声"
+    ],
+    "searchReadings": [
+      "声"
+    ],
+    "bushu": "耳",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "こえ。"
+  },
+  "絵": {
+    "kanji": "絵",
+    "onyomi": [],
+    "kunyomi": [
+      "絵"
+    ],
+    "searchReadings": [
+      "絵"
+    ],
+    "bushu": "糸",
+    "kakusu": 12,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "え。"
+  },
+  "紙": {
+    "kanji": "紙",
+    "onyomi": [],
+    "kunyomi": [
+      "紙"
+    ],
+    "searchReadings": [
+      "紙"
+    ],
+    "bushu": "糸",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "かみ。"
+  },
+  "工": {
+    "kanji": "工",
+    "onyomi": [],
+    "kunyomi": [
+      "工"
+    ],
+    "searchReadings": [
+      "工"
+    ],
+    "bushu": "工",
+    "kakusu": 3,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "こう、たくみ。"
+  },
+  "肉": {
+    "kanji": "肉",
+    "onyomi": [],
+    "kunyomi": [
+      "肉"
+    ],
+    "searchReadings": [
+      "肉"
+    ],
+    "bushu": "肉",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "にく。"
+  },
+  "米": {
+    "kanji": "米",
+    "onyomi": [],
+    "kunyomi": [
+      "米"
+    ],
+    "searchReadings": [
+      "米"
+    ],
+    "bushu": "米",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "こめ。"
+  },
+  "麦": {
+    "kanji": "麦",
+    "onyomi": [],
+    "kunyomi": [
+      "麦"
+    ],
+    "searchReadings": [
+      "麦"
+    ],
+    "bushu": "麦",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "むぎ。"
+  },
+  "魚": {
+    "kanji": "魚",
+    "onyomi": [],
+    "kunyomi": [
+      "魚"
+    ],
+    "searchReadings": [
+      "魚"
+    ],
+    "bushu": "魚",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "さかな。"
+  },
+  "鳥": {
+    "kanji": "鳥",
+    "onyomi": [],
+    "kunyomi": [
+      "鳥"
+    ],
+    "searchReadings": [
+      "鳥"
+    ],
+    "bushu": "鳥",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "とり。"
+  },
+  "羽": {
+    "kanji": "羽",
+    "onyomi": [],
+    "kunyomi": [
+      "羽"
+    ],
+    "searchReadings": [
+      "羽"
+    ],
+    "bushu": "羽",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "はね。"
+  },
+  "牛": {
+    "kanji": "牛",
+    "onyomi": [],
+    "kunyomi": [
+      "牛"
+    ],
+    "searchReadings": [
+      "牛"
+    ],
+    "bushu": "牛",
+    "kakusu": 4,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "うし。"
+  },
+  "馬": {
+    "kanji": "馬",
+    "onyomi": [],
+    "kunyomi": [
+      "馬"
+    ],
+    "searchReadings": [
+      "馬"
+    ],
+    "bushu": "馬",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "うま。"
+  },
+  "羊": {
+    "kanji": "羊",
+    "onyomi": [],
+    "kunyomi": [
+      "羊"
+    ],
+    "searchReadings": [
+      "羊"
+    ],
+    "bushu": "羊",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ひつじ。"
+  },
+  "貝": {
+    "kanji": "貝",
+    "onyomi": [],
+    "kunyomi": [
+      "貝"
+    ],
+    "searchReadings": [
+      "貝"
+    ],
+    "bushu": "貝",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "かい。"
+  },
+  "京": {
+    "kanji": "京",
+    "onyomi": [],
+    "kunyomi": [
+      "京"
+    ],
+    "searchReadings": [
+      "京"
+    ],
+    "bushu": "亠",
+    "kakusu": 8,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "みやこ。"
+  },
+  "市": {
+    "kanji": "市",
+    "onyomi": [],
+    "kunyomi": [
+      "市"
+    ],
+    "searchReadings": [
+      "市"
+    ],
+    "bushu": "巾",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "し。"
+  },
+  "社": {
+    "kanji": "社",
+    "onyomi": [],
+    "kunyomi": [
+      "社"
+    ],
+    "searchReadings": [
+      "社"
+    ],
+    "bushu": "示",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "やしろ、会社のしゃ。"
+  },
+  "船": {
+    "kanji": "船",
+    "onyomi": [],
+    "kunyomi": [
+      "船"
+    ],
+    "searchReadings": [
+      "船"
+    ],
+    "bushu": "舟",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ふね。"
+  },
+  "汽": {
+    "kanji": "汽",
+    "onyomi": [],
+    "kunyomi": [
+      "汽"
+    ],
+    "searchReadings": [
+      "汽"
+    ],
+    "bushu": "水",
+    "kakusu": 7,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "き。"
+  },
+  "活": {
+    "kanji": "活",
+    "onyomi": [],
+    "kunyomi": [
+      "活"
+    ],
+    "searchReadings": [
+      "活"
+    ],
+    "bushu": "水",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "いきる。"
+  },
+  "計": {
+    "kanji": "計",
+    "onyomi": [],
+    "kunyomi": [
+      "計"
+    ],
+    "searchReadings": [
+      "計"
+    ],
+    "bushu": "言",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "はかる。"
+  },
+  "色": {
+    "kanji": "色",
+    "onyomi": [],
+    "kunyomi": [
+      "色"
+    ],
+    "searchReadings": [
+      "色"
+    ],
+    "bushu": "色",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "いろ。"
+  },
+  "黒": {
+    "kanji": "黒",
+    "onyomi": [],
+    "kunyomi": [
+      "黒"
+    ],
+    "searchReadings": [
+      "黒"
+    ],
+    "bushu": "黒",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "くろ。"
+  },
+  "黄": {
+    "kanji": "黄",
+    "onyomi": [],
+    "kunyomi": [
+      "黄"
+    ],
+    "searchReadings": [
+      "黄"
+    ],
+    "bushu": "黄",
+    "kakusu": 11,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "きいろ。"
+  },
+  "茶": {
+    "kanji": "茶",
+    "onyomi": [],
+    "kunyomi": [
+      "茶"
+    ],
+    "searchReadings": [
+      "茶"
+    ],
+    "bushu": "艸",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ちゃ。"
+  },
+  "点": {
+    "kanji": "点",
+    "onyomi": [],
+    "kunyomi": [
+      "点"
+    ],
+    "searchReadings": [
+      "点"
+    ],
+    "bushu": "黑",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "てん。"
+  },
+  "丸": {
+    "kanji": "丸",
+    "onyomi": [],
+    "kunyomi": [
+      "丸"
+    ],
+    "searchReadings": [
+      "丸"
+    ],
+    "bushu": "丶",
+    "kakusu": 3,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "まる。"
+  },
+  "弓": {
+    "kanji": "弓",
+    "onyomi": [],
+    "kunyomi": [
+      "弓"
+    ],
+    "searchReadings": [
+      "弓"
+    ],
+    "bushu": "弓",
+    "kakusu": 3,
+    "grade": "小学校2年",
+    "kanken": "9級",
+    "meaning": "ゆみ。"
+  },
+  "矢": {
+    "kanji": "矢",
+    "onyomi": [],
+    "kunyomi": [
+      "矢"
+    ],
+    "searchReadings": [
+      "矢"
+    ],
+    "bushu": "矢",
+    "kakusu": 5,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "や。"
+  },
+  "首": {
+    "kanji": "首",
+    "onyomi": [],
+    "kunyomi": [
+      "首"
+    ],
+    "searchReadings": [
+      "首"
+    ],
+    "bushu": "首",
+    "kakusu": 9,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "くび。"
+  },
+  "交": {
+    "kanji": "交",
+    "onyomi": [],
+    "kunyomi": [
+      "交"
+    ],
+    "searchReadings": [
+      "交"
+    ],
+    "bushu": "亠",
+    "kakusu": 6,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "まじわる。"
+  },
+  "通": {
+    "kanji": "通",
+    "onyomi": [],
+    "kunyomi": [
+      "通"
+    ],
+    "searchReadings": [
+      "通"
+    ],
+    "bushu": "辵",
+    "kakusu": 10,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "とおる。"
+  },
+  "番": {
+    "kanji": "番",
+    "onyomi": [],
+    "kunyomi": [
+      "番"
+    ],
+    "searchReadings": [
+      "番"
+    ],
+    "bushu": "田",
+    "kakusu": 12,
+    "grade": "小学校2年",
+    "kanken": "8級",
+    "meaning": "ばん。"
   },
   "あ": {
     "kanji": "あ",
