@@ -278,7 +278,7 @@
   <canvas id="minimap" width="170" height="170"></canvas>
   <div class="crosshair" id="crosshair"></div>
   <div class="lockNotice hidden" id="lockNotice">この環境ではマウス固定が許可されていないため、クリック長押し/ドラッグで向きを変えます。</div>
-  <div class="help">WASD: 移動　クリック長押し=竜巻(必殺ゲージ消費)　巨大化アイテム追加　素早く10回斬る=旋風攻撃　Space: ジャンプ/滑空　Z/X/C/V: 特殊攻撃　左クリック/J: 攻撃</div>
+  <div class="help">WASD: 移動　クリック長押し=竜巻吸引 / 離す=竜巻発射　巨大化アイテム追加　素早く10回斬る=旋風攻撃　Space: ジャンプ/滑空　Z/X/C/V: 特殊攻撃　左クリック/J: 攻撃</div>
 
   <div class="controls">
     <div class="stick-zone" id="stickZone"><div class="stick" id="stick"></div></div>
@@ -383,6 +383,7 @@
     let tornadoCharge = 0;
     let tornadoHolding = false;
     let tornadoEffect = null;
+    let tornadoProjectiles = [];
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
@@ -754,6 +755,7 @@
       tornadoCharge = 0;
       tornadoHolding = false;
       if (tornadoEffect) { scene.remove(tornadoEffect); tornadoEffect = null; }
+      tornadoProjectiles = [];
       player.pos.set(0, 0, 0);
       player.group.position.copy(player.pos);
       if (player.dashSlash > 0) {
@@ -1167,12 +1169,50 @@
       }
     }
 
+    function releaseTornado() {
+      if (!tornadoEffect) return;
+      const mesh = tornadoEffect;
+      tornadoEffect = null;
+      const power = Math.max(0.7, tornadoCharge);
+      tornadoProjectiles.push({ mesh, x: player.pos.x, z: player.pos.z, dir: player.dir, speed: 34 + power * 8, life: 2.4 + power * 0.3, radius: 10 + power * 4, damage: player.atk * (0.8 + power * 0.35) });
+      tornadoHolding = false;
+      tornadoCharge = 0;
+      addText(player.pos.x, player.pos.z, '竜巻発射!', '#67e8f9');
+    }
+
     function stopTornado() {
+      if (tornadoHolding && tornadoCharge > 0.2) {
+        releaseTornado();
+        return;
+      }
       tornadoHolding = false;
       tornadoCharge = 0;
       if (tornadoEffect) {
         scene.remove(tornadoEffect);
         tornadoEffect = null;
+      }
+    }
+
+    function updateTornadoProjectiles(dt) {
+      for (let i = tornadoProjectiles.length - 1; i >= 0; i--) {
+        const t = tornadoProjectiles[i];
+        t.life -= dt;
+        t.x += Math.sin(t.dir) * t.speed * dt;
+        t.z += Math.cos(t.dir) * t.speed * dt;
+        t.mesh.position.set(t.x, terrainHeight(t.x, t.z) + 1.5, t.z);
+        t.mesh.rotation.z += dt * 14;
+        for (const e of enemies) {
+          const d = Math.hypot(e.pos.x - t.x, e.pos.z - t.z);
+          if (d < t.radius + e.radius) {
+            e.airLaunch = 0.65;
+            e.airVy = 18;
+            e.hp -= t.damage * dt;
+          }
+        }
+        if (t.life <= 0) {
+          scene.remove(t.mesh);
+          tornadoProjectiles.splice(i, 1);
+        }
       }
     }
 
@@ -1422,6 +1462,7 @@
       if (!running || paused) return;
       player.attackCd -= dt;
       updateTornado(dt);
+      updateTornadoProjectiles(dt);
       rapidSlashTimer -= dt;
       if (rapidSlashTimer <= 0) rapidSlashCount = 0;
       cycloneActive = Math.max(0, cycloneActive - dt);
