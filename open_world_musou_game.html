@@ -278,7 +278,7 @@
   <canvas id="minimap" width="170" height="170"></canvas>
   <div class="crosshair" id="crosshair"></div>
   <div class="lockNotice hidden" id="lockNotice">この環境ではマウス固定が許可されていないため、クリック長押し/ドラッグで向きを変えます。</div>
-  <div class="help">WASD: 移動　クリック長押し=竜巻吸引 / 離す=竜巻発射　巨大化アイテム追加　素早く10回斬る=旋風攻撃　Space: ジャンプ/滑空　Z/X/C/V: 特殊攻撃　左クリック/J: 攻撃</div>
+  <div class="help">WASD: 移動　クリック5秒以上長押し=竜巻準備 / 離す=竜巻発射　巨大化アイテム追加　素早く10回斬る=旋風攻撃　Space: ジャンプ/滑空　Z/X/C/V: 特殊攻撃　左クリック/J: 攻撃</div>
 
   <div class="controls">
     <div class="stick-zone" id="stickZone"><div class="stick" id="stick"></div></div>
@@ -384,6 +384,7 @@
     let tornadoHolding = false;
     let tornadoEffect = null;
     let tornadoProjectiles = [];
+    const TORNADO_MIN_CHARGE = 5;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
@@ -1171,9 +1172,17 @@
 
     function releaseTornado() {
       if (!tornadoEffect) return;
+      if (tornadoCharge < TORNADO_MIN_CHARGE) {
+        addText(player.pos.x, player.pos.z, '竜巻失敗…5秒必要', '#bfdbfe');
+        scene.remove(tornadoEffect);
+        tornadoEffect = null;
+        tornadoHolding = false;
+        tornadoCharge = 0;
+        return;
+      }
       const mesh = tornadoEffect;
       tornadoEffect = null;
-      const power = Math.max(0.7, tornadoCharge);
+      const power = Math.max(1.0, tornadoCharge - TORNADO_MIN_CHARGE + 1);
       tornadoProjectiles.push({ mesh, x: player.pos.x, z: player.pos.z, dir: player.dir, speed: 34 + power * 8, life: 2.4 + power * 0.3, radius: 10 + power * 4, damage: player.atk * (0.8 + power * 0.35) });
       tornadoHolding = false;
       tornadoCharge = 0;
@@ -1181,7 +1190,7 @@
     }
 
     function stopTornado() {
-      if (tornadoHolding && tornadoCharge > 0.2) {
+      if (tornadoHolding && tornadoCharge >= TORNADO_MIN_CHARGE) {
         releaseTornado();
         return;
       }
@@ -1228,11 +1237,13 @@
       if (tornadoEffect) {
         tornadoEffect.position.set(player.pos.x, player.pos.y + 1.0, player.pos.z);
         tornadoEffect.rotation.z += dt * 8;
-        const s = 1 + Math.min(1.4, tornadoCharge * 0.9);
+        const chargeRatio = Math.min(1, tornadoCharge / TORNADO_MIN_CHARGE);
+        const s = 0.45 + chargeRatio * 1.95;
         tornadoEffect.scale.set(s, s, s);
+        if (Math.abs(tornadoCharge - TORNADO_MIN_CHARGE) < dt) addText(player.pos.x, player.pos.z, '竜巻準備完了!', '#67e8f9');
         tornadoEffect.material.opacity = 0.45 + Math.sin(performance.now() / 90) * 0.18;
       }
-      const radius = 9 + Math.min(18, tornadoCharge * 7) * (powerUps.giant > 0 ? 1.55 : 1);
+      const radius = tornadoCharge >= TORNADO_MIN_CHARGE ? 9 + Math.min(18, (tornadoCharge - TORNADO_MIN_CHARGE + 1) * 7) : 3 + Math.min(1, tornadoCharge / TORNADO_MIN_CHARGE) * 5 * (powerUps.giant > 0 ? 1.55 : 1);
       for (const e of enemies) {
         const d = dist2D(player.pos, e.pos);
         if (d < radius + e.radius) {
