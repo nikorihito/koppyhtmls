@@ -361,13 +361,10 @@
     let eventTimer = 18;
     let currentEventName = '';
     let eventTextLife = 0;
-  let combo = 0;
+    let combo = 0;
     let comboTimer = 0;
     let comboReady = false;
     let finisherJump = 0;
-    let rapidSlashCount = 0;
-    let rapidSlashTimer = 0;
-    let cycloneActive = 0;0;
     let rapidSlashCount = 0;
     let rapidSlashTimer = 0;
     let cycloneActive = 0;
@@ -772,7 +769,11 @@
       nextSpawn = 0;
       bossAlive = false;
       giantBossAlive = false;
-      bossSpawnedOnce = false;entEventName = '';
+      bossSpawnedOnce = false;
+      giantBossSpawnedOnce = false;
+      bossTimer = 0;
+      eventTimer = 10;
+      currentEventName = '';
       eventTextLife = 0;
       setBattleSky(false);
       rapidSlashCount = 0;
@@ -1029,7 +1030,9 @@
       attackEffects.push({ mesh, life, max: life, grow: 1.6 });
     }
 
-    func   rapidSlashCount++;
+    function attack() {
+      if (!running || paused || player.attackCd > 0) return;
+      rapidSlashCount++;
       rapidSlashTimer = 2.0;
       if (rapidSlashCount >= 10) {
         cycloneAttack();
@@ -1116,7 +1119,7 @@
     function cycloneAttack() {
       rapidSlashCount = 0;
       rapidSlashTimer = 0;
-   5;
+      cycloneActive = 1.25;
       player.attackCd = 0.85;
       screenShake = 0.75;
       addText(player.pos.x, player.pos.z, '旋風攻撃!', '#bbf7d0');
@@ -1354,7 +1357,7 @@
       player.attackCd -= dt;
       rapidSlashTimer -= dt;
       if (rapidSlashTimer <= 0) rapidSlashCount = 0;
- ath.max(0, cycloneActive - dt);
+      cycloneActive = Math.max(0, cycloneActive - dt);
       whiteFlash = Math.max(0, whiteFlash - dt * 1.8);
       player.dashSlash -= dt;
       powerUps.atk -= dt;
@@ -1458,7 +1461,8 @@
         e.hitCd -= dt;
         if (e.airLaunch && e.airLaunch > 0) {
           e.airLaunch -= dt;
-          e.airVy = (e.airVy || 0) - 4    e.group.position.y += e.airVy * dt;
+          e.airVy = (e.airVy || 0) - 44 * dt;
+          e.group.position.y += e.airVy * dt;
           if (e.airLaunch <= 0 || e.group.position.y <= terrainHeight(e.pos.x, e.pos.z)) {
             e.airLaunch = 0;
             e.group.position.y = terrainHeight(e.pos.x, e.pos.z);
@@ -1717,7 +1721,13 @@
       spBar.style.width = clamp(player.sp / player.maxSp * 100, 0, 100) + '%';
       xpBar.style.width = clamp(player.xp / player.nextXp * 100, 0, 100) + '%';
       const active = [powerUps.atk > 0 ? 'ATK' : '', powerUps.range > 0 ? 'RANGE' : '', powerUps.combo > 0 ? 'COMBO+' : '', powerUps.thunder > 0 ? 'THUNDER' : ''].filter(Boolean).join(',');
-      statusText.textContent = `Lv.${player.level} / 撃破 ${player.kills} / Wave ${wave} / COMBO ${combo}${comboReady ? ' READY' : ''} / 連斬 ${rapidSlapdate(dt);
+      statusText.textContent = `Lv.${player.level} / 撃破 ${player.kills} / Wave ${wave} / COMBO ${combo}${comboReady ? ' READY' : ''} / 連斬 ${rapidSlashCount}/10 / 敵 ${enemies.length}${currentEventName && eventTextLife > 0 ? ' / EVENT: ' + currentEventName : ''}${active ? ' / ' + active : ''}`;
+      updateBossHud();
+    }
+
+    function animate() {
+      const dt = Math.min(0.033, clock.getDelta());
+      update(dt);
       drawMinimap();
       renderer.render(scene, camera);
       if (whiteFlash > 0) {
