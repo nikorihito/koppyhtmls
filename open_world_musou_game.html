@@ -278,9 +278,7 @@
   <canvas id="minimap" width="170" height="170"></canvas>
   <div class="crosshair" id="crosshair"></div>
   <div class="lockNotice hidden" id="lockNotice">この環境ではマウス固定が許可されていないため、クリック長押し/ドラッグで向きを変えます。</div>
-  <div class="help">WASD: 移動　素早く10回斬る=旋風攻撃　Space: ジャンプ/長押し滑空　滑空中に攻撃=急降下斬り　Shift+攻撃=ダッシュ斬り　Z/X/C/V: 特殊攻撃　中クリック: 命削り殲滅　左クリック/J: 攻撃</div>
-
-  <div class="controls">
+  "controls">
     <div class="stick-zone" id="stickZone"><div class="stick" id="stick"></div></div>
     <div class="buttons">
       <button class="btn dash" id="dashBtn">ダッシュ</button>
@@ -379,7 +377,12 @@
     let screenShake = 0;
     let whiteFlash = 0;
     const skillCooldowns = { spin: 0, wave: 0, thunder: 0, drain: 0 };
-    const powerUps = { atk: 0, range: 0, combo: 0, thunder: 0 };
+    const powerUps const powerUps = { atk: 0, range: 0, combo: 0, thunder: 0, giant: 0 };
+    let tornadoCharge = 0;
+    let tornadoHolding = false;
+    let tornadoEffect = null;let tornadoCharge = 0;
+    let tornadoHolding = false;
+    let tornadoEffect = null;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
@@ -747,6 +750,10 @@
       powerUps.range = 0;
       powerUps.combo = 0;
       powerUps.thunder = 0;
+      powerUps.giant = 0;
+      tornadoCharge = 0;
+      tornadoHolding = false;
+      if (tornadoEffect) { scene.remove(tornadoEffect); tornadoEffect = null; }
       player.pos.set(0, 0, 0);
       player.group.position.copy(player.pos);
       if (player.dashSlash > 0) {
@@ -1049,12 +1056,8 @@
         comboFinisher();
         return;
       }
-      if ((keys.has('shift') || player.dash > 0) && player.dashSlash <= 0) {
-        dashSlash();
-        return;
-      }
-      player.attackCd = 0.24;
-      const range = (8 + player.level * 0.18) * (powerUps.range > 0 ? 1.55 : 1);
+      if ((keys.has('shift') || player.dash > 0) && player.dashSlash <= 0)24;
+      const range = (8 + player.level * 0.18) * (powerUps.range > 0 ? 1.55 : 1) * (powerUps.giant > 0 ? 1.55 : 1);
       const arc = Math.PI * 0.85;
       let hit = 0;
       player.sword.rotation.x = -1.25;
@@ -1063,7 +1066,7 @@
         const d = dist2D(player.pos, e.pos);
         const da = Math.abs(Math.atan2(Math.sin(angleTo(player.pos, e.pos) - player.dir), Math.cos(angleTo(player.pos, e.pos) - player.dir)));
         if (d < range + e.radius && da < arc / 2) {
-          const dmg = (player.atk + Math.floor(rand(0, 14))) * (powerUps.atk > 0 ? 1.75 : 1);
+1.75 : 1) * (powerUps.giant > 0 ? 1.65 : 1);
           e.hp -= dmg;
           hit++;
           addComboHit(powerUps.combo > 0 ? 3 : 1);
@@ -1139,11 +1142,63 @@
           e.airVy = 34 + Math.random() * 12;
           e.fallDamage = player.atk * (e.giant ? 2.2 : 5.5);
           const a = angleTo(player.pos, e.pos);
-          e.pos.x += Math.sin(a) * (e.giant ? 2.2 : 8.5);
-          e.pos.z += Math.cos(a) * (e.giant ? 2.2 : 8.5);
+          e.pos.x += Math.sin(a) * (e.giant ? 2.2 : 8.5= Math.cos(a) * (e.giant ? 2.2 : 8.5);
           makeParticles(e.pos.x, e.pos.z, 22, 0xa7f3d0, 1.5);
         }
       }
+    }
+
+    function startTornado() {
+      if (!running || paused || player.sp < 8) return;
+      tornadoHolding = true;
+      tornadoCharge = 0;
+      if (!tornadoEffect) {
+        tornadoEffect = new THREE.Mesh(
+          new THREE.TorusGeometry(5.4, 0.22, 12, 128),
+          new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.72 })
+        );
+        tornadoEffect.rotation.x = Math.PI / 2;
+        scene.add(tornadoEffect);
+      }
+    }
+
+    function stopTornado() {
+      tornadoHolding = false;
+      tornadoCharge = 0;
+      if (tornadoEffect) {
+        scene.remove(tornadoEffect);
+        tornadoEffect = null;
+      }
+    }
+
+    function updateTornado(dt) {
+      if (!tornadoHolding || paused || !running) return;
+      if (player.sp <= 0) {
+        stopTornado();
+        return;
+      }
+      player.sp = Math.max(0, player.sp - 26 * dt);
+      tornadoCharge += dt;
+      if (!tornadoEffect) startTornado();
+      if (tornadoEffect) {
+        tornadoEffect.position.set(player.pos.x, player.pos.y + 1.0, player.pos.z);
+        tornadoEffect.rotation.z += dt * 8;
+        const s = 1 + Math.min(1.4, tornadoCharge * 0.9);
+        tornadoEffect.scale.set(s, s, s);
+        tornadoEffect.material.opacity = 0.45 + Math.sin(performance.now() / 90) * 0.18;
+      }
+      const radius = 9 + Math.min(18, tornadoCharge * 7) * (powerUps.giant > 0 ? 1.55 : 1);
+      for (const e of enemies) {
+        const d = dist2D(player.pos, e.pos);
+        if (d < radius + e.radius) {
+          const a = angleTo(player.pos, e.pos) + Math.PI / 2;
+          e.pos.x += Math.sin(a) * dt * 18;
+          e.pos.z += Math.cos(a) * dt * 18;
+          e.hp -= (player.atk * 0.55 + tornadoCharge * 6) * dt;
+          if (Math.random() < 0.08) makeParticles(e.pos.x, e.pos.z, 2, 0x67e8f9, 0.8);
+        }
+      }
+      if (player.sp <= 0) stopTornado();
     }
 
     function dashSlash() {
@@ -1239,8 +1294,7 @@
         }
       }
       if (healed > 0) {
-        player.hp = clamp(player.hp + healed, 0, player.maxHp);
-        addText(player.pos.x, player.pos.z, '+' + healed, '#bbf7d0');
+        player.hp = clam  addText(player.pos.x, player.pos.z, '+' + healed, '#bbf7d0');
       }
     }
 
@@ -1264,7 +1318,7 @@
         if (d < 22) {
           const dmg = 135 + player.level * 18;
           e.hp -= dmg;
-          addText(e.pos.x, e.pos.z, dmg, '#fef08a');
+       x, e.pos.z, dmg, '#fef08a');
           const a = angleTo(player.pos, e.pos);
           e.pos.x += Math.sin(a) * 5.2;
           e.pos.z += Math.cos(a) * 5.2;
@@ -1284,9 +1338,7 @@
         player.hp = player.maxHp;
         player.atk += 7;
         player.speed += 0.8;
-        addText(player.pos.x, player.pos.z, 'LEVEL UP!', '#bbf7d0');
-        makeParticles(player.pos.x, player.pos.z, 50, 0x22c55e, 1.4);
-      }
+        ad  }
     }
 
     function makePickup(x, z, type = 'heal') {
@@ -1295,7 +1347,8 @@
         atk: { color: 0xef4444, label: 'ATK UP' },
         range: { color: 0x38bdf8, label: 'RANGE UP' },
         combo: { color: 0xfacc15, label: 'COMBO+' },
-        thunder: { color: 0xa78bfa, label: 'THUNDER' }
+        thunder: { color: 0xa78bfa, label: 'THUNDER' },
+        giant: { color: 0x22d3ee, label: 'GIANT' }
       }[type] || { color: 0x22c55e, label: '+HP' };
       const mesh = new THREE.Mesh(
         type === 'heal' ? new THREE.IcosahedronGeometry(0.75, 0) : new THREE.OctahedronGeometry(0.85, 0),
@@ -1315,7 +1368,8 @@
       if (r < 0.60) return 'atk';
       if (r < 0.76) return 'range';
       if (r < 0.90) return 'combo';
-      return 'thunder';
+      if (r < 0.94) return 'thunder';
+      return 'giant';
     }
 
     function applyPickup(type) {
@@ -1334,6 +1388,10 @@
       } else if (type === 'thunder') {
         powerUps.thunder = 12;
         addText(player.pos.x, player.pos.z, '毎攻撃雷', '#ddd6fe');
+      } else if (type === 'giant') {
+        powerUps.giant = 14;
+        addText(player.pos.x, player.pos.z, '巨大化!', '#a5f3fc');
+        makeParticles(player.pos.x, player.pos.z, 60, 0x22d3ee, 1.8);
       }
     }
 
@@ -1355,8 +1413,8 @@
     function update(dt) {
       if (!running || paused) return;
       player.attackCd -= dt;
-      rapidSlashTimer -= dt;
-      if (rapidSlashTimer <= 0) rapidSlashCount = 0;
+      updateTornado(dt);
+      rapidSlashTiapidSlashTimer <= 0) rapidSlashCount = 0;
       cycloneActive = Math.max(0, cycloneActive - dt);
       whiteFlash = Math.max(0, whiteFlash - dt * 1.8);
       player.dashSlash -= dt;
@@ -1364,9 +1422,9 @@
       powerUps.range -= dt;
       powerUps.combo -= dt;
       powerUps.thunder -= dt;
+      powerUps.giant -= dt;
       comboTimer -= dt;
-      if (comboTimer <= 0) {
-        combo = 0;
+      if (co  combo = 0;
         comboReady = false;
       }
       finisherJump = Math.max(0, finisherJump - dt);
@@ -1421,7 +1479,8 @@
       if (Math.abs(mobileMove.x) + Math.abs(mobileMove.z) > 0.05) player.dir = Math.atan2(mobileMove.x, mobileMove.z);
       player.group.position.copy(player.pos);
       player.group.rotation.y = player.dir;
-      const jumpY = finisherJump > 0 ? Math.sin((finisherJump / 0.55) * Math.PI) * 7.5 : 0;
+      const giantScale = powerUps.giant > 0 ? 1.9 : 1;
+      player.grouponst jumpY = finisherJump > 0 ? Math.sin((finisherJump / 0.55) * Math.PI) * 7.5 : 0;
       player.group.position.y = player.pos.y + jumpY + Math.sin(performance.now()/120) * 0.04;
       if (player.gliding && player.sprite) player.sprite.scale.set(9.0, 7.2, 1);
       else if (player.sprite) player.sprite.scale.set(7.8, 7.8, 1);
@@ -1720,9 +1779,8 @@
       hpBar.style.width = clamp(player.hp / player.maxHp * 100, 0, 100) + '%';
       spBar.style.width = clamp(player.sp / player.maxSp * 100, 0, 100) + '%';
       xpBar.style.width = clamp(player.xp / player.nextXp * 100, 0, 100) + '%';
-      const active = [powerUps.atk > 0 ? 'ATK' : '', powerUps.range > 0 ? 'RANGE' : '', powerUps.combo > 0 ? 'COMBO+' : '', powerUps.thunder > 0 ? 'THUNDER' : ''].filter(Boolean).join(',');
-      statusText.textContent = `Lv.${player.level} / 撃破 ${player.kills} / Wave ${wave} / COMBO ${combo}${comboReady ? ' READY' : ''} / 連斬 ${rapidSlashCount}/10 / 敵 ${enemies.length}${currentEventName && eventTextLife > 0 ? ' / EVENT: ' + currentEventName : ''}${active ? ' / ' + active : ''}`;
-      updateBossHud();
+      const active = [powerUps.atk > 0 ? 'ATK' : '', powerUps.range > 0 ? 'RANGE' : '', powerUps.combo > 0 ? 'COMBO+' : '', powerUps.thunder > 0 ? 'THUNDER' : '', powerUps.giant > 0 ? 'GIANT' : '', tornadoHolding ? 'TORNADO' : ''].filter(Boolean).join(',');
+      statusText.textContent = `Lv.${player.level} / 撃破 ${player.kills} / Wave ${wave} / COMBO ${combo}${comboReady ? ' RteBossHud();
     }
 
     function animate() {
@@ -1859,22 +1917,23 @@
       if (e.target.closest('.controls') || e.target.closest('.startScreen') || e.target.closest('.gameover') || e.target.closest('.pauseScreen')) return;
       mouseDragging = true;
       lastMouseX = e.clientX;
-      window.lastMouseY = e.clientY;
-      if (document.pointerLockElement !== renderer.domElement) lockPointer();
+      window.laslement) lockPointer();
       if (e.button === 1) sacrificeBlast();
       else if (e.button === 2) skill();
-      else attack();
+      else {
+        startTornado();
+        attack();
+      }
     });
 
     addEventListener('contextmenu', e => e.preventDefault());
 
-    addEventListener('pointerup', () => { mouseDragging = false; });
+    addEventListener('pointerup', () => { mouseDragging = false; stopTornado(); });
     addEventListener('blur', () => { keys.clear(); mouseDragging = false; });
 
-    document.getElementById('attackBtn').addEventListener('pointerdown', e => { e.preventDefault(); attack(); });
+    dack(); });
     document.getElementById('skillBtn').addEventListener('pointerdown', e => { e.preventDefault(); skill(); });
-    document.getElementById('dashBtn').addEventListener('pointerdown', e => { e.preventDefault(); player.dash = 0.35; });
-    document.getElementById('startBtn').addEventListener('click', start);
+    document.getElementById('dashBtn').addEventListener('pointerdown', e => { e.preventDefaultn').addEventListener('click', start);
     document.getElementById('restartBtn').addEventListener('click', start);
     document.getElementById('resumeBtn').addEventListener('click', togglePause);
 
@@ -1937,6 +1996,7 @@
       console.assert(typeof triggerWorldEvent === 'function' && typeof spawnCenterHorde === 'function', 'event system exists');
       console.assert(typeof updateBossHud === 'function', 'boss hp hud exists');
       console.assert(typeof cycloneAttack === 'function', 'cyclone attack exists');
+      console.assert(typeof startTornado === 'function' && typeof updateTornado === 'function', 'hold tornado skill exists');
       console.assert(typeof sacrificeBlast === 'function', 'middle click sacrifice exists');
       console.assert(typeof terrainHeight === 'function', 'terrain height exists');
       console.assert(typeof glideDiveAttack === 'function', 'glide dive attack exists');
