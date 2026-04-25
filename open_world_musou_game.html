@@ -278,7 +278,9 @@
   <canvas id="minimap" width="170" height="170"></canvas>
   <div class="crosshair" id="crosshair"></div>
   <div class="lockNotice hidden" id="lockNotice">この環境ではマウス固定が許可されていないため、クリック長押し/ドラッグで向きを変えます。</div>
-  "controls">
+  <div class="help">WASD: 移動　クリック長押し=竜巻(必殺ゲージ消費)　巨大化アイテム追加　素早く10回斬る=旋風攻撃　Space: ジャンプ/滑空　Z/X/C/V: 特殊攻撃　左クリック/J: 攻撃</div>
+
+  <div class="controls">
     <div class="stick-zone" id="stickZone"><div class="stick" id="stick"></div></div>
     <div class="buttons">
       <button class="btn dash" id="dashBtn">ダッシュ</button>
@@ -377,10 +379,8 @@
     let screenShake = 0;
     let whiteFlash = 0;
     const skillCooldowns = { spin: 0, wave: 0, thunder: 0, drain: 0 };
-    const powerUps const powerUps = { atk: 0, range: 0, combo: 0, thunder: 0, giant: 0 };
+    const powerUps = { atk: 0, range: 0, combo: 0, thunder: 0, giant: 0 };
     let tornadoCharge = 0;
-    let tornadoHolding = false;
-    let tornadoEffect = null;let tornadoCharge = 0;
     let tornadoHolding = false;
     let tornadoEffect = null;
 
@@ -1056,7 +1056,11 @@
         comboFinisher();
         return;
       }
-      if ((keys.has('shift') || player.dash > 0) && player.dashSlash <= 0)24;
+      if ((keys.has('shift') || player.dash > 0) && player.dashSlash <= 0) {
+        dashSlash();
+        return;
+      }
+      player.attackCd = 0.24;
       const range = (8 + player.level * 0.18) * (powerUps.range > 0 ? 1.55 : 1) * (powerUps.giant > 0 ? 1.55 : 1);
       const arc = Math.PI * 0.85;
       let hit = 0;
@@ -1066,7 +1070,7 @@
         const d = dist2D(player.pos, e.pos);
         const da = Math.abs(Math.atan2(Math.sin(angleTo(player.pos, e.pos) - player.dir), Math.cos(angleTo(player.pos, e.pos) - player.dir)));
         if (d < range + e.radius && da < arc / 2) {
-1.75 : 1) * (powerUps.giant > 0 ? 1.65 : 1);
+          const dmg = (player.atk + Math.floor(rand(0, 14))) * (powerUps.atk > 0 ? 1.75 : 1) * (powerUps.giant > 0 ? 1.65 : 1);
           e.hp -= dmg;
           hit++;
           addComboHit(powerUps.combo > 0 ? 3 : 1);
@@ -1142,7 +1146,8 @@
           e.airVy = 34 + Math.random() * 12;
           e.fallDamage = player.atk * (e.giant ? 2.2 : 5.5);
           const a = angleTo(player.pos, e.pos);
-          e.pos.x += Math.sin(a) * (e.giant ? 2.2 : 8.5= Math.cos(a) * (e.giant ? 2.2 : 8.5);
+          e.pos.x += Math.sin(a) * (e.giant ? 2.2 : 8.5);
+          e.pos.z += Math.cos(a) * (e.giant ? 2.2 : 8.5);
           makeParticles(e.pos.x, e.pos.z, 22, 0xa7f3d0, 1.5);
         }
       }
@@ -1294,7 +1299,8 @@
         }
       }
       if (healed > 0) {
-        player.hp = clam  addText(player.pos.x, player.pos.z, '+' + healed, '#bbf7d0');
+        player.hp = clamp(player.hp + healed, 0, player.maxHp);
+        addText(player.pos.x, player.pos.z, '+' + healed, '#bbf7d0');
       }
     }
 
@@ -1318,7 +1324,7 @@
         if (d < 22) {
           const dmg = 135 + player.level * 18;
           e.hp -= dmg;
-       x, e.pos.z, dmg, '#fef08a');
+          addText(e.pos.x, e.pos.z, dmg, '#fef08a');
           const a = angleTo(player.pos, e.pos);
           e.pos.x += Math.sin(a) * 5.2;
           e.pos.z += Math.cos(a) * 5.2;
@@ -1338,7 +1344,9 @@
         player.hp = player.maxHp;
         player.atk += 7;
         player.speed += 0.8;
-        ad  }
+        addText(player.pos.x, player.pos.z, 'LEVEL UP!', '#bbf7d0');
+        makeParticles(player.pos.x, player.pos.z, 50, 0x22c55e, 1.4);
+      }
     }
 
     function makePickup(x, z, type = 'heal') {
@@ -1414,7 +1422,8 @@
       if (!running || paused) return;
       player.attackCd -= dt;
       updateTornado(dt);
-      rapidSlashTiapidSlashTimer <= 0) rapidSlashCount = 0;
+      rapidSlashTimer -= dt;
+      if (rapidSlashTimer <= 0) rapidSlashCount = 0;
       cycloneActive = Math.max(0, cycloneActive - dt);
       whiteFlash = Math.max(0, whiteFlash - dt * 1.8);
       player.dashSlash -= dt;
@@ -1424,7 +1433,8 @@
       powerUps.thunder -= dt;
       powerUps.giant -= dt;
       comboTimer -= dt;
-      if (co  combo = 0;
+      if (comboTimer <= 0) {
+        combo = 0;
         comboReady = false;
       }
       finisherJump = Math.max(0, finisherJump - dt);
@@ -1480,7 +1490,8 @@
       player.group.position.copy(player.pos);
       player.group.rotation.y = player.dir;
       const giantScale = powerUps.giant > 0 ? 1.9 : 1;
-      player.grouponst jumpY = finisherJump > 0 ? Math.sin((finisherJump / 0.55) * Math.PI) * 7.5 : 0;
+      player.group.scale.setScalar(giantScale);
+      const jumpY = finisherJump > 0 ? Math.sin((finisherJump / 0.55) * Math.PI) * 7.5 : 0;
       player.group.position.y = player.pos.y + jumpY + Math.sin(performance.now()/120) * 0.04;
       if (player.gliding && player.sprite) player.sprite.scale.set(9.0, 7.2, 1);
       else if (player.sprite) player.sprite.scale.set(7.8, 7.8, 1);
@@ -1780,7 +1791,8 @@
       spBar.style.width = clamp(player.sp / player.maxSp * 100, 0, 100) + '%';
       xpBar.style.width = clamp(player.xp / player.nextXp * 100, 0, 100) + '%';
       const active = [powerUps.atk > 0 ? 'ATK' : '', powerUps.range > 0 ? 'RANGE' : '', powerUps.combo > 0 ? 'COMBO+' : '', powerUps.thunder > 0 ? 'THUNDER' : '', powerUps.giant > 0 ? 'GIANT' : '', tornadoHolding ? 'TORNADO' : ''].filter(Boolean).join(',');
-      statusText.textContent = `Lv.${player.level} / 撃破 ${player.kills} / Wave ${wave} / COMBO ${combo}${comboReady ? ' RteBossHud();
+      statusText.textContent = `Lv.${player.level} / 撃破 ${player.kills} / Wave ${wave} / COMBO ${combo}${comboReady ? ' READY' : ''} / 連斬 ${rapidSlashCount}/10 / 敵 ${enemies.length}${currentEventName && eventTextLife > 0 ? ' / EVENT: ' + currentEventName : ''}${active ? ' / ' + active : ''}`;
+      updateBossHud();
     }
 
     function animate() {
@@ -1917,7 +1929,8 @@
       if (e.target.closest('.controls') || e.target.closest('.startScreen') || e.target.closest('.gameover') || e.target.closest('.pauseScreen')) return;
       mouseDragging = true;
       lastMouseX = e.clientX;
-      window.laslement) lockPointer();
+      window.lastMouseY = e.clientY;
+      if (document.pointerLockElement !== renderer.domElement) lockPointer();
       if (e.button === 1) sacrificeBlast();
       else if (e.button === 2) skill();
       else {
@@ -1931,9 +1944,10 @@
     addEventListener('pointerup', () => { mouseDragging = false; stopTornado(); });
     addEventListener('blur', () => { keys.clear(); mouseDragging = false; });
 
-    dack(); });
+    document.getElementById('attackBtn').addEventListener('pointerdown', e => { e.preventDefault(); attack(); });
     document.getElementById('skillBtn').addEventListener('pointerdown', e => { e.preventDefault(); skill(); });
-    document.getElementById('dashBtn').addEventListener('pointerdown', e => { e.preventDefaultn').addEventListener('click', start);
+    document.getElementById('dashBtn').addEventListener('pointerdown', e => { e.preventDefault(); player.dash = 0.35; });
+    document.getElementById('startBtn').addEventListener('click', start);
     document.getElementById('restartBtn').addEventListener('click', start);
     document.getElementById('resumeBtn').addEventListener('click', togglePause);
 
