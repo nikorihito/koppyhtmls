@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星降るタイピングアカデミア</title>
+  <style>
+    :root {
+      --bg1: #10142d;
+      --bg2: #24164a;
+      --bg3: #0e3b4f;
+      --line: rgba(255, 255, 255, 0.22);
+      --text: #f8fbff;
+      --muted: #c8d3ff;
+      --accent: #8ee8ff;
+      --accent2: #ffdf8e;
+      --danger: #ff7b91;
+      --good: #a9ffcb;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(142, 232, 255, 0.28), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(255, 223, 142, 0.20), transparent 26%),
+        radial-gradient(circle at 50% 90%, rgba(155, 119, 255, 0.28), transparent 35%),
+        linear-gradient(135deg, var(--bg1), var(--bg2) 50%, var(--bg3));
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.9) 0 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(142,232,255,0.7) 0 1px, transparent 1.5px);
+      background-size: 110px 110px, 170px 170px;
+      background-position: 0 0, 40px 70px;
+      animation: stars 24s linear infinite;
+      opacity: 0.55;
+    }
+
+    body::after { background-size: 260px 260px; animation-duration: 42s; opacity: 0.25; }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to { transform: translateY(110px); }
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 52px);
+      letter-spacing: 0.04em;
+      text-shadow: 0 4px 24px rgba(142, 232, 255, 0.35);
+    }
+
+    .brand p { margin: 8px 0 0; color: var(--muted); line-height: 1.7; }
+
+    .status-pill {
+      min-width: 190px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(14px);
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .status-pill strong { color: var(--accent2); }
+    .screen { display: none; animation: fadeIn 0.28s ease both; }
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding: 22px; }
+    .mode-card {
+      position: relative;
+      padding: 24px;
+      min-height: 250px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07)), radial-gradient(circle at 20% 10%, rgba(142,232,255,0.28), transparent 36%);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+    }
+    .mode-card:hover { transform: translateY(-5px); border-color: rgba(142, 232, 255, 0.72); }
+    .mode-icon {
+      width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center;
+      font-size: 34px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.2); margin-bottom: 16px;
+    }
+    .mode-card h2 { margin: 0 0 10px; font-size: 24px; }
+    .mode-card p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 14px; }
+    .mode-card .tag {
+      position: absolute; right: 18px; bottom: 18px; padding: 7px 12px; border-radius: 999px;
+      background: rgba(255,255,255,0.14); color: var(--accent2); font-weight: 700; font-size: 12px; border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .map-screen-inner { padding: 22px; }
+    .map-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+    .map-header h2 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 36px); }
+    .map-header p { margin: 0; color: var(--muted); line-height: 1.7; }
+    .map-grid, .world-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .map-grid { margin-bottom: 18px; }
+    .map-card, .world-card {
+      border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.11); color: var(--text);
+      border-radius: 18px; padding: 14px; text-align: left; cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease; box-shadow: none;
+    }
+    .map-card:hover, .world-card:hover { transform: translateY(-3px); border-color: rgba(142,232,255,0.6); background: rgba(255,255,255,0.16); }
+    .map-card.locked, .world-card.locked { opacity: .48; cursor: default; }
+    .map-card strong, .world-card strong { display: block; margin-bottom: 6px; font-size: 16px; }
+    .map-card span, .world-card span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .map-actions, .world-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .mini-button {
+      width: auto;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+    .mini-button.secondary { color: var(--text); background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); }
+    .mini-button.skip { background: linear-gradient(135deg, #ffdf8e, #8ee8ff); color: #0b1530; }
+    .skip-rule {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,223,142,0.10);
+      border: 1px solid rgba(255,223,142,0.22);
+      color: var(--accent2);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .lesson-chip {
+      display: inline-flex; gap: 6px; align-items: center; padding: 8px 12px; border-radius: 999px;
+      background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.17); color: var(--accent2); font-weight: 800; margin-top: 10px;
+    }
+
+    .game-layout { display: grid; grid-template-columns: 1fr 310px; gap: 18px; }
+    .game-main { min-height: 600px; padding: 22px; position: relative; }
+    .hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+    .hud-card { padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.16); text-align: center; }
+    .hud-card span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 5px; }
+    .hud-card strong { font-size: 22px; }
+
+    .stage {
+      position: relative; min-height: 390px; border-radius: 26px; border: 1px solid rgba(255,255,255,0.17);
+      background: linear-gradient(180deg, rgba(16, 20, 45, 0.25), rgba(5, 12, 26, 0.55)), radial-gradient(circle at 50% 20%, rgba(142,232,255,0.22), transparent 36%);
+      overflow: hidden; display: grid; place-items: center; padding: 30px;
+    }
+    .landscape {
+      position: absolute; inset: auto 0 0; height: 130px;
+      background: radial-gradient(ellipse at 12% 100%, rgba(103, 255, 202, 0.22), transparent 38%), radial-gradient(ellipse at 70% 100%, rgba(255, 223, 142, 0.18), transparent 42%), linear-gradient(180deg, transparent, rgba(0,0,0,0.28));
+      pointer-events: none;
+    }
+    .castle { position: absolute; bottom: 40px; left: 28px; opacity: 0.35; font-size: 80px; filter: drop-shadow(0 0 18px rgba(142,232,255,0.4)); }
+    .word-box { width: min(720px, 100%); text-align: center; position: relative; z-index: 2; }
+    .jp-word { font-size: clamp(30px, 5vw, 58px); font-weight: 900; letter-spacing: 0.08em; margin-bottom: 14px; text-shadow: 0 0 26px rgba(142, 232, 255, 0.4); }
+    .roma-word {
+      display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 2px; padding: 16px 18px; border-radius: 18px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); font-size: clamp(24px, 4vw, 42px);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.04em;
+    }
+    .typed { color: var(--good); opacity: 0.65; }
+    .current { color: var(--accent2); text-decoration: underline; text-underline-offset: 7px; }
+    .remaining { color: #ffffff; }
+    .message { min-height: 30px; margin-top: 18px; color: var(--muted); font-weight: 700; }
+    .combo-effect {
+      position: absolute; top: 22px; right: 24px; padding: 10px 15px; border-radius: 999px; background: rgba(255,223,142,0.17);
+      border: 1px solid rgba(255,223,142,0.28); color: var(--accent2); font-weight: 900; opacity: 0; transform: translateY(-8px); transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .combo-effect.show { opacity: 1; transform: translateY(0); }
+    .time-gauge-box {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+    .time-gauge-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .time-gauge {
+      width: 100%;
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .time-gauge > div {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--good), var(--accent), var(--accent2));
+      transition: width 0.18s ease;
+    }
+    .time-gauge.danger > div {
+      background: linear-gradient(90deg, var(--danger), #ffb08e);
+    }
+    .time-gauge.warning > div {
+      background: linear-gradient(90deg, var(--accent2), #fff1b8);
+    }
+    .controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
+
+    button {
+      border: 0; border-radius: 999px; padding: 12px 18px; color: #0b1530; background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.22); transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    button.secondary { color: var(--text); background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.2); }
+    button:disabled { pointer-events: none; }
+
+    .side { padding: 18px; }
+    .side h3 { margin: 0 0 10px; font-size: 18px; }
+    .quest-list { display: grid; gap: 10px; margin: 12px 0 20px; }
+    .quest { padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.14); color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .quest.done { color: var(--good); border-color: rgba(169,255,203,0.35); background: rgba(169,255,203,0.08); }
+    .progress-wrap { margin: 12px 0 20px; }
+    .bar { width: 100%; height: 12px; border-radius: 999px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.16); overflow: hidden; }
+    .bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, #8ee8ff, #ffdf8e); border-radius: inherit; transition: width 0.2s ease; }
+    .small-note { color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .result { padding: 30px; text-align: center; }
+    .result h2 { font-size: clamp(30px, 5vw, 52px); margin: 0 0 14px; }
+    .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0; }
+
+    .shake { animation: shake 0.18s ease; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 30% { transform: translateX(-6px); } 60% { transform: translateX(6px); } }
+    .pop { animation: pop 0.25s ease; }
+    @keyframes pop { 0% { transform: scale(0.96); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+
+    @media (max-width: 900px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .mode-grid { grid-template-columns: 1fr; }
+      .map-grid, .world-grid { grid-template-columns: repeat(2, 1fr); }
+      .game-layout { grid-template-columns: 1fr; }
+      .hud { grid-template-columns: repeat(2, 1fr); }
+      .result-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .map-grid, .world-grid { grid-template-columns: 1fr; }
+      .app { width: min(100% - 18px, 1180px); padding-top: 16px; }
+      .game-main, .side, .result { padding: 14px; }
+      .stage { min-height: 330px; padding: 16px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <h1>星降るタイピングアカデミア</h1>
+        <p>教育にも使える、やさしく幻想的なタイピング練習ゲーム。キーの基礎から大文字・記号・長文まで、段階的に練習できます。</p>
+      </div>
+      <div class="status-pill">現在の称号：<strong id="titleName">見習い魔法タイパー</strong></div>
+    </header>
+
+    <section id="menuScreen" class="screen active panel">
+      <div class="mode-grid">
+        <article class="mode-card" data-mode="level">
+          <div class="mode-icon">🏰</div>
+          <h2>レベルアップモード</h2>
+          <p>10マップ × 各10ワールドを進む学習向けモードです。最初はF/Jだけ、次に上段・下段・大文字・記号・長文へ進みます。</p>
+          <span class="tag">育成・授業向け</span>
+        </article>
+        <article class="mode-card" data-mode="normal">
+          <div class="mode-icon">🍣</div>
+          <h2>ノーマルモード</h2>
+          <p>制限時間内にどれだけ正確に打てるか挑戦。寿司打の普通モード風にテンポよく練習できます。</p>
+          <span class="tag">普通</span>
+        </article>
+        <article class="mode-card" data-mode="endless">
+          <div class="mode-icon">⏳</div>
+          <h2>エンドレスモード</h2>
+          <p>速さ重視。1問ごとに10秒の制限時間があり、ミスるとその問題の残り時間が少し削られます。</p>
+          <span class="tag">速さ重視</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="mapScreen" class="screen panel">
+      <div class="map-screen-inner">
+        <div class="map-header">
+          <div>
+            <h2>レベルアップマップ</h2>
+            <p>マップを選び、各マップの10ワールドを順番にクリアしていきます。</p>
+            <div class="lesson-chip" id="selectedMapInfo">まずはマップを選んでください</div>
+          </div>
+          <button class="secondary" id="mapBackBtn">モード選択に戻る</button>
+        </div>
+        <div class="map-grid" id="mapGrid"></div>
+        <h3 id="worldTitle">ワールド選択</h3>
+        <div class="world-grid" id="worldGrid"></div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="game-layout">
+        <main class="panel game-main">
+          <div class="hud">
+            <div class="hud-card"><span>モード</span><strong id="hudMode">-</strong></div>
+            <div class="hud-card"><span>残り時間</span><strong id="hudTime">-</strong></div>
+            <div class="hud-card"><span>スコア</span><strong id="hudScore">0</strong></div>
+            <div class="hud-card"><span>正確率</span><strong id="hudAcc">100%</strong></div>
+          </div>
+          <div id="stage" class="stage">
+            <div class="combo-effect" id="comboEffect">COMBO!</div>
+            <div class="castle">🏯</div>
+            <div class="landscape"></div>
+            <div class="word-box">
+              <div class="jp-word" id="jpWord">スペースで開始</div>
+              <div class="roma-word" id="romaWord"></div>
+              <div class="message" id="message">モードを選んだら、スペースキーで開始できます。</div>
+            </div>
+          </div>
+          <div class="time-gauge-box">
+            <div class="time-gauge-head">
+              <span id="timeGaugeTitle">残り時間ゲージ</span>
+              <span id="timeGaugeLabel">-</span>
+            </div>
+            <div class="time-gauge" id="timeGauge"><div id="timeGaugeFill"></div></div>
+          </div>
+          <div class="controls">
+            <button id="startBtn">スタート / 再開</button>
+            <button class="secondary" id="backBtn">戻る</button>
+          </div>
+        </main>
+        <aside class="panel side">
+          <h3>🌟 アカデミア情報</h3>
+          <div class="progress-wrap">
+            <div class="small-note">レベル <span id="sideLevel">1</span> / EXP <span id="sideExp">0</span></div>
+            <div class="bar"><div id="expBar"></div></div>
+          </div>
+          <h3>📜 クエスト</h3>
+          <div class="quest-list" id="questList"></div>
+          <h3>📘 教育向けポイント</h3>
+          <p class="small-note">授業では、ホームポジション・大文字・記号・長文など、学年や習熟度に合わせたタイピング練習として使えます。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen panel result">
+      <h2 id="resultTitle">結果発表</h2>
+      <p id="resultMessage" class="small-note"></p>
+      <div class="result-grid">
+        <div class="hud-card"><span>スコア</span><strong id="resultScore">0</strong></div>
+        <div class="hud-card"><span>正確率</span><strong id="resultAcc">0%</strong></div>
+        <div class="hud-card"><span>打鍵数</span><strong id="resultTyped">0</strong></div>
+        <div class="hud-card"><span>最高コンボ</span><strong id="resultCombo">0</strong></div>
+      </div>
+      <button id="retryBtn">もう一度挑戦</button>
+      <button class="secondary" id="menuBtn">戻る</button>
+    </section>
+  </div>
+
+  <script src="./typing_words.js"></script>
+  <script>
+    'use strict';
+
+    const typingData = window.TYPING_ACADEMIA_DATA;
+    if (!typingData) {
+      throw new Error('typing_words.js が読み込まれていません。同じフォルダに typing_words.js を置いてください。');
+    }
+
+    const wordBank = typingData.wordBank;
+    const levelMaps = typingData.levelMaps;
+
+    const modeConfig = {
+      level: {
+        label: '育成',
+        fullName: 'レベルアップ',
+        time: 90,
+        description: '10マップ×10ワールドを進めてレベルアップを目指そう。',
+        mistakePenalty: 0,
+        correctBonus: 0,
+        targetWords: 10
+      },
+      normal: {
+        label: '普通',
+        fullName: 'ノーマル',
+        time: 60,
+        description: '60秒で高スコアを目指そう。',
+        mistakePenalty: 0,
+        correctBonus: 0,
+        targetWords: Infinity
+      },
+      endless: {
+        label: '速さ',
+        fullName: 'エンドレス',
+        time: 30,
+        description: '1問ごとに10秒。ミスるとその問題の残り時間が少し減少。',
+        mistakePenalty: 1.5,
+        correctBonus: 0,
+        targetWords: Infinity
+      }
+    };
+
+    const questDefs = [
+      { id: 'q1', text: '5問正解する', check: s => s.correctWords >= 5 },
+      { id: 'q2', text: '10コンボを達成する', check: s => s.maxCombo >= 10 },
+      { id: 'q3', text: '正確率90%以上を保つ', check: s => accuracy(s) >= 90 && s.totalTyped >= 20 },
+      { id: 'q4', text: 'ワールドをクリアする', check: s => s.mode === 'level' && s.correctWords >= modeConfig.level.targetWords }
+    ];
+
+    const screens = {
+      menu: document.getElementById('menuScreen'),
+      map: document.getElementById('mapScreen'),
+      game: document.getElementById('gameScreen'),
+      result: document.getElementById('resultScreen')
+    };
+
+    const el = {
+      titleName: document.getElementById('titleName'), hudMode: document.getElementById('hudMode'), hudTime: document.getElementById('hudTime'), hudScore: document.getElementById('hudScore'), hudAcc: document.getElementById('hudAcc'),
+      timeGauge: document.getElementById('timeGauge'), timeGaugeFill: document.getElementById('timeGaugeFill'), timeGaugeLabel: document.getElementById('timeGaugeLabel'), timeGaugeTitle: document.getElementById('timeGaugeTitle'),
+      stage: document.getElementById('stage'), jpWord: document.getElementById('jpWord'), romaWord: document.getElementById('romaWord'), message: document.getElementById('message'),
+      startBtn: document.getElementById('startBtn'), backBtn: document.getElementById('backBtn'), retryBtn: document.getElementById('retryBtn'), menuBtn: document.getElementById('menuBtn'),
+      sideLevel: document.getElementById('sideLevel'), sideExp: document.getElementById('sideExp'), expBar: document.getElementById('expBar'), questList: document.getElementById('questList'), comboEffect: document.getElementById('comboEffect'),
+      resultTitle: document.getElementById('resultTitle'), resultMessage: document.getElementById('resultMessage'), resultScore: document.getElementById('resultScore'), resultAcc: document.getElementById('resultAcc'), resultTyped: document.getElementById('resultTyped'), resultCombo: document.getElementById('resultCombo'),
+      mapGrid: document.getElementById('mapGrid'), worldGrid: document.getElementById('worldGrid'), worldTitle: document.getElementById('worldTitle'), selectedMapInfo: document.getElementById('selectedMapInfo'), mapBackBtn: document.getElementById('mapBackBtn')
+    };
+
+    let state = createInitialState('level');
+    let timerId = null;
+    let lastWordIndex = -1;
+
+    function createInitialState(mode) {
+      const cfg = modeConfig[mode];
+      return {
+        mode,
+        running: false,
+        remaining: cfg.time,
+        score: 0,
+        exp: Number(localStorage.getItem('fantasyTypingExp') || 0),
+        level: Number(localStorage.getItem('fantasyTypingLevel') || 1),
+        currentWord: null,
+        inputIndex: 0,
+        totalTyped: 0,
+        missTyped: 0,
+        correctWords: 0,
+        combo: 0,
+        maxCombo: 0,
+        completedQuests: new Set(),
+        startedAt: null,
+        selectedMap: 0,
+        selectedWorld: 0,
+        lessonWords: null,
+        isSkipTest: false,
+        skipTargetMap: null,
+        skipTargetWorld: 0,
+        skipPassWords: 8,
+        skipMaxMiss: 2,
+        skipMinAccuracy: 92,
+        perWordLimit: mode === 'endless' ? 10 : null
+      };
+    }
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.remove('active'));
+      screens[name].classList.add('active');
+    }
+
+    function selectMode(mode) {
+      stopTimer();
+      state = createInitialState(mode);
+      if (mode === 'level') {
+        showScreen('map');
+        renderMapSelect();
+        return;
+      }
+      startSelectedMode(mode);
+    }
+
+    function startSelectedMode(mode, mapIndex = 0, worldIndex = 0) {
+      stopTimer();
+      state = createInitialState(mode);
+      state.selectedMap = mapIndex;
+      state.selectedWorld = worldIndex;
+      if (mode === 'level') {
+        const lesson = getLesson(mapIndex, worldIndex);
+        state.lessonWords = lesson.words;
+        state.remaining = 75;
+      }
+      if (mode === 'endless') {
+        state.remaining = state.perWordLimit;
+      }
+      showScreen('game');
+      el.message.textContent = makeStartMessage(mode, mapIndex, worldIndex);
+      el.jpWord.textContent = '準備OK';
+      el.romaWord.innerHTML = '';
+      renderAll();
+    }
+
+    function startSkipTest(mapIndex) {
+      stopTimer();
+      state = createInitialState('level');
+      state.selectedMap = mapIndex;
+      state.selectedWorld = 0;
+      state.skipTargetMap = mapIndex;
+      state.skipTargetWorld = 0;
+      state.isSkipTest = true;
+      state.remaining = 60;
+      state.lessonWords = buildSkipTestWords(mapIndex);
+      showScreen('game');
+      const map = levelMaps[mapIndex];
+      el.jpWord.textContent = 'マップ飛び級テスト';
+      el.romaWord.innerHTML = '';
+      el.message.textContent = `${map.icon} ${map.name} に飛び級挑戦。8問正解・正確率92%以上・ミス2回以内で、このマップを解放できます。`;
+      renderAll();
+    }
+
+    function buildSkipTestWords(mapIndex) {
+      const targetMap = levelMaps[mapIndex];
+      const targetWords = targetMap.worlds.slice(0, 5).flatMap(world => world[1].slice(0, 3));
+      const reviewWords = mapIndex > 0
+        ? levelMaps[mapIndex - 1].worlds.slice(-3).flatMap(world => world[1].slice(0, 2))
+        : [];
+      return [...new Set([...targetWords, ...reviewWords])];
+    }
+
+    function makeStartMessage(mode, mapIndex, worldIndex) {
+      if (mode !== 'level') return modeConfig[mode].description + ' スペースキーかスタートボタンで開始。';
+      const map = levelMaps[mapIndex];
+      const lesson = getLesson(mapIndex, worldIndex);
+      return `${map.icon} ${map.name} / World ${worldIndex + 1}「${lesson.title}」 スペースキーかスタートボタンで開始。`;
+    }
+
+    function isSkipTestPassed() {
+      return state.isSkipTest && state.correctWords >= state.skipPassWords && accuracy() >= state.skipMinAccuracy && state.missTyped <= state.skipMaxMiss;
+    }
+
+    function isSkipTestFailed() {
+      return state.isSkipTest && (state.missTyped > state.skipMaxMiss || state.remaining <= 0);
+    }
+
+    function startGame() {
+      if (state.running) return;
+      state.running = true;
+      state.startedAt = Date.now();
+      if (!state.currentWord) setNextWord();
+      stopTimer();
+      timerId = setInterval(tick, 1000);
+      el.message.textContent = '文字キーで入力してください。Enterは不要です。';
+      renderAll();
+    }
+
+    function tick() {
+      if (!state.running) return;
+      state.remaining -= 1;
+      if (state.remaining <= 0) {
+        state.remaining = 0;
+        if (state.isSkipTest) finishGame('飛び級テスト不合格');
+        else finishGame('時間切れ！');
+      }
+      renderHud();
+    }
+
+    function stopTimer() {
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+    }
+
+    function setNextWord() {
+      const bank = state.mode === 'level' && state.lessonWords ? state.lessonWords : wordBank;
+      let idx = Math.floor(Math.random() * bank.length);
+      if (bank.length > 1) while (idx === lastWordIndex) idx = Math.floor(Math.random() * bank.length);
+      lastWordIndex = idx;
+      const item = bank[idx];
+      state.currentWord = typeof item === 'string' ? { jp: item, roma: item, subject: getLessonSubject() } : item;
+      state.inputIndex = 0;
+      renderWord();
+    }
+
+    function getLesson(mapIndex, worldIndex) {
+      const raw = levelMaps[mapIndex].worlds[worldIndex];
+      return { title: raw[0], words: raw[1] };
+    }
+
+    function getLessonSubject() {
+      if (state.mode !== 'level') return '練習';
+      return levelMaps[state.selectedMap]?.category || levelMaps[state.selectedMap]?.theme || '練習';
+    }
+
+    function renderWord() {
+      const word = state.currentWord;
+      if (!word) return;
+      el.jpWord.textContent = `${word.jp}　${subjectBadge(word.subject)}`;
+      el.romaWord.innerHTML = word.roma.split('').map((ch, i) => {
+        const cls = i < state.inputIndex ? 'typed' : i === state.inputIndex ? 'current' : 'remaining';
+        return `<span class="${cls}">${escapeHtml(ch)}</span>`;
+      }).join('');
+    }
+
+    function subjectBadge(subject) {
+      const map = {
+        '基礎': '⌨️',
+        '上段': '🌙',
+        '下段': '💎',
+        '大文字': '☀️',
+        '単語': '📖',
+        '記号': '🎵',
+        '速度': '🌠',
+        '長文': '🕰️',
+        '正確性': '🪽',
+        '総仕上げ': '👑',
+        '練習': '✨'
+      };
+      return `${map[subject] || '✨'}${subject || '練習'}`;
+    }
+
+    function handleKey(e) {
+      if (screens.menu.classList.contains('active') || screens.map.classList.contains('active') || screens.result.classList.contains('active')) return;
+      if (e.key === ' ') {
+        e.preventDefault();
+        if (!state.running) startGame();
+        else handleTypedKey(' ');
+        return;
+      }
+      if (!state.running || !state.currentWord || e.key.length !== 1) return;
+      handleTypedKey(e.key);
+    }
+
+    function handleTypedKey(rawKey) {
+      const expected = state.currentWord.roma[state.inputIndex];
+      const key = rawKey === expected ? rawKey : rawKey.toLowerCase();
+      state.totalTyped += 1;
+      if (key === expected) {
+        state.inputIndex += 1;
+        state.score += 10 + Math.min(state.combo, 20);
+        state.combo += 1;
+        state.maxCombo = Math.max(state.maxCombo, state.combo);
+        showComboIfNeeded();
+        if (state.inputIndex >= state.currentWord.roma.length) completeWord();
+        else renderWord();
+      } else {
+        state.missTyped += 1;
+        state.combo = 0;
+        state.score = Math.max(0, state.score - 5);
+        if (modeConfig[state.mode].mistakePenalty) {
+          state.remaining = Math.max(0, state.remaining - modeConfig[state.mode].mistakePenalty);
+          const targetText = state.mode === 'endless' ? 'この問題の残り時間' : '残り時間';
+          el.message.textContent = `ミス！ ${targetText} -${modeConfig[state.mode].mistakePenalty}秒`;
+        } else {
+          el.message.textContent = 'ミス！ 落ち着いてもう一度。';
+        }
+        el.stage.classList.remove('shake');
+        void el.stage.offsetWidth;
+        el.stage.classList.add('shake');
+        if (isSkipTestFailed()) finishGame('飛び級テスト不合格');
+        else if (state.remaining <= 0) finishGame('時間切れ！');
+      }
+      renderAll();
+    }
+
+    function completeWord() {
+      const word = state.currentWord;
+      state.correctWords += 1;
+      state.score += 50 + word.roma.length * 4 + Math.min(100, state.combo * 2);
+      if (state.mode === 'endless') {
+        state.remaining = state.perWordLimit;
+        el.message.textContent = '正解！ 次の問題も10秒以内に入力しよう。';
+      } else {
+        el.message.textContent = `正解！ ${word.subject}のことばをクリア！`;
+      }
+      if (state.mode === 'level') addExp(12 + Math.floor(word.roma.length / 2));
+      el.stage.classList.remove('pop');
+      void el.stage.offsetWidth;
+      el.stage.classList.add('pop');
+      checkQuests();
+      if (state.isSkipTest && isSkipTestPassed()) {
+        unlockMap(state.skipTargetMap);
+        finishGame('マップ飛び級テスト合格！');
+        return;
+      }
+      if (state.mode === 'level' && !state.isSkipTest && state.correctWords >= modeConfig.level.targetWords) {
+        unlockNextWorld();
+        finishGame('ワールドクリア！');
+        return;
+      }
+      setNextWord();
+    }
+
+    function addExp(amount) {
+      state.exp += amount;
+      let needed = expToNext(state.level);
+      while (state.exp >= needed) {
+        state.exp -= needed;
+        state.level += 1;
+        needed = expToNext(state.level);
+      }
+      localStorage.setItem('fantasyTypingExp', String(state.exp));
+      localStorage.setItem('fantasyTypingLevel', String(state.level));
+    }
+
+    function expToNext(level) { return 80 + level * 20; }
+    function accuracy(s = state) { return s.totalTyped === 0 ? 100 : Math.max(0, Math.round(((s.totalTyped - s.missTyped) / s.totalTyped) * 100)); }
+
+    function checkQuests() {
+      for (const quest of questDefs) {
+        if (!state.completedQuests.has(quest.id) && quest.check(state)) {
+          state.completedQuests.add(quest.id);
+          if (state.mode === 'level') addExp(30);
+        }
+      }
+    }
+
+    function showComboIfNeeded() {
+      if (state.combo > 0 && state.combo % 10 === 0) {
+        el.comboEffect.textContent = `${state.combo} COMBO!`;
+        el.comboEffect.classList.add('show');
+        setTimeout(() => el.comboEffect.classList.remove('show'), 700);
+      }
+    }
+
+    function finishGame(reason) {
+      stopTimer();
+      state.running = false;
+      saveBestScore();
+      showScreen('result');
+      el.resultTitle.textContent = reason;
+      el.resultMessage.textContent = makeResultMessage();
+      el.resultScore.textContent = Math.round(state.score);
+      el.resultAcc.textContent = accuracy() + '%';
+      el.resultTyped.textContent = state.totalTyped;
+      el.resultCombo.textContent = state.maxCombo;
+      updateTitle();
+    }
+
+    function makeResultMessage() {
+      const acc = accuracy();
+      if (state.mode === 'level') {
+        const map = levelMaps[state.selectedMap];
+        const lesson = getLesson(state.selectedMap, state.selectedWorld);
+        if (state.isSkipTest) {
+          if (isSkipTestPassed()) return `${map.icon} ${map.name} を飛び級解放しました。正確率${accuracy()}%、ミス${state.missTyped}回です。`;
+          return `あと少しです。マップ飛び級条件は8問正解・正確率92%以上・ミス2回以内です。今回：${state.correctWords}問正解、正確率${accuracy()}%、ミス${state.missTyped}回。`;
+        }
+        return `${map.icon} ${map.name}「${lesson.title}」を${state.correctWords}問進みました。レベル${state.level}、EXP${state.exp}です。`;
+      }
+      if (state.mode === 'endless') return acc >= 95 ? 'すばらしい正確さです。10秒制限でも安定しています。' : '1問10秒なので、速さを上げる前にミスを減らすと長く続けられます。';
+      return acc >= 90 ? '安定したタイピングです。次はコンボを伸ばしましょう。' : '正確性を上げるとスコアが大きく伸びます。';
+    }
+
+    function saveBestScore() {
+      const key = `fantasyTypingBest_${state.mode}`;
+      const best = Number(localStorage.getItem(key) || 0);
+      if (state.score > best) localStorage.setItem(key, String(Math.round(state.score)));
+    }
+
+    function updateTitle() {
+      const level = Number(localStorage.getItem('fantasyTypingLevel') || state.level || 1);
+      let title = '見習い魔法タイパー';
+      if (level >= 5) title = '星読みタイパー';
+      if (level >= 10) title = '幻想図書館の司書';
+      if (level >= 20) title = '天空タイピングマスター';
+      el.titleName.textContent = title;
+    }
+
+    function getProgressKey() { return 'starAcademiaLevelProgress'; }
+    function loadProgress() {
+      try { return JSON.parse(localStorage.getItem(getProgressKey()) || '{}'); }
+      catch { return {}; }
+    }
+    function saveProgress(progress) { localStorage.setItem(getProgressKey(), JSON.stringify(progress)); }
+    function isWorldUnlocked(mapIndex, worldIndex) {
+      if (mapIndex === 0 && worldIndex === 0) return true;
+      return !!loadProgress()[`${mapIndex}-${worldIndex}`];
+    }
+    function unlockNextWorld() {
+      if (state.mode !== 'level') return;
+      let nextMap = state.selectedMap;
+      let nextWorld = state.selectedWorld + 1;
+      if (nextWorld >= 10) { nextWorld = 0; nextMap += 1; }
+      if (nextMap >= levelMaps.length) return;
+      unlockWorld(nextMap, nextWorld);
+    }
+
+    function unlockWorld(mapIndex, worldIndex) {
+      const progress = loadProgress();
+      progress[`${mapIndex}-${worldIndex}`] = true;
+      saveProgress(progress);
+    }
+
+    function unlockMap(mapIndex) {
+      unlockWorld(mapIndex, 0);
+    }
+
+    function renderMapSelect(selectedMap = 0) {
+      el.mapGrid.innerHTML = levelMaps.map((map, i) => {
+        const unlocked = i === 0 || isWorldUnlocked(i, 0);
+        return `<div class="map-card ${unlocked ? '' : 'locked'}" data-map="${i}">
+          <strong>${map.icon} ${i + 1}. ${escapeHtml(map.name)}</strong>
+          <span>${escapeHtml(map.theme)}</span>
+          <span>${unlocked ? '解放済み' : '未解放'}</span>
+          ${unlocked ? '' : '<div class="skip-rule">マップ飛び級条件：8問正解・正確率92%以上・ミス2回以内</div>'}
+          <div class="map-actions">
+            ${unlocked ? '<button class="mini-button start-map">マップを見る</button>' : '<button class="mini-button skip skip-map">飛び級する</button>'}
+          </div>
+        </div>`;
+      }).join('');
+      el.mapGrid.querySelectorAll('.start-map').forEach(btn => {
+        const card = btn.closest('.map-card');
+        btn.addEventListener('click', () => renderWorldSelect(Number(card.dataset.map)));
+      });
+      el.mapGrid.querySelectorAll('.skip-map').forEach(btn => {
+        const card = btn.closest('.map-card');
+        btn.addEventListener('click', () => startSkipTest(Number(card.dataset.map)));
+      });
+      renderWorldSelect(selectedMap);
+    }
+
+    function renderWorldSelect(mapIndex) {
+      const map = levelMaps[mapIndex];
+      el.selectedMapInfo.textContent = `${map.icon} ${map.name}：${map.theme}`;
+      el.worldTitle.textContent = `${map.name} のワールド`;
+      el.worldGrid.innerHTML = map.worlds.map((raw, i) => {
+        const unlocked = isWorldUnlocked(mapIndex, i);
+        const sample = raw[1].slice(0, 3).join(' / ');
+        const status = unlocked ? '解放済み' : '未解放';
+        return `<div class="world-card ${unlocked ? '' : 'locked'}" data-map="${mapIndex}" data-world="${i}">
+          <strong>World ${i + 1}：${escapeHtml(raw[0])}</strong>
+          <span>${escapeHtml(sample)}</span>
+          <span>${status}</span>
+          <div class="world-actions">
+            ${unlocked ? '<button class="mini-button start-world">挑戦する</button>' : '<span class="small-note">前のワールドをクリアすると解放されます</span>'}
+          </div>
+        </div>`;
+      }).join('');
+      el.worldGrid.querySelectorAll('.start-world').forEach(btn => {
+        const card = btn.closest('.world-card');
+        btn.addEventListener('click', () => startSelectedMode('level', Number(card.dataset.map), Number(card.dataset.world)));
+      });
+
+    }
+
+    function getTimeLimitForGauge() {
+      if (state.mode === 'endless') return state.perWordLimit || 10;
+      if (state.isSkipTest) return 60;
+      if (state.mode === 'level') return 75;
+      return modeConfig[state.mode].time;
+    }
+
+    function renderTimeGauge() {
+      const limit = Math.max(1, getTimeLimitForGauge());
+      const remaining = Math.max(0, state.remaining);
+      const percent = Math.max(0, Math.min(100, (remaining / limit) * 100));
+      el.timeGaugeFill.style.width = `${percent}%`;
+      el.timeGaugeLabel.textContent = `${Math.ceil(remaining)}秒 / ${limit}秒`;
+      el.timeGaugeTitle.textContent = state.mode === 'endless' ? 'この問題の残り時間' : '残り時間ゲージ';
+      el.timeGauge.classList.toggle('warning', percent <= 40 && percent > 20);
+      el.timeGauge.classList.toggle('danger', percent <= 20);
+    }
+
+    function renderHud() {
+      el.hudMode.textContent = modeConfig[state.mode].label;
+      el.hudTime.textContent = Math.ceil(state.remaining);
+      el.hudScore.textContent = Math.round(state.score);
+      el.hudAcc.textContent = accuracy() + '%';
+      renderTimeGauge();
+    }
+
+    function renderSide() {
+      el.sideLevel.textContent = state.level;
+      el.sideExp.textContent = `${state.exp} / ${expToNext(state.level)}`;
+      el.expBar.style.width = `${Math.min(100, (state.exp / expToNext(state.level)) * 100)}%`;
+      el.questList.innerHTML = questDefs.map(q => {
+        const done = state.completedQuests.has(q.id) || q.check(state);
+        return `<div class="quest ${done ? 'done' : ''}">${done ? '✅' : '⬜'} ${escapeHtml(q.text)}</div>`;
+      }).join('');
+    }
+
+    function renderAll() {
+      renderHud();
+      renderSide();
+      updateTitle();
+      if (state.currentWord) renderWord();
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+    }
+
+    function runStartupTests() {
+      console.assert(levelMaps.length === 10, 'levelMaps must have 10 maps');
+      console.assert(levelMaps.every(map => map.worlds.length === 10), 'each map must have 10 worlds');
+      console.assert(modeConfig.level.description.endsWith('。'), 'level description should be valid text');
+      console.assert(modeConfig.level.mistakePenalty === 0, 'level mistakePenalty should exist');
+      console.assert(modeConfig.endless.time === 30 && createInitialState('endless').perWordLimit === 10, 'endless mode should have a 10 second per-word limit');
+      const testState = state;
+      state = createInitialState('endless');
+      console.assert(getTimeLimitForGauge() === 10, 'endless gauge should use 10 seconds');
+      state = createInitialState('normal');
+      console.assert(getTimeLimitForGauge() === 60, 'normal gauge should use 60 seconds');
+      state = testState;
+      console.assert(getLesson(0, 0).words.includes('f') && getLesson(0, 0).words.includes('j'), 'first world should train F/J');
+      console.assert(accuracy({ totalTyped: 10, missTyped: 1 }) === 90, 'accuracy calculation should be correct');
+      const skipWords = buildSkipTestWords(1);
+      console.assert(skipWords.includes('r') && skipWords.includes('flash'), 'map skip test should include target map and previous review words');
+      const forbiddenSubjects = ['国語', '算数', '理科', '社会', '光合成', '水蒸気', '日本地図', '平安京', '分数', '面積'];
+      const allNormalText = JSON.stringify(wordBank);
+      const allLevelText = JSON.stringify(levelMaps);
+      console.assert(forbiddenSubjects.every(word => !allNormalText.includes(word) && !allLevelText.includes(word)), 'all modes should not include school subject vocabulary');
+      console.assert(typeof window.TYPING_ACADEMIA_DATA === 'object', 'typing words must be loaded from typing_words.js');
+    }
+
+    document.querySelectorAll('.mode-card').forEach(card => card.addEventListener('click', () => selectMode(card.dataset.mode)));
+    el.startBtn.addEventListener('click', startGame);
+    el.backBtn.addEventListener('click', () => {
+      stopTimer();
+      state.running = false;
+      if (state.mode === 'level') { showScreen('map'); renderMapSelect(state.selectedMap); }
+      else showScreen('menu');
+    });
+    el.mapBackBtn.addEventListener('click', () => { stopTimer(); state.running = false; showScreen('menu'); });
+    el.retryBtn.addEventListener('click', () => {
+      if (state.isSkipTest) startSkipTest(state.skipTargetMap);
+      else if (state.mode === 'level') startSelectedMode('level', state.selectedMap, state.selectedWorld);
+      else selectMode(state.mode);
+    });
+    el.menuBtn.addEventListener('click', () => {
+      if (state.mode === 'level') { showScreen('map'); renderMapSelect(state.selectedMap); }
+      else showScreen('menu');
+    });
+    window.addEventListener('keydown', handleKey);
+
+    runStartupTests();
+    renderAll();
+  </script>
+</body>
+</html>
