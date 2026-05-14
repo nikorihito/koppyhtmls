@@ -69,6 +69,106 @@
       margin-bottom: 20px;
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .settings-button {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 24px;
+      line-height: 1;
+      box-shadow: var(--shadow);
+    }
+
+    .settings-panel {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      z-index: 10;
+      width: min(340px, calc(100vw - 32px));
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(20, 25, 55, .94);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      display: none;
+    }
+
+    .settings-panel.open { display: block; }
+
+    .settings-panel h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .setting-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .setting-group label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .setting-group select,
+    .setting-group button.setting-choice {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      padding: 11px 12px;
+      font-weight: 800;
+      box-shadow: none;
+    }
+
+    .setting-group select option {
+      color: #111827;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .segmented button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--text);
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: none;
+    }
+
+    .segmented button.active {
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+    }
+
+    .settings-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
     h1 {
       margin: 0;
       font-size: clamp(28px, 5vw, 52px);
@@ -459,7 +559,27 @@
         <h1>星降るタイピングアカデミア</h1>
         <p class="lead">教育にも使える、幻想的なタイピング練習ゲーム。ローマ字の複数候補にも対応しています。</p>
       </div>
-      <div class="pill">現在の称号：<strong id="titleName">見習い魔法タイパー</strong></div>
+      <div class="header-right">
+        <div class="pill">現在の称号：<strong id="titleName">見習い魔法タイパー</strong></div>
+        <button class="settings-button" id="settingsBtn" aria-label="設定を開く">…</button>
+        <div class="settings-panel" id="settingsPanel">
+          <h3>設定</h3>
+          <div class="setting-group">
+            <label for="genreSelect">ジャンル絞り込み</label>
+            <select id="genreSelect">
+              <option value="all">すべて</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label>タイピング方式</label>
+            <div class="segmented">
+              <button type="button" id="jpModeBtn" class="active">日本語</button>
+              <button type="button" id="enModeBtn">英語</button>
+            </div>
+          </div>
+          <p class="settings-note">ジャンル絞り込みと英語/日本語切り替えは、ノーマル・エンドレスモードに適用されます。レベルアップモードは専用カリキュラムです。</p>
+        </div>
+      </div>
     </header>
 
     <section id="menuScreen" class="screen active panel">
@@ -471,7 +591,7 @@
           <span class="tag">育成・授業向け</span>
         </article>
         <article class="mode-card" data-mode="normal">
-          <div class="mode-icon">⌨</div>
+          <div class="mode-icon">🍣</div>
           <h2>ノーマルモード</h2>
           <p>60秒で高スコアを目指す標準モードです。日本語の単語や短文をローマ字で入力します。</p>
           <span class="tag">普通</span>
@@ -631,12 +751,46 @@
       resultScore: document.getElementById('resultScore'),
       resultAcc: document.getElementById('resultAcc'),
       resultTyped: document.getElementById('resultTyped'),
-      resultCombo: document.getElementById('resultCombo')
+      resultCombo: document.getElementById('resultCombo'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      settingsPanel: document.getElementById('settingsPanel'),
+      genreSelect: document.getElementById('genreSelect'),
+      jpModeBtn: document.getElementById('jpModeBtn'),
+      enModeBtn: document.getElementById('enModeBtn')
     };
 
     let state = createInitialState('normal');
     let timerId = null;
     let lastWordIndex = -1;
+
+    const gameSettings = {
+      genre: localStorage.getItem('typingAcademiaGenre') || 'all',
+      typingMode: localStorage.getItem('typingAcademiaTypingMode') || 'jp'
+    };
+
+    const englishFallback = {
+      '星': 'star', '月': 'moon', '夜空': 'night sky', '流れ星': 'shooting star', '星明かり': 'starlight', '月明かり': 'moonlight',
+      '魔法': 'magic', '魔法使い': 'wizard', '妖精': 'fairy', '精霊': 'spirit', '水晶': 'crystal', '宝石': 'jewel', '古城': 'old castle',
+      '塔': 'tower', '扉': 'door', '鍵': 'key', '迷宮': 'maze', '冒険': 'adventure', '旅人': 'traveler', '伝説': 'legend',
+      '森': 'forest', '湖': 'lake', '川': 'river', '海': 'sea', '山': 'mountain', '空': 'sky', '雲': 'cloud', '風': 'wind',
+      '雨': 'rain', '雪': 'snow', '花': 'flower', '木の葉': 'leaf', '小鳥': 'small bird', '朝日': 'morning sun', '夕日': 'sunset',
+      '虹': 'rainbow', '泉': 'spring', '草原': 'grassland', '洞窟': 'cave', '光': 'light',
+      '本': 'book', '手紙': 'letter', '机': 'desk', '椅子': 'chair', '時計': 'clock', '窓': 'window', '部屋': 'room',
+      'かばん': 'bag', 'ノート': 'notebook', 'えんぴつ': 'pencil', '地図': 'map', 'ランプ': 'lamp', 'リボン': 'ribbon', '鏡': 'mirror', '箱': 'box',
+      '歩く': 'walk', '走る': 'run', '跳ぶ': 'jump', '開ける': 'open', '閉じる': 'close', '探す': 'search', '見つける': 'find',
+      '進む': 'go forward', '戻る': 'go back', '光る': 'shine', '歌う': 'sing', '笑う': 'laugh', '休む': 'rest', '集中する': 'focus', '練習する': 'practice',
+      'リズム': 'rhythm', 'スピード': 'speed', '正確さ': 'accuracy', '集中': 'focus', '落ち着く': 'calm down', '指先': 'fingertip',
+      'キーボード': 'keyboard', 'ホームポジション': 'home position', 'ミスを減らす': 'reduce mistakes', '速く打つ': 'type fast',
+      '星が光る': 'the star shines', '月がのぼる': 'the moon rises', '風がふく': 'the wind blows', '森を歩く': 'walk through the forest',
+      '扉を開ける': 'open the door', '鍵を探す': 'search for the key', '本を読む': 'read a book', '手紙を書く': 'write a letter',
+      '光を追う': 'follow the light', '橋を渡る': 'cross the bridge', '空を見上げる': 'look up at the sky', '静かに進む': 'move quietly',
+      'ゆっくり打つ': 'type slowly', '正確に打つ': 'type accurately', 'リズムよく打つ': 'type with rhythm',
+      '星明かりの道を進む': 'walk along the starlit road', '水晶の湖が静かに光る': 'the crystal lake shines quietly',
+      '古い扉の先に光が見える': 'light can be seen beyond the old door', '小さな妖精が森で歌う': 'a small fairy sings in the forest',
+      '夜空に流れ星がきらめく': 'a shooting star sparkles in the night sky', '落ち着いて一文字ずつ打つ': 'type each letter calmly',
+      '指先のリズムを大切にする': 'value the rhythm of your fingertips', '速さよりも正確さを意識する': 'focus on accuracy rather than speed',
+      'ミスを減らすと長く続けられる': 'fewer mistakes help you continue longer', '今日も少しずつ上達する': 'improve little by little today'
+    };
 
     function createInitialState(mode) {
       return {
@@ -767,7 +921,7 @@
     }
 
     function setNextWord() {
-      const bank = state.mode === 'level' && state.lessonWords ? state.lessonWords : wordBank;
+      const bank = getActiveWordBank();
       let idx = Math.floor(Math.random() * bank.length);
       if (bank.length > 1) {
         while (idx === lastWordIndex) idx = Math.floor(Math.random() * bank.length);
@@ -780,12 +934,32 @@
       renderWord();
     }
 
+    function getActiveWordBank() {
+      if (state.mode === 'level' && state.lessonWords) return state.lessonWords;
+      const filtered = gameSettings.genre === 'all'
+        ? wordBank
+        : wordBank.filter(word => word.subject === gameSettings.genre);
+      return filtered.length > 0 ? filtered : wordBank;
+    }
+
     function normalizeWordItem(item) {
-      if (typeof item === 'string') return { jp: item, kana: null, roma: item, subject: getLessonSubject() };
+      if (typeof item === 'string') return { jp: item, kana: null, roma: item, en: item, subject: getLessonSubject() };
+      const englishText = item.en || englishFallback[item.jp] || item.english || '';
+      if (state.mode !== 'level' && gameSettings.typingMode === 'en') {
+        const en = englishText || item.roma || item.kana || item.jp;
+        return {
+          jp: en,
+          kana: null,
+          roma: en.toLowerCase(),
+          en,
+          subject: item.subject || '練習'
+        };
+      }
       return {
         jp: item.jp,
         kana: item.kana || item.jp,
         roma: item.roma || '',
+        en: englishText,
         subject: item.subject || '練習'
       };
     }
@@ -1215,7 +1389,37 @@
       renderHud();
       renderSide();
       updateTitle();
+      renderSettingsUi();
       if (state.currentWord) renderWord();
+    }
+
+    function renderSettingsUi() {
+      if (!el.genreSelect.dataset.ready) setupGenreOptions();
+      el.genreSelect.value = gameSettings.genre;
+      el.jpModeBtn.classList.toggle('active', gameSettings.typingMode === 'jp');
+      el.enModeBtn.classList.toggle('active', gameSettings.typingMode === 'en');
+    }
+
+    function setupGenreOptions() {
+      const genres = [...new Set(wordBank.map(word => word.subject).filter(Boolean))];
+      el.genreSelect.innerHTML = '<option value="all">すべて</option>' + genres.map(genre => `<option value="${escapeHtml(genre)}">${escapeHtml(genre)}</option>`).join('');
+      el.genreSelect.dataset.ready = 'true';
+    }
+
+    function applySettingChange() {
+      localStorage.setItem('typingAcademiaGenre', gameSettings.genre);
+      localStorage.setItem('typingAcademiaTypingMode', gameSettings.typingMode);
+      if (state.mode === 'normal' || state.mode === 'endless') {
+        stopTimer();
+        const currentMode = state.mode;
+        state = createInitialState(currentMode);
+        if (currentMode === 'endless') state.remaining = 10;
+        showScreen('game');
+        el.jpWord.textContent = '準備OK';
+        el.romaWord.innerHTML = '';
+        el.message.textContent = '設定を反映しました。スペースキーで開始。';
+      }
+      renderAll();
     }
 
     function escapeHtml(value) {
@@ -1240,10 +1444,44 @@
       console.assert(!buildCandidatesForWord({ jp: '本', kana: 'ほん', roma: '', subject: 'テスト' }).includes('hon'), '語末の ん は hon を許可しない');
       console.assert(buildCandidatesForWord({ jp: '本を読む', kana: 'ほんをよむ', roma: '', subject: 'テスト' }).includes('honwoyomu'), '語中の ん は n を許可する');
       console.assert(buildCandidatesForWord({ jp: '本を読む', kana: 'ほんをよむ', roma: '', subject: 'テスト' }).includes('honnwoyomu'), '語中の ん は nn も許可する');
+      console.assert(wordBank.some(word => word.subject === '幻想'), 'genre filter requires subjects');
+      const previousMode = gameSettings.typingMode;
+      const previousState = state;
+      gameSettings.typingMode = 'en';
+      state = createInitialState('normal');
+      console.assert(normalizeWordItem({ jp: '星', kana: 'ほし', subject: '幻想' }).jp === 'star', 'English mode should display English text');
+      gameSettings.typingMode = previousMode;
+      state = previousState;
     }
 
     document.querySelectorAll('.mode-card').forEach(card => {
       card.addEventListener('click', () => selectMode(card.dataset.mode));
+    });
+
+    el.settingsBtn.addEventListener('click', event => {
+      event.stopPropagation();
+      el.settingsPanel.classList.toggle('open');
+    });
+
+    el.settingsPanel.addEventListener('click', event => event.stopPropagation());
+
+    document.addEventListener('click', () => {
+      el.settingsPanel.classList.remove('open');
+    });
+
+    el.genreSelect.addEventListener('change', () => {
+      gameSettings.genre = el.genreSelect.value;
+      applySettingChange();
+    });
+
+    el.jpModeBtn.addEventListener('click', () => {
+      gameSettings.typingMode = 'jp';
+      applySettingChange();
+    });
+
+    el.enModeBtn.addEventListener('click', () => {
+      gameSettings.typingMode = 'en';
+      applySettingChange();
     });
 
     el.startBtn.addEventListener('click', startGame);
