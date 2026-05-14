@@ -360,6 +360,98 @@
 
     .map-wrap { padding: 22px; }
 
+    .character-dialog {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 14px;
+      align-items: start;
+      margin: 16px 0 18px;
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .character-dialog img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .character-dialog strong {
+      display: block;
+      color: var(--accent2);
+      margin-bottom: 6px;
+    }
+
+    .character-dialog p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-weight: 700;
+    }
+
+    .tutorial-card { padding: 22px; }
+    .tutorial-dialogs { display: grid; gap: 14px; margin: 18px 0; }
+
+    .tutorial-dialog {
+      display: grid;
+      grid-template-columns: 76px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .tutorial-dialog.reverse { grid-template-columns: 1fr 76px; }
+
+    .tutorial-dialog img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .tutorial-dialog strong {
+      display: block;
+      color: var(--accent2);
+      margin-bottom: 6px;
+    }
+
+    .tutorial-dialog p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-weight: 700;
+    }
+
+    .tutorial-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .tutorial-choice {
+      min-height: 76px;
+      border-radius: 18px;
+      white-space: normal;
+      line-height: 1.5;
+    }
+
+    .tutorial-choice.secondary {
+      color: var(--text);
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
     .map-header {
       display: flex;
       justify-content: space-between;
@@ -690,7 +782,7 @@
           <span class="tag">育成・授業向け</span>
         </article>
         <article class="mode-card" data-mode="normal">
-          <div class="mode-icon">⌨</div>
+          <div class="mode-icon">🍣</div>
           <h2>ノーマルモード</h2>
           <p>60秒で高スコアを目指す標準モードです。日本語の単語や短文をローマ字で入力します。</p>
           <span class="tag">普通</span>
@@ -701,6 +793,39 @@
           <p>1問ごとに10秒。ミスるとその問題の残り時間が減る、速さ重視のモードです。</p>
           <span class="tag">速さ重視</span>
         </article>
+      </div>
+    </section>
+
+    <section id="levelTutorialScreen" class="screen panel tutorial-card">
+      <h2>レベルアップモードのはじめに</h2>
+      <p class="lead">ニコリヒトとつるつる君が、今のタイピングレベルを確認します。</p>
+      <div class="tutorial-dialogs">
+        <div class="tutorial-dialog">
+          <img src="./ニコリヒト.png" alt="ニコリヒト">
+          <div>
+            <strong>ニコリヒト</strong>
+            <p>ここでは、FとJのホームポジションから少しずつ練習していくよ。まずは今のレベルを教えてね。</p>
+          </div>
+        </div>
+        <div class="tutorial-dialog reverse">
+          <div>
+            <strong>つるつる君</strong>
+            <p>君はタイピング、どれくらいできる？はじめてでも大丈夫。できる人は途中のマップから始められるよ。</p>
+          </div>
+          <img src="./つるつる君.png" alt="つるつる君">
+        </div>
+        <div class="tutorial-dialog">
+          <img src="./ニコリヒト.png" alt="ニコリヒト">
+          <div>
+            <strong>ニコリヒト</strong>
+            <p>「それなりにできる」を選ぶと、マップ5「言葉の図書館」からスタートできるようにするよ。</p>
+          </div>
+        </div>
+      </div>
+      <div class="tutorial-actions">
+        <button class="tutorial-choice secondary" id="tutorialBeginnerBtn">はじめて・ゆっくり練習したい<br>マップ1から</button>
+        <button class="tutorial-choice" id="tutorialIntermediateBtn">それなりにできる<br>マップ5から</button>
+        <button class="tutorial-choice secondary" id="tutorialSkipBtn">あとで選ぶ<br>マップを見る</button>
       </div>
     </section>
 
@@ -715,6 +840,13 @@
           <button class="secondary" id="mapBackBtn">モード選択に戻る</button>
         </div>
         <div class="map-grid" id="mapGrid"></div>
+        <div class="character-dialog" id="mapAdviceBox">
+          <img src="./ニコリヒト.png" alt="ニコリヒト">
+          <div>
+            <strong>ニコリヒト</strong>
+            <p id="mapAdviceText">マップを選ぶと、このマップのアドバイスが表示されます。</p>
+          </div>
+        </div>
         <h3 id="worldTitle">ワールド選択</h3>
         <div class="world-grid" id="worldGrid"></div>
       </div>
@@ -813,6 +945,7 @@
 
     const screens = {
       menu: document.getElementById('menuScreen'),
+      tutorial: document.getElementById('levelTutorialScreen'),
       map: document.getElementById('mapScreen'),
       game: document.getElementById('gameScreen'),
       result: document.getElementById('resultScreen')
@@ -837,6 +970,7 @@
       worldGrid: document.getElementById('worldGrid'),
       worldTitle: document.getElementById('worldTitle'),
       selectedMapInfo: document.getElementById('selectedMapInfo'),
+      mapAdviceText: document.getElementById('mapAdviceText'),
       timeGauge: document.getElementById('timeGauge'),
       timeGaugeFill: document.getElementById('timeGaugeFill'),
       timeGaugeLabel: document.getElementById('timeGaugeLabel'),
@@ -851,6 +985,9 @@
       resultAcc: document.getElementById('resultAcc'),
       resultTyped: document.getElementById('resultTyped'),
       resultCombo: document.getElementById('resultCombo'),
+      tutorialBeginnerBtn: document.getElementById('tutorialBeginnerBtn'),
+      tutorialIntermediateBtn: document.getElementById('tutorialIntermediateBtn'),
+      tutorialSkipBtn: document.getElementById('tutorialSkipBtn'),
       settingsBtn: document.getElementById('settingsBtn'),
       settingsPanel: document.getElementById('settingsPanel'),
       genreDropdown: document.getElementById('genreDropdown'),
@@ -878,6 +1015,19 @@
         return ['all'];
       }
     }
+
+    const mapAdviceMessages = [
+      'まずはFとJを見つけるところから。人差し指をホームポジションに置いて、焦らず正確に打とう。',
+      '上段キーは指が伸びやすい場所だよ。手全体を動かさず、指先だけで軽く届かせるのがコツ。',
+      '下段キーは打ち間違いが増えやすいよ。急がず、どの指で押すかを意識しよう。',
+      '大文字はShiftキーとの連携が大事。片手でShift、もう片方で文字を押す練習をしよう。',
+      'ここからは言葉の入力に入るよ。キーの場所を思い出しながら、リズムよく打ってみよう。',
+      '記号はタイピングの実用力に直結するよ。ピリオドやカンマも、文字と同じように慣れていこう。',
+      '速さを上げるマップだよ。ただし、ミスが増えすぎたら一度ゆっくりに戻すのが上達の近道。',
+      '長文は空白や句点まで含めて流れで打つ練習。目だけ先に進めすぎず、一文ずつ落ち着いて。',
+      '正確性を高めるマップだよ。速く打つより、ミスなく最後まで打ち切ることを優先しよう。',
+      '総仕上げだよ。これまでの練習を思い出して、正確さ・速さ・リズムを全部使ってみよう。'
+    ];
 
     const englishFallback = {
       '星': 'star', '月': 'moon', '夜空': 'night sky', '流れ星': 'shooting star', '星明かり': 'starlight', '月明かり': 'moonlight',
@@ -940,8 +1090,12 @@
       stopTimer();
       state = createInitialState(mode);
       if (mode === 'level') {
-        showScreen('map');
-        renderMapSelect();
+        if (!localStorage.getItem('typingAcademiaTutorialDone')) {
+          showScreen('tutorial');
+        } else {
+          showScreen('map');
+          renderMapSelect();
+        }
         return;
       }
       startSelectedMode(mode);
@@ -1434,7 +1588,8 @@
     function renderWorldSelect(mapIndex) {
       const map = levelMaps[mapIndex];
       el.selectedMapInfo.textContent = `${map.icon} ${map.name}：${map.theme}`;
-      el.worldTitle.textContent = `${map.name} のワールド`;
+      el.mapAdviceText.textContent = map.advice || mapAdviceMessages[mapIndex] || 'このマップでは、落ち着いて正確に打つことを意識しよう。';
+      el.worldTitle.textContent = `${map.name} のワールド`; 
 
       el.worldGrid.innerHTML = map.worlds.map((raw, i) => {
         const unlocked = isWorldUnlocked(mapIndex, i);
@@ -1588,6 +1743,7 @@
       console.assert(Array.isArray(wordBank) && wordBank.length >= 100, 'wordBank must contain at least 100 words');
       console.assert(levelMaps.length === 10, 'levelMaps must have 10 maps');
       console.assert(levelMaps.every(map => map.worlds.length === 10), 'each map must have 10 worlds');
+      console.assert(mapAdviceMessages.length === 10, 'each map should have a Nikorihito advice message');
       console.assert(romajiRules.kanaRules['し'].includes('shi') && romajiRules.kanaRules['し'].includes('si'), 'し must accept shi and si');
       console.assert(romajiRules.specialRules?.finalN?.enabled, 'finalN special rule must be enabled');
       console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'し should include si');
@@ -1639,6 +1795,25 @@
     el.enModeBtn.addEventListener('click', () => {
       gameSettings.typingMode = 'en';
       applySettingChange();
+    });
+
+    el.tutorialBeginnerBtn.addEventListener('click', () => {
+      localStorage.setItem('typingAcademiaTutorialDone', '1');
+      showScreen('map');
+      renderMapSelect(0);
+    });
+
+    el.tutorialIntermediateBtn.addEventListener('click', () => {
+      localStorage.setItem('typingAcademiaTutorialDone', '1');
+      unlockMap(4);
+      showScreen('map');
+      renderMapSelect(4);
+    });
+
+    el.tutorialSkipBtn.addEventListener('click', () => {
+      localStorage.setItem('typingAcademiaTutorialDone', '1');
+      showScreen('map');
+      renderMapSelect(0);
     });
 
     el.startBtn.addEventListener('click', startGame);
