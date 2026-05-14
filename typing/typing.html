@@ -125,20 +125,117 @@
       font-weight: 800;
     }
 
-    .setting-group select,
-    .setting-group button.setting-choice {
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.10);
-      color: var(--text);
-      padding: 11px 12px;
-      font-weight: 800;
-      box-shadow: none;
+    .setting-dropdown {
+      position: relative;
     }
 
-    .setting-group select option {
-      color: #111827;
+    .setting-dropdown-button {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+      color: var(--text);
+      padding: 12px 14px;
+      font-weight: 900;
+      box-shadow: none;
+      text-align: left;
+    }
+
+    .setting-dropdown-button::after {
+      content: "▾";
+      color: var(--accent2);
+      font-size: 14px;
+      transition: transform .18s ease;
+    }
+
+    .setting-dropdown.open .setting-dropdown-button::after {
+      transform: rotate(180deg);
+    }
+
+    .genre-menu {
+      display: none;
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      max-height: 260px;
+      overflow: auto;
+      padding: 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(17, 22, 50, .98);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .setting-dropdown.open .genre-menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .genre-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 800;
+      box-shadow: none;
+      text-align: left;
+    }
+
+    .genre-option:hover {
+      transform: none;
+      filter: brightness(1.08);
+    }
+
+    .genre-option.active {
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      border-color: rgba(255,255,255,.36);
+    }
+
+    .genre-option .checkmark {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.18);
+      font-size: 13px;
+    }
+
+    .genre-option.active .checkmark {
+      background: rgba(11,21,48,.16);
+      border-color: rgba(11,21,48,.24);
+    }
+
+    .selected-genre-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .selected-genre-chip {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(142,232,255,.13);
+      border: 1px solid rgba(142,232,255,.22);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
     }
 
     .segmented {
@@ -565,10 +662,12 @@
         <div class="settings-panel" id="settingsPanel">
           <h3>設定</h3>
           <div class="setting-group">
-            <label for="genreSelect">ジャンル絞り込み</label>
-            <select id="genreSelect">
-              <option value="all">すべて</option>
-            </select>
+            <label>ジャンル絞り込み</label>
+            <div class="setting-dropdown" id="genreDropdown">
+              <button type="button" class="setting-dropdown-button" id="genreDropdownBtn">すべて</button>
+              <div class="genre-menu" id="genreMenu"></div>
+            </div>
+            <div class="selected-genre-chips" id="selectedGenreChips"></div>
           </div>
           <div class="setting-group">
             <label>タイピング方式</label>
@@ -754,7 +853,10 @@
       resultCombo: document.getElementById('resultCombo'),
       settingsBtn: document.getElementById('settingsBtn'),
       settingsPanel: document.getElementById('settingsPanel'),
-      genreSelect: document.getElementById('genreSelect'),
+      genreDropdown: document.getElementById('genreDropdown'),
+      genreDropdownBtn: document.getElementById('genreDropdownBtn'),
+      genreMenu: document.getElementById('genreMenu'),
+      selectedGenreChips: document.getElementById('selectedGenreChips'),
       jpModeBtn: document.getElementById('jpModeBtn'),
       enModeBtn: document.getElementById('enModeBtn')
     };
@@ -764,9 +866,18 @@
     let lastWordIndex = -1;
 
     const gameSettings = {
-      genre: localStorage.getItem('typingAcademiaGenre') || 'all',
+      genres: loadSelectedGenres(),
       typingMode: localStorage.getItem('typingAcademiaTypingMode') || 'jp'
     };
+
+    function loadSelectedGenres() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem('typingAcademiaGenres') || '["all"]');
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : ['all'];
+      } catch {
+        return ['all'];
+      }
+    }
 
     const englishFallback = {
       '星': 'star', '月': 'moon', '夜空': 'night sky', '流れ星': 'shooting star', '星明かり': 'starlight', '月明かり': 'moonlight',
@@ -936,9 +1047,10 @@
 
     function getActiveWordBank() {
       if (state.mode === 'level' && state.lessonWords) return state.lessonWords;
-      const filtered = gameSettings.genre === 'all'
+      const selectedGenres = gameSettings.genres.includes('all') ? ['all'] : gameSettings.genres;
+      const filtered = selectedGenres.includes('all')
         ? wordBank
-        : wordBank.filter(word => word.subject === gameSettings.genre);
+        : wordBank.filter(word => selectedGenres.includes(word.subject));
       return filtered.length > 0 ? filtered : wordBank;
     }
 
@@ -1394,20 +1506,60 @@
     }
 
     function renderSettingsUi() {
-      if (!el.genreSelect.dataset.ready) setupGenreOptions();
-      el.genreSelect.value = gameSettings.genre;
+      if (!el.genreMenu.dataset.ready) setupGenreOptions();
+      renderGenreSelection();
       el.jpModeBtn.classList.toggle('active', gameSettings.typingMode === 'jp');
       el.enModeBtn.classList.toggle('active', gameSettings.typingMode === 'en');
     }
 
     function setupGenreOptions() {
-      const genres = [...new Set(wordBank.map(word => word.subject).filter(Boolean))];
-      el.genreSelect.innerHTML = '<option value="all">すべて</option>' + genres.map(genre => `<option value="${escapeHtml(genre)}">${escapeHtml(genre)}</option>`).join('');
-      el.genreSelect.dataset.ready = 'true';
+      const genres = ['all', ...new Set(wordBank.map(word => word.subject).filter(Boolean))];
+      el.genreMenu.innerHTML = genres.map(genre => `
+        <button type="button" class="genre-option" data-genre="${escapeHtml(genre)}">
+          <span>${genre === 'all' ? 'すべて' : escapeHtml(genre)}</span>
+          <span class="checkmark">✓</span>
+        </button>
+      `).join('');
+      el.genreMenu.querySelectorAll('.genre-option').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          toggleGenre(button.dataset.genre);
+        });
+      });
+      el.genreMenu.dataset.ready = 'true';
+    }
+
+    function toggleGenre(genre) {
+      if (genre === 'all') {
+        gameSettings.genres = ['all'];
+      } else {
+        const withoutAll = gameSettings.genres.filter(item => item !== 'all');
+        if (withoutAll.includes(genre)) {
+          gameSettings.genres = withoutAll.filter(item => item !== genre);
+        } else {
+          gameSettings.genres = [...withoutAll, genre];
+        }
+        if (gameSettings.genres.length === 0) gameSettings.genres = ['all'];
+      }
+      applySettingChange();
+    }
+
+    function renderGenreSelection() {
+      const selected = gameSettings.genres.includes('all') ? ['all'] : gameSettings.genres;
+      el.genreMenu.querySelectorAll('.genre-option').forEach(button => {
+        button.classList.toggle('active', selected.includes(button.dataset.genre));
+      });
+      if (selected.includes('all')) {
+        el.genreDropdownBtn.textContent = 'すべて';
+        el.selectedGenreChips.innerHTML = '<span class="selected-genre-chip">すべて</span>';
+        return;
+      }
+      el.genreDropdownBtn.textContent = selected.length === 1 ? selected[0] : `${selected.length}ジャンル選択中`;
+      el.selectedGenreChips.innerHTML = selected.map(genre => `<span class="selected-genre-chip">${escapeHtml(genre)}</span>`).join('');
     }
 
     function applySettingChange() {
-      localStorage.setItem('typingAcademiaGenre', gameSettings.genre);
+      localStorage.setItem('typingAcademiaGenres', JSON.stringify(gameSettings.genres));
       localStorage.setItem('typingAcademiaTypingMode', gameSettings.typingMode);
       if (state.mode === 'normal' || state.mode === 'endless') {
         stopTimer();
@@ -1445,6 +1597,10 @@
       console.assert(buildCandidatesForWord({ jp: '本を読む', kana: 'ほんをよむ', roma: '', subject: 'テスト' }).includes('honwoyomu'), '語中の ん は n を許可する');
       console.assert(buildCandidatesForWord({ jp: '本を読む', kana: 'ほんをよむ', roma: '', subject: 'テスト' }).includes('honnwoyomu'), '語中の ん は nn も許可する');
       console.assert(wordBank.some(word => word.subject === '幻想'), 'genre filter requires subjects');
+      gameSettings.genres = ['幻想', '自然'];
+      state = createInitialState('normal');
+      console.assert(getActiveWordBank().every(word => ['幻想', '自然'].includes(word.subject)), 'multiple genre filter should work');
+      gameSettings.genres = ['all'];
       const previousMode = gameSettings.typingMode;
       const previousState = state;
       gameSettings.typingMode = 'en';
@@ -1465,13 +1621,14 @@
 
     el.settingsPanel.addEventListener('click', event => event.stopPropagation());
 
-    document.addEventListener('click', () => {
-      el.settingsPanel.classList.remove('open');
+    el.genreDropdownBtn.addEventListener('click', event => {
+      event.stopPropagation();
+      el.genreDropdown.classList.toggle('open');
     });
 
-    el.genreSelect.addEventListener('change', () => {
-      gameSettings.genre = el.genreSelect.value;
-      applySettingChange();
+    document.addEventListener('click', () => {
+      el.settingsPanel.classList.remove('open');
+      el.genreDropdown.classList.remove('open');
     });
 
     el.jpModeBtn.addEventListener('click', () => {
