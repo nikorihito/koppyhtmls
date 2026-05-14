@@ -12,8 +12,6 @@
       --text: #f8fbff;
       --muted: #c8d3ff;
       --line: rgba(255,255,255,.22);
-      --panel: rgba(255,255,255,.12);
-      --panel2: rgba(255,255,255,.18);
       --accent: #8ee8ff;
       --accent2: #ffdf8e;
       --good: #a9ffcb;
@@ -22,6 +20,7 @@
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -125,12 +124,15 @@
       padding: 24px;
       border-radius: 24px;
       border: 1px solid rgba(255,255,255,.20);
-      background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.07)), radial-gradient(circle at 20% 10%, rgba(142,232,255,.28), transparent 36%);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.07)),
+        radial-gradient(circle at 20% 10%, rgba(142,232,255,.28), transparent 36%);
       cursor: pointer;
       transition: transform .2s ease, border-color .2s ease;
     }
 
     .mode-card:hover { transform: translateY(-5px); border-color: rgba(142,232,255,.72); }
+
     .mode-icon {
       width: 64px;
       height: 64px;
@@ -142,8 +144,10 @@
       border: 1px solid rgba(255,255,255,.2);
       font-size: 34px;
     }
+
     .mode-card h2 { margin: 0 0 10px; font-size: 24px; }
     .mode-card p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 14px; }
+
     .tag {
       position: absolute;
       right: 18px;
@@ -158,6 +162,7 @@
     }
 
     .map-wrap { padding: 22px; }
+
     .map-header {
       display: flex;
       justify-content: space-between;
@@ -165,8 +170,10 @@
       gap: 16px;
       margin-bottom: 18px;
     }
+
     .map-header h2 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 36px); }
     .map-header p { margin: 0; color: var(--muted); line-height: 1.7; }
+
     .lesson-chip {
       display: inline-flex;
       margin-top: 10px;
@@ -178,13 +185,17 @@
       font-weight: 800;
     }
 
-    .map-grid, .world-grid {
+    .map-grid,
+    .world-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 12px;
     }
+
     .map-grid { margin-bottom: 18px; }
-    .map-card, .world-card {
+
+    .map-card,
+    .world-card {
       padding: 14px;
       border-radius: 18px;
       border: 1px solid rgba(255,255,255,.18);
@@ -192,10 +203,16 @@
       color: var(--text);
       text-align: left;
     }
-    .map-card.locked, .world-card.locked { opacity: .5; }
-    .map-card strong, .world-card strong { display: block; margin-bottom: 6px; font-size: 16px; }
-    .map-card span, .world-card span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .map-card.locked,
+    .world-card.locked { opacity: .5; }
+    .map-card strong,
+    .world-card strong { display: block; margin-bottom: 6px; font-size: 16px; }
+    .map-card span,
+    .world-card span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
     .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
     .skip-rule {
       margin-top: 10px;
       padding: 10px 12px;
@@ -207,14 +224,21 @@
       line-height: 1.6;
     }
 
-    .game-layout { display: grid; grid-template-columns: 1fr 310px; gap: 18px; }
+    .game-layout {
+      display: grid;
+      grid-template-columns: 1fr 310px;
+      gap: 18px;
+    }
+
     .game-main { min-height: 600px; padding: 22px; }
+
     .hud {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       margin-bottom: 18px;
     }
+
     .hud-card {
       padding: 14px;
       border-radius: 18px;
@@ -222,6 +246,7 @@
       border: 1px solid rgba(255,255,255,.16);
       text-align: center;
     }
+
     .hud-card span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 12px; }
     .hud-card strong { font-size: 22px; }
 
@@ -234,17 +259,38 @@
       overflow: hidden;
       border-radius: 26px;
       border: 1px solid rgba(255,255,255,.17);
-      background: linear-gradient(180deg, rgba(16,20,45,.25), rgba(5,12,26,.55)), radial-gradient(circle at 50% 20%, rgba(142,232,255,.22), transparent 36%);
+      background:
+        linear-gradient(180deg, rgba(16,20,45,.25), rgba(5,12,26,.55)),
+        radial-gradient(circle at 50% 20%, rgba(142,232,255,.22), transparent 36%);
     }
+
     .stage::after {
       content: "";
       position: absolute;
       inset: auto 0 0;
       height: 130px;
-      background: radial-gradient(ellipse at 12% 100%, rgba(103,255,202,.22), transparent 38%), radial-gradient(ellipse at 70% 100%, rgba(255,223,142,.18), transparent 42%), linear-gradient(180deg, transparent, rgba(0,0,0,.28));
+      background:
+        radial-gradient(ellipse at 12% 100%, rgba(103,255,202,.22), transparent 38%),
+        radial-gradient(ellipse at 70% 100%, rgba(255,223,142,.18), transparent 42%),
+        linear-gradient(180deg, transparent, rgba(0,0,0,.28));
     }
-    .castle { position: absolute; left: 28px; bottom: 40px; opacity: .35; font-size: 80px; filter: drop-shadow(0 0 18px rgba(142,232,255,.4)); }
-    .word-box { width: min(760px, 100%); position: relative; z-index: 2; text-align: center; }
+
+    .castle {
+      position: absolute;
+      left: 28px;
+      bottom: 40px;
+      opacity: .35;
+      font-size: 80px;
+      filter: drop-shadow(0 0 18px rgba(142,232,255,.4));
+    }
+
+    .word-box {
+      width: min(760px, 100%);
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
     .jp-word {
       margin-bottom: 14px;
       font-size: clamp(30px, 5vw, 58px);
@@ -252,6 +298,7 @@
       letter-spacing: .06em;
       text-shadow: 0 0 26px rgba(142,232,255,.4);
     }
+
     .roma-word {
       display: inline-flex;
       flex-wrap: wrap;
@@ -265,10 +312,17 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       letter-spacing: .04em;
     }
+
     .typed { color: var(--good); opacity: .65; }
     .current { color: var(--accent2); text-decoration: underline; text-underline-offset: 7px; }
     .remaining { color: #fff; }
-    .message { min-height: 30px; margin-top: 18px; color: var(--muted); font-weight: 800; }
+
+    .message {
+      min-height: 30px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-weight: 800;
+    }
 
     .time-gauge-box {
       margin-top: 16px;
@@ -277,13 +331,45 @@
       background: rgba(255,255,255,.10);
       border: 1px solid rgba(255,255,255,.16);
     }
-    .time-gauge-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: var(--muted); font-size: 13px; font-weight: 800; }
-    .time-gauge { width: 100%; height: 16px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); }
-    .time-gauge > div { height: 100%; width: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--good), var(--accent), var(--accent2)); transition: width .18s ease; }
+
+    .time-gauge-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .time-gauge {
+      width: 100%;
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .time-gauge > div {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--good), var(--accent), var(--accent2));
+      transition: width .18s ease;
+    }
+
     .time-gauge.warning > div { background: linear-gradient(90deg, var(--accent2), #fff1b8); }
     .time-gauge.danger > div { background: linear-gradient(90deg, var(--danger), #ffb08e); }
 
-    .controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
     button {
       border: 0;
       border-radius: 999px;
@@ -295,6 +381,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.22);
       transition: transform .15s ease, filter .15s ease;
     }
+
     button:hover { transform: translateY(-2px); filter: brightness(1.05); }
     button.secondary { color: var(--text); background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.2); }
     .mini-button { width: auto; padding: 8px 10px; font-size: 12px; box-shadow: none; }
@@ -302,17 +389,48 @@
 
     .side { padding: 18px; }
     .side h3 { margin: 0 0 10px; font-size: 18px; }
-    .bar { width: 100%; height: 12px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16); }
-    .bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, #8ee8ff, #ffdf8e); transition: width .2s ease; }
+
+    .bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .bar > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8ee8ff, #ffdf8e);
+      transition: width .2s ease;
+    }
+
     .quest-list { display: grid; gap: 10px; margin: 12px 0 20px; }
-    .quest { padding: 12px; border-radius: 16px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.14); color: var(--muted); font-size: 14px; line-height: 1.55; }
-    .quest.done { color: var(--good); border-color: rgba(169,255,203,.35); background: rgba(169,255,203,.08); }
+
+    .quest {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .quest.done {
+      color: var(--good);
+      border-color: rgba(169,255,203,.35);
+      background: rgba(169,255,203,.08);
+    }
 
     .result { padding: 30px; text-align: center; }
     .result h2 { margin: 0 0 14px; font-size: clamp(30px, 5vw, 52px); }
     .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0; }
+
     .shake { animation: shake .18s ease; }
     @keyframes shake { 0%,100% { transform: translateX(0); } 30% { transform: translateX(-6px); } 60% { transform: translateX(6px); } }
+
     .pop { animation: pop .25s ease; }
     @keyframes pop { 0% { transform: scale(.96); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
 
@@ -323,6 +441,7 @@
       .game-layout { grid-template-columns: 1fr; }
       .hud, .result-grid { grid-template-columns: repeat(2, 1fr); }
     }
+
     @media (max-width: 520px) {
       .app { width: min(100% - 18px, 1180px); padding-top: 16px; }
       .map-grid, .world-grid { grid-template-columns: 1fr; }
@@ -352,7 +471,7 @@
           <span class="tag">育成・授業向け</span>
         </article>
         <article class="mode-card" data-mode="normal">
-          <div class="mode-icon">⌨</div>
+          <div class="mode-icon">🍣</div>
           <h2>ノーマルモード</h2>
           <p>60秒で高スコアを目指す標準モードです。日本語の単語や短文をローマ字で入力します。</p>
           <span class="tag">普通</span>
@@ -419,10 +538,15 @@
           <h3>🌟 アカデミア情報</h3>
           <div class="small-note">レベル <span id="sideLevel">1</span> / EXP <span id="sideExp">0</span></div>
           <div class="bar"><div id="expBar"></div></div>
+
           <h3 style="margin-top:18px;">📜 クエスト</h3>
           <div class="quest-list" id="questList"></div>
+
           <h3>📘 入力ルール</h3>
-          <p class="small-note">例：し は <b>shi</b> でも <b>si</b> でもOK。ち・つ・ふ・しゃ・しゅ・しょ等も複数候補に対応。</p>
+          <p class="small-note">
+            例：し は <b>shi</b> / <b>si</b> どちらもOK。<br>
+            ん は語中なら <b>n</b> / <b>nn</b> どちらもOK、語末なら <b>nn</b> のみOK。
+          </p>
         </aside>
       </div>
     </section>
@@ -563,11 +687,14 @@
       state = createInitialState(mode);
       state.selectedMap = mapIndex;
       state.selectedWorld = worldIndex;
+
       if (mode === 'level') {
         state.lessonWords = getLesson(mapIndex, worldIndex).words;
         state.remaining = 75;
       }
+
       if (mode === 'endless') state.remaining = 10;
+
       showScreen('game');
       el.jpWord.textContent = '準備OK';
       el.romaWord.innerHTML = '';
@@ -584,6 +711,7 @@
       state.isSkipTest = true;
       state.remaining = 60;
       state.lessonWords = buildSkipTestWords(mapIndex);
+
       showScreen('game');
       el.jpWord.textContent = 'マップ飛び級テスト';
       el.romaWord.innerHTML = '';
@@ -606,7 +734,9 @@
 
     function buildSkipTestWords(mapIndex) {
       const targetWords = levelMaps[mapIndex].worlds.slice(0, 5).flatMap(world => world[1].slice(0, 3));
-      const reviewWords = mapIndex > 0 ? levelMaps[mapIndex - 1].worlds.slice(-3).flatMap(world => world[1].slice(0, 2)) : [];
+      const reviewWords = mapIndex > 0
+        ? levelMaps[mapIndex - 1].worlds.slice(-3).flatMap(world => world[1].slice(0, 2))
+        : [];
       return [...new Set([...targetWords, ...reviewWords])];
     }
 
@@ -639,7 +769,9 @@
     function setNextWord() {
       const bank = state.mode === 'level' && state.lessonWords ? state.lessonWords : wordBank;
       let idx = Math.floor(Math.random() * bank.length);
-      if (bank.length > 1) while (idx === lastWordIndex) idx = Math.floor(Math.random() * bank.length);
+      if (bank.length > 1) {
+        while (idx === lastWordIndex) idx = Math.floor(Math.random() * bank.length);
+      }
       lastWordIndex = idx;
       const item = bank[idx];
       state.currentWord = normalizeWordItem(item);
@@ -665,52 +797,75 @@
 
     function buildCandidatesForWord(word) {
       const candidates = new Set();
+
       if (word.kana && canBuildFromKana(word.kana)) {
         for (const candidate of buildCandidatesFromKana(word.kana)) candidates.add(candidate);
       }
+
       if (word.roma) {
         candidates.add(word.roma);
         for (const candidate of expandRomaSubstitutions(word.roma)) candidates.add(candidate);
       }
+
       return [...candidates].filter(Boolean).sort((a, b) => a.length - b.length || a.localeCompare(b));
     }
 
     function canBuildFromKana(text) {
-      return [...text].some(char => /[ぁ-んー]/.test(char));
+      return [...String(text)].some(char => /[ぁ-んー]/.test(char));
     }
 
     function buildCandidatesFromKana(text) {
       const tokens = tokenizeKana(text);
       let results = [''];
-      for (const token of tokens) {
-        const options = romajiRules.kanaRules[token] || [token];
+
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        let options;
+
+        if (token === 'ん' && romajiRules.specialRules?.finalN?.enabled) {
+          const isFinalN = i === tokens.length - 1;
+          options = isFinalN
+            ? romajiRules.specialRules.finalN.finalOptions
+            : romajiRules.specialRules.finalN.middleOptions;
+        } else {
+          options = romajiRules.kanaRules[token] || [token];
+        }
+
         const next = [];
         for (const prefix of results) {
           for (const option of options) next.push(prefix + option);
         }
         results = next.slice(0, 512);
       }
+
       return results;
     }
 
     function tokenizeKana(text) {
       const chars = [...String(text)];
       const tokens = [];
+
       for (let i = 0; i < chars.length; i++) {
         const pair = chars[i] + (chars[i + 1] || '');
+
         if (romajiRules.kanaRules[pair]) {
           tokens.push(pair);
           i += 1;
-        } else if (chars[i] === 'っ' && chars[i + 1]) {
+          continue;
+        }
+
+        if (chars[i] === 'っ' && chars[i + 1]) {
           const nextPair = chars[i + 1] + (chars[i + 2] || '');
           const nextToken = romajiRules.kanaRules[nextPair] ? nextPair : chars[i + 1];
           const nextOptions = romajiRules.kanaRules[nextToken] || [''];
           const firstConsonant = getFirstConsonant(nextOptions[0]);
           tokens.push(firstConsonant || 'xtu');
-        } else {
-          tokens.push(chars[i]);
+          continue;
         }
+
+        tokens.push(chars[i]);
       }
+
       return tokens;
     }
 
@@ -724,6 +879,7 @@
       const substitutions = romajiRules.romaSubstitutions || [];
       const results = new Set([String(baseRoma || '')]);
       let changed = true;
+
       while (changed && results.size < 512) {
         changed = false;
         for (const current of [...results]) {
@@ -743,6 +899,7 @@
           if (results.size >= 512) break;
         }
       }
+
       return [...results];
     }
 
@@ -757,7 +914,24 @@
     }
 
     function subjectBadge(subject) {
-      const map = { '幻想': '✨', '自然': '🌿', '日常': '📦', '動作': '🏃', '練習': '⌨️', '短文': '📝', '長文': '📜', '基礎': '⌨️', '上段': '🌙', '下段': '💎', '大文字': '☀️', '短語': '📖', '記号': '🎵', '速度': '🌠', '正確性': '🪽', '総仕上げ': '👑' };
+      const map = {
+        '幻想': '✨',
+        '自然': '🌿',
+        '日常': '📦',
+        '動作': '🏃',
+        '練習': '⌨️',
+        '短文': '📝',
+        '長文': '📜',
+        '基礎': '⌨️',
+        '上段': '🌙',
+        '下段': '💎',
+        '大文字': '☀️',
+        '短語': '📖',
+        '記号': '🎵',
+        '速度': '🌠',
+        '正確性': '🪽',
+        '総仕上げ': '👑'
+      };
       return `${map[subject] || '✨'}${subject}`;
     }
 
@@ -767,12 +941,14 @@
 
     function handleKey(e) {
       if (screens.menu.classList.contains('active') || screens.map.classList.contains('active') || screens.result.classList.contains('active')) return;
+
       if (e.key === ' ') {
         e.preventDefault();
         if (!state.running) startGame();
         else handleTypedKey(' ');
         return;
       }
+
       if (!state.running || !state.currentWord || e.key.length !== 1) return;
       handleTypedKey(e.key);
     }
@@ -782,28 +958,34 @@
       const nextInput = state.typedInput + key;
       const ok = state.candidates.some(candidate => candidate.startsWith(nextInput));
       state.totalTyped += 1;
+
       if (ok) {
         state.typedInput = nextInput;
         state.score += 10 + Math.min(state.combo, 20);
         state.combo += 1;
         state.maxCombo = Math.max(state.maxCombo, state.combo);
+
         if (state.candidates.includes(state.typedInput)) completeWord();
         else renderWord();
       } else {
         state.missTyped += 1;
         state.combo = 0;
         state.score = Math.max(0, state.score - 5);
+
         if (modeConfig[state.mode].mistakePenalty) {
           state.remaining = Math.max(0, state.remaining - modeConfig[state.mode].mistakePenalty);
           el.message.textContent = `ミス！ この問題の残り時間 -${modeConfig[state.mode].mistakePenalty}秒`;
         } else {
           el.message.textContent = 'ミス！ 落ち着いてもう一度。';
         }
+
         el.stage.classList.remove('shake');
         void el.stage.offsetWidth;
         el.stage.classList.add('shake');
+
         if (state.remaining <= 0) finishGame('時間切れ！');
       }
+
       renderAll();
     }
 
@@ -816,23 +998,32 @@
       const completedLength = state.typedInput.length || getDisplayCandidate().length;
       state.correctWords += 1;
       state.score += 50 + completedLength * 4 + Math.min(100, state.combo * 2);
+
       if (state.mode === 'level') addExp(12 + Math.floor(completedLength / 2));
       if (state.mode === 'endless') state.remaining = 10;
-      el.message.textContent = state.mode === 'endless' ? '正解！ 次の問題も10秒以内に入力しよう。' : '正解！';
+
+      el.message.textContent = state.mode === 'endless'
+        ? '正解！ 次の問題も10秒以内に入力しよう。'
+        : '正解！';
+
       el.stage.classList.remove('pop');
       void el.stage.offsetWidth;
       el.stage.classList.add('pop');
+
       checkQuests();
+
       if (state.isSkipTest && isSkipTestPassed()) {
         unlockMap(state.skipTargetMap);
         finishGame('マップ飛び級テスト合格！');
         return;
       }
+
       if (state.mode === 'level' && !state.isSkipTest && state.correctWords >= modeConfig.level.targetWords) {
         unlockNextWorld();
         finishGame('ワールドクリア！');
         return;
       }
+
       setNextWord();
     }
 
@@ -842,19 +1033,28 @@
 
     function addExp(amount) {
       state.exp += amount;
+
       while (state.exp >= expToNext(state.level)) {
         state.exp -= expToNext(state.level);
         state.level += 1;
       }
+
       localStorage.setItem('typingAcademiaExp', String(state.exp));
       localStorage.setItem('typingAcademiaLevel', String(state.level));
     }
 
-    function expToNext(level) { return 80 + level * 20; }
-    function accuracy(s = state) { return s.totalTyped === 0 ? 100 : Math.max(0, Math.round(((s.totalTyped - s.missTyped) / s.totalTyped) * 100)); }
+    function expToNext(level) {
+      return 80 + level * 20;
+    }
+
+    function accuracy(s = state) {
+      return s.totalTyped === 0 ? 100 : Math.max(0, Math.round(((s.totalTyped - s.missTyped) / s.totalTyped) * 100));
+    }
 
     function checkQuests() {
-      for (const quest of quests) if (!state.completedQuests.has(quest.id) && quest.check(state)) state.completedQuests.add(quest.id);
+      for (const quest of quests) {
+        if (!state.completedQuests.has(quest.id) && quest.check(state)) state.completedQuests.add(quest.id);
+      }
     }
 
     function finishGame(title) {
@@ -876,31 +1076,49 @@
           ? `${levelMaps[state.skipTargetMap].name} を解放しました。正確率${accuracy()}%、ミス${state.missTyped}回です。`
           : `条件は8問正解・正確率92%以上・ミス2回以内です。今回：${state.correctWords}問正解、正確率${accuracy()}%、ミス${state.missTyped}回。`;
       }
+
       if (state.mode === 'level') return `${levelMaps[state.selectedMap].name} / World ${state.selectedWorld + 1} を${state.correctWords}問進みました。`;
       if (state.mode === 'endless') return accuracy() >= 95 ? '10秒制限でも安定しています。' : 'ミスを減らすと長く続けられます。';
       return accuracy() >= 90 ? '安定したタイピングです。' : '正確性を意識するとさらに伸びます。';
     }
 
-    function progressKey() { return 'typingAcademiaMapProgress'; }
+    function progressKey() {
+      return 'typingAcademiaMapProgress';
+    }
+
     function loadProgress() {
       try { return JSON.parse(localStorage.getItem(progressKey()) || '{}'); }
       catch { return {}; }
     }
-    function saveProgress(progress) { localStorage.setItem(progressKey(), JSON.stringify(progress)); }
+
+    function saveProgress(progress) {
+      localStorage.setItem(progressKey(), JSON.stringify(progress));
+    }
+
     function isWorldUnlocked(mapIndex, worldIndex) {
       if (mapIndex === 0 && worldIndex === 0) return true;
       return !!loadProgress()[`${mapIndex}-${worldIndex}`];
     }
+
     function unlockWorld(mapIndex, worldIndex) {
       const progress = loadProgress();
       progress[`${mapIndex}-${worldIndex}`] = true;
       saveProgress(progress);
     }
-    function unlockMap(mapIndex) { unlockWorld(mapIndex, 0); }
+
+    function unlockMap(mapIndex) {
+      unlockWorld(mapIndex, 0);
+    }
+
     function unlockNextWorld() {
       let map = state.selectedMap;
       let world = state.selectedWorld + 1;
-      if (world >= 10) { world = 0; map += 1; }
+
+      if (world >= 10) {
+        world = 0;
+        map += 1;
+      }
+
       if (map < levelMaps.length) unlockWorld(map, world);
     }
 
@@ -915,8 +1133,15 @@
           <div class="actions">${unlocked ? '<button class="mini-button start-map">マップを見る</button>' : '<button class="mini-button skip-map">飛び級する</button>'}</div>
         </div>`;
       }).join('');
-      el.mapGrid.querySelectorAll('.start-map').forEach(btn => btn.addEventListener('click', () => renderWorldSelect(Number(btn.closest('.map-card').dataset.map))));
-      el.mapGrid.querySelectorAll('.skip-map').forEach(btn => btn.addEventListener('click', () => startSkipTest(Number(btn.closest('.map-card').dataset.map))));
+
+      el.mapGrid.querySelectorAll('.start-map').forEach(btn => {
+        btn.addEventListener('click', () => renderWorldSelect(Number(btn.closest('.map-card').dataset.map)));
+      });
+
+      el.mapGrid.querySelectorAll('.skip-map').forEach(btn => {
+        btn.addEventListener('click', () => startSkipTest(Number(btn.closest('.map-card').dataset.map)));
+      });
+
       renderWorldSelect(selectedMap);
     }
 
@@ -924,6 +1149,7 @@
       const map = levelMaps[mapIndex];
       el.selectedMapInfo.textContent = `${map.icon} ${map.name}：${map.theme}`;
       el.worldTitle.textContent = `${map.name} のワールド`;
+
       el.worldGrid.innerHTML = map.worlds.map((raw, i) => {
         const unlocked = isWorldUnlocked(mapIndex, i);
         const sample = raw[1].slice(0, 3).map(word => typeof word === 'string' ? word : word.jp).join(' / ');
@@ -934,6 +1160,7 @@
           <div class="actions">${unlocked ? '<button class="mini-button start-world">挑戦する</button>' : '<span class="small-note">前のワールドをクリアすると解放されます</span>'}</div>
         </div>`;
       }).join('');
+
       el.worldGrid.querySelectorAll('.start-world').forEach(btn => {
         const card = btn.closest('.world-card');
         btn.addEventListener('click', () => startSelectedMode('level', Number(card.dataset.map), Number(card.dataset.world)));
@@ -992,7 +1219,13 @@
     }
 
     function escapeHtml(value) {
-      return String(value).replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
+      return String(value).replace(/[&<>'"]/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[ch]));
     }
 
     function runTests() {
@@ -1000,29 +1233,52 @@
       console.assert(levelMaps.length === 10, 'levelMaps must have 10 maps');
       console.assert(levelMaps.every(map => map.worlds.length === 10), 'each map must have 10 worlds');
       console.assert(romajiRules.kanaRules['し'].includes('shi') && romajiRules.kanaRules['し'].includes('si'), 'し must accept shi and si');
-      console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'kana candidates should include si');
+      console.assert(romajiRules.specialRules?.finalN?.enabled, 'finalN special rule must be enabled');
+      console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'し should include si');
       console.assert(buildCandidatesForWord({ jp: '集中', kana: 'しゅうちゅう', roma: '', subject: 'テスト' }).includes('syuuchuu'), 'しゅうちゅう should accept syuuchuu');
-      console.assert(expandRomaSubstitutions('shuuchuu').includes('syuuchuu'), 'roma substitutions should accept syuuchuu');
+      console.assert(buildCandidatesForWord({ jp: '本', kana: 'ほん', roma: '', subject: 'テスト' }).includes('honn'), '語末の ん は honn を含む');
+      console.assert(!buildCandidatesForWord({ jp: '本', kana: 'ほん', roma: '', subject: 'テスト' }).includes('hon'), '語末の ん は hon を許可しない');
+      console.assert(buildCandidatesForWord({ jp: '本を読む', kana: 'ほんをよむ', roma: '', subject: 'テスト' }).includes('honwoyomu'), '語中の ん は n を許可する');
+      console.assert(buildCandidatesForWord({ jp: '本を読む', kana: 'ほんをよむ', roma: '', subject: 'テスト' }).includes('honnwoyomu'), '語中の ん は nn も許可する');
     }
 
-    document.querySelectorAll('.mode-card').forEach(card => card.addEventListener('click', () => selectMode(card.dataset.mode)));
+    document.querySelectorAll('.mode-card').forEach(card => {
+      card.addEventListener('click', () => selectMode(card.dataset.mode));
+    });
+
     el.startBtn.addEventListener('click', startGame);
+
     el.backBtn.addEventListener('click', () => {
       stopTimer();
       state.running = false;
-      if (state.mode === 'level') { showScreen('map'); renderMapSelect(state.selectedMap); }
-      else showScreen('menu');
+      if (state.mode === 'level') {
+        showScreen('map');
+        renderMapSelect(state.selectedMap);
+      } else {
+        showScreen('menu');
+      }
     });
-    el.mapBackBtn.addEventListener('click', () => { stopTimer(); showScreen('menu'); });
+
+    el.mapBackBtn.addEventListener('click', () => {
+      stopTimer();
+      showScreen('menu');
+    });
+
     el.retryBtn.addEventListener('click', () => {
       if (state.isSkipTest) startSkipTest(state.skipTargetMap);
       else if (state.mode === 'level') startSelectedMode('level', state.selectedMap, state.selectedWorld);
       else startSelectedMode(state.mode);
     });
+
     el.menuBtn.addEventListener('click', () => {
-      if (state.mode === 'level') { showScreen('map'); renderMapSelect(state.selectedMap); }
-      else showScreen('menu');
+      if (state.mode === 'level') {
+        showScreen('map');
+        renderMapSelect(state.selectedMap);
+      } else {
+        showScreen('menu');
+      }
     });
+
     window.addEventListener('keydown', handleKey);
 
     runTests();
