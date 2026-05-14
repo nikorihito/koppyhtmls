@@ -56,7 +56,7 @@ window.ROMAJI_RULES = {
 
     'わ': ['wa'],
     'を': ['wo', 'o'],
-    'ん': ['n', 'nn'],
+    'ん': ['n', 'nn'], // 通常候補。語末だけ nn 必須にする処理は specialRules.finalN で制御します。
 
     'が': ['ga'],
     'ぎ': ['gi'],
@@ -142,6 +142,16 @@ window.ROMAJI_RULES = {
     'ょ': ['xyo', 'lyo'],
     'っ': ['xtu', 'ltu'],
     'ー': ['-']
+  },
+
+  // 文脈によって変わる特殊ルール。
+  // 例：語中の「ん」は n / nn どちらもOK、語末の「ん」は nn のみOK。
+  specialRules: {
+    finalN: {
+      enabled: true,
+      finalOptions: ['nn'],
+      middleOptions: ['n', 'nn']
+    }
   },
 
   // すでに roma に英字が登録されている単語にも適用する置換候補。
