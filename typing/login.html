@@ -1,3 +1,4 @@
+<!-- login.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -171,6 +172,65 @@
       font-weight: 700;
     }
 
+    .login-existing-box {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(142,232,255,.10);
+      border: 1px solid rgba(142,232,255,.20);
+    }
+
+    .login-existing-box h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .login-existing-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
+    .login-id-row {
+      display: grid;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .create-account-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .create-account-box h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .create-account-box p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
+    .create-form-wrap {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.14);
+    }
+
+    .create-form-wrap.open { display: block; }
+
     .form {
       display: grid;
       gap: 16px;
@@ -181,7 +241,8 @@
       gap: 8px;
     }
 
-    .field label {
+    .field label,
+    .login-id-row label {
       color: var(--muted);
       font-size: 13px;
       font-weight: 900;
@@ -270,7 +331,10 @@
     }
 
     button:hover,
-    .button-link:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .button-link:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
 
     button.secondary,
     .button-link.secondary {
@@ -283,6 +347,13 @@
       color: #fff;
       background: rgba(255,123,145,.18);
       border: 1px solid rgba(255,123,145,.34);
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
     }
 
     .status {
@@ -310,59 +381,6 @@
       border: 1px solid rgba(255,255,255,.16);
     }
 
-    .create-account-box {
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: 22px;
-      background: rgba(255,255,255,.09);
-      border: 1px solid rgba(255,255,255,.16);
-    }
-
-    .create-account-box h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-    }
-
-    .create-account-box p {
-      margin: 0 0 12px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-      font-weight: 700;
-    }
-
-    .create-form-wrap {
-      display: none;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,.14);
-    }
-
-    .create-form-wrap.open { display: block; }
-
-    .login-existing-box {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding: 16px;
-      border-radius: 22px;
-      background: rgba(142,232,255,.10);
-      border: 1px solid rgba(142,232,255,.20);
-    }
-
-    .login-existing-box h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .login-existing-box p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-      font-weight: 700;
-    }
-
     .footer-note {
       margin-top: 18px;
       color: var(--muted);
@@ -378,11 +396,28 @@
     }
 
     @media (max-width: 520px) {
-      .app { width: min(100% - 18px, 980px); padding-top: 14px; }
-      .hero, .card { padding: 18px; border-radius: 24px; }
-      .input-row { grid-template-columns: 1fr; }
-      .split-actions { grid-template-columns: 1fr; }
-      .quick-icons { grid-template-columns: repeat(4, 1fr); }
+      .app {
+        width: min(100% - 18px, 980px);
+        padding-top: 14px;
+      }
+
+      .hero,
+      .card {
+        padding: 18px;
+        border-radius: 24px;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+
+      .split-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-icons {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
   </style>
 </head>
@@ -392,7 +427,8 @@
       <section class="hero">
         <div>
           <h1>星降る<br>タイピングアカデミア</h1>
-          <p>アカウントID・名前・絵文字アイコンを設定します。保存した内容は、タイピング画面の右上に表示されます。</p>
+          <p>ログインIDを入力して、保存済みのアカウントでタイピング画面へ進みます。アカウントが無い場合は、下から作成できます。</p>
+
           <div class="preview" aria-label="アカウントプレビュー">
             <div class="preview-icon" id="previewEmoji">🌟</div>
             <div>
@@ -401,65 +437,78 @@
             </div>
           </div>
         </div>
+
         <p class="footer-note">このログインはローカル保存版です。サーバー認証ではなく、この端末のブラウザ内に保存されます。</p>
       </section>
 
       <section class="card">
         <h2>ログイン</h2>
-        <p class="lead">保存済みのアカウントでタイピング画面に進みます。アカウントが無い場合は、下から作成できます。</p>
+        <p class="lead">保存済みのアカウントIDを毎回入力してください。</p>
 
         <div class="login-existing-box" id="existingAccountBox">
           <h3>現在のアカウント</h3>
           <p id="existingAccountText">保存済みアカウントを確認しています。</p>
-          <a class="button-link" href="./typing.html">このアカウントで始める</a>
+
+          <div class="login-id-row">
+            <label for="loginIdInput">ログインID</label>
+            <input id="loginIdInput" maxlength="24" autocomplete="username" placeholder="アカウントIDを入力">
+            <div class="hint">毎回、登録済みのアカウントIDを入力してください。</div>
+          </div>
+
+          <button type="button" id="loginBtn">ログインして始める</button>
         </div>
+
+        <div class="error" id="errorBox"></div>
+        <div class="status" id="statusText"></div>
 
         <div class="create-account-box">
           <h3>アカウントが無い場合</h3>
           <p>はじめて使う場合は、名前・ID・絵文字アイコンを決めてアカウントを作成してください。</p>
+
           <button type="button" class="secondary" id="openCreateFormBtn">アカウントを作成する</button>
+
           <div class="create-form-wrap" id="createFormWrap">
             <form class="form" id="accountForm">
-          <div class="input-row">
-            <div class="field">
-              <label for="emojiInput">アイコン</label>
-              <input id="emojiInput" class="emoji-input" maxlength="4" autocomplete="off" placeholder="🌟">
-            </div>
-            <div class="field">
-              <label for="nameInput">名前</label>
-              <input id="nameInput" maxlength="20" autocomplete="nickname" placeholder="例：こっぴー">
-            </div>
-          </div>
+              <div class="input-row">
+                <div class="field">
+                  <label for="emojiInput">アイコン</label>
+                  <input id="emojiInput" class="emoji-input" maxlength="4" autocomplete="off" placeholder="🌟">
+                </div>
 
-          <div class="quick-icons" aria-label="アイコン候補">
-            <button type="button" data-emoji="🌟">🌟</button>
-            <button type="button" data-emoji="⌨️">⌨️</button>
-            <button type="button" data-emoji="📚">📚</button>
-            <button type="button" data-emoji="🪄">🪄</button>
-            <button type="button" data-emoji="🐣">🐣</button>
-            <button type="button" data-emoji="🚀">🚀</button>
-          </div>
+                <div class="field">
+                  <label for="nameInput">名前</label>
+                  <input id="nameInput" maxlength="20" autocomplete="nickname" placeholder="例：こっぴー">
+                </div>
+              </div>
 
-          <div class="field">
-            <label for="idInput">アカウントID</label>
-            <input id="idInput" maxlength="24" autocomplete="username" placeholder="例：koppy001">
-            <div class="hint">使える文字：英小文字・数字・ハイフン・アンダーバー。大文字や記号は保存時に自動整形します。</div>
-          </div>
+              <div class="quick-icons" aria-label="アイコン候補">
+                <button type="button" data-emoji="🌟">🌟</button>
+                <button type="button" data-emoji="⌨️">⌨️</button>
+                <button type="button" data-emoji="📚">📚</button>
+                <button type="button" data-emoji="🪄">🪄</button>
+                <button type="button" data-emoji="🐣">🐣</button>
+                <button type="button" data-emoji="🚀">🚀</button>
+              </div>
 
-          <div class="error" id="errorBox"></div>
-          <div class="status" id="statusText"></div>
+              <div class="field">
+                <label for="idInput">アカウントID</label>
+                <input id="idInput" maxlength="24" autocomplete="username" placeholder="例：koppy001">
+                <div class="hint">使える文字：英小文字・数字・ハイフン・アンダーバー。大文字や記号は保存時に自動整形します。</div>
+              </div>
 
-          <div class="actions">
-            <button type="submit">保存してタイピングへ</button>
-            <div class="split-actions">
-              <button type="button" class="secondary" id="saveOnlyBtn">保存だけする</button>
-              <button type="button" class="secondary" id="generateIdBtn">ID自動生成</button>
-            </div>
-            <div class="split-actions">
-              <a class="button-link secondary" href="./typing.html">タイピングへ戻る</a>
-              <button type="button" class="danger" id="resetAccountBtn">アカウントをリセット</button>
-            </div>
-          </div>
+              <div class="actions">
+                <button type="submit">保存してタイピングへ</button>
+
+                <div class="split-actions">
+                  <button type="button" class="secondary" id="saveOnlyBtn">保存だけする</button>
+                  <button type="button" class="secondary" id="generateIdBtn">ID自動生成</button>
+                </div>
+
+                <div class="split-actions">
+                  <a class="button-link secondary" href="./typing.html">タイピングへ戻る</a>
+                  <button type="button" class="danger" id="resetAccountBtn">アカウントをリセット</button>
+                </div>
+              </div>
             </form>
           </div>
         </div>
@@ -468,27 +517,33 @@
   </main>
 
   <script>
-    'use strict';
+    "use strict";
 
-    const STORAGE_KEY = 'typingAcademiaAccount';
+    const STORAGE_KEY = "typingAcademiaAccount";
 
     const el = {
-      form: document.getElementById('accountForm'),
-      emojiInput: document.getElementById('emojiInput'),
-      nameInput: document.getElementById('nameInput'),
-      idInput: document.getElementById('idInput'),
-      previewEmoji: document.getElementById('previewEmoji'),
-      previewName: document.getElementById('previewName'),
-      previewId: document.getElementById('previewId'),
-      errorBox: document.getElementById('errorBox'),
-      statusText: document.getElementById('statusText'),
-      saveOnlyBtn: document.getElementById('saveOnlyBtn'),
-      generateIdBtn: document.getElementById('generateIdBtn'),
-      resetAccountBtn: document.getElementById('resetAccountBtn'),
-      openCreateFormBtn: document.getElementById('openCreateFormBtn'),
-      createFormWrap: document.getElementById('createFormWrap'),
-      existingAccountBox: document.getElementById('existingAccountBox'),
-      existingAccountText: document.getElementById('existingAccountText')
+      form: document.getElementById("accountForm"),
+      emojiInput: document.getElementById("emojiInput"),
+      nameInput: document.getElementById("nameInput"),
+      idInput: document.getElementById("idInput"),
+
+      loginIdInput: document.getElementById("loginIdInput"),
+      loginBtn: document.getElementById("loginBtn"),
+
+      previewEmoji: document.getElementById("previewEmoji"),
+      previewName: document.getElementById("previewName"),
+      previewId: document.getElementById("previewId"),
+
+      errorBox: document.getElementById("errorBox"),
+      statusText: document.getElementById("statusText"),
+
+      saveOnlyBtn: document.getElementById("saveOnlyBtn"),
+      generateIdBtn: document.getElementById("generateIdBtn"),
+      resetAccountBtn: document.getElementById("resetAccountBtn"),
+
+      openCreateFormBtn: document.getElementById("openCreateFormBtn"),
+      createFormWrap: document.getElementById("createFormWrap"),
+      existingAccountText: document.getElementById("existingAccountText")
     };
 
     let account = loadAccount();
@@ -496,11 +551,11 @@
 
     function loadAccount() {
       try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
         return {
           id: sanitizeAccountId(saved.id || generateAccountId()),
-          name: sanitizeName(saved.name || 'ゲスト'),
-          emoji: normalizeEmoji(saved.emoji || '🌟')
+          name: sanitizeName(saved.name || "ゲスト"),
+          emoji: normalizeEmoji(saved.emoji || "🌟")
         };
       } catch {
         return createDefaultAccount();
@@ -510,39 +565,37 @@
     function createDefaultAccount() {
       return {
         id: generateAccountId(),
-        name: 'ゲスト',
-        emoji: '🌟'
+        name: "ゲスト",
+        emoji: "🌟"
       };
     }
 
     function saveAccount(nextAccount) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAccount));
       account = nextAccount;
-      if (hadSavedAccountOnLoad) {
-      el.openCreateFormBtn.textContent = 'アカウントを編集する';
-    }
-    renderAccount();
+      renderAccount();
     }
 
     function generateAccountId() {
-      return 'user-' + Math.random().toString(36).slice(2, 8);
+      return "user-" + Math.random().toString(36).slice(2, 8);
     }
 
     function sanitizeAccountId(value) {
-      const sanitized = String(value || '')
+      const sanitized = String(value || "")
         .toLowerCase()
-        .replace(/[^a-z0-9_-]/g, '')
+        .replace(/[^a-z0-9_-]/g, "")
         .slice(0, 24);
+
       return sanitized || generateAccountId();
     }
 
     function sanitizeName(value) {
-      return String(value || 'ゲスト').trim().slice(0, 20) || 'ゲスト';
+      return String(value || "ゲスト").trim().slice(0, 20) || "ゲスト";
     }
 
     function normalizeEmoji(value) {
-      const text = String(value || '').trim();
-      return [...text][0] || '🌟';
+      const text = String(value || "").trim();
+      return [...text][0] || "🌟";
     }
 
     function buildAccountFromForm() {
@@ -554,24 +607,25 @@
     }
 
     function validateAccount(nextAccount) {
-      if (!nextAccount.name) return '名前を入力してください。';
-      if (!nextAccount.id) return 'アカウントIDを入力してください。';
-      if (nextAccount.id.length < 3) return 'アカウントIDは3文字以上にしてください。';
-      if (!/^[a-z0-9_-]+$/.test(nextAccount.id)) return 'アカウントIDに使えない文字があります。';
-      if (!nextAccount.emoji) return '絵文字アイコンを入力してください。';
-      return '';
+      if (!nextAccount.name) return "名前を入力してください。";
+      if (!nextAccount.id) return "アカウントIDを入力してください。";
+      if (nextAccount.id.length < 3) return "アカウントIDは3文字以上にしてください。";
+      if (!/^[a-z0-9_-]+$/.test(nextAccount.id)) return "アカウントIDに使えない文字があります。";
+      if (!nextAccount.emoji) return "絵文字アイコンを入力してください。";
+      return "";
     }
 
     function setError(message) {
       el.errorBox.textContent = message;
-      el.errorBox.classList.toggle('show', !!message);
+      el.errorBox.classList.toggle("show", !!message);
     }
 
     function setStatus(message) {
       el.statusText.textContent = message;
+
       if (message) {
         window.setTimeout(() => {
-          if (el.statusText.textContent === message) el.statusText.textContent = '';
+          if (el.statusText.textContent === message) el.statusText.textContent = "";
         }, 2200);
       }
     }
@@ -584,100 +638,165 @@
       renderExistingAccount();
     }
 
-    function renderExistingAccount() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) {
-        el.existingAccountText.textContent = 'まだアカウントがありません。下の「アカウントが無い場合」から作成してください。';
-        return;
-      }
-      el.existingAccountText.textContent = `${account.emoji} ${account.name}（ID: ${account.id}）でログインできます。`;
-    }
-
     function renderPreview() {
       const preview = buildAccountFromForm();
+
       el.previewEmoji.textContent = preview.emoji;
       el.previewName.textContent = preview.name;
       el.previewId.textContent = `ID: ${preview.id}`;
     }
 
+    function renderExistingAccount() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (!saved) {
+        el.existingAccountText.textContent = "まだアカウントがありません。下の「アカウントが無い場合」から作成してください。";
+        el.loginBtn.disabled = true;
+        el.loginIdInput.value = "";
+        el.loginIdInput.placeholder = "先にアカウントを作成してください";
+        return;
+      }
+
+      el.loginBtn.disabled = false;
+      el.loginIdInput.placeholder = "アカウントIDを入力";
+      el.existingAccountText.textContent = `${account.emoji} ${account.name} のアカウントがあります。ログインIDを入力してください。`;
+    }
+
+    function handleLogin() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (!saved) {
+        setError("アカウントがありません。下の「アカウントが無い場合」から作成してください。");
+        return;
+      }
+
+      const rawInput = el.loginIdInput.value.trim();
+
+      if (!rawInput) {
+        setError("ログインIDを入力してください。");
+        return;
+      }
+
+      const inputId = sanitizeAccountId(rawInput);
+
+      if (inputId !== account.id) {
+        setError("ログインIDが一致しません。登録したアカウントIDを入力してください。");
+        return;
+      }
+
+      setError("");
+      window.location.href = "./typing.html";
+    }
+
     function handleSave({ redirect = false } = {}) {
       const nextAccount = buildAccountFromForm();
       const error = validateAccount(nextAccount);
+
       if (error) {
         setError(error);
         return false;
       }
-      setError('');
+
+      setError("");
       saveAccount(nextAccount);
-      el.createFormWrap.classList.remove('open');
-      el.openCreateFormBtn.textContent = 'アカウントを編集する';
-      setStatus('保存しました。');
+
+      el.createFormWrap.classList.remove("open");
+      el.openCreateFormBtn.textContent = "アカウントを編集する";
+
+      setStatus("保存しました。");
+
       if (redirect) {
-        window.location.href = './typing.html';
+        window.location.href = "./typing.html";
       }
+
       return true;
     }
 
     function resetAccount() {
-      const ok = confirm('アカウントID・名前・絵文字アイコンをリセットします。よろしいですか？');
+      const ok = confirm("アカウントID・名前・絵文字アイコンをリセットします。よろしいですか？");
       if (!ok) return;
+
       localStorage.removeItem(STORAGE_KEY);
+
       const fresh = createDefaultAccount();
       account = fresh;
-      setError('');
+
+      setError("");
       renderAccount();
-      el.createFormWrap.classList.remove('open');
-      el.openCreateFormBtn.textContent = 'アカウントを作成する';
-      setStatus('アカウントをリセットしました。');
+
+      el.createFormWrap.classList.remove("open");
+      el.openCreateFormBtn.textContent = "アカウントを作成する";
+
+      setStatus("アカウントをリセットしました。");
     }
 
-    el.openCreateFormBtn.addEventListener('click', () => {
-      el.createFormWrap.classList.toggle('open');
-      el.openCreateFormBtn.textContent = el.createFormWrap.classList.contains('open') ? '作成フォームを閉じる' : (localStorage.getItem(STORAGE_KEY) ? 'アカウントを編集する' : 'アカウントを作成する');
+    el.loginBtn.addEventListener("click", handleLogin);
+
+    el.loginIdInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") handleLogin();
     });
 
-    el.form.addEventListener('submit', event => {
+    el.openCreateFormBtn.addEventListener("click", () => {
+      el.createFormWrap.classList.toggle("open");
+
+      if (el.createFormWrap.classList.contains("open")) {
+        el.openCreateFormBtn.textContent = "作成フォームを閉じる";
+      } else {
+        el.openCreateFormBtn.textContent = localStorage.getItem(STORAGE_KEY)
+          ? "アカウントを編集する"
+          : "アカウントを作成する";
+      }
+    });
+
+    el.form.addEventListener("submit", event => {
       event.preventDefault();
       handleSave({ redirect: true });
     });
 
-    el.saveOnlyBtn.addEventListener('click', () => handleSave({ redirect: false }));
+    el.saveOnlyBtn.addEventListener("click", () => handleSave({ redirect: false }));
 
-    el.generateIdBtn.addEventListener('click', () => {
+    el.generateIdBtn.addEventListener("click", () => {
       el.idInput.value = generateAccountId();
       renderPreview();
-      setStatus('新しいIDを生成しました。保存すると反映されます。');
+      setStatus("新しいIDを生成しました。保存すると反映されます。");
     });
 
-    el.resetAccountBtn.addEventListener('click', resetAccount);
+    el.resetAccountBtn.addEventListener("click", resetAccount);
 
-    document.querySelectorAll('[data-emoji]').forEach(button => {
-      button.addEventListener('click', () => {
+    document.querySelectorAll("[data-emoji]").forEach(button => {
+      button.addEventListener("click", () => {
         el.emojiInput.value = button.dataset.emoji;
         renderPreview();
       });
     });
 
     [el.emojiInput, el.nameInput, el.idInput].forEach(input => {
-      input.addEventListener('input', () => {
+      input.addEventListener("input", () => {
         if (input === el.idInput) {
           const cursor = el.idInput.selectionStart;
           el.idInput.value = sanitizeAccountId(el.idInput.value);
           try { el.idInput.setSelectionRange(cursor, cursor); } catch {}
         }
+
         renderPreview();
       });
     });
 
     function runTests() {
-      console.assert(sanitizeAccountId('KoPPy 001!!') === 'koppy001', 'ID should be sanitized');
-      console.assert(sanitizeName('') === 'ゲスト', 'empty name should become guest');
-      console.assert(normalizeEmoji('🌟abc') === '🌟', 'emoji should use first visible character');
-      console.assert(validateAccount({ id: 'ab', name: 'テスト', emoji: '🌟' }) !== '', 'short id should be invalid');
-      console.assert(validateAccount({ id: 'abc', name: 'テスト', emoji: '🌟' }) === '', 'valid account should pass');
+      console.assert(sanitizeAccountId("KoPPy 001!!") === "koppy001", "ID should be sanitized");
+      console.assert(sanitizeName("") === "ゲスト", "empty name should become guest");
+      console.assert(normalizeEmoji("🌟abc") === "🌟", "emoji should use first visible character");
+      console.assert(validateAccount({ id: "ab", name: "テスト", emoji: "🌟" }) !== "", "short id should be invalid");
+      console.assert(validateAccount({ id: "abc", name: "テスト", emoji: "🌟" }) === "", "valid account should pass");
+      console.assert(!!el.loginIdInput && !!el.loginBtn, "login ID should be required every time");
     }
 
     runTests();
+
+    if (hadSavedAccountOnLoad) {
+      el.openCreateFormBtn.textContent = "アカウントを編集する";
+    }
+
     renderAccount();
   </script>
 </body>
