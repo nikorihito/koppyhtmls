@@ -1,10 +1,10 @@
-<!-- login.html -->
+<!-- typing.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ログイン - 星降るタイピングアカデミア</title>
+  <title>星降るタイピングアカデミア</title>
   <style>
     :root {
       --bg1: #10142d;
@@ -55,279 +55,122 @@
     }
 
     .app {
-      width: min(980px, calc(100% - 28px));
+      width: min(1180px, calc(100% - 28px));
       margin: 0 auto;
-      min-height: 100vh;
-      display: grid;
-      align-items: center;
       padding: 28px 0 40px;
       position: relative;
       z-index: 1;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 22px;
-      align-items: stretch;
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
     }
 
-    .hero,
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      overflow: hidden;
-    }
-
-    .hero {
-      padding: 32px;
-      display: grid;
-      align-content: space-between;
-      min-height: 560px;
-      position: relative;
-    }
-
-    .hero::after {
-      content: "🏰";
-      position: absolute;
-      right: 26px;
-      bottom: 22px;
-      font-size: 110px;
-      opacity: .18;
-      filter: drop-shadow(0 0 22px rgba(142,232,255,.45));
-    }
-
-    .hero h1 {
+    h1 {
       margin: 0;
-      font-size: clamp(34px, 5vw, 58px);
+      font-size: clamp(28px, 5vw, 52px);
       letter-spacing: .04em;
-      line-height: 1.18;
       text-shadow: 0 4px 24px rgba(142,232,255,.35);
     }
 
-    .hero p {
-      margin: 14px 0 0;
+    .lead {
+      margin: 8px 0 0;
       color: var(--muted);
-      line-height: 1.9;
-      font-weight: 700;
+      line-height: 1.7;
     }
 
-    .preview {
+    .header-right {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-top: 28px;
-      padding: 16px;
-      border-radius: 24px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.16);
-      width: min(420px, 100%);
+      gap: 10px;
+      position: relative;
     }
 
-    .preview-icon {
-      width: 64px;
-      height: 64px;
+    .account-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: var(--shadow);
+      min-width: 230px;
+    }
+
+    .account-card.inner {
+      box-shadow: none;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .account-icon {
+      width: 44px;
+      height: 44px;
       display: grid;
       place-items: center;
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(142,232,255,.30), rgba(255,223,142,.28));
-      border: 1px solid rgba(255,255,255,.22);
-      font-size: 36px;
-    }
-
-    .preview strong {
-      display: block;
-      font-size: 18px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .preview span {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card {
-      padding: 24px;
-    }
-
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-
-    .card .lead {
-      margin: 0 0 22px;
-      color: var(--muted);
-      line-height: 1.75;
-      font-weight: 700;
-    }
-
-    .login-existing-box {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding: 16px;
-      border-radius: 22px;
-      background: rgba(142,232,255,.10);
-      border: 1px solid rgba(142,232,255,.20);
-    }
-
-    .login-existing-box h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .login-existing-box p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-      font-weight: 700;
-    }
-
-    .login-id-row {
-      display: grid;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .create-account-box {
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: 22px;
-      background: rgba(255,255,255,.09);
-      border: 1px solid rgba(255,255,255,.16);
-    }
-
-    .create-account-box h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-    }
-
-    .create-account-box p {
-      margin: 0 0 12px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-      font-weight: 700;
-    }
-
-    .create-form-wrap {
-      display: none;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,.14);
-    }
-
-    .create-form-wrap.open { display: block; }
-
-    .form {
-      display: grid;
-      gap: 16px;
-    }
-
-    .field {
-      display: grid;
-      gap: 8px;
-    }
-
-    .field label,
-    .login-id-row label {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .input-row {
-      display: grid;
-      grid-template-columns: 82px 1fr;
-      gap: 10px;
-      align-items: end;
-    }
-
-    input {
-      width: 100%;
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.20);
-      background: rgba(255,255,255,.11);
+      background: linear-gradient(135deg, rgba(142,232,255,.28), rgba(255,223,142,.24));
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 26px;
+      flex: 0 0 auto;
+    }
+
+    .account-meta { min-width: 0; }
+
+    .account-meta strong {
+      display: block;
       color: var(--text);
-      padding: 13px 14px;
-      font-size: 16px;
-      font-weight: 800;
-      outline: none;
-      transition: border-color .16s ease, background .16s ease;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    input:focus {
-      border-color: rgba(142,232,255,.70);
-      background: rgba(255,255,255,.15);
-    }
-
-    input::placeholder { color: rgba(200,211,255,.58); }
-
-    .emoji-input {
-      text-align: center;
-      font-size: 30px;
-      padding: 9px 8px;
-    }
-
-    .hint {
+    .account-meta span {
+      display: block;
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.6;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .error {
-      display: none;
-      padding: 10px 12px;
-      border-radius: 16px;
-      color: #fff;
-      background: rgba(255,123,145,.16);
-      border: 1px solid rgba(255,123,145,.32);
-      font-size: 13px;
-      line-height: 1.6;
-      font-weight: 800;
+    .pill {
+      min-width: 190px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.09);
+      backdrop-filter: blur(14px);
+      text-align: center;
+      box-shadow: var(--shadow);
     }
 
-    .error.show { display: block; }
-
-    .actions {
-      display: grid;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .split-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .pill strong { color: var(--accent2); }
 
     button,
     .button-link {
-      width: 100%;
       border: 0;
       border-radius: 999px;
-      padding: 13px 18px;
+      padding: 12px 18px;
       color: #0b1530;
       background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
       font-weight: 900;
       cursor: pointer;
       box-shadow: 0 10px 30px rgba(0,0,0,.22);
       transition: transform .15s ease, filter .15s ease;
-      text-align: center;
       text-decoration: none;
-      font-size: 15px;
+      text-align: center;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-family: inherit;
     }
 
     button:hover,
@@ -343,220 +186,1316 @@
       border: 1px solid rgba(255,255,255,.2);
     }
 
-    button.danger {
+    .danger-button {
       color: #fff;
       background: rgba(255,123,145,.18);
       border: 1px solid rgba(255,123,145,.34);
     }
 
-    button:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-      transform: none;
-      filter: none;
-    }
-
-    .status {
-      min-height: 24px;
-      color: var(--good);
-      font-size: 13px;
-      font-weight: 900;
-      line-height: 1.5;
-    }
-
-    .quick-icons {
+    .settings-button {
+      width: 48px;
+      height: 48px;
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      place-items: center;
+      padding: 0;
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 24px;
+      line-height: 1;
+      box-shadow: var(--shadow);
+    }
+
+    .settings-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(4px);
+    }
+
+    .settings-backdrop.open { display: block; }
+
+    .settings-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 100;
+      width: min(860px, calc(100vw - 28px));
+      max-height: min(760px, calc(100vh - 28px));
+      overflow: auto;
+      padding: 24px;
+      border-radius: 28px;
+      background: rgba(20, 25, 55, .96);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 28px 90px rgba(0,0,0,.46);
+      backdrop-filter: blur(22px);
+      display: none;
+      transform: translate(-50%, -50%);
+    }
+
+    .settings-panel.open { display: block; }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .settings-header h3 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .settings-close-button {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.20);
+      box-shadow: none;
+    }
+
+    .settings-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 6px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .settings-tab-button {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 14px;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid transparent;
+      box-shadow: none;
+    }
+
+    .settings-tab-button.active {
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      border-color: rgba(255,255,255,.32);
+    }
+
+    .settings-tab-panel { display: none; }
+    .settings-tab-panel.active { display: block; }
+
+    .setting-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .setting-group label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .account-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: 8px;
     }
 
-    .quick-icons button {
-      padding: 9px 0;
-      border-radius: 14px;
-      font-size: 22px;
+    .login-link-button {
+      width: 100%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      border-radius: 16px;
+      padding: 10px 12px;
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      font-weight: 900;
       box-shadow: none;
-      background: rgba(255,255,255,.10);
+    }
+
+    .setting-dropdown { position: relative; }
+
+    .setting-dropdown-button {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
       color: var(--text);
+      padding: 12px 14px;
+      font-weight: 900;
+      box-shadow: none;
+      text-align: left;
+    }
+
+    .setting-dropdown-button::after {
+      content: "▾";
+      color: var(--accent2);
+      font-size: 14px;
+      transition: transform .18s ease;
+    }
+
+    .setting-dropdown.open .setting-dropdown-button::after {
+      transform: rotate(180deg);
+    }
+
+    .genre-menu {
+      display: none;
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      max-height: 260px;
+      overflow: auto;
+      padding: 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(17, 22, 50, .98);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .setting-dropdown.open .genre-menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .genre-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      font-weight: 800;
+      box-shadow: none;
+      text-align: left;
+    }
+
+    .genre-option.active {
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      border-color: rgba(255,255,255,.36);
+    }
+
+    .selected-genre-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .selected-genre-chip {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(142,232,255,.13);
+      border: 1px solid rgba(142,232,255,.22);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .segmented button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--text);
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: none;
+    }
+
+    .segmented button.active {
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+    }
+
+    .settings-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .settings-save-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,.14);
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn .24s ease both;
+    }
+
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .mode-reset-row {
+      padding: 18px 22px 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      padding: 22px;
+    }
+
+    .mode-card {
+      position: relative;
+      min-height: 250px;
+      padding: 24px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.20);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.07)),
+        radial-gradient(circle at 20% 10%, rgba(142,232,255,.28), transparent 36%);
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(142,232,255,.72);
+    }
+
+    .mode-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.2);
+      font-size: 34px;
+    }
+
+    .mode-card h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+
+    .mode-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .tag {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: var(--accent2);
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.18);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .map-wrap,
+    .tutorial-card {
+      padding: 22px;
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .map-header h2 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 36px);
+    }
+
+    .map-header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .lesson-chip {
+      display: inline-flex;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--accent2);
+      background: rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.17);
+      font-weight: 800;
+    }
+
+    .map-grid,
+    .world-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .map-grid { margin-bottom: 18px; }
+
+    .map-card,
+    .world-card {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.11);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .map-card.locked,
+    .world-card.locked {
+      opacity: .5;
+    }
+
+    .map-card strong,
+    .world-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .map-card span,
+    .world-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .skip-rule {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--accent2);
+      background: rgba(255,223,142,.10);
+      border: 1px solid rgba(255,223,142,.22);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .speech-stage {
+      min-height: 340px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(142,232,255,.16), transparent 34%),
+        rgba(255,255,255,.08);
       border: 1px solid rgba(255,255,255,.16);
     }
 
-    .footer-note {
-      margin-top: 18px;
+    .speech-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 16px;
+      width: min(760px, 100%);
+      align-items: end;
+    }
+
+    .speech-row.reverse {
+      grid-template-columns: minmax(0, 1fr) 92px;
+    }
+
+    .speech-row.reverse img {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .speech-row.reverse .speech-bubble {
+      grid-column: 1;
+      grid-row: 1;
+      min-width: 0;
+    }
+
+    .speech-row:not(.reverse) img {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .speech-row:not(.reverse) .speech-bubble {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+    }
+
+    .speech-row img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      border-radius: 22px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+    }
+
+    .speech-bubble {
+      position: relative;
+      padding: 18px 20px;
+      border-radius: 24px;
+      color: #172036;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 16px 40px rgba(0,0,0,.24);
+      font-weight: 800;
+      line-height: 1.85;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -12px;
+      bottom: 24px;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-right: 14px solid rgba(255,255,255,.92);
+    }
+
+    .speech-row.reverse .speech-bubble::before {
+      left: auto;
+      right: -12px;
+      border-right: 0;
+      border-left: 14px solid rgba(255,255,255,.92);
+    }
+
+    .speech-name {
+      display: inline-flex;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      color: #0b1530;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .speech-text {
+      min-height: 58px;
+      font-size: clamp(16px, 2vw, 20px);
+    }
+
+    .speech-progress {
+      margin-top: 12px;
       color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tutorial-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .tutorial-actions.one {
+      grid-template-columns: 1fr;
+    }
+
+    .tutorial-actions.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .tutorial-actions.hidden { display: none; }
+
+    .tutorial-choice {
+      min-height: 76px;
+      border-radius: 18px;
+      white-space: normal;
+      line-height: 1.5;
+    }
+
+    .game-layout {
+      display: grid;
+      grid-template-columns: 1fr 310px;
+      gap: 18px;
+    }
+
+    .game-main {
+      min-height: 600px;
+      padding: 22px;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .hud-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
       text-align: center;
     }
 
-    @media (max-width: 860px) {
-      .app { align-items: start; }
-      .layout { grid-template-columns: 1fr; }
-      .hero { min-height: auto; }
+    .hud-card span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hud-card strong {
+      font-size: 22px;
+    }
+
+    .stage {
+      position: relative;
+      min-height: 390px;
+      display: grid;
+      place-items: center;
+      padding: 30px;
+      overflow: hidden;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,.17);
+      background:
+        linear-gradient(180deg, rgba(16,20,45,.25), rgba(5,12,26,.55)),
+        radial-gradient(circle at 50% 20%, rgba(142,232,255,.22), transparent 36%);
+    }
+
+    .castle {
+      position: absolute;
+      left: 28px;
+      bottom: 40px;
+      opacity: .35;
+      font-size: 80px;
+      filter: drop-shadow(0 0 18px rgba(142,232,255,.4));
+    }
+
+    .word-box {
+      width: min(760px, 100%);
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .jp-word {
+      margin-bottom: 14px;
+      font-size: clamp(30px, 5vw, 58px);
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-shadow: 0 0 26px rgba(142,232,255,.4);
+    }
+
+    .roma-word {
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      font-size: clamp(24px, 4vw, 42px);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .04em;
+    }
+
+    .typed { color: var(--good); opacity: .65; }
+    .current { color: var(--accent2); text-decoration: underline; text-underline-offset: 7px; }
+    .remaining { color: #fff; }
+
+    .message {
+      min-height: 30px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .time-gauge-box {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .time-gauge-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .time-gauge {
+      width: 100%;
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .time-gauge > div {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--good), var(--accent), var(--accent2));
+      transition: width .18s ease;
+    }
+
+    .time-gauge.warning > div {
+      background: linear-gradient(90deg, var(--accent2), #fff1b8);
+    }
+
+    .time-gauge.danger > div {
+      background: linear-gradient(90deg, var(--danger), #ffb08e);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .side {
+      padding: 18px;
+    }
+
+    .side h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .bar > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #8ee8ff, #ffdf8e);
+      transition: width .2s ease;
+    }
+
+    .quest-list {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0 20px;
+    }
+
+    .quest {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .quest.done {
+      color: var(--good);
+      border-color: rgba(169,255,203,.35);
+      background: rgba(169,255,203,.08);
+    }
+
+    .result {
+      padding: 30px;
+      text-align: center;
+    }
+
+    .result h2 {
+      margin: 0 0 14px;
+      font-size: clamp(30px, 5vw, 52px);
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .shake { animation: shake .18s ease; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      30% { transform: translateX(-6px); }
+      60% { transform: translateX(6px); }
+    }
+
+    .pop { animation: pop .25s ease; }
+
+    @keyframes pop {
+      0% { transform: scale(.96); }
+      60% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 900px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .header-right { flex-wrap: wrap; }
+      .mode-grid { grid-template-columns: 1fr; }
+      .map-grid, .world-grid { grid-template-columns: repeat(2, 1fr); }
+      .game-layout { grid-template-columns: 1fr; }
+      .hud, .result-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 520px) {
-      .app { width: min(100% - 18px, 980px); padding-top: 14px; }
-      .hero, .card { padding: 18px; border-radius: 24px; }
-      .input-row { grid-template-columns: 1fr; }
-      .split-actions { grid-template-columns: 1fr; }
-      .quick-icons { grid-template-columns: repeat(4, 1fr); }
+      .app { width: min(100% - 18px, 1180px); padding-top: 16px; }
+      .map-grid, .world-grid { grid-template-columns: 1fr; }
+      .game-main, .side, .result { padding: 14px; }
+      .stage { min-height: 330px; padding: 16px; }
+      .controls, .settings-save-row { flex-direction: column; align-items: stretch; }
+      button, .button-link { width: 100%; }
+      .account-actions, .tutorial-actions, .tutorial-actions.two { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <div class="layout">
-      <section class="hero">
-        <div>
-          <h1>星降る<br>タイピングアカデミア</h1>
-          <p>ログインIDを入力して、保存済みのアカウントでタイピング画面へ進みます。アカウントが無い場合は、下から作成できます。</p>
+  <div class="app">
+    <header>
+      <div>
+        <h1>星降るタイピングアカデミア</h1>
+        <p class="lead">教育にも使える、幻想的なタイピング練習ゲーム。ローマ字の複数候補にも対応しています。</p>
+      </div>
 
-          <div class="preview" aria-label="アカウントプレビュー">
-            <div class="preview-icon" id="previewEmoji">🌟</div>
-            <div>
-              <strong id="previewName">ゲスト</strong>
-              <span id="previewId">ID: guest</span>
+      <div class="settings-backdrop" id="settingsBackdrop"></div>
+
+      <div class="header-right">
+        <div class="account-card" id="accountCard">
+          <div class="account-icon" id="accountIconDisplay">🌟</div>
+          <div class="account-meta">
+            <strong id="accountNameDisplay">ゲスト</strong>
+            <span id="accountIdDisplay">ID: guest</span>
+          </div>
+        </div>
+
+        <div class="pill">現在の称号：<strong id="titleName">見習い魔法タイパー</strong></div>
+
+        <button class="settings-button" id="settingsBtn" aria-label="設定を開く">⚙</button>
+
+        <div class="settings-panel" id="settingsPanel">
+          <div class="settings-header">
+            <h3>設定</h3>
+            <button type="button" class="settings-close-button" id="settingsCloseBtn">×</button>
+          </div>
+
+          <div class="settings-tabs" role="tablist">
+            <button type="button" class="settings-tab-button active" id="accountTabBtn">アカウント</button>
+            <button type="button" class="settings-tab-button" id="typingTabBtn">タイピング</button>
+          </div>
+
+          <div class="settings-tab-panel active" id="accountTabPanel">
+            <div class="setting-group">
+              <label>現在のアカウント</label>
+
+              <div class="account-card inner">
+                <div class="account-icon" id="settingsAccountIconDisplay">🌟</div>
+                <div class="account-meta">
+                  <strong id="settingsAccountNameDisplay">ゲスト</strong>
+                  <span id="settingsAccountIdDisplay">ID: guest</span>
+                </div>
+              </div>
+
+              <div class="account-actions">
+                <a class="login-link-button" href="./login.html">ログイン・編集</a>
+                <button type="button" class="danger-button" id="deleteAccountBtn">アカウントを消す</button>
+              </div>
+
+              <p class="settings-note">
+                アカウントID・名前・絵文字アイコンの作成や編集、ログインID入力は login.html で行います。
+              </p>
+            </div>
+          </div>
+
+          <div class="settings-tab-panel" id="typingTabPanel">
+            <div class="setting-group">
+              <label>ジャンル絞り込み</label>
+              <div class="setting-dropdown" id="genreDropdown">
+                <button type="button" class="setting-dropdown-button" id="genreDropdownBtn">すべて</button>
+                <div class="genre-menu" id="genreMenu"></div>
+              </div>
+              <div class="selected-genre-chips" id="selectedGenreChips"></div>
+            </div>
+
+            <div class="setting-group">
+              <label>タイピング方式</label>
+              <div class="segmented">
+                <button type="button" id="jpModeBtn" class="active">日本語</button>
+                <button type="button" id="enModeBtn">英語</button>
+              </div>
+            </div>
+
+            <p class="settings-note">
+              ジャンル絞り込みと英語/日本語切り替えは、ノーマル・エンドレスモードに適用されます。レベルアップモードは専用カリキュラムです。
+            </p>
+
+            <div class="settings-save-row">
+              <button type="button" class="secondary" id="settingsCancelBtn">キャンセル</button>
+              <button type="button" id="settingsSaveBtn">設定を保存する</button>
             </div>
           </div>
         </div>
+      </div>
+    </header>
 
-        <p class="footer-note">このログインはローカル保存版です。サーバー認証ではなく、この端末のブラウザ内に保存されます。</p>
-      </section>
+    <section id="menuScreen" class="screen active panel">
+      <div class="mode-reset-row">
+        <button class="secondary" id="resetAllBtn">全てをリセットする</button>
+      </div>
 
-      <section class="card">
-        <h2>ログイン</h2>
-        <p class="lead">保存済みのアカウントIDを毎回入力してください。</p>
+      <div class="mode-grid">
+        <article class="mode-card" data-mode="level">
+          <div class="mode-icon">🏰</div>
+          <h2>レベルアップモード</h2>
+          <p>10マップ × 各10ワールドを進む学習向けモードです。F/Jから始めて、上段・下段・大文字・記号・長文へ進みます。</p>
+          <span class="tag">育成・授業向け</span>
+        </article>
 
-        <div class="login-existing-box" id="existingAccountBox">
-          <h3>現在のアカウント</h3>
-          <p id="existingAccountText">保存済みアカウントを確認しています。</p>
+        <article class="mode-card" data-mode="normal">
+          <div class="mode-icon">⌨️</div>
+          <h2>ノーマルモード</h2>
+          <p>60秒で高スコアを目指す標準モードです。日本語の単語や短文、または英語で入力します。</p>
+          <span class="tag">普通</span>
+        </article>
 
-          <div class="login-id-row">
-            <label for="loginIdInput">ログインID</label>
-            <input id="loginIdInput" maxlength="24" autocomplete="username" placeholder="アカウントIDを入力">
-            <div class="hint">毎回、登録済みのアカウントIDを入力してください。</div>
-          </div>
+        <article class="mode-card" data-mode="endless">
+          <div class="mode-icon">⏳</div>
+          <h2>エンドレスモード</h2>
+          <p>1問ごとに10秒。ミスるとその問題の残り時間が減る、速さ重視のモードです。</p>
+          <span class="tag">速さ重視</span>
+        </article>
+      </div>
+    </section>
 
-          <button type="button" id="loginBtn">ログインして始める</button>
-        </div>
+    <section id="levelTutorialScreen" class="screen panel tutorial-card">
+      <h2>レベルアップモードのはじめに</h2>
+      <p class="lead">ニコリヒトとつるつる君が、今のタイピングレベルを確認します。</p>
 
-        <div class="error" id="errorBox"></div>
-        <div class="status" id="statusText"></div>
-
-        <div class="create-account-box">
-          <h3>アカウントが無い場合</h3>
-          <p>はじめて使う場合は、名前・ID・絵文字アイコンを決めてアカウントを作成してください。</p>
-
-          <button type="button" class="secondary" id="openCreateFormBtn">アカウントを作成する</button>
-
-          <div class="create-form-wrap" id="createFormWrap">
-            <form class="form" id="accountForm">
-              <div class="input-row">
-                <div class="field">
-                  <label for="emojiInput">アイコン</label>
-                  <input id="emojiInput" class="emoji-input" maxlength="4" autocomplete="off" placeholder="🌟">
-                </div>
-
-                <div class="field">
-                  <label for="nameInput">名前</label>
-                  <input id="nameInput" maxlength="20" autocomplete="nickname" placeholder="例：こっぴー">
-                </div>
-              </div>
-
-              <div class="quick-icons" aria-label="アイコン候補">
-                <button type="button" data-emoji="🌟">🌟</button>
-                <button type="button" data-emoji="⌨️">⌨️</button>
-                <button type="button" data-emoji="📚">📚</button>
-                <button type="button" data-emoji="🪄">🪄</button>
-                <button type="button" data-emoji="🐣">🐣</button>
-                <button type="button" data-emoji="🚀">🚀</button>
-              </div>
-
-              <div class="field">
-                <label for="idInput">アカウントID</label>
-                <input id="idInput" maxlength="24" autocomplete="username" placeholder="例：koppy001">
-                <div class="hint">使える文字：英小文字・数字・ハイフン・アンダーバー。大文字や記号は保存時に自動整形します。</div>
-              </div>
-
-              <div class="actions">
-                <button type="submit">保存してタイピングへ</button>
-
-                <div class="split-actions">
-                  <button type="button" class="secondary" id="saveOnlyBtn">保存だけする</button>
-                  <button type="button" class="secondary" id="generateIdBtn">ID自動生成</button>
-                </div>
-
-                <div class="split-actions">
-                  <a class="button-link secondary" href="./typing.html">タイピングへ戻る</a>
-                  <button type="button" class="danger" id="resetAccountBtn">アカウントをリセット</button>
-                </div>
-              </div>
-            </form>
+      <div class="speech-stage">
+        <div class="speech-row" id="tutorialSpeechRow">
+          <img id="tutorialSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
+          <div class="speech-bubble">
+            <span class="speech-name" id="tutorialSpeakerName">ニコリヒト</span>
+            <div class="speech-text" id="tutorialSpeechText">ここでは、FとJのホームポジションから少しずつ練習していくよ。</div>
           </div>
         </div>
-      </section>
-    </div>
-  </main>
+      </div>
+
+      <div class="speech-progress" id="tutorialProgress">1 / 4</div>
+
+      <div class="tutorial-actions one" id="tutorialNextActions">
+        <button class="tutorial-choice" id="tutorialNextBtn">次へ</button>
+      </div>
+
+      <div class="tutorial-actions hidden" id="tutorialChoiceActions">
+        <button class="tutorial-choice secondary" id="tutorialBeginnerBtn">はじめて・ゆっくり練習したい<br>マップ1から</button>
+        <button class="tutorial-choice" id="tutorialIntermediateBtn">それなりにできる<br>マップ5から</button>
+        <button class="tutorial-choice secondary" id="tutorialSkipBtn">あとで選ぶ<br>マップを見る</button>
+      </div>
+    </section>
+
+    <section id="preWorldAdviceScreen" class="screen panel tutorial-card">
+      <h2 id="preWorldAdviceTitle">ワールド開始前アドバイス</h2>
+      <p class="lead" id="preWorldAdviceLead">ニコリヒトとつるつる君の会話を読んでから、ワールドを開始します。</p>
+
+      <div class="speech-stage">
+        <div class="speech-row" id="preWorldSpeechRow">
+          <img id="preWorldSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
+          <div class="speech-bubble">
+            <span class="speech-name" id="preWorldSpeakerName">ニコリヒト</span>
+            <div class="speech-text" id="preWorldSpeechText">このワールドのアドバイスを確認しよう。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="speech-progress" id="preWorldProgress">1 / 4</div>
+
+      <div class="tutorial-actions two">
+        <button class="tutorial-choice secondary" id="preWorldBackBtn">マップに戻る</button>
+        <button class="tutorial-choice" id="preWorldNextBtn">次へ</button>
+      </div>
+    </section>
+
+    <section id="mapScreen" class="screen panel">
+      <div class="map-wrap">
+        <div class="map-header">
+          <div>
+            <h2>レベルアップマップ</h2>
+            <p>マップを選び、各マップの10ワールドを順番にクリアしていきます。未解放マップは飛び級テストで解放できます。</p>
+            <div class="lesson-chip" id="selectedMapInfo">まずはマップを選んでください</div>
+          </div>
+          <button class="secondary" id="mapBackBtn">モード選択に戻る</button>
+        </div>
+
+        <div class="map-grid" id="mapGrid"></div>
+
+        <h3 id="worldTitle">ワールド選択</h3>
+        <div class="world-grid" id="worldGrid"></div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="game-layout">
+        <main class="panel game-main">
+          <div class="hud">
+            <div class="hud-card"><span>モード</span><strong id="hudMode">-</strong></div>
+            <div class="hud-card"><span>残り時間</span><strong id="hudTime">-</strong></div>
+            <div class="hud-card"><span>スコア</span><strong id="hudScore">0</strong></div>
+            <div class="hud-card"><span>正確率</span><strong id="hudAcc">100%</strong></div>
+          </div>
+
+          <div id="stage" class="stage">
+            <div class="castle">🏯</div>
+            <div class="word-box">
+              <div class="jp-word" id="jpWord">スペースで開始</div>
+              <div class="roma-word" id="romaWord"></div>
+              <div class="message" id="message">モードを選んだら、スペースキーで開始できます。</div>
+            </div>
+          </div>
+
+          <div class="time-gauge-box">
+            <div class="time-gauge-head">
+              <span id="timeGaugeTitle">残り時間ゲージ</span>
+              <span id="timeGaugeLabel">-</span>
+            </div>
+            <div class="time-gauge" id="timeGauge"><div id="timeGaugeFill"></div></div>
+          </div>
+
+          <div class="controls">
+            <button id="startBtn">スタート / 再開</button>
+            <button class="secondary" id="backBtn">戻る</button>
+          </div>
+        </main>
+
+        <aside class="panel side">
+          <h3>🌟 アカデミア情報</h3>
+          <div class="small-note">レベル <span id="sideLevel">1</span> / EXP <span id="sideExp">0</span></div>
+          <div class="bar"><div id="expBar"></div></div>
+
+          <h3 style="margin-top:18px;">📜 クエスト</h3>
+          <div class="quest-list" id="questList"></div>
+
+          <h3>📘 入力ルール</h3>
+          <p class="small-note">
+            例：し は <b>shi</b> / <b>si</b> どちらもOK。<br>
+            ん は語中なら <b>n</b> / <b>nn</b> どちらもOK、語末なら <b>nn</b> のみOK。
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen panel result">
+      <h2 id="resultTitle">結果発表</h2>
+      <p id="resultMessage" class="small-note"></p>
+
+      <div class="result-grid">
+        <div class="hud-card"><span>スコア</span><strong id="resultScore">0</strong></div>
+        <div class="hud-card"><span>正確率</span><strong id="resultAcc">0%</strong></div>
+        <div class="hud-card"><span>打鍵数</span><strong id="resultTyped">0</strong></div>
+        <div class="hud-card"><span>最高コンボ</span><strong id="resultCombo">0</strong></div>
+      </div>
+
+      <button id="retryBtn">もう一度挑戦</button>
+      <button class="secondary" id="menuBtn">戻る</button>
+    </section>
+  </div>
+
+  <script src="./typing_words.js"></script>
+  <script src="./romaji_rules.js"></script>
 
   <script>
     "use strict";
 
-    const STORAGE_KEY = "typingAcademiaAccount";
+    const typingData = window.TYPING_ACADEMIA_DATA;
+    const romajiRules = window.ROMAJI_RULES;
 
-    const el = {
-      form: document.getElementById("accountForm"),
-      emojiInput: document.getElementById("emojiInput"),
-      nameInput: document.getElementById("nameInput"),
-      idInput: document.getElementById("idInput"),
+    if (!typingData) throw new Error("typing_words.js が読み込まれていません。");
+    if (!romajiRules) throw new Error("romaji_rules.js が読み込まれていません。");
 
-      loginIdInput: document.getElementById("loginIdInput"),
-      loginBtn: document.getElementById("loginBtn"),
+    const wordBank = typingData.wordBank;
+    const levelMaps = typingData.levelMaps;
 
-      previewEmoji: document.getElementById("previewEmoji"),
-      previewName: document.getElementById("previewName"),
-      previewId: document.getElementById("previewId"),
-
-      errorBox: document.getElementById("errorBox"),
-      statusText: document.getElementById("statusText"),
-
-      saveOnlyBtn: document.getElementById("saveOnlyBtn"),
-      generateIdBtn: document.getElementById("generateIdBtn"),
-      resetAccountBtn: document.getElementById("resetAccountBtn"),
-
-      openCreateFormBtn: document.getElementById("openCreateFormBtn"),
-      createFormWrap: document.getElementById("createFormWrap"),
-      existingAccountText: document.getElementById("existingAccountText")
+    const modeConfig = {
+      level: { label: "育成", time: 75, mistakePenalty: 0, targetWords: 10 },
+      normal: { label: "普通", time: 60, mistakePenalty: 0, targetWords: Infinity },
+      endless: { label: "速さ", time: 10, mistakePenalty: 1.5, targetWords: Infinity }
     };
 
-    let account = loadAccount();
-    const hadSavedAccountOnLoad = !!localStorage.getItem(STORAGE_KEY);
+    const screens = {
+      menu: document.getElementById("menuScreen"),
+      tutorial: document.getElementById("levelTutorialScreen"),
+      preWorldAdvice: document.getElementById("preWorldAdviceScreen"),
+      map: document.getElementById("mapScreen"),
+      game: document.getElementById("gameScreen"),
+      result: document.getElementById("resultScreen")
+    };
 
-    function loadAccount() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-        return {
-          id: sanitizeAccountId(saved.id || generateAccountId()),
-          name: sanitizeName(saved.name || "ゲスト"),
-          emoji: normalizeEmoji(saved.emoji || "🌟")
-        };
-      } catch {
-        return createDefaultAccount();
-      }
-    }
+    const el = {
+      titleName: document.getElementById("titleName"),
+      accountIconDisplay: document.getElementById("accountIconDisplay"),
+      accountNameDisplay: document.getElementById("accountNameDisplay"),
+      accountIdDisplay: document.getElementById("accountIdDisplay"),
+      settingsAccountIconDisplay: document.getElementById("settingsAccountIconDisplay"),
+      settingsAccountNameDisplay: document.getElementById("settingsAccountNameDisplay"),
+      settingsAccountIdDisplay: document.getElementById("settingsAccountIdDisplay"),
 
-    function createDefaultAccount() {
+      settingsBtn: document.getElementById("settingsBtn"),
+      settingsBackdrop: document.getElementById("settingsBackdrop"),
+      settingsPanel: document.getElementById("settingsPanel"),
+      settingsCloseBtn: document.getElementById("settingsCloseBtn"),
+      accountTabBtn: document.getElementById("accountTabBtn"),
+      typingTabBtn: document.getElementById("typingTabBtn"),
+      accountTabPanel: document.getElementById("accountTabPanel"),
+      typingTabPanel: document.getElementById("typingTabPanel"),
+      deleteAccountBtn: document.getElementById("deleteAccountBtn"),
+
+      genreDropdown: document.getElementById("genreDropdown"),
+      genreDropdownBtn: document.getElementById("genreDropdownBtn"),
+      genreMenu: document.getElementById("genreMenu"),
+      selectedGenreChips: document.getElementById("selectedGenreChips"),
+      jpModeBtn: document.getElementById("jpModeBtn"),
+      enModeBtn: document.getElementById("enModeBtn"),
+      settingsCancelBtn: document.getElementById("settingsCancelBtn"),
+      settingsSaveBtn: document.getElementById("settingsSaveBtn"),
+
+      resetAllBtn: document.getElementById("resetAllBtn"),
+
+      tutorialSpeechRow: document.getElementById("tutorialSpeechRow"),
+      tutorialSpeakerImage: document.getElementById("tutorialSpeakerImage"),
+      tutorialSpeakerName: document.getElementById("tutorialSpeakerName"),
+      tutorialSpeechText: document.getElementById("tutorialSpeechText"),
+      tutorialProgress: document.getElementById("tutorialProgress"),
+      tutorialNextBtn: document.getElementById("tutorialNextBtn"),
+      tutorialNextActions: document.getElementById("tutorialNextActions"),
+      tutorialChoiceActions: document.getElementById("tutorialChoiceActions"),
+      tutorialBeginnerBtn: document.getElementById("tutorialBeginnerBtn"),
+      tutorialIntermediateBtn: document.getElementById("tutorialIntermediateBtn"),
+      tutorialSkipBtn: document.getElementById("tutorialSkipBtn"),
+
+      preWorldAdviceTitle: document.getElementById("preWorldAdviceTitle"),
+      preWorldAdviceLead: document.getElementById("preWorldAdviceLead"),
+      preWorldSpeechRow: document.getElementById("preWorldSpeechRow"),
+      preWorldSpeakerImage: document.getElementById("preWorldSpeakerImage"),
+      preWorldSpeakerName: document.getElementById("preWorldSpeakerName"),
+      preWorldSpeechText: document.getElementById("preWorldSpeechText"),
+      preWorldProgress: document.getElementById("preWorldProgress"),
+      preWorldNextBtn: document.getElementById("preWorldNextBtn"),
+      preWorldBackBtn: document.getElementById("preWorldBackBtn"),
+
+      mapGrid: document.getElementById("mapGrid"),
+      worldGrid: document.getElementById("worldGrid"),
+      selectedMapInfo: document.getElementById("selectedMapInfo"),
+      worldTitle: document.getElementById("worldTitle"),
+      mapBackBtn: document.getElementById("mapBackBtn"),
+
+      hudMode: document.getElementById("hudMode"),
+      hudTime: document.getElementById("hudTime"),
+      hudScore: document.getElementById("hudScore"),
+      hudAcc: document.getElementById("hudAcc"),
+      jpWord: document.getElementById("jpWord"),
+      romaWord: document.getElementById("romaWord"),
+      message: document.getElementById("message"),
+      stage: document.getElementById("stage"),
+      startBtn: document.getElementById("startBtn"),
+      backBtn: document.getElementById("backBtn"),
+      timeGauge: document.getElementById("timeGauge"),
+      timeGaugeFill: document.getElementById("timeGaugeFill"),
+      timeGaugeLabel: document.getElementById("timeGaugeLabel"),
+      timeGaugeTitle: document.getElementById("timeGaugeTitle"),
+
+      sideLevel: document.getElementById("sideLevel"),
+      sideExp: document.getElementById("sideExp"),
+      expBar: document.getElementById("expBar"),
+      questList: document.getElementById("questList"),
+
+      resultTitle: document.getElementById("resultTitle"),
+      resultMessage: document.getElementById("resultMessage"),
+      resultScore: document.getElementById("resultScore"),
+      resultAcc: document.getElementById("resultAcc"),
+      resultTyped: document.getElementById("resultTyped"),
+      resultCombo: document.getElementById("resultCombo"),
+      retryBtn: document.getElementById("retryBtn"),
+      menuBtn: document.getElementById("menuBtn")
+    };
+
+    const quests = [
+      { id: "q1", text: "5問正解する", check: s => s.correctWords >= 5 },
+      { id: "q2", text: "10コンボを達成する", check: s => s.maxCombo >= 10 },
+      { id: "q3", text: "正確率90%以上を保つ", check: s => accuracy(s) >= 90 && s.totalTyped >= 20 },
+      { id: "q4", text: "ワールドをクリアする", check: s => s.mode === "level" && !s.isSkipTest && s.correctWords >= modeConfig.level.targetWords }
+    ];
+
+    const tutorialLines = [
+      { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: "ここでは、FとJのホームポジションから少しずつ練習していくよ。" },
+      { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "タイピングって、最初はキーの場所を覚えるのが大事なんだね。" },
+      { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: "そうそう。だけど、もうある程度できる人は、途中のマップから始めても大丈夫。" },
+      { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "君はタイピング、どれくらいできる？それなりにできるなら、マップ5「言葉の図書館」から始められるよ。" }
+    ];
+
+    const mapAdviceMessages = [
+      "まずはFとJを見つけるところから。人差し指をホームポジションに置いて、焦らず正確に打とう。",
+      "上段キーは指が伸びやすい場所だよ。手全体を動かさず、指先だけで軽く届かせるのがコツ。",
+      "下段キーは打ち間違いが増えやすいよ。急がず、どの指で押すかを意識しよう。",
+      "大文字はShiftキーとの連携が大事。片手でShift、もう片方で文字を押す練習をしよう。",
+      "ここからは言葉の入力に入るよ。キーの場所を思い出しながら、リズムよく打ってみよう。",
+      "記号はタイピングの実用力に直結するよ。ピリオドやカンマも、文字と同じように慣れていこう。",
+      "速さを上げるマップだよ。ただし、ミスが増えすぎたら一度ゆっくりに戻すのが上達の近道。",
+      "長文は空白や句点まで含めて流れで打つ練習。目だけ先に進めすぎず、一文ずつ落ち着いて。",
+      "正確性を高めるマップだよ。速く打つより、ミスなく最後まで打ち切ることを優先しよう。",
+      "総仕上げだよ。これまでの練習を思い出して、正確さ・速さ・リズムを全部使ってみよう。"
+    ];
+
+    const englishFallback = {
+      "星": "star", "月": "moon", "夜空": "night sky", "流れ星": "shooting star", "星明かり": "starlight",
+      "魔法": "magic", "妖精": "fairy", "水晶": "crystal", "古城": "old castle", "冒険": "adventure",
+      "森": "forest", "湖": "lake", "川": "river", "海": "sea", "山": "mountain", "空": "sky",
+      "本": "book", "手紙": "letter", "時計": "clock", "地図": "map",
+      "歩く": "walk", "走る": "run", "跳ぶ": "jump", "開ける": "open", "閉じる": "close",
+      "集中": "focus", "リズム": "rhythm", "スピード": "speed", "正確さ": "accuracy",
+      "星が光る": "the star shines", "森を歩く": "walk through the forest", "本を読む": "read a book",
+      "正確に打つ": "type accurately", "リズムよく打つ": "type with rhythm"
+    };
+
+    let state = createInitialState("normal");
+    let timerId = null;
+    let lastWordIndex = -1;
+    let tutorialLineIndex = 0;
+
+    const account = loadAccount();
+
+    const gameSettings = {
+      genres: loadSelectedGenres(),
+      typingMode: localStorage.getItem("typingAcademiaTypingMode") || "jp"
+    };
+
+    const draftSettings = {
+      genres: [...gameSettings.genres],
+      typingMode: gameSettings.typingMode
+    };
+
+    function createInitialState(mode) {
       return {
-        id: generateAccountId(),
-        name: "ゲスト",
-        emoji: "🌟"
+        mode,
+        running: false,
+        remaining: modeConfig[mode].time,
+        score: 0,
+        exp: Number(localStorage.getItem("typingAcademiaExp") || 0),
+        level: Number(localStorage.getItem("typingAcademiaLevel") || 1),
+        currentWord: null,
+        typedInput: "",
+        candidates: [],
+        totalTyped: 0,
+        missTyped: 0,
+        correctWords: 0,
+        combo: 0,
+        maxCombo: 0,
+        selectedMap: 0,
+        selectedWorld: 0,
+        lessonWords: null,
+        isSkipTest: false,
+        skipTargetMap: null,
+        skipPassWords: 8,
+        skipMaxMiss: 2,
+        skipMinAccuracy: 92,
+        completedQuests: new Set(),
+        adviceIndex: 0,
+        adviceLines: [],
+        pendingStart: null
       };
     }
 
-    function saveAccount(nextAccount) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAccount));
-      account = nextAccount;
-      renderAccount();
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.remove("active"));
+      screens[name].classList.add("active");
+    }
+
+    function loadAccount() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("typingAcademiaAccount") || "{}");
+        return {
+          id: sanitizeAccountId(saved.id || generateAccountId()),
+          name: String(saved.name || "ゲスト").slice(0, 20),
+          emoji: normalizeEmoji(saved.emoji || "🌟")
+        };
+      } catch {
+        return { id: generateAccountId(), name: "ゲスト", emoji: "🌟" };
+      }
+    }
+
+    function saveAccount() {
+      localStorage.setItem("typingAcademiaAccount", JSON.stringify(account));
     }
 
     function generateAccountId() {
@@ -564,16 +1503,8 @@
     }
 
     function sanitizeAccountId(value) {
-      const sanitized = String(value || "")
-        .toLowerCase()
-        .replace(/[^a-z0-9_-]/g, "")
-        .slice(0, 24);
-
+      const sanitized = String(value || "").toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 24);
       return sanitized || generateAccountId();
-    }
-
-    function sanitizeName(value) {
-      return String(value || "ゲスト").trim().slice(0, 20) || "ゲスト";
     }
 
     function normalizeEmoji(value) {
@@ -581,204 +1512,1114 @@
       return [...text][0] || "🌟";
     }
 
-    function buildAccountFromForm() {
+    function loadSelectedGenres() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem("typingAcademiaGenres") || '["all"]');
+        return Array.isArray(parsed) && parsed.length > 0 ? parsed : ["all"];
+      } catch {
+        return ["all"];
+      }
+    }
+
+    function selectMode(mode) {
+      stopTimer();
+      state = createInitialState(mode);
+
+      if (mode === "level") {
+        if (!localStorage.getItem("typingAcademiaTutorialDone")) {
+          tutorialLineIndex = 0;
+          showScreen("tutorial");
+          renderTutorialLine();
+        } else {
+          showScreen("map");
+          renderMapSelect();
+        }
+        return;
+      }
+
+      startSelectedMode(mode);
+    }
+
+    function startSelectedMode(mode, mapIndex = 0, worldIndex = 0) {
+      stopTimer();
+      state = createInitialState(mode);
+      state.selectedMap = mapIndex;
+      state.selectedWorld = worldIndex;
+
+      if (mode === "level") {
+        state.lessonWords = getLesson(mapIndex, worldIndex).words;
+        state.remaining = 75;
+      }
+
+      if (mode === "endless") state.remaining = 10;
+
+      showScreen("game");
+      el.jpWord.textContent = "準備OK";
+      el.romaWord.innerHTML = "";
+      el.message.textContent = makeStartMessage(mode, mapIndex, worldIndex);
+      renderAll();
+    }
+
+    function makeStartMessage(mode, mapIndex, worldIndex) {
+      if (mode === "normal") return "60秒で高スコアを目指そう。スペースキーで開始。";
+      if (mode === "endless") return "1問ごとに10秒。スペースキーで開始。";
+
+      const map = levelMaps[mapIndex];
+      const lesson = getLesson(mapIndex, worldIndex);
+      return `${map.icon} ${map.name} / World ${worldIndex + 1}「${lesson.title}」 スペースキーで開始。`;
+    }
+
+    function startGame() {
+      if (state.running) return;
+
+      state.running = true;
+
+      if (!state.currentWord) setNextWord();
+
+      stopTimer();
+      timerId = setInterval(tick, 1000);
+      el.message.textContent = "入力してください。Enterは不要です。";
+      renderAll();
+    }
+
+    function tick() {
+      if (!state.running) return;
+
+      state.remaining -= 1;
+
+      if (state.remaining <= 0) {
+        state.remaining = 0;
+        if (state.isSkipTest) finishGame("マップ飛び級テスト不合格");
+        else finishGame("時間切れ！");
+      }
+
+      renderHud();
+    }
+
+    function stopTimer() {
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+    }
+
+    function getLesson(mapIndex, worldIndex) {
+      const raw = levelMaps[mapIndex].worlds[worldIndex];
+      return { title: raw[0], words: raw[1] };
+    }
+
+    function buildSkipTestWords(mapIndex) {
+      const targetWords = levelMaps[mapIndex].worlds.slice(0, 5).flatMap(world => world[1].slice(0, 3));
+      const reviewWords = mapIndex > 0
+        ? levelMaps[mapIndex - 1].worlds.slice(-3).flatMap(world => world[1].slice(0, 2))
+        : [];
+      return [...new Set([...targetWords, ...reviewWords])];
+    }
+
+    function startSkipTest(mapIndex) {
+      stopTimer();
+
+      state = createInitialState("level");
+      state.selectedMap = mapIndex;
+      state.selectedWorld = 0;
+      state.skipTargetMap = mapIndex;
+      state.isSkipTest = true;
+      state.remaining = 60;
+      state.lessonWords = buildSkipTestWords(mapIndex);
+
+      showScreen("game");
+      el.jpWord.textContent = "マップ飛び級テスト";
+      el.romaWord.innerHTML = "";
+      el.message.textContent = `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} に飛び級挑戦。`;
+      renderAll();
+    }
+
+    function openPreWorldAdvice(mapIndex, worldIndex, type = "world") {
+      stopTimer();
+
+      state = createInitialState("level");
+      state.selectedMap = mapIndex;
+      state.selectedWorld = worldIndex;
+      state.pendingStart = { type, mapIndex, worldIndex };
+      state.adviceIndex = 0;
+      state.adviceLines = type === "skip"
+        ? buildSkipDialogue(mapIndex)
+        : buildWorldDialogue(mapIndex, worldIndex);
+
+      const map = levelMaps[mapIndex];
+
+      el.preWorldAdviceTitle.textContent = type === "skip"
+        ? "マップ飛び級テストの前に"
+        : `${map.icon} ${map.name} の前に`;
+
+      el.preWorldAdviceLead.textContent = type === "skip"
+        ? "飛び級テストの説明を読んでから、テストを開始します。"
+        : "ニコリヒトとつるつる君のアドバイスを読んでから、ワールドを開始します。";
+
+      showScreen("preWorldAdvice");
+      renderPreWorldAdviceLine();
+    }
+
+    function buildWorldDialogue(mapIndex, worldIndex) {
+      const map = levelMaps[mapIndex];
+      const lesson = getLesson(mapIndex, worldIndex);
+      const advice = mapAdviceMessages[mapIndex] || "落ち着いて正確に打とう。";
+
+      return [
+        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: `${map.icon} ${map.name}、World ${worldIndex + 1}「${lesson.title}」に入るよ。` },
+        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "このマップでは、どんなことを意識すればいい？" },
+        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: advice },
+        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "よし、アドバイスを読んだらスタートだね！" }
+      ];
+    }
+
+    function buildSkipDialogue(mapIndex) {
+      return [
+        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} の飛び級テストだよ。` },
+        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "飛び級ってことは、ちょっとむずかしいのかな？" },
+        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: "8問正解・正確率92%以上・ミス2回以内で合格。速さより正確さを優先しよう。" },
+        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "落ち着いて打てばいけそう！説明を読んだらスタートだね。" }
+      ];
+    }
+
+    function renderPreWorldAdviceLine() {
+      const line = state.adviceLines[state.adviceIndex];
+      if (!line) return;
+
+      el.preWorldSpeechRow.classList.toggle("reverse", line.side === "right");
+      el.preWorldSpeakerImage.src = line.image;
+      el.preWorldSpeakerImage.alt = line.speaker;
+      el.preWorldSpeakerName.textContent = line.speaker;
+      el.preWorldSpeechText.textContent = line.text;
+      el.preWorldProgress.textContent = `${state.adviceIndex + 1} / ${state.adviceLines.length}`;
+      el.preWorldNextBtn.textContent = state.adviceIndex >= state.adviceLines.length - 1 ? "はじめる" : "次へ";
+    }
+
+    function advancePreWorldAdvice() {
+      if (state.adviceIndex < state.adviceLines.length - 1) {
+        state.adviceIndex += 1;
+        renderPreWorldAdviceLine();
+        return;
+      }
+
+      const pending = state.pendingStart;
+
+      if (!pending) {
+        showScreen("map");
+        renderMapSelect(state.selectedMap || 0);
+        return;
+      }
+
+      if (pending.type === "skip") startSkipTest(pending.mapIndex);
+      else startSelectedMode("level", pending.mapIndex, pending.worldIndex);
+    }
+
+    function renderTutorialLine() {
+      const line = tutorialLines[tutorialLineIndex];
+      if (!line) return;
+
+      el.tutorialSpeechRow.classList.toggle("reverse", line.side === "right");
+      el.tutorialSpeakerImage.src = line.image;
+      el.tutorialSpeakerImage.alt = line.speaker;
+      el.tutorialSpeakerName.textContent = line.speaker;
+      el.tutorialSpeechText.textContent = line.text;
+      el.tutorialProgress.textContent = `${tutorialLineIndex + 1} / ${tutorialLines.length}`;
+
+      const isLast = tutorialLineIndex >= tutorialLines.length - 1;
+      el.tutorialNextActions.classList.toggle("hidden", isLast);
+      el.tutorialChoiceActions.classList.toggle("hidden", !isLast);
+    }
+
+    function setNextWord() {
+      const bank = getActiveWordBank();
+
+      let idx = Math.floor(Math.random() * bank.length);
+      if (bank.length > 1) {
+        while (idx === lastWordIndex) idx = Math.floor(Math.random() * bank.length);
+      }
+
+      lastWordIndex = idx;
+
+      const item = bank[idx];
+      state.currentWord = normalizeWordItem(item);
+      state.typedInput = "";
+      state.candidates = buildCandidatesForWord(state.currentWord);
+
+      renderWord();
+    }
+
+    function getActiveWordBank() {
+      if (state.mode === "level" && state.lessonWords) return state.lessonWords;
+
+      const selectedGenres = gameSettings.genres.includes("all") ? ["all"] : gameSettings.genres;
+
+      const filtered = selectedGenres.includes("all")
+        ? wordBank
+        : wordBank.filter(word => selectedGenres.includes(word.subject));
+
+      return filtered.length > 0 ? filtered : wordBank;
+    }
+
+    function normalizeWordItem(item) {
+      if (typeof item === "string") {
+        return { jp: item, kana: null, roma: item, en: item, subject: getLessonSubject() };
+      }
+
+      const englishText = item.en || englishFallback[item.jp] || item.english || "";
+
+      if (state.mode !== "level" && gameSettings.typingMode === "en") {
+        const en = englishText || item.roma || item.kana || item.jp;
+        return {
+          jp: en,
+          kana: null,
+          roma: en.toLowerCase(),
+          en,
+          subject: item.subject || "練習"
+        };
+      }
+
       return {
-        id: sanitizeAccountId(el.idInput.value),
-        name: sanitizeName(el.nameInput.value),
-        emoji: normalizeEmoji(el.emojiInput.value)
+        jp: item.jp,
+        kana: item.kana || item.jp,
+        roma: item.roma || "",
+        en: englishText,
+        subject: item.subject || "練習"
       };
     }
 
-    function validateAccount(nextAccount) {
-      if (!nextAccount.name) return "名前を入力してください。";
-      if (!nextAccount.id) return "アカウントIDを入力してください。";
-      if (nextAccount.id.length < 3) return "アカウントIDは3文字以上にしてください。";
-      if (!/^[a-z0-9_-]+$/.test(nextAccount.id)) return "アカウントIDに使えない文字があります。";
-      if (!nextAccount.emoji) return "絵文字アイコンを入力してください。";
-      return "";
+    function getLessonSubject() {
+      if (state.mode !== "level") return "練習";
+      return levelMaps[state.selectedMap]?.category || "練習";
     }
 
-    function setError(message) {
-      el.errorBox.textContent = message;
-      el.errorBox.classList.toggle("show", !!message);
-    }
+    function buildCandidatesForWord(word) {
+      const candidates = new Set();
 
-    function setStatus(message) {
-      el.statusText.textContent = message;
-
-      if (message) {
-        window.setTimeout(() => {
-          if (el.statusText.textContent === message) el.statusText.textContent = "";
-        }, 2200);
-      }
-    }
-
-    function renderAccount() {
-      el.emojiInput.value = account.emoji;
-      el.nameInput.value = account.name;
-      el.idInput.value = account.id;
-      renderPreview();
-      renderExistingAccount();
-    }
-
-    function renderPreview() {
-      const preview = buildAccountFromForm();
-
-      el.previewEmoji.textContent = preview.emoji;
-      el.previewName.textContent = preview.name;
-      el.previewId.textContent = `ID: ${preview.id}`;
-    }
-
-    function renderExistingAccount() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-
-      if (!saved) {
-        el.existingAccountText.textContent = "まだアカウントがありません。下の「アカウントが無い場合」から作成してください。";
-        el.loginBtn.disabled = true;
-        el.loginIdInput.value = "";
-        el.loginIdInput.placeholder = "先にアカウントを作成してください";
-        return;
+      if (word.kana && canBuildFromKana(word.kana)) {
+        for (const candidate of buildCandidatesFromKana(word.kana)) {
+          candidates.add(candidate);
+        }
       }
 
-      el.loginBtn.disabled = false;
-      el.loginIdInput.placeholder = "アカウントIDを入力";
-      el.existingAccountText.textContent = `${account.emoji} ${account.name} のアカウントがあります。ログインIDを入力してください。`;
+      if (word.roma) {
+        candidates.add(word.roma);
+        for (const candidate of expandRomaSubstitutions(word.roma)) {
+          candidates.add(candidate);
+        }
+      }
+
+      return [...candidates].filter(Boolean).sort((a, b) => a.length - b.length || a.localeCompare(b));
     }
 
-    function handleLogin() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-
-      if (!saved) {
-        setError("アカウントがありません。下の「アカウントが無い場合」から作成してください。");
-        return;
-      }
-
-      const inputId = sanitizeAccountId(el.loginIdInput.value);
-
-      if (!inputId || !el.loginIdInput.value.trim()) {
-        setError("ログインIDを入力してください。");
-        return;
-      }
-
-      if (inputId !== account.id) {
-        setError("ログインIDが一致しません。登録したアカウントIDを入力してください。");
-        return;
-      }
-
-      setError("");
-      window.location.href = "./typing.html";
+    function canBuildFromKana(text) {
+      return [...String(text)].some(char => /[ぁ-んー]/.test(char));
     }
 
-    function handleSave({ redirect = false } = {}) {
-      const nextAccount = buildAccountFromForm();
-      const error = validateAccount(nextAccount);
+    function buildCandidatesFromKana(text) {
+      const tokens = tokenizeKana(text);
+      let results = [""];
 
-      if (error) {
-        setError(error);
-        return false;
-      }
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+        let options;
 
-      setError("");
-      saveAccount(nextAccount);
-
-      el.createFormWrap.classList.remove("open");
-      el.openCreateFormBtn.textContent = "アカウントを編集する";
-
-      setStatus("保存しました。");
-
-      if (redirect) {
-        window.location.href = "./typing.html";
-      }
-
-      return true;
-    }
-
-    function resetAccount() {
-      const ok = confirm("アカウントID・名前・絵文字アイコンをリセットします。よろしいですか？");
-      if (!ok) return;
-
-      localStorage.removeItem(STORAGE_KEY);
-
-      const fresh = createDefaultAccount();
-      account = fresh;
-
-      setError("");
-      renderAccount();
-
-      el.createFormWrap.classList.remove("open");
-      el.openCreateFormBtn.textContent = "アカウントを作成する";
-
-      setStatus("アカウントをリセットしました。");
-    }
-
-    el.loginBtn.addEventListener("click", handleLogin);
-
-    el.loginIdInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") handleLogin();
-    });
-
-    el.openCreateFormBtn.addEventListener("click", () => {
-      el.createFormWrap.classList.toggle("open");
-
-      if (el.createFormWrap.classList.contains("open")) {
-        el.openCreateFormBtn.textContent = "作成フォームを閉じる";
-      } else {
-        el.openCreateFormBtn.textContent = localStorage.getItem(STORAGE_KEY)
-          ? "アカウントを編集する"
-          : "アカウントを作成する";
-      }
-    });
-
-    el.form.addEventListener("submit", event => {
-      event.preventDefault();
-      handleSave({ redirect: true });
-    });
-
-    el.saveOnlyBtn.addEventListener("click", () => handleSave({ redirect: false }));
-
-    el.generateIdBtn.addEventListener("click", () => {
-      el.idInput.value = generateAccountId();
-      renderPreview();
-      setStatus("新しいIDを生成しました。保存すると反映されます。");
-    });
-
-    el.resetAccountBtn.addEventListener("click", resetAccount);
-
-    document.querySelectorAll("[data-emoji]").forEach(button => {
-      button.addEventListener("click", () => {
-        el.emojiInput.value = button.dataset.emoji;
-        renderPreview();
-      });
-    });
-
-    [el.emojiInput, el.nameInput, el.idInput].forEach(input => {
-      input.addEventListener("input", () => {
-        if (input === el.idInput) {
-          const cursor = el.idInput.selectionStart;
-          el.idInput.value = sanitizeAccountId(el.idInput.value);
-          try { el.idInput.setSelectionRange(cursor, cursor); } catch {}
+        if (token === "ん" && romajiRules.specialRules?.finalN?.enabled) {
+          const isFinalN = i === tokens.length - 1;
+          options = isFinalN
+            ? romajiRules.specialRules.finalN.finalOptions
+            : romajiRules.specialRules.finalN.middleOptions;
+        } else {
+          options = romajiRules.kanaRules[token] || [token];
         }
 
-        renderPreview();
+        const next = [];
+        for (const prefix of results) {
+          for (const option of options) {
+            next.push(prefix + option);
+          }
+        }
+
+        results = next.slice(0, 512);
+      }
+
+      return results;
+    }
+
+    function tokenizeKana(text) {
+      const chars = [...String(text)];
+      const tokens = [];
+
+      for (let i = 0; i < chars.length; i++) {
+        const pair = chars[i] + (chars[i + 1] || "");
+
+        if (romajiRules.kanaRules[pair]) {
+          tokens.push(pair);
+          i += 1;
+          continue;
+        }
+
+        if (chars[i] === "っ" && chars[i + 1]) {
+          const nextPair = chars[i + 1] + (chars[i + 2] || "");
+          const nextToken = romajiRules.kanaRules[nextPair] ? nextPair : chars[i + 1];
+          const nextOptions = romajiRules.kanaRules[nextToken] || [""];
+          const firstConsonant = getFirstConsonant(nextOptions[0]);
+          tokens.push(firstConsonant || "xtu");
+          continue;
+        }
+
+        tokens.push(chars[i]);
+      }
+
+      return tokens;
+    }
+
+    function getFirstConsonant(roma) {
+      if (!roma) return "";
+      if ("aiueon".includes(roma[0])) return "";
+      return roma[0];
+    }
+
+    function expandRomaSubstitutions(baseRoma) {
+      const substitutions = romajiRules.romaSubstitutions || [];
+      const results = new Set([String(baseRoma || "")]);
+      let changed = true;
+
+      while (changed && results.size < 512) {
+        changed = false;
+
+        for (const current of [...results]) {
+          for (const [from, to] of substitutions) {
+            let index = current.indexOf(from);
+
+            while (index !== -1) {
+              const next = current.slice(0, index) + to + current.slice(index + from.length);
+
+              if (!results.has(next)) {
+                results.add(next);
+                changed = true;
+                if (results.size >= 512) break;
+              }
+
+              index = current.indexOf(from, index + 1);
+            }
+
+            if (results.size >= 512) break;
+          }
+
+          if (results.size >= 512) break;
+        }
+      }
+
+      return [...results];
+    }
+
+    function renderWord() {
+      if (!state.currentWord) return;
+
+      el.jpWord.textContent = `${state.currentWord.jp}　${subjectBadge(state.currentWord.subject)}`;
+
+      const display = getDisplayCandidate();
+
+      el.romaWord.innerHTML = display.split("").map((ch, i) => {
+        const cls = i < state.typedInput.length
+          ? "typed"
+          : i === state.typedInput.length
+            ? "current"
+            : "remaining";
+
+        return `<span class="${cls}">${escapeHtml(ch)}</span>`;
+      }).join("");
+    }
+
+    function subjectBadge(subject) {
+      const map = {
+        "幻想": "✨",
+        "自然": "🌿",
+        "日常": "📦",
+        "動作": "🏃",
+        "練習": "⌨️",
+        "短文": "📝",
+        "長文": "📜",
+        "基礎": "⌨️",
+        "上段": "🌙",
+        "下段": "💎",
+        "大文字": "☀️",
+        "短語": "📖",
+        "記号": "🎵",
+        "速度": "🌠",
+        "正確性": "🪽",
+        "総仕上げ": "👑"
+      };
+
+      return `${map[subject] || "✨"}${subject}`;
+    }
+
+    function getDisplayCandidate() {
+      return state.candidates.find(candidate => candidate.startsWith(state.typedInput)) || state.candidates[0] || "";
+    }
+
+    function handleKey(e) {
+      if (
+        screens.menu.classList.contains("active") ||
+        screens.map.classList.contains("active") ||
+        screens.tutorial.classList.contains("active") ||
+        screens.preWorldAdvice.classList.contains("active") ||
+        screens.result.classList.contains("active")
+      ) return;
+
+      if (e.key === " ") {
+        e.preventDefault();
+
+        if (!state.running) startGame();
+        else handleTypedKey(" ");
+
+        return;
+      }
+
+      if (!state.running || !state.currentWord || e.key.length !== 1) return;
+
+      handleTypedKey(e.key);
+    }
+
+    function handleTypedKey(rawKey) {
+      const key = normalizeTypedKey(rawKey);
+      const nextInput = state.typedInput + key;
+      const ok = state.candidates.some(candidate => candidate.startsWith(nextInput));
+
+      state.totalTyped += 1;
+
+      if (ok) {
+        state.typedInput = nextInput;
+        state.score += 10 + Math.min(state.combo, 20);
+        state.combo += 1;
+        state.maxCombo = Math.max(state.maxCombo, state.combo);
+
+        if (state.candidates.includes(state.typedInput)) completeWord();
+        else renderWord();
+      } else {
+        state.missTyped += 1;
+        state.combo = 0;
+        state.score = Math.max(0, state.score - 5);
+
+        if (modeConfig[state.mode].mistakePenalty) {
+          state.remaining = Math.max(0, state.remaining - modeConfig[state.mode].mistakePenalty);
+          el.message.textContent = `ミス！ この問題の残り時間 -${modeConfig[state.mode].mistakePenalty}秒`;
+        } else {
+          el.message.textContent = "ミス！ 落ち着いてもう一度。";
+        }
+
+        el.stage.classList.remove("shake");
+        void el.stage.offsetWidth;
+        el.stage.classList.add("shake");
+
+        if (state.remaining <= 0) finishGame("時間切れ！");
+      }
+
+      renderAll();
+    }
+
+    function normalizeTypedKey(rawKey) {
+      const expected = getDisplayCandidate()[state.typedInput.length];
+      return rawKey === expected ? rawKey : rawKey.toLowerCase();
+    }
+
+    function completeWord() {
+      const completedLength = state.typedInput.length || getDisplayCandidate().length;
+
+      state.correctWords += 1;
+      state.score += 50 + completedLength * 4 + Math.min(100, state.combo * 2);
+
+      if (state.mode === "level") addExp(12 + Math.floor(completedLength / 2));
+      if (state.mode === "endless") state.remaining = 10;
+
+      el.message.textContent = state.mode === "endless"
+        ? "正解！ 次の問題も10秒以内に入力しよう。"
+        : "正解！";
+
+      el.stage.classList.remove("pop");
+      void el.stage.offsetWidth;
+      el.stage.classList.add("pop");
+
+      checkQuests();
+
+      if (state.isSkipTest && isSkipTestPassed()) {
+        unlockMapAndPrevious(state.skipTargetMap);
+        finishGame("マップ飛び級テスト合格！");
+        return;
+      }
+
+      if (state.mode === "level" && !state.isSkipTest && state.correctWords >= modeConfig.level.targetWords) {
+        markWorldCompleted(state.selectedMap, state.selectedWorld);
+        unlockNextWorld();
+        finishGame("ワールドクリア！");
+        return;
+      }
+
+      setNextWord();
+    }
+
+    function isSkipTestPassed() {
+      return state.isSkipTest &&
+        state.correctWords >= state.skipPassWords &&
+        accuracy() >= state.skipMinAccuracy &&
+        state.missTyped <= state.skipMaxMiss;
+    }
+
+    function addExp(amount) {
+      state.exp += amount;
+
+      while (state.exp >= expToNext(state.level)) {
+        state.exp -= expToNext(state.level);
+        state.level += 1;
+      }
+
+      localStorage.setItem("typingAcademiaExp", String(state.exp));
+      localStorage.setItem("typingAcademiaLevel", String(state.level));
+    }
+
+    function expToNext(level) {
+      return 80 + level * 20;
+    }
+
+    function accuracy(s = state) {
+      return s.totalTyped === 0
+        ? 100
+        : Math.max(0, Math.round(((s.totalTyped - s.missTyped) / s.totalTyped) * 100));
+    }
+
+    function checkQuests() {
+      for (const quest of quests) {
+        if (!state.completedQuests.has(quest.id) && quest.check(state)) {
+          state.completedQuests.add(quest.id);
+        }
+      }
+    }
+
+    function finishGame(title) {
+      stopTimer();
+      state.running = false;
+      showScreen("result");
+
+      el.resultTitle.textContent = title;
+      el.resultMessage.textContent = makeResultMessage();
+      el.resultScore.textContent = Math.round(state.score);
+      el.resultAcc.textContent = accuracy() + "%";
+      el.resultTyped.textContent = state.totalTyped;
+      el.resultCombo.textContent = state.maxCombo;
+
+      updateTitle();
+    }
+
+    function makeResultMessage() {
+      if (state.isSkipTest) {
+        return isSkipTestPassed()
+          ? `${levelMaps[state.skipTargetMap].name} を解放しました。正確率${accuracy()}%、ミス${state.missTyped}回です。`
+          : `条件は8問正解・正確率92%以上・ミス2回以内です。今回：${state.correctWords}問正解、正確率${accuracy()}%、ミス${state.missTyped}回。`;
+      }
+
+      if (state.mode === "level") {
+        return `${levelMaps[state.selectedMap].name} / World ${state.selectedWorld + 1} を${state.correctWords}問進みました。`;
+      }
+
+      if (state.mode === "endless") {
+        return accuracy() >= 95 ? "10秒制限でも安定しています。" : "ミスを減らすと長く続けられます。";
+      }
+
+      return accuracy() >= 90 ? "安定したタイピングです。" : "正確性を意識するとさらに伸びます。";
+    }
+
+    function progressKey() {
+      return "typingAcademiaMapProgress";
+    }
+
+    function loadProgress() {
+      try {
+        return JSON.parse(localStorage.getItem(progressKey()) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveProgress(progress) {
+      localStorage.setItem(progressKey(), JSON.stringify(progress));
+    }
+
+    function isWorldUnlocked(mapIndex, worldIndex) {
+      if (mapIndex === 0 && worldIndex === 0) return true;
+      return !!loadProgress()[`${mapIndex}-${worldIndex}`];
+    }
+
+    function unlockWorld(mapIndex, worldIndex) {
+      const progress = loadProgress();
+      progress[`${mapIndex}-${worldIndex}`] = true;
+      saveProgress(progress);
+    }
+
+    function markWorldCompleted(mapIndex, worldIndex) {
+      const progress = loadProgress();
+      progress[`world-${mapIndex}-${worldIndex}-complete`] = true;
+      saveProgress(progress);
+    }
+
+    function isWorldCompleted(mapIndex, worldIndex) {
+      return !!loadProgress()[`world-${mapIndex}-${worldIndex}-complete`];
+    }
+
+    function markMapCompleted(mapIndex) {
+      const progress = loadProgress();
+      progress[`map-${mapIndex}-complete`] = true;
+      saveProgress(progress);
+    }
+
+    function isMapCompleted(mapIndex) {
+      return !!loadProgress()[`map-${mapIndex}-complete`];
+    }
+
+    function unlockMap(mapIndex) {
+      unlockWorld(mapIndex, 0);
+    }
+
+    function unlockMapAndPrevious(mapIndex) {
+      for (let i = 0; i <= mapIndex; i++) {
+        unlockMap(i);
+      }
+    }
+
+    function unlockNextWorld() {
+      let map = state.selectedMap;
+      let world = state.selectedWorld + 1;
+
+      if (world >= 10) {
+        markMapCompleted(state.selectedMap);
+        world = 0;
+        map += 1;
+      }
+
+      if (map < levelMaps.length) {
+        unlockWorld(map, world);
+      }
+    }
+
+    function renderMapSelect(selectedMap = 0) {
+      el.mapGrid.innerHTML = levelMaps.map((map, i) => {
+        const unlocked = i === 0 || isWorldUnlocked(i, 0);
+
+        return `
+          <div class="map-card ${unlocked ? "" : "locked"}" data-map="${i}">
+            <strong>${map.icon} ${i + 1}. ${escapeHtml(map.name)}${isMapCompleted(i) ? " 👑" : ""}</strong>
+            <span>${escapeHtml(map.theme)}</span>
+            <span>${unlocked ? "解放済み" : "未解放"}</span>
+            ${unlocked ? "" : '<div class="skip-rule">マップ飛び級条件：8問正解・正確率92%以上・ミス2回以内</div>'}
+            <div class="actions">
+              ${unlocked
+                ? '<button class="mini-button start-map">マップを見る</button>'
+                : '<button class="mini-button skip-map">飛び級する</button>'}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      el.mapGrid.querySelectorAll(".start-map").forEach(btn => {
+        btn.addEventListener("click", () => renderWorldSelect(Number(btn.closest(".map-card").dataset.map)));
       });
+
+      el.mapGrid.querySelectorAll(".skip-map").forEach(btn => {
+        btn.addEventListener("click", () => openPreWorldAdvice(Number(btn.closest(".map-card").dataset.map), 0, "skip"));
+      });
+
+      renderWorldSelect(selectedMap);
+    }
+
+    function renderWorldSelect(mapIndex) {
+      const map = levelMaps[mapIndex];
+
+      el.selectedMapInfo.textContent = `${map.icon} ${map.name}：${map.theme}`;
+      el.worldTitle.textContent = `${map.name} のワールド`;
+
+      el.worldGrid.innerHTML = map.worlds.map((raw, i) => {
+        const unlocked = isWorldUnlocked(mapIndex, i);
+        const sample = raw[1].slice(0, 3).map(word => typeof word === "string" ? word : word.jp).join(" / ");
+
+        return `
+          <div class="world-card ${unlocked ? "" : "locked"}" data-map="${mapIndex}" data-world="${i}">
+            <strong>World ${i + 1}：${escapeHtml(raw[0])}${isWorldCompleted(mapIndex, i) ? " ⭐" : ""}</strong>
+            <span>${escapeHtml(sample)}</span>
+            <span>${unlocked ? "解放済み" : "未解放"}</span>
+            <div class="actions">
+              ${unlocked
+                ? '<button class="mini-button start-world">挑戦する</button>'
+                : '<span class="small-note">前のワールドをクリアすると解放されます</span>'}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      el.worldGrid.querySelectorAll(".start-world").forEach(btn => {
+        const card = btn.closest(".world-card");
+
+        btn.addEventListener("click", () => {
+          const mapIndex = Number(card.dataset.map);
+          const worldIndex = Number(card.dataset.world);
+
+          if (worldIndex === 0) {
+            openPreWorldAdvice(mapIndex, worldIndex, "world");
+          } else {
+            startSelectedMode("level", mapIndex, worldIndex);
+          }
+        });
+      });
+    }
+
+    function renderHud() {
+      el.hudMode.textContent = modeConfig[state.mode].label;
+      el.hudTime.textContent = Math.ceil(state.remaining);
+      el.hudScore.textContent = Math.round(state.score);
+      el.hudAcc.textContent = accuracy() + "%";
+      renderTimeGauge();
+    }
+
+    function timeLimitForGauge() {
+      if (state.mode === "endless") return 10;
+      if (state.isSkipTest) return 60;
+      if (state.mode === "level") return 75;
+      return 60;
+    }
+
+    function renderTimeGauge() {
+      const limit = timeLimitForGauge();
+      const percent = Math.max(0, Math.min(100, (state.remaining / limit) * 100));
+
+      el.timeGaugeFill.style.width = `${percent}%`;
+      el.timeGaugeLabel.textContent = `${Math.ceil(state.remaining)}秒 / ${limit}秒`;
+      el.timeGaugeTitle.textContent = state.mode === "endless" ? "この問題の残り時間" : "残り時間ゲージ";
+      el.timeGauge.classList.toggle("warning", percent <= 40 && percent > 20);
+      el.timeGauge.classList.toggle("danger", percent <= 20);
+    }
+
+    function renderSide() {
+      el.sideLevel.textContent = state.level;
+      el.sideExp.textContent = `${state.exp} / ${expToNext(state.level)}`;
+      el.expBar.style.width = `${Math.min(100, (state.exp / expToNext(state.level)) * 100)}%`;
+
+      el.questList.innerHTML = quests.map(q => {
+        const done = state.completedQuests.has(q.id) || q.check(state);
+        return `<div class="quest ${done ? "done" : ""}">${done ? "✅" : "⬜"} ${escapeHtml(q.text)}</div>`;
+      }).join("");
+    }
+
+    function updateTitle() {
+      const level = Number(localStorage.getItem("typingAcademiaLevel") || state.level || 1);
+
+      let title = "見習い魔法タイパー";
+      if (level >= 5) title = "星読みタイパー";
+      if (level >= 10) title = "幻想図書館の司書";
+      if (level >= 20) title = "天空タイピングマスター";
+
+      el.titleName.textContent = title;
+    }
+
+    function renderAccountUi() {
+      const latest = loadAccount();
+
+      account.id = latest.id;
+      account.name = latest.name;
+      account.emoji = latest.emoji;
+
+      el.accountIconDisplay.textContent = account.emoji;
+      el.accountNameDisplay.textContent = account.name;
+      el.accountIdDisplay.textContent = `ID: ${account.id}`;
+
+      el.settingsAccountIconDisplay.textContent = account.emoji;
+      el.settingsAccountNameDisplay.textContent = account.name;
+      el.settingsAccountIdDisplay.textContent = `ID: ${account.id}`;
+    }
+
+    function deleteAccount() {
+      const ok = confirm("この端末に保存されたアカウントID・名前・絵文字アイコンを削除します。よろしいですか？");
+      if (!ok) return;
+
+      localStorage.removeItem("typingAcademiaAccount");
+
+      const fresh = loadAccount();
+      account.id = fresh.id;
+      account.name = fresh.name;
+      account.emoji = fresh.emoji;
+
+      renderAccountUi();
+      el.message.textContent = "アカウントを削除しました。";
+    }
+
+    function switchSettingsTab(tab) {
+      const isAccount = tab === "account";
+
+      el.accountTabBtn.classList.toggle("active", isAccount);
+      el.typingTabBtn.classList.toggle("active", !isAccount);
+      el.accountTabPanel.classList.toggle("active", isAccount);
+      el.typingTabPanel.classList.toggle("active", !isAccount);
+    }
+
+    function renderSettingsUi() {
+      renderAccountUi();
+
+      if (!el.genreMenu.dataset.ready) setupGenreOptions();
+
+      renderGenreSelection();
+
+      el.jpModeBtn.classList.toggle("active", draftSettings.typingMode === "jp");
+      el.enModeBtn.classList.toggle("active", draftSettings.typingMode === "en");
+    }
+
+    function syncDraftSettingsFromSaved() {
+      draftSettings.genres = [...gameSettings.genres];
+      draftSettings.typingMode = gameSettings.typingMode;
+    }
+
+    function setupGenreOptions() {
+      const genres = ["all", ...new Set(wordBank.map(word => word.subject).filter(Boolean))];
+
+      el.genreMenu.innerHTML = genres.map(genre => `
+        <button type="button" class="genre-option" data-genre="${escapeHtml(genre)}">
+          <span>${genre === "all" ? "すべて" : escapeHtml(genre)}</span>
+          <span class="checkmark">✓</span>
+        </button>
+      `).join("");
+
+      el.genreMenu.querySelectorAll(".genre-option").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          toggleGenre(button.dataset.genre);
+        });
+      });
+
+      el.genreMenu.dataset.ready = "true";
+    }
+
+    function toggleGenre(genre) {
+      if (genre === "all") {
+        draftSettings.genres = ["all"];
+      } else {
+        const withoutAll = draftSettings.genres.filter(item => item !== "all");
+
+        if (withoutAll.includes(genre)) {
+          draftSettings.genres = withoutAll.filter(item => item !== genre);
+        } else {
+          draftSettings.genres = [...withoutAll, genre];
+        }
+
+        if (draftSettings.genres.length === 0) draftSettings.genres = ["all"];
+      }
+
+      renderGenreSelection();
+    }
+
+    function renderGenreSelection() {
+      const selected = draftSettings.genres.includes("all") ? ["all"] : draftSettings.genres;
+
+      el.genreMenu.querySelectorAll(".genre-option").forEach(button => {
+        button.classList.toggle("active", selected.includes(button.dataset.genre));
+      });
+
+      if (selected.includes("all")) {
+        el.genreDropdownBtn.textContent = "すべて";
+        el.selectedGenreChips.innerHTML = '<span class="selected-genre-chip">すべて</span>';
+        return;
+      }
+
+      el.genreDropdownBtn.textContent = selected.length === 1 ? selected[0] : `${selected.length}ジャンル選択中`;
+      el.selectedGenreChips.innerHTML = selected.map(genre => `<span class="selected-genre-chip">${escapeHtml(genre)}</span>`).join("");
+    }
+
+    function saveSettings() {
+      gameSettings.genres = [...draftSettings.genres];
+      gameSettings.typingMode = draftSettings.typingMode;
+
+      localStorage.setItem("typingAcademiaGenres", JSON.stringify(gameSettings.genres));
+      localStorage.setItem("typingAcademiaTypingMode", gameSettings.typingMode);
+
+      closeSettingsPanel();
+      el.message.textContent = "設定を保存しました。次に開始する問題から反映されます。";
+      renderAll();
+    }
+
+    function cancelSettings() {
+      syncDraftSettingsFromSaved();
+      closeSettingsPanel();
+      renderAll();
+    }
+
+    function openSettingsPanel() {
+      syncDraftSettingsFromSaved();
+      el.settingsPanel.classList.add("open");
+      el.settingsBackdrop.classList.add("open");
+      renderSettingsUi();
+    }
+
+    function closeSettingsPanel() {
+      el.settingsPanel.classList.remove("open");
+      el.settingsBackdrop.classList.remove("open");
+      el.genreDropdown.classList.remove("open");
+    }
+
+    function renderAll() {
+      renderHud();
+      renderSide();
+      updateTitle();
+      renderAccountUi();
+      renderSettingsUi();
+
+      if (state.currentWord) renderWord();
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;"
+      }[ch]));
+    }
+
+    document.querySelectorAll(".mode-card").forEach(card => {
+      card.addEventListener("click", () => selectMode(card.dataset.mode));
     });
 
-    function runTests() {
-      console.assert(sanitizeAccountId("KoPPy 001!!") === "koppy001", "ID should be sanitized");
-      console.assert(sanitizeName("") === "ゲスト", "empty name should become guest");
-      console.assert(normalizeEmoji("🌟abc") === "🌟", "emoji should use first visible character");
-      console.assert(validateAccount({ id: "ab", name: "テスト", emoji: "🌟" }) !== "", "short id should be invalid");
-      console.assert(validateAccount({ id: "abc", name: "テスト", emoji: "🌟" }) === "", "valid account should pass");
-      console.assert(!!el.loginIdInput && !!el.loginBtn, "login ID should be required every time");
-    }
+    el.settingsBtn.addEventListener("click", event => {
+      event.stopPropagation();
+      openSettingsPanel();
+    });
 
-    runTests();
+    el.settingsPanel.addEventListener("click", event => event.stopPropagation());
+    el.settingsBackdrop.addEventListener("click", cancelSettings);
+    el.settingsCloseBtn.addEventListener("click", cancelSettings);
+    el.settingsCancelBtn.addEventListener("click", cancelSettings);
+    el.settingsSaveBtn.addEventListener("click", saveSettings);
 
-    if (hadSavedAccountOnLoad) {
-      el.openCreateFormBtn.textContent = "アカウントを編集する";
-    }
+    el.accountTabBtn.addEventListener("click", () => switchSettingsTab("account"));
+    el.typingTabBtn.addEventListener("click", () => switchSettingsTab("typing"));
+    el.deleteAccountBtn.addEventListener("click", deleteAccount);
 
-    renderAccount();
+    el.genreDropdownBtn.addEventListener("click", event => {
+      event.stopPropagation();
+      el.genreDropdown.classList.toggle("open");
+    });
+
+    document.addEventListener("click", () => {
+      closeSettingsPanel();
+    });
+
+    el.jpModeBtn.addEventListener("click", () => {
+      draftSettings.typingMode = "jp";
+      renderSettingsUi();
+    });
+
+    el.enModeBtn.addEventListener("click", () => {
+      draftSettings.typingMode = "en";
+      renderSettingsUi();
+    });
+
+    el.resetAllBtn.addEventListener("click", () => {
+      const ok = confirm("レベル、EXP、マップ進行、チュートリアル、設定、アカウントをすべてリセットします。よろしいですか？");
+      if (!ok) return;
+
+      [
+        "typingAcademiaExp",
+        "typingAcademiaLevel",
+        "typingAcademiaMapProgress",
+        "typingAcademiaTutorialDone",
+        "typingAcademiaGenres",
+        "typingAcademiaTypingMode",
+        "typingAcademiaAccount"
+      ].forEach(key => localStorage.removeItem(key));
+
+      const fresh = loadAccount();
+      account.id = fresh.id;
+      account.name = fresh.name;
+      account.emoji = fresh.emoji;
+      saveAccount();
+
+      gameSettings.genres = ["all"];
+      gameSettings.typingMode = "jp";
+      draftSettings.genres = ["all"];
+      draftSettings.typingMode = "jp";
+
+      stopTimer();
+      state = createInitialState("normal");
+      showScreen("menu");
+      el.jpWord.textContent = "スペースで開始";
+      el.romaWord.innerHTML = "";
+      el.message.textContent = "モードを選んだら、スペースキーで開始できます。";
+      renderAll();
+
+      alert("リセットしました。");
+    });
+
+    el.tutorialNextBtn.addEventListener("click", () => {
+      tutorialLineIndex = Math.min(tutorialLines.length - 1, tutorialLineIndex + 1);
+      renderTutorialLine();
+    });
+
+    el.tutorialBeginnerBtn.addEventListener("click", () => {
+      localStorage.setItem("typingAcademiaTutorialDone", "1");
+      showScreen("map");
+      renderMapSelect(0);
+    });
+
+    el.tutorialIntermediateBtn.addEventListener("click", () => {
+      localStorage.setItem("typingAcademiaTutorialDone", "1");
+      unlockMapAndPrevious(4);
+      showScreen("map");
+      renderMapSelect(4);
+    });
+
+    el.tutorialSkipBtn.addEventListener("click", () => {
+      localStorage.setItem("typingAcademiaTutorialDone", "1");
+      showScreen("map");
+      renderMapSelect(0);
+    });
+
+    el.preWorldNextBtn.addEventListener("click", advancePreWorldAdvice);
+
+    el.preWorldBackBtn.addEventListener("click", () => {
+      showScreen("map");
+      renderMapSelect(state.selectedMap || 0);
+    });
+
+    el.startBtn.addEventListener("click", startGame);
+
+    el.backBtn.addEventListener("click", () => {
+      stopTimer();
+      state.running = false;
+
+      if (state.mode === "level") {
+        showScreen("map");
+        renderMapSelect(state.selectedMap);
+      } else {
+        showScreen("menu");
+      }
+    });
+
+    el.mapBackBtn.addEventListener("click", () => {
+      stopTimer();
+      showScreen("menu");
+    });
+
+    el.retryBtn.addEventListener("click", () => {
+      if (state.isSkipTest) openPreWorldAdvice(state.skipTargetMap, 0, "skip");
+      else if (state.mode === "level") startSelectedMode("level", state.selectedMap, state.selectedWorld);
+      else startSelectedMode(state.mode);
+    });
+
+    el.menuBtn.addEventListener("click", () => {
+      if (state.mode === "level") {
+        showScreen("map");
+        renderMapSelect(state.selectedMap);
+      } else {
+        showScreen("menu");
+      }
+    });
+
+    window.addEventListener("keydown", handleKey);
+
+    renderAll();
   </script>
 </body>
 </html>
