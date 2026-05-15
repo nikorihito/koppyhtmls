@@ -92,25 +92,81 @@
     }
 
     .settings-panel {
-      position: absolute;
-      top: calc(100% + 12px);
-      right: 0;
-      z-index: 10;
-      width: min(340px, calc(100vw - 32px));
-      padding: 16px;
-      border-radius: 22px;
-      background: rgba(20, 25, 55, .94);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      right: auto;
+      z-index: 100;
+      width: min(860px, calc(100vw - 28px));
+      max-height: min(760px, calc(100vh - 28px));
+      overflow: auto;
+      padding: 24px;
+      border-radius: 28px;
+      background: rgba(20, 25, 55, .96);
       border: 1px solid rgba(255,255,255,.22);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
+      box-shadow: 0 28px 90px rgba(0,0,0,.46);
+      backdrop-filter: blur(22px);
       display: none;
+      transform: translate(-50%, -50%);
     }
 
     .settings-panel.open { display: block; }
 
-    .settings-panel h3 {
-      margin: 0 0 12px;
-      font-size: 18px;
+    .settings-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(4px);
+    }
+
+    .settings-backdrop.open { display: block; }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .settings-header h3 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .settings-close-button {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.20);
+      box-shadow: none;
+    }
+
+    .settings-save-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,.14);
+    }
+
+    .login-link-button {
+      width: 100%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      font-weight: 900;
     }
 
     .setting-group {
@@ -971,6 +1027,7 @@
         <h1>星降るタイピングアカデミア</h1>
         <p class="lead">教育にも使える、幻想的なタイピング練習ゲーム。ローマ字の複数候補にも対応しています。</p>
       </div>
+      <div class="settings-backdrop" id="settingsBackdrop"></div>
       <div class="header-right">
         <div class="account-card" id="accountCard">
           <div class="account-icon" id="accountIconDisplay">🌟</div>
@@ -982,25 +1039,14 @@
         <div class="pill">現在の称号：<strong id="titleName">見習い魔法タイパー</strong></div>
         <button class="settings-button" id="settingsBtn" aria-label="設定を開く">…</button>
         <div class="settings-panel" id="settingsPanel">
-          <h3>設定</h3>
+          <div class="settings-header">
+            <h3>設定</h3>
+            <button type="button" class="settings-close-button" id="settingsCloseBtn">×</button>
+          </div>
           <div class="setting-group">
-            <label>アカウント</label>
-            <div class="account-setting-grid">
-              <div>
-                <label for="accountEmojiInput">アイコン</label>
-                <input id="accountEmojiInput" class="setting-input emoji-input" maxlength="4" placeholder="🌟">
-              </div>
-              <div>
-                <label for="accountNameInput">名前</label>
-                <input id="accountNameInput" class="setting-input" maxlength="20" placeholder="名前を入力">
-              </div>
-            </div>
-            <label for="accountIdInput">アカウントID</label>
-            <input id="accountIdInput" class="setting-input" maxlength="24" placeholder="例：koppy001">
-            <div class="account-actions">
-              <button type="button" id="saveAccountBtn">保存</button>
-              <button type="button" class="secondary" id="randomAccountIdBtn">ID自動生成</button>
-            </div>
+            <label>ログイン・アカウント</label>
+            <a class="login-link-button" href="./login.html">login.htmlで編集する</a>
+            <p class="settings-note">アカウントID・名前・絵文字アイコンはログイン画面で管理します。</p>
           </div>
           <div class="setting-group">
             <label>ジャンル絞り込み</label>
@@ -1018,6 +1064,10 @@
             </div>
           </div>
           <p class="settings-note">ジャンル絞り込みと英語/日本語切り替えは、ノーマル・エンドレスモードに適用されます。レベルアップモードは専用カリキュラムです。</p>
+          <div class="settings-save-row">
+            <button type="button" class="secondary" id="settingsCancelBtn">キャンセル</button>
+            <button type="button" id="settingsSaveBtn">設定を保存する</button>
+          </div>
         </div>
       </div>
     </header>
@@ -1230,11 +1280,10 @@
       accountIconDisplay: document.getElementById('accountIconDisplay'),
       accountNameDisplay: document.getElementById('accountNameDisplay'),
       accountIdDisplay: document.getElementById('accountIdDisplay'),
-      accountEmojiInput: document.getElementById('accountEmojiInput'),
-      accountNameInput: document.getElementById('accountNameInput'),
-      accountIdInput: document.getElementById('accountIdInput'),
-      saveAccountBtn: document.getElementById('saveAccountBtn'),
-      randomAccountIdBtn: document.getElementById('randomAccountIdBtn'),
+      settingsBackdrop: document.getElementById('settingsBackdrop'),
+      settingsCloseBtn: document.getElementById('settingsCloseBtn'),
+      settingsCancelBtn: document.getElementById('settingsCancelBtn'),
+      settingsSaveBtn: document.getElementById('settingsSaveBtn'),
       hudMode: document.getElementById('hudMode'),
       hudTime: document.getElementById('hudTime'),
       hudScore: document.getElementById('hudScore'),
@@ -1312,6 +1361,11 @@
     const gameSettings = {
       genres: loadSelectedGenres(),
       typingMode: localStorage.getItem('typingAcademiaTypingMode') || 'jp'
+    };
+
+    const draftSettings = {
+      genres: [...gameSettings.genres],
+      typingMode: gameSettings.typingMode
     };
 
     function loadAccount() {
@@ -2185,26 +2239,23 @@
       renderAccountUi();
       if (!el.genreMenu.dataset.ready) setupGenreOptions();
       renderGenreSelection();
-      el.jpModeBtn.classList.toggle('active', gameSettings.typingMode === 'jp');
-      el.enModeBtn.classList.toggle('active', gameSettings.typingMode === 'en');
+      el.jpModeBtn.classList.toggle('active', draftSettings.typingMode === 'jp');
+      el.enModeBtn.classList.toggle('active', draftSettings.typingMode === 'en');
     }
 
     function renderAccountUi() {
+      const latest = loadAccount();
+      account.id = latest.id;
+      account.name = latest.name;
+      account.emoji = latest.emoji;
       el.accountIconDisplay.textContent = account.emoji;
       el.accountNameDisplay.textContent = account.name;
       el.accountIdDisplay.textContent = `ID: ${account.id}`;
-      el.accountEmojiInput.value = account.emoji;
-      el.accountNameInput.value = account.name;
-      el.accountIdInput.value = account.id;
     }
 
-    function applyAccountForm() {
-      account.emoji = normalizeEmoji(el.accountEmojiInput.value);
-      account.name = String(el.accountNameInput.value || 'ゲスト').trim().slice(0, 20) || 'ゲスト';
-      account.id = sanitizeAccountId(el.accountIdInput.value);
-      saveAccount();
-      renderAccountUi();
-      el.message.textContent = 'アカウント情報を保存しました。';
+    function syncDraftSettingsFromSaved() {
+      draftSettings.genres = [...gameSettings.genres];
+      draftSettings.typingMode = gameSettings.typingMode;
     }
 
     function setupGenreOptions() {
@@ -2226,21 +2277,21 @@
 
     function toggleGenre(genre) {
       if (genre === 'all') {
-        gameSettings.genres = ['all'];
+        draftSettings.genres = ['all'];
       } else {
-        const withoutAll = gameSettings.genres.filter(item => item !== 'all');
+        const withoutAll = draftSettings.genres.filter(item => item !== 'all');
         if (withoutAll.includes(genre)) {
-          gameSettings.genres = withoutAll.filter(item => item !== genre);
+          draftSettings.genres = withoutAll.filter(item => item !== genre);
         } else {
-          gameSettings.genres = [...withoutAll, genre];
+          draftSettings.genres = [...withoutAll, genre];
         }
-        if (gameSettings.genres.length === 0) gameSettings.genres = ['all'];
+        if (draftSettings.genres.length === 0) draftSettings.genres = ['all'];
       }
-      applySettingChange();
+      renderGenreSelection();
     }
 
     function renderGenreSelection() {
-      const selected = gameSettings.genres.includes('all') ? ['all'] : gameSettings.genres;
+      const selected = draftSettings.genres.includes('all') ? ['all'] : draftSettings.genres;
       el.genreMenu.querySelectorAll('.genre-option').forEach(button => {
         button.classList.toggle('active', selected.includes(button.dataset.genre));
       });
@@ -2253,20 +2304,33 @@
       el.selectedGenreChips.innerHTML = selected.map(genre => `<span class="selected-genre-chip">${escapeHtml(genre)}</span>`).join('');
     }
 
-    function applySettingChange() {
+    function saveSettings() {
+      gameSettings.genres = [...draftSettings.genres];
+      gameSettings.typingMode = draftSettings.typingMode;
       localStorage.setItem('typingAcademiaGenres', JSON.stringify(gameSettings.genres));
       localStorage.setItem('typingAcademiaTypingMode', gameSettings.typingMode);
-      if (state.mode === 'normal' || state.mode === 'endless') {
-        stopTimer();
-        const currentMode = state.mode;
-        state = createInitialState(currentMode);
-        if (currentMode === 'endless') state.remaining = 10;
-        showScreen('game');
-        el.jpWord.textContent = '準備OK';
-        el.romaWord.innerHTML = '';
-        el.message.textContent = '設定を反映しました。スペースキーで開始。';
-      }
+      closeSettingsPanel();
+      el.message.textContent = '設定を保存しました。次に開始する問題から反映されます。';
       renderAll();
+    }
+
+    function cancelSettings() {
+      syncDraftSettingsFromSaved();
+      closeSettingsPanel();
+      renderAll();
+    }
+
+    function openSettingsPanel() {
+      syncDraftSettingsFromSaved();
+      el.settingsPanel.classList.add('open');
+      el.settingsBackdrop.classList.add('open');
+      renderSettingsUi();
+    }
+
+    function closeSettingsPanel() {
+      el.settingsPanel.classList.remove('open');
+      el.settingsBackdrop.classList.remove('open');
+      el.genreDropdown.classList.remove('open');
     }
 
     function escapeHtml(value) {
@@ -2286,7 +2350,8 @@
       console.assert(mapAdviceMessages.length === 10, 'each map should have a Nikorihito advice message');
       console.assert(tutorialLines.length >= 4, 'tutorial should have sequential dialogue lines');
       console.assert(!!el.resetAllBtn, 'reset button should exist');
-      console.assert(!!el.accountCard && !!el.saveAccountBtn, 'account UI should exist');
+      console.assert(!!el.accountCard, 'account display should exist');
+      console.assert(!!el.settingsSaveBtn, 'settings save button should exist');
       console.assert(sanitizeAccountId('KoPPy 001!!') === 'koppy001', 'account id should be sanitized');
       console.assert(!!el.gameAdviceBox, 'game advice box should exist');
       console.assert(typeof advancePreWorldAdvice === 'function', 'pre-world advice should require next button');
@@ -2324,17 +2389,14 @@
 
     el.settingsBtn.addEventListener('click', event => {
       event.stopPropagation();
-      el.settingsPanel.classList.toggle('open');
+      openSettingsPanel();
     });
 
     el.settingsPanel.addEventListener('click', event => event.stopPropagation());
-
-    el.saveAccountBtn.addEventListener('click', applyAccountForm);
-
-    el.randomAccountIdBtn.addEventListener('click', () => {
-      el.accountIdInput.value = generateAccountId();
-      applyAccountForm();
-    });
+    el.settingsBackdrop.addEventListener('click', cancelSettings);
+    el.settingsCloseBtn.addEventListener('click', cancelSettings);
+    el.settingsCancelBtn.addEventListener('click', cancelSettings);
+    el.settingsSaveBtn.addEventListener('click', saveSettings);
 
     el.genreDropdownBtn.addEventListener('click', event => {
       event.stopPropagation();
@@ -2342,18 +2404,17 @@
     });
 
     document.addEventListener('click', () => {
-      el.settingsPanel.classList.remove('open');
-      el.genreDropdown.classList.remove('open');
+      closeSettingsPanel();
     });
 
     el.jpModeBtn.addEventListener('click', () => {
-      gameSettings.typingMode = 'jp';
-      applySettingChange();
+      draftSettings.typingMode = 'jp';
+      renderSettingsUi();
     });
 
     el.enModeBtn.addEventListener('click', () => {
-      gameSettings.typingMode = 'en';
-      applySettingChange();
+      draftSettings.typingMode = 'en';
+      renderSettingsUi();
     });
 
     el.gameAdviceNextBtn.addEventListener('click', () => {});
@@ -2406,6 +2467,8 @@
       saveAccount();
       gameSettings.genres = ['all'];
       gameSettings.typingMode = 'jp';
+      draftSettings.genres = ['all'];
+      draftSettings.typingMode = 'jp';
       stopTimer();
       state = createInitialState('normal');
       showScreen('menu');
