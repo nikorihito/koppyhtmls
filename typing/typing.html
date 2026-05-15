@@ -405,6 +405,41 @@
       border-right: 13px solid rgba(255,255,255,.94);
     }
 
+    .character-dialog.reverse {
+      grid-template-columns: 1fr 82px;
+    }
+
+    .character-dialog.reverse img {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .character-dialog.reverse .advice-bubble {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .character-dialog.reverse .advice-bubble::before {
+      left: auto;
+      right: -11px;
+      border-right: 0;
+      border-left: 13px solid rgba(255,255,255,.94);
+    }
+
+    .advice-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .advice-actions button {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 13px;
+      box-shadow: none;
+    }
+
     .character-dialog strong {
       display: inline-flex;
       color: #0b1530;
@@ -955,10 +990,13 @@
           </div>
 
           <div class="character-dialog" id="gameAdviceBox">
-            <img src="./ニコリヒト.png" alt="ニコリヒト">
+            <img id="gameAdviceImage" src="./ニコリヒト.png" alt="ニコリヒト">
             <div class="advice-bubble">
-              <strong>ニコリヒト</strong>
+              <strong id="gameAdviceName">ニコリヒト</strong>
               <p id="gameAdviceText">このワールドのアドバイスがここに表示されます。</p>
+              <div class="advice-actions">
+                <button id="gameAdviceNextBtn" type="button">次へ</button>
+              </div>
             </div>
           </div>
 
@@ -1087,7 +1125,10 @@
       resultCombo: document.getElementById('resultCombo'),
       resetAllBtn: document.getElementById('resetAllBtn'),
       gameAdviceBox: document.getElementById('gameAdviceBox'),
+      gameAdviceImage: document.getElementById('gameAdviceImage'),
+      gameAdviceName: document.getElementById('gameAdviceName'),
       gameAdviceText: document.getElementById('gameAdviceText'),
+      gameAdviceNextBtn: document.getElementById('gameAdviceNextBtn'),
       tutorialBeginnerBtn: document.getElementById('tutorialBeginnerBtn'),
       tutorialIntermediateBtn: document.getElementById('tutorialIntermediateBtn'),
       tutorialSkipBtn: document.getElementById('tutorialSkipBtn'),
@@ -1197,7 +1238,11 @@
         skipPassWords: 8,
         skipMaxMiss: 2,
         skipMinAccuracy: 92,
-        completedQuests: new Set()
+        completedQuests: new Set(),
+        adviceRequired: false,
+        adviceDone: true,
+        adviceIndex: 0,
+        adviceLines: []
       };
     }
 
@@ -1240,7 +1285,7 @@
       el.jpWord.textContent = '準備OK';
       el.romaWord.innerHTML = '';
       el.message.textContent = makeStartMessage(mode, mapIndex, worldIndex);
-      if (mode === 'level') showGameAdvice(mapIndex, worldIndex);
+      if (mode === 'level') showPreWorldDialogue(mapIndex, worldIndex);
       else hideGameAdvice();
       renderAll();
     }
@@ -1256,7 +1301,7 @@
       state.lessonWords = buildSkipTestWords(mapIndex);
 
       showScreen('game');
-      showGameAdvice(mapIndex, 0, '飛び級テストだよ。落ち着いて、正確率を意識しながら進めよう。');
+      showSkipTestDialogue(mapIndex);
       el.jpWord.textContent = 'マップ飛び級テスト';
       el.romaWord.innerHTML = '';
       el.message.textContent = `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} に飛び級挑戦。8問正解・正確率92%以上・ミス2回以内で解放。`;
@@ -1285,6 +1330,10 @@
     }
 
     function startGame() {
+      if (state.adviceRequired && !state.adviceDone) {
+        el.message.textContent = 'ニコリヒトたちのアドバイスを最後まで読んでから始めよう。';
+        return;
+      }
       if (state.running) return;
       state.running = true;
       if (!state.currentWord) setNextWord();
@@ -1745,11 +1794,90 @@
       const text = `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。`;
       el.mapAdviceText.textContent = text;
       el.mapAdviceBox?.classList.add('show');
-      showGameAdvice(mapIndex, worldIndex, text);
+    }
+
+    function buildWorldDialogue(mapIndex, worldIndex) {
+      const map = levelMaps[mapIndex];
+      const lesson = getLesson(mapIndex, worldIndex);
+      const advice = mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。';
+      return [
+        {
+          speaker: 'ニコリヒト',
+          image: './ニコリヒト.png',
+          side: 'left',
+          text: `${map.icon} ${map.name}、World ${worldIndex + 1}「${lesson.title}」に入るよ。`
+        },
+        {
+          speaker: 'つるつる君',
+          image: './つるつる君.png',
+          side: 'right',
+          text: 'このワールドでは、どんなことを意識すればいい？'
+        },
+        {
+          speaker: 'ニコリヒト',
+          image: './ニコリヒト.png',
+          side: 'left',
+          text: `${advice}`
+        },
+        {
+          speaker: 'つるつる君',
+          image: './つるつる君.png',
+          side: 'right',
+          text: 'よし、アドバイスを読んだらスタートだね！'
+        }
+      ];
+    }
+
+    function showPreWorldDialogue(mapIndex, worldIndex) {
+      state.adviceRequired = true;
+      state.adviceDone = false;
+      state.adviceIndex = 0;
+      state.adviceLines = buildWorldDialogue(mapIndex, worldIndex);
+      renderGameAdviceLine();
+      el.message.textContent = 'アドバイスを最後まで読んでから、スタートできます。';
+    }
+
+    function showSkipTestDialogue(mapIndex) {
+      state.adviceRequired = true;
+      state.adviceDone = false;
+      state.adviceIndex = 0;
+      state.adviceLines = [
+        { speaker: 'ニコリヒト', image: './ニコリヒト.png', side: 'left', text: `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} の飛び級テストだよ。` },
+        { speaker: 'つるつる君', image: './つるつる君.png', side: 'right', text: '飛び級ってことは、ちょっとむずかしいのかな？' },
+        { speaker: 'ニコリヒト', image: './ニコリヒト.png', side: 'left', text: '8問正解・正確率92%以上・ミス2回以内で合格。速さより正確さを優先しよう。' },
+        { speaker: 'つるつる君', image: './つるつる君.png', side: 'right', text: '落ち着いて打てばいけそう！アドバイスを読んだらスタートだね。' }
+      ];
+      renderGameAdviceLine();
+      el.message.textContent = '飛び級テストの説明を最後まで読んでから、スタートできます。';
+    }
+
+    function renderGameAdviceLine() {
+      const line = state.adviceLines[state.adviceIndex];
+      if (!line) return;
+      el.gameAdviceBox.classList.add('show');
+      el.gameAdviceBox.classList.toggle('reverse', line.side === 'right');
+      el.gameAdviceImage.src = line.image;
+      el.gameAdviceImage.alt = line.speaker;
+      el.gameAdviceName.textContent = line.speaker;
+      el.gameAdviceText.textContent = line.text;
+      const isLast = state.adviceIndex >= state.adviceLines.length - 1;
+      el.gameAdviceNextBtn.textContent = isLast ? 'はじめる' : '次へ';
+    }
+
+    function advanceGameAdvice() {
+      if (!state.adviceRequired || state.adviceDone) return;
+      if (state.adviceIndex < state.adviceLines.length - 1) {
+        state.adviceIndex += 1;
+        renderGameAdviceLine();
+        return;
+      }
+      state.adviceDone = true;
+      state.adviceRequired = false;
+      hideGameAdvice();
+      el.message.textContent = '準備OK。スタートを押すか、スペースキーで始めよう。';
     }
 
     function showGameAdvice(mapIndex, worldIndex, customText = '') {
-      if (!el.gameAdviceBox || !el.gameAdviceText) return;
       const lesson = getLesson(mapIndex, worldIndex);
       el.gameAdviceText.textContent = customText || `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。スタートを押すか、スペースキーで始めよう。`;
       el.gameAdviceBox.classList.add('show');
@@ -1757,6 +1885,7 @@
 
     function hideGameAdvice() {
       el.gameAdviceBox?.classList.remove('show');
+      el.gameAdviceBox?.classList.remove('reverse');
     }
 
     function renderTutorialLine() {
@@ -1912,6 +2041,7 @@
       console.assert(tutorialLines.length >= 4, 'tutorial should have sequential dialogue lines');
       console.assert(!!el.resetAllBtn, 'reset button should exist');
       console.assert(!!el.gameAdviceBox, 'game advice box should exist');
+      console.assert(typeof advanceGameAdvice === 'function', 'world advice should require next button');
       console.assert(romajiRules.kanaRules['し'].includes('shi') && romajiRules.kanaRules['し'].includes('si'), 'し must accept shi and si');
       console.assert(romajiRules.specialRules?.finalN?.enabled, 'finalN special rule must be enabled');
       console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'し should include si');
@@ -1964,6 +2094,8 @@
       gameSettings.typingMode = 'en';
       applySettingChange();
     });
+
+    el.gameAdviceNextBtn.addEventListener('click', advanceGameAdvice);
 
     el.tutorialNextBtn.addEventListener('click', () => {
       tutorialLineIndex = Math.min(tutorialLines.length - 1, tutorialLineIndex + 1);
