@@ -824,6 +824,9 @@
     </header>
 
     <section id="menuScreen" class="screen active panel">
+      <div style="padding: 18px 22px 0; display:flex; justify-content:flex-end;">
+        <button class="secondary" id="resetAllBtn">全てをリセットする</button>
+      </div>
       <div class="mode-grid">
         <article class="mode-card" data-mode="level">
           <div class="mode-icon">🏰</div>
@@ -832,7 +835,7 @@
           <span class="tag">育成・授業向け</span>
         </article>
         <article class="mode-card" data-mode="normal">
-          <div class="mode-icon">🍣</div>
+          <div class="mode-icon">⌨️</div>
           <h2>ノーマルモード</h2>
           <p>60秒で高スコアを目指す標準モードです。日本語の単語や短文をローマ字で入力します。</p>
           <span class="tag">普通</span>
@@ -900,6 +903,14 @@
             <div class="hud-card"><span>残り時間</span><strong id="hudTime">-</strong></div>
             <div class="hud-card"><span>スコア</span><strong id="hudScore">0</strong></div>
             <div class="hud-card"><span>正確率</span><strong id="hudAcc">100%</strong></div>
+          </div>
+
+          <div class="character-dialog" id="gameAdviceBox">
+            <img src="./ニコリヒト.png" alt="ニコリヒト">
+            <div>
+              <strong>ニコリヒト</strong>
+              <p id="gameAdviceText">このワールドのアドバイスがここに表示されます。</p>
+            </div>
           </div>
 
           <div id="stage" class="stage">
@@ -1025,6 +1036,9 @@
       resultAcc: document.getElementById('resultAcc'),
       resultTyped: document.getElementById('resultTyped'),
       resultCombo: document.getElementById('resultCombo'),
+      resetAllBtn: document.getElementById('resetAllBtn'),
+      gameAdviceBox: document.getElementById('gameAdviceBox'),
+      gameAdviceText: document.getElementById('gameAdviceText'),
       tutorialBeginnerBtn: document.getElementById('tutorialBeginnerBtn'),
       tutorialIntermediateBtn: document.getElementById('tutorialIntermediateBtn'),
       tutorialSkipBtn: document.getElementById('tutorialSkipBtn'),
@@ -1177,6 +1191,8 @@
       el.jpWord.textContent = '準備OK';
       el.romaWord.innerHTML = '';
       el.message.textContent = makeStartMessage(mode, mapIndex, worldIndex);
+      if (mode === 'level') showGameAdvice(mapIndex, worldIndex);
+      else hideGameAdvice();
       renderAll();
     }
 
@@ -1191,6 +1207,7 @@
       state.lessonWords = buildSkipTestWords(mapIndex);
 
       showScreen('game');
+      showGameAdvice(mapIndex, 0, '飛び級テストだよ。落ち着いて、正確率を意識しながら進めよう。');
       el.jpWord.textContent = 'マップ飛び級テスト';
       el.romaWord.innerHTML = '';
       el.message.textContent = `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} に飛び級挑戦。8問正解・正確率92%以上・ミス2回以内で解放。`;
@@ -1676,8 +1693,21 @@
     function showWorldAdvice(mapIndex, worldIndex) {
       const map = levelMaps[mapIndex];
       const lesson = getLesson(mapIndex, worldIndex);
-      el.mapAdviceText.textContent = `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。`;
+      const text = `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。`;
+      el.mapAdviceText.textContent = text;
       el.mapAdviceBox?.classList.add('show');
+      showGameAdvice(mapIndex, worldIndex, text);
+    }
+
+    function showGameAdvice(mapIndex, worldIndex, customText = '') {
+      if (!el.gameAdviceBox || !el.gameAdviceText) return;
+      const lesson = getLesson(mapIndex, worldIndex);
+      el.gameAdviceText.textContent = customText || `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。`;
+      el.gameAdviceBox.classList.add('show');
+    }
+
+    function hideGameAdvice() {
+      el.gameAdviceBox?.classList.remove('show');
     }
 
     function renderTutorialLine() {
@@ -1831,6 +1861,8 @@
       console.assert(levelMaps.every(map => map.worlds.length === 10), 'each map must have 10 worlds');
       console.assert(mapAdviceMessages.length === 10, 'each map should have a Nikorihito advice message');
       console.assert(tutorialLines.length >= 4, 'tutorial should have sequential dialogue lines');
+      console.assert(!!el.resetAllBtn, 'reset button should exist');
+      console.assert(!!el.gameAdviceBox, 'game advice box should exist');
       console.assert(romajiRules.kanaRules['し'].includes('shi') && romajiRules.kanaRules['し'].includes('si'), 'し must accept shi and si');
       console.assert(romajiRules.specialRules?.finalN?.enabled, 'finalN special rule must be enabled');
       console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'し should include si');
@@ -1906,6 +1938,30 @@
       localStorage.setItem('typingAcademiaTutorialDone', '1');
       showScreen('map');
       renderMapSelect(0);
+    });
+
+    el.resetAllBtn.addEventListener('click', () => {
+      const ok = confirm('レベル、EXP、マップ進行、チュートリアル、設定をすべてリセットします。よろしいですか？');
+      if (!ok) return;
+      [
+        'typingAcademiaExp',
+        'typingAcademiaLevel',
+        'typingAcademiaMapProgress',
+        'typingAcademiaTutorialDone',
+        'typingAcademiaGenres',
+        'typingAcademiaTypingMode'
+      ].forEach(key => localStorage.removeItem(key));
+      gameSettings.genres = ['all'];
+      gameSettings.typingMode = 'jp';
+      stopTimer();
+      state = createInitialState('normal');
+      showScreen('menu');
+      el.jpWord.textContent = 'スペースで開始';
+      el.romaWord.innerHTML = '';
+      el.message.textContent = 'モードを選んだら、スペースキーで開始できます。';
+      hideGameAdvice();
+      renderAll();
+      alert('リセットしました。');
     });
 
     el.startBtn.addEventListener('click', startGame);
