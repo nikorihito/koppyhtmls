@@ -979,6 +979,25 @@
       </div>
     </section>
 
+    <section id="preWorldAdviceScreen" class="screen panel tutorial-card">
+      <h2 id="preWorldAdviceTitle">ワールド開始前アドバイス</h2>
+      <p class="lead" id="preWorldAdviceLead">ニコリヒトとつるつる君の会話を読んでから、ワールドを開始します。</p>
+      <div class="speech-stage">
+        <div class="speech-row" id="preWorldSpeechRow">
+          <img id="preWorldSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
+          <div class="speech-bubble">
+            <span class="speech-name" id="preWorldSpeakerName">ニコリヒト</span>
+            <div class="speech-text" id="preWorldSpeechText">このワールドのアドバイスを確認しよう。</div>
+          </div>
+        </div>
+      </div>
+      <div class="speech-progress" id="preWorldProgress">1 / 4</div>
+      <div class="tutorial-actions">
+        <button class="tutorial-choice secondary" id="preWorldBackBtn">マップに戻る</button>
+        <button class="tutorial-choice" id="preWorldNextBtn">次へ</button>
+      </div>
+    </section>
+
     <section id="gameScreen" class="screen">
       <div class="game-layout">
         <main class="panel game-main">
@@ -1084,6 +1103,7 @@
     const screens = {
       menu: document.getElementById('menuScreen'),
       tutorial: document.getElementById('levelTutorialScreen'),
+      preWorldAdvice: document.getElementById('preWorldAdviceScreen'),
       map: document.getElementById('mapScreen'),
       game: document.getElementById('gameScreen'),
       result: document.getElementById('resultScreen')
@@ -1140,6 +1160,15 @@
       tutorialSpeakerName: document.getElementById('tutorialSpeakerName'),
       tutorialSpeechText: document.getElementById('tutorialSpeechText'),
       tutorialProgress: document.getElementById('tutorialProgress'),
+      preWorldAdviceTitle: document.getElementById('preWorldAdviceTitle'),
+      preWorldAdviceLead: document.getElementById('preWorldAdviceLead'),
+      preWorldSpeechRow: document.getElementById('preWorldSpeechRow'),
+      preWorldSpeakerImage: document.getElementById('preWorldSpeakerImage'),
+      preWorldSpeakerName: document.getElementById('preWorldSpeakerName'),
+      preWorldSpeechText: document.getElementById('preWorldSpeechText'),
+      preWorldProgress: document.getElementById('preWorldProgress'),
+      preWorldNextBtn: document.getElementById('preWorldNextBtn'),
+      preWorldBackBtn: document.getElementById('preWorldBackBtn'),
       settingsBtn: document.getElementById('settingsBtn'),
       settingsPanel: document.getElementById('settingsPanel'),
       genreDropdown: document.getElementById('genreDropdown'),
@@ -1242,7 +1271,8 @@
         adviceRequired: false,
         adviceDone: true,
         adviceIndex: 0,
-        adviceLines: []
+        adviceLines: [],
+        pendingStart: null
       };
     }
 
@@ -1301,7 +1331,7 @@
       state.lessonWords = buildSkipTestWords(mapIndex);
 
       showScreen('game');
-      showSkipTestDialogue(mapIndex);
+      hideGameAdvice();
       el.jpWord.textContent = 'マップ飛び級テスト';
       el.romaWord.innerHTML = '';
       el.message.textContent = `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} に飛び級挑戦。8問正解・正確率92%以上・ミス2回以内で解放。`;
@@ -1627,7 +1657,7 @@
       checkQuests();
 
       if (state.isSkipTest && isSkipTestPassed()) {
-        unlockMap(state.skipTargetMap);
+        unlockMapAndPrevious(state.skipTargetMap);
         finishGame('マップ飛び級テスト合格！');
         return;
       }
@@ -1724,6 +1754,10 @@
       unlockWorld(mapIndex, 0);
     }
 
+    function unlockMapAndPrevious(mapIndex) {
+      for (let i = 0; i <= mapIndex; i++) unlockMap(i);
+    }
+
     function unlockNextWorld() {
       let map = state.selectedMap;
       let world = state.selectedWorld + 1;
@@ -1753,7 +1787,7 @@
       });
 
       el.mapGrid.querySelectorAll('.skip-map').forEach(btn => {
-        btn.addEventListener('click', () => startSkipTest(Number(btn.closest('.map-card').dataset.map)));
+        btn.addEventListener('click', () => openPreWorldAdvice(Number(btn.closest('.map-card').dataset.map), 0, 'skip'));
       });
 
       renderWorldSelect(selectedMap);
@@ -1783,7 +1817,7 @@
           const mapIndex = Number(card.dataset.map);
           const worldIndex = Number(card.dataset.world);
           showWorldAdvice(mapIndex, worldIndex);
-          startSelectedMode('level', mapIndex, worldIndex);
+          openPreWorldAdvice(mapIndex, worldIndex, 'world');
         });
       });
     }
@@ -1828,58 +1862,66 @@
       ];
     }
 
-    function showPreWorldDialogue(mapIndex, worldIndex) {
-      state.adviceRequired = true;
-      state.adviceDone = false;
+    function openPreWorldAdvice(mapIndex, worldIndex, type = 'world') {
+      stopTimer();
+      state = createInitialState('level');
+      state.selectedMap = mapIndex;
+      state.selectedWorld = worldIndex;
+      state.pendingStart = { type, mapIndex, worldIndex };
       state.adviceIndex = 0;
-      state.adviceLines = buildWorldDialogue(mapIndex, worldIndex);
-      renderGameAdviceLine();
-      el.message.textContent = 'アドバイスを最後まで読んでから、スタートできます。';
+      state.adviceLines = type === 'skip'
+        ? buildSkipDialogue(mapIndex)
+        : buildWorldDialogue(mapIndex, worldIndex);
+
+      const map = levelMaps[mapIndex];
+      el.preWorldAdviceTitle.textContent = type === 'skip' ? 'マップ飛び級テストの前に' : `${map.icon} ${map.name} の前に`;
+      el.preWorldAdviceLead.textContent = type === 'skip'
+        ? '飛び級テストの説明を読んでから、テストを開始します。'
+        : 'ニコリヒトとつるつる君のアドバイスを読んでから、ワールドを開始します。';
+      showScreen('preWorldAdvice');
+      renderPreWorldAdviceLine();
     }
 
-    function showSkipTestDialogue(mapIndex) {
-      state.adviceRequired = true;
-      state.adviceDone = false;
-      state.adviceIndex = 0;
-      state.adviceLines = [
+    function buildSkipDialogue(mapIndex) {
+      return [
         { speaker: 'ニコリヒト', image: './ニコリヒト.png', side: 'left', text: `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} の飛び級テストだよ。` },
         { speaker: 'つるつる君', image: './つるつる君.png', side: 'right', text: '飛び級ってことは、ちょっとむずかしいのかな？' },
         { speaker: 'ニコリヒト', image: './ニコリヒト.png', side: 'left', text: '8問正解・正確率92%以上・ミス2回以内で合格。速さより正確さを優先しよう。' },
-        { speaker: 'つるつる君', image: './つるつる君.png', side: 'right', text: '落ち着いて打てばいけそう！アドバイスを読んだらスタートだね。' }
+        { speaker: 'つるつる君', image: './つるつる君.png', side: 'right', text: '落ち着いて打てばいけそう！説明を読んだらスタートだね。' }
       ];
-      renderGameAdviceLine();
-      el.message.textContent = '飛び級テストの説明を最後まで読んでから、スタートできます。';
     }
 
-    function renderGameAdviceLine() {
+    function renderPreWorldAdviceLine() {
       const line = state.adviceLines[state.adviceIndex];
       if (!line) return;
-      el.gameAdviceBox.classList.add('show');
-      el.gameAdviceBox.classList.toggle('reverse', line.side === 'right');
-      el.gameAdviceImage.src = line.image;
-      el.gameAdviceImage.alt = line.speaker;
-      el.gameAdviceName.textContent = line.speaker;
-      el.gameAdviceText.textContent = line.text;
-      const isLast = state.adviceIndex >= state.adviceLines.length - 1;
-      el.gameAdviceNextBtn.textContent = isLast ? 'はじめる' : '次へ';
+      el.preWorldSpeechRow.classList.toggle('reverse', line.side === 'right');
+      el.preWorldSpeakerImage.src = line.image;
+      el.preWorldSpeakerImage.alt = line.speaker;
+      el.preWorldSpeakerName.textContent = line.speaker;
+      el.preWorldSpeechText.textContent = line.text;
+      el.preWorldProgress.textContent = `${state.adviceIndex + 1} / ${state.adviceLines.length}`;
+      el.preWorldNextBtn.textContent = state.adviceIndex >= state.adviceLines.length - 1 ? 'はじめる' : '次へ';
     }
 
-    function advanceGameAdvice() {
-      if (!state.adviceRequired || state.adviceDone) return;
+    function advancePreWorldAdvice() {
       if (state.adviceIndex < state.adviceLines.length - 1) {
         state.adviceIndex += 1;
-        renderGameAdviceLine();
+        renderPreWorldAdviceLine();
         return;
       }
-      state.adviceDone = true;
-      state.adviceRequired = false;
-      hideGameAdvice();
-      el.message.textContent = '準備OK。スタートを押すか、スペースキーで始めよう。';
+      const pending = state.pendingStart;
+      if (!pending) {
+        showScreen('map');
+        renderMapSelect(state.selectedMap || 0);
+        return;
+      }
+      if (pending.type === 'skip') startSkipTest(pending.mapIndex);
+      else startSelectedMode('level', pending.mapIndex, pending.worldIndex);
     }
 
     function showGameAdvice(mapIndex, worldIndex, customText = '') {
       const lesson = getLesson(mapIndex, worldIndex);
-      el.gameAdviceText.textContent = customText || `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。スタートを押すか、スペースキーで始めよう。`;
+      el.gameAdviceText.textContent = customText || `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。`;
       el.gameAdviceBox.classList.add('show');
     }
 
@@ -2041,7 +2083,9 @@
       console.assert(tutorialLines.length >= 4, 'tutorial should have sequential dialogue lines');
       console.assert(!!el.resetAllBtn, 'reset button should exist');
       console.assert(!!el.gameAdviceBox, 'game advice box should exist');
-      console.assert(typeof advanceGameAdvice === 'function', 'world advice should require next button');
+      console.assert(typeof advancePreWorldAdvice === 'function', 'pre-world advice should require next button');
+      unlockMapAndPrevious(2);
+      console.assert(isWorldUnlocked(0, 0) && isWorldUnlocked(1, 0) && isWorldUnlocked(2, 0), 'jumping maps should unlock previous maps');
       console.assert(romajiRules.kanaRules['し'].includes('shi') && romajiRules.kanaRules['し'].includes('si'), 'し must accept shi and si');
       console.assert(romajiRules.specialRules?.finalN?.enabled, 'finalN special rule must be enabled');
       console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'し should include si');
@@ -2095,7 +2139,12 @@
       applySettingChange();
     });
 
-    el.gameAdviceNextBtn.addEventListener('click', advanceGameAdvice);
+    el.gameAdviceNextBtn.addEventListener('click', () => {});
+    el.preWorldNextBtn.addEventListener('click', advancePreWorldAdvice);
+    el.preWorldBackBtn.addEventListener('click', () => {
+      showScreen('map');
+      renderMapSelect(state.selectedMap || 0);
+    });
 
     el.tutorialNextBtn.addEventListener('click', () => {
       tutorialLineIndex = Math.min(tutorialLines.length - 1, tutorialLineIndex + 1);
@@ -2110,7 +2159,7 @@
 
     el.tutorialIntermediateBtn.addEventListener('click', () => {
       localStorage.setItem('typingAcademiaTutorialDone', '1');
-      unlockMap(4);
+      unlockMapAndPrevious(4);
       showScreen('map');
       renderMapSelect(4);
     });
