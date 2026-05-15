@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ログイン - 星降るタイピングアカデミア</title>
+  <style>
+    :root {
+      --bg1: #10142d;
+      --bg2: #24164a;
+      --bg3: #0e3b4f;
+      --text: #f8fbff;
+      --muted: #c8d3ff;
+      --line: rgba(255,255,255,.22);
+      --accent: #8ee8ff;
+      --accent2: #ffdf8e;
+      --good: #a9ffcb;
+      --danger: #ff7b91;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(142,232,255,.28), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(255,223,142,.20), transparent 26%),
+        radial-gradient(circle at 50% 90%, rgba(155,119,255,.28), transparent 35%),
+        linear-gradient(135deg, var(--bg1), var(--bg2) 50%, var(--bg3));
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.85) 0 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(142,232,255,.65) 0 1px, transparent 1.5px);
+      background-size: 110px 110px, 170px 170px;
+      background-position: 0 0, 40px 70px;
+      animation: stars 28s linear infinite;
+      opacity: .42;
+    }
+
+    @keyframes stars {
+      from { transform: translateY(0); }
+      to { transform: translateY(110px); }
+    }
+
+    .app {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: 28px 0 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero,
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 32px;
+      display: grid;
+      align-content: space-between;
+      min-height: 560px;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "🏰";
+      position: absolute;
+      right: 26px;
+      bottom: 22px;
+      font-size: 110px;
+      opacity: .18;
+      filter: drop-shadow(0 0 22px rgba(142,232,255,.45));
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 58px);
+      letter-spacing: .04em;
+      line-height: 1.18;
+      text-shadow: 0 4px 24px rgba(142,232,255,.35);
+    }
+
+    .hero p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.9;
+      font-weight: 700;
+    }
+
+    .preview {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 28px;
+      padding: 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.16);
+      width: min(420px, 100%);
+    }
+
+    .preview-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(142,232,255,.30), rgba(255,223,142,.28));
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 36px;
+    }
+
+    .preview strong {
+      display: block;
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card {
+      padding: 24px;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .card .lead {
+      margin: 0 0 22px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-weight: 700;
+    }
+
+    .form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    input {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.11);
+      color: var(--text);
+      padding: 13px 14px;
+      font-size: 16px;
+      font-weight: 800;
+      outline: none;
+      transition: border-color .16s ease, background .16s ease;
+    }
+
+    input:focus {
+      border-color: rgba(142,232,255,.70);
+      background: rgba(255,255,255,.15);
+    }
+
+    input::placeholder { color: rgba(200,211,255,.58); }
+
+    .emoji-input {
+      text-align: center;
+      font-size: 30px;
+      padding: 9px 8px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .error {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 16px;
+      color: #fff;
+      background: rgba(255,123,145,.16);
+      border: 1px solid rgba(255,123,145,.32);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 800;
+    }
+
+    .error.show { display: block; }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .split-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button,
+    .button-link {
+      width: 100%;
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+      transition: transform .15s ease, filter .15s ease;
+      text-align: center;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    button:hover,
+    .button-link:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+    button.secondary,
+    .button-link.secondary {
+      color: var(--text);
+      background: rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    button.danger {
+      color: #fff;
+      background: rgba(255,123,145,.18);
+      border: 1px solid rgba(255,123,145,.34);
+    }
+
+    .status {
+      min-height: 24px;
+      color: var(--good);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .quick-icons {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .quick-icons button {
+      padding: 9px 0;
+      border-radius: 14px;
+      font-size: 22px;
+      box-shadow: none;
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .app { align-items: start; }
+      .layout { grid-template-columns: 1fr; }
+      .hero { min-height: auto; }
+    }
+
+    @media (max-width: 520px) {
+      .app { width: min(100% - 18px, 980px); padding-top: 14px; }
+      .hero, .card { padding: 18px; border-radius: 24px; }
+      .input-row { grid-template-columns: 1fr; }
+      .split-actions { grid-template-columns: 1fr; }
+      .quick-icons { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="layout">
+      <section class="hero">
+        <div>
+          <h1>星降る<br>タイピングアカデミア</h1>
+          <p>アカウントID・名前・絵文字アイコンを設定します。保存した内容は、タイピング画面の右上に表示されます。</p>
+          <div class="preview" aria-label="アカウントプレビュー">
+            <div class="preview-icon" id="previewEmoji">🌟</div>
+            <div>
+              <strong id="previewName">ゲスト</strong>
+              <span id="previewId">ID: guest</span>
+            </div>
+          </div>
+        </div>
+        <p class="footer-note">このログインはローカル保存版です。サーバー認証ではなく、この端末のブラウザ内に保存されます。</p>
+      </section>
+
+      <section class="card">
+        <h2>ログイン / アカウント設定</h2>
+        <p class="lead">名前とアイコンを決めて、タイピングの進行状況と一緒に使えるプロフィールを作ります。</p>
+
+        <form class="form" id="accountForm">
+          <div class="input-row">
+            <div class="field">
+              <label for="emojiInput">アイコン</label>
+              <input id="emojiInput" class="emoji-input" maxlength="4" autocomplete="off" placeholder="🌟">
+            </div>
+            <div class="field">
+              <label for="nameInput">名前</label>
+              <input id="nameInput" maxlength="20" autocomplete="nickname" placeholder="例：こっぴー">
+            </div>
+          </div>
+
+          <div class="quick-icons" aria-label="アイコン候補">
+            <button type="button" data-emoji="🌟">🌟</button>
+            <button type="button" data-emoji="⌨️">⌨️</button>
+            <button type="button" data-emoji="📚">📚</button>
+            <button type="button" data-emoji="🪄">🪄</button>
+            <button type="button" data-emoji="🐣">🐣</button>
+            <button type="button" data-emoji="🚀">🚀</button>
+          </div>
+
+          <div class="field">
+            <label for="idInput">アカウントID</label>
+            <input id="idInput" maxlength="24" autocomplete="username" placeholder="例：koppy001">
+            <div class="hint">使える文字：英小文字・数字・ハイフン・アンダーバー。大文字や記号は保存時に自動整形します。</div>
+          </div>
+
+          <div class="error" id="errorBox"></div>
+          <div class="status" id="statusText"></div>
+
+          <div class="actions">
+            <button type="submit">保存してタイピングへ</button>
+            <div class="split-actions">
+              <button type="button" class="secondary" id="saveOnlyBtn">保存だけする</button>
+              <button type="button" class="secondary" id="generateIdBtn">ID自動生成</button>
+            </div>
+            <div class="split-actions">
+              <a class="button-link secondary" href="./typing.html">タイピングへ戻る</a>
+              <button type="button" class="danger" id="resetAccountBtn">アカウントをリセット</button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    'use strict';
+
+    const STORAGE_KEY = 'typingAcademiaAccount';
+
+    const el = {
+      form: document.getElementById('accountForm'),
+      emojiInput: document.getElementById('emojiInput'),
+      nameInput: document.getElementById('nameInput'),
+      idInput: document.getElementById('idInput'),
+      previewEmoji: document.getElementById('previewEmoji'),
+      previewName: document.getElementById('previewName'),
+      previewId: document.getElementById('previewId'),
+      errorBox: document.getElementById('errorBox'),
+      statusText: document.getElementById('statusText'),
+      saveOnlyBtn: document.getElementById('saveOnlyBtn'),
+      generateIdBtn: document.getElementById('generateIdBtn'),
+      resetAccountBtn: document.getElementById('resetAccountBtn')
+    };
+
+    let account = loadAccount();
+
+    function loadAccount() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return {
+          id: sanitizeAccountId(saved.id || generateAccountId()),
+          name: sanitizeName(saved.name || 'ゲスト'),
+          emoji: normalizeEmoji(saved.emoji || '🌟')
+        };
+      } catch {
+        return createDefaultAccount();
+      }
+    }
+
+    function createDefaultAccount() {
+      return {
+        id: generateAccountId(),
+        name: 'ゲスト',
+        emoji: '🌟'
+      };
+    }
+
+    function saveAccount(nextAccount) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAccount));
+      account = nextAccount;
+      renderAccount();
+    }
+
+    function generateAccountId() {
+      return 'user-' + Math.random().toString(36).slice(2, 8);
+    }
+
+    function sanitizeAccountId(value) {
+      const sanitized = String(value || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, '')
+        .slice(0, 24);
+      return sanitized || generateAccountId();
+    }
+
+    function sanitizeName(value) {
+      return String(value || 'ゲスト').trim().slice(0, 20) || 'ゲスト';
+    }
+
+    function normalizeEmoji(value) {
+      const text = String(value || '').trim();
+      return [...text][0] || '🌟';
+    }
+
+    function buildAccountFromForm() {
+      return {
+        id: sanitizeAccountId(el.idInput.value),
+        name: sanitizeName(el.nameInput.value),
+        emoji: normalizeEmoji(el.emojiInput.value)
+      };
+    }
+
+    function validateAccount(nextAccount) {
+      if (!nextAccount.name) return '名前を入力してください。';
+      if (!nextAccount.id) return 'アカウントIDを入力してください。';
+      if (nextAccount.id.length < 3) return 'アカウントIDは3文字以上にしてください。';
+      if (!/^[a-z0-9_-]+$/.test(nextAccount.id)) return 'アカウントIDに使えない文字があります。';
+      if (!nextAccount.emoji) return '絵文字アイコンを入力してください。';
+      return '';
+    }
+
+    function setError(message) {
+      el.errorBox.textContent = message;
+      el.errorBox.classList.toggle('show', !!message);
+    }
+
+    function setStatus(message) {
+      el.statusText.textContent = message;
+      if (message) {
+        window.setTimeout(() => {
+          if (el.statusText.textContent === message) el.statusText.textContent = '';
+        }, 2200);
+      }
+    }
+
+    function renderAccount() {
+      el.emojiInput.value = account.emoji;
+      el.nameInput.value = account.name;
+      el.idInput.value = account.id;
+      renderPreview();
+    }
+
+    function renderPreview() {
+      const preview = buildAccountFromForm();
+      el.previewEmoji.textContent = preview.emoji;
+      el.previewName.textContent = preview.name;
+      el.previewId.textContent = `ID: ${preview.id}`;
+    }
+
+    function handleSave({ redirect = false } = {}) {
+      const nextAccount = buildAccountFromForm();
+      const error = validateAccount(nextAccount);
+      if (error) {
+        setError(error);
+        return false;
+      }
+      setError('');
+      saveAccount(nextAccount);
+      setStatus('保存しました。');
+      if (redirect) {
+        window.location.href = './typing.html';
+      }
+      return true;
+    }
+
+    function resetAccount() {
+      const ok = confirm('アカウントID・名前・絵文字アイコンをリセットします。よろしいですか？');
+      if (!ok) return;
+      const fresh = createDefaultAccount();
+      saveAccount(fresh);
+      setError('');
+      setStatus('アカウントをリセットしました。');
+    }
+
+    el.form.addEventListener('submit', event => {
+      event.preventDefault();
+      handleSave({ redirect: true });
+    });
+
+    el.saveOnlyBtn.addEventListener('click', () => handleSave({ redirect: false }));
+
+    el.generateIdBtn.addEventListener('click', () => {
+      el.idInput.value = generateAccountId();
+      renderPreview();
+      setStatus('新しいIDを生成しました。保存すると反映されます。');
+    });
+
+    el.resetAccountBtn.addEventListener('click', resetAccount);
+
+    document.querySelectorAll('[data-emoji]').forEach(button => {
+      button.addEventListener('click', () => {
+        el.emojiInput.value = button.dataset.emoji;
+        renderPreview();
+      });
+    });
+
+    [el.emojiInput, el.nameInput, el.idInput].forEach(input => {
+      input.addEventListener('input', () => {
+        if (input === el.idInput) {
+          const cursor = el.idInput.selectionStart;
+          el.idInput.value = sanitizeAccountId(el.idInput.value);
+          try { el.idInput.setSelectionRange(cursor, cursor); } catch {}
+        }
+        renderPreview();
+      });
+    });
+
+    function runTests() {
+      console.assert(sanitizeAccountId('KoPPy 001!!') === 'koppy001', 'ID should be sanitized');
+      console.assert(sanitizeName('') === 'ゲスト', 'empty name should become guest');
+      console.assert(normalizeEmoji('🌟abc') === '🌟', 'emoji should use first visible character');
+      console.assert(validateAccount({ id: 'ab', name: 'テスト', emoji: '🌟' }) !== '', 'short id should be invalid');
+      console.assert(validateAccount({ id: 'abc', name: 'テスト', emoji: '🌟' }) === '', 'valid account should pass');
+    }
+
+    runTests();
+    renderAccount();
+  </script>
+</body>
+</html>
