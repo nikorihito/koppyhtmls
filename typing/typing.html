@@ -361,7 +361,7 @@
     .map-wrap { padding: 22px; }
 
     .character-dialog {
-      display: grid;
+      display: none;
       grid-template-columns: 82px 1fr;
       gap: 14px;
       align-items: start;
@@ -371,6 +371,8 @@
       background: rgba(255,255,255,.10);
       border: 1px solid rgba(255,255,255,.18);
     }
+
+    .character-dialog.show { display: grid; }
 
     .character-dialog img {
       width: 72px;
@@ -394,43 +396,89 @@
       font-weight: 700;
     }
 
-    .tutorial-card { padding: 22px; }
-    .tutorial-dialogs { display: grid; gap: 14px; margin: 18px 0; }
-
-    .tutorial-dialog {
+    .speech-stage {
+      min-height: 340px;
       display: grid;
-      grid-template-columns: 76px 1fr;
-      gap: 14px;
-      align-items: start;
-      padding: 14px;
-      border-radius: 22px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.18);
-    }
-
-    .tutorial-dialog.reverse { grid-template-columns: 1fr 76px; }
-
-    .tutorial-dialog img {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
-      border-radius: 18px;
-      background: rgba(255,255,255,.12);
+      place-items: center;
+      padding: 18px;
+      border-radius: 24px;
+      background: radial-gradient(circle at 25% 20%, rgba(142,232,255,.16), transparent 34%), rgba(255,255,255,.08);
       border: 1px solid rgba(255,255,255,.16);
     }
 
-    .tutorial-dialog strong {
-      display: block;
-      color: var(--accent2);
-      margin-bottom: 6px;
+    .speech-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 16px;
+      width: min(760px, 100%);
+      align-items: end;
     }
 
-    .tutorial-dialog p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.75;
-      font-weight: 700;
+    .speech-row.reverse { grid-template-columns: minmax(0, 1fr) 92px; }
+
+    .speech-row img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      border-radius: 22px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
     }
+
+    .speech-bubble {
+      position: relative;
+      padding: 18px 20px;
+      border-radius: 24px;
+      color: #172036;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 16px 40px rgba(0,0,0,.24);
+      font-weight: 800;
+      line-height: 1.85;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -12px;
+      bottom: 24px;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-right: 14px solid rgba(255,255,255,.92);
+    }
+
+    .speech-row.reverse .speech-bubble::before {
+      left: auto;
+      right: -12px;
+      border-right: 0;
+      border-left: 14px solid rgba(255,255,255,.92);
+    }
+
+    .speech-name {
+      display: inline-flex;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      color: #0b1530;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .speech-text {
+      min-height: 58px;
+      font-size: clamp(16px, 2vw, 20px);
+    }
+
+    .speech-progress {
+      margin-top: 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tutorial-card { padding: 22px; }
 
     .tutorial-actions {
       display: grid;
@@ -438,6 +486,8 @@
       gap: 12px;
       margin-top: 16px;
     }
+
+    .tutorial-actions.hidden { display: none; }
 
     .tutorial-choice {
       min-height: 76px;
@@ -782,7 +832,7 @@
           <span class="tag">育成・授業向け</span>
         </article>
         <article class="mode-card" data-mode="normal">
-          <div class="mode-icon">⌨</div>
+          <div class="mode-icon">🍣</div>
           <h2>ノーマルモード</h2>
           <p>60秒で高スコアを目指す標準モードです。日本語の単語や短文をローマ字で入力します。</p>
           <span class="tag">普通</span>
@@ -799,30 +849,20 @@
     <section id="levelTutorialScreen" class="screen panel tutorial-card">
       <h2>レベルアップモードのはじめに</h2>
       <p class="lead">ニコリヒトとつるつる君が、今のタイピングレベルを確認します。</p>
-      <div class="tutorial-dialogs">
-        <div class="tutorial-dialog">
-          <img src="./ニコリヒト.png" alt="ニコリヒト">
-          <div>
-            <strong>ニコリヒト</strong>
-            <p>ここでは、FとJのホームポジションから少しずつ練習していくよ。まずは今のレベルを教えてね。</p>
-          </div>
-        </div>
-        <div class="tutorial-dialog reverse">
-          <div>
-            <strong>つるつる君</strong>
-            <p>君はタイピング、どれくらいできる？はじめてでも大丈夫。できる人は途中のマップから始められるよ。</p>
-          </div>
-          <img src="./つるつる君.png" alt="つるつる君">
-        </div>
-        <div class="tutorial-dialog">
-          <img src="./ニコリヒト.png" alt="ニコリヒト">
-          <div>
-            <strong>ニコリヒト</strong>
-            <p>「それなりにできる」を選ぶと、マップ5「言葉の図書館」からスタートできるようにするよ。</p>
+      <div class="speech-stage">
+        <div class="speech-row" id="tutorialSpeechRow">
+          <img id="tutorialSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
+          <div class="speech-bubble">
+            <span class="speech-name" id="tutorialSpeakerName">ニコリヒト</span>
+            <div class="speech-text" id="tutorialSpeechText">ここでは、FとJのホームポジションから少しずつ練習していくよ。</div>
           </div>
         </div>
       </div>
-      <div class="tutorial-actions">
+      <div class="speech-progress" id="tutorialProgress">1 / 4</div>
+      <div class="tutorial-actions" id="tutorialNextActions">
+        <button class="tutorial-choice" id="tutorialNextBtn">次へ</button>
+      </div>
+      <div class="tutorial-actions hidden" id="tutorialChoiceActions">
         <button class="tutorial-choice secondary" id="tutorialBeginnerBtn">はじめて・ゆっくり練習したい<br>マップ1から</button>
         <button class="tutorial-choice" id="tutorialIntermediateBtn">それなりにできる<br>マップ5から</button>
         <button class="tutorial-choice secondary" id="tutorialSkipBtn">あとで選ぶ<br>マップを見る</button>
@@ -844,7 +884,7 @@
           <img src="./ニコリヒト.png" alt="ニコリヒト">
           <div>
             <strong>ニコリヒト</strong>
-            <p id="mapAdviceText">マップを選ぶと、このマップのアドバイスが表示されます。</p>
+            <p id="mapAdviceText">ワールドを開くと、このマップのアドバイスが表示されます。</p>
           </div>
         </div>
         <h3 id="worldTitle">ワールド選択</h3>
@@ -988,6 +1028,14 @@
       tutorialBeginnerBtn: document.getElementById('tutorialBeginnerBtn'),
       tutorialIntermediateBtn: document.getElementById('tutorialIntermediateBtn'),
       tutorialSkipBtn: document.getElementById('tutorialSkipBtn'),
+      tutorialNextBtn: document.getElementById('tutorialNextBtn'),
+      tutorialNextActions: document.getElementById('tutorialNextActions'),
+      tutorialChoiceActions: document.getElementById('tutorialChoiceActions'),
+      tutorialSpeechRow: document.getElementById('tutorialSpeechRow'),
+      tutorialSpeakerImage: document.getElementById('tutorialSpeakerImage'),
+      tutorialSpeakerName: document.getElementById('tutorialSpeakerName'),
+      tutorialSpeechText: document.getElementById('tutorialSpeechText'),
+      tutorialProgress: document.getElementById('tutorialProgress'),
       settingsBtn: document.getElementById('settingsBtn'),
       settingsPanel: document.getElementById('settingsPanel'),
       genreDropdown: document.getElementById('genreDropdown'),
@@ -1015,6 +1063,15 @@
         return ['all'];
       }
     }
+
+    const tutorialLines = [
+      { speaker: 'ニコリヒト', image: './ニコリヒト.png', side: 'left', text: 'ここでは、FとJのホームポジションから少しずつ練習していくよ。' },
+      { speaker: 'つるつる君', image: './つるつる君.png', side: 'right', text: 'タイピングって、最初はキーの場所を覚えるのが大事なんだね。' },
+      { speaker: 'ニコリヒト', image: './ニコリヒト.png', side: 'left', text: 'そうそう。だけど、もうある程度できる人は、途中のマップから始めても大丈夫。' },
+      { speaker: 'つるつる君', image: './つるつる君.png', side: 'right', text: '君はタイピング、どれくらいできる？それなりにできるなら、マップ5「言葉の図書館」から始められるよ。' }
+    ];
+
+    let tutorialLineIndex = 0;
 
     const mapAdviceMessages = [
       'まずはFとJを見つけるところから。人差し指をホームポジションに置いて、焦らず正確に打とう。',
@@ -1091,7 +1148,9 @@
       state = createInitialState(mode);
       if (mode === 'level') {
         if (!localStorage.getItem('typingAcademiaTutorialDone')) {
+          tutorialLineIndex = 0;
           showScreen('tutorial');
+          renderTutorialLine();
         } else {
           showScreen('map');
           renderMapSelect();
@@ -1588,8 +1647,9 @@
     function renderWorldSelect(mapIndex) {
       const map = levelMaps[mapIndex];
       el.selectedMapInfo.textContent = `${map.icon} ${map.name}：${map.theme}`;
+      el.mapAdviceBox?.classList.remove('show');
       el.mapAdviceText.textContent = map.advice || mapAdviceMessages[mapIndex] || 'このマップでは、落ち着いて正確に打つことを意識しよう。';
-      el.worldTitle.textContent = `${map.name} のワールド`; 
+      el.worldTitle.textContent = `${map.name} のワールド`;  
 
       el.worldGrid.innerHTML = map.worlds.map((raw, i) => {
         const unlocked = isWorldUnlocked(mapIndex, i);
@@ -1604,8 +1664,34 @@
 
       el.worldGrid.querySelectorAll('.start-world').forEach(btn => {
         const card = btn.closest('.world-card');
-        btn.addEventListener('click', () => startSelectedMode('level', Number(card.dataset.map), Number(card.dataset.world)));
+        btn.addEventListener('click', () => {
+          const mapIndex = Number(card.dataset.map);
+          const worldIndex = Number(card.dataset.world);
+          showWorldAdvice(mapIndex, worldIndex);
+          startSelectedMode('level', mapIndex, worldIndex);
+        });
       });
+    }
+
+    function showWorldAdvice(mapIndex, worldIndex) {
+      const map = levelMaps[mapIndex];
+      const lesson = getLesson(mapIndex, worldIndex);
+      el.mapAdviceText.textContent = `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。`;
+      el.mapAdviceBox?.classList.add('show');
+    }
+
+    function renderTutorialLine() {
+      const line = tutorialLines[tutorialLineIndex];
+      if (!line) return;
+      el.tutorialSpeechRow.classList.toggle('reverse', line.side === 'right');
+      el.tutorialSpeakerImage.src = line.image;
+      el.tutorialSpeakerImage.alt = line.speaker;
+      el.tutorialSpeakerName.textContent = line.speaker;
+      el.tutorialSpeechText.textContent = line.text;
+      el.tutorialProgress.textContent = `${tutorialLineIndex + 1} / ${tutorialLines.length}`;
+      const isLast = tutorialLineIndex >= tutorialLines.length - 1;
+      el.tutorialNextActions.classList.toggle('hidden', isLast);
+      el.tutorialChoiceActions.classList.toggle('hidden', !isLast);
     }
 
     function renderHud() {
@@ -1744,6 +1830,7 @@
       console.assert(levelMaps.length === 10, 'levelMaps must have 10 maps');
       console.assert(levelMaps.every(map => map.worlds.length === 10), 'each map must have 10 worlds');
       console.assert(mapAdviceMessages.length === 10, 'each map should have a Nikorihito advice message');
+      console.assert(tutorialLines.length >= 4, 'tutorial should have sequential dialogue lines');
       console.assert(romajiRules.kanaRules['し'].includes('shi') && romajiRules.kanaRules['し'].includes('si'), 'し must accept shi and si');
       console.assert(romajiRules.specialRules?.finalN?.enabled, 'finalN special rule must be enabled');
       console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'し should include si');
@@ -1795,6 +1882,11 @@
     el.enModeBtn.addEventListener('click', () => {
       gameSettings.typingMode = 'en';
       applySettingChange();
+    });
+
+    el.tutorialNextBtn.addEventListener('click', () => {
+      tutorialLineIndex = Math.min(tutorialLines.length - 1, tutorialLineIndex + 1);
+      renderTutorialLine();
     });
 
     el.tutorialBeginnerBtn.addEventListener('click', () => {
