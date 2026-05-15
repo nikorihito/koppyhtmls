@@ -364,7 +364,7 @@
       display: none;
       grid-template-columns: 82px 1fr;
       gap: 14px;
-      align-items: start;
+      align-items: end;
       margin: 16px 0 18px;
       padding: 14px;
       border-radius: 22px;
@@ -381,19 +381,46 @@
       border-radius: 18px;
       background: rgba(255,255,255,.12);
       border: 1px solid rgba(255,255,255,.16);
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+    }
+
+    .character-dialog .advice-bubble {
+      position: relative;
+      padding: 14px 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.94);
+      color: #172036;
+      box-shadow: 0 14px 34px rgba(0,0,0,.22);
+      line-height: 1.75;
+      font-weight: 800;
+    }
+
+    .character-dialog .advice-bubble::before {
+      content: "";
+      position: absolute;
+      left: -11px;
+      bottom: 20px;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-right: 13px solid rgba(255,255,255,.94);
     }
 
     .character-dialog strong {
-      display: block;
-      color: var(--accent2);
+      display: inline-flex;
+      color: #0b1530;
       margin-bottom: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      font-size: 13px;
+      font-weight: 900;
     }
 
     .character-dialog p {
       margin: 0;
-      color: var(--muted);
+      color: #172036;
       line-height: 1.75;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     .speech-stage {
@@ -415,6 +442,28 @@
     }
 
     .speech-row.reverse { grid-template-columns: minmax(0, 1fr) 92px; }
+
+    .speech-row.reverse img {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .speech-row.reverse .speech-bubble {
+      grid-column: 1;
+      grid-row: 1;
+      min-width: 0;
+    }
+
+    .speech-row:not(.reverse) img {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .speech-row:not(.reverse) .speech-bubble {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+    }
 
     .speech-row img {
       width: 88px;
@@ -885,7 +934,7 @@
         <div class="map-grid" id="mapGrid"></div>
         <div class="character-dialog" id="mapAdviceBox">
           <img src="./ニコリヒト.png" alt="ニコリヒト">
-          <div>
+          <div class="advice-bubble">
             <strong>ニコリヒト</strong>
             <p id="mapAdviceText">ワールドを開くと、このマップのアドバイスが表示されます。</p>
           </div>
@@ -907,7 +956,7 @@
 
           <div class="character-dialog" id="gameAdviceBox">
             <img src="./ニコリヒト.png" alt="ニコリヒト">
-            <div>
+            <div class="advice-bubble">
               <strong>ニコリヒト</strong>
               <p id="gameAdviceText">このワールドのアドバイスがここに表示されます。</p>
             </div>
@@ -1702,7 +1751,7 @@
     function showGameAdvice(mapIndex, worldIndex, customText = '') {
       if (!el.gameAdviceBox || !el.gameAdviceText) return;
       const lesson = getLesson(mapIndex, worldIndex);
-      el.gameAdviceText.textContent = customText || `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。`;
+      el.gameAdviceText.textContent = customText || `${mapAdviceMessages[mapIndex] || '落ち着いて正確に打とう。'} 今回は World ${worldIndex + 1}「${lesson.title}」だよ。スタートを押すか、スペースキーで始めよう。`;
       el.gameAdviceBox.classList.add('show');
     }
 
