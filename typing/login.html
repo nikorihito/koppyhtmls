@@ -380,6 +380,7 @@
         </div>
 
         <button type="button" id="loginBtn">ログインして始める</button>
+        <button type="button" class="secondary" id="guestLoginBtn">ゲストとしてログインする</button>
       </div>
 
       <div class="error" id="errorBox"></div>
@@ -456,6 +457,7 @@
 
       loginIdInput: document.getElementById("loginIdInput"),
       loginBtn: document.getElementById("loginBtn"),
+      guestLoginBtn: document.getElementById("guestLoginBtn"),
 
       errorBox: document.getElementById("errorBox"),
       statusText: document.getElementById("statusText"),
@@ -477,7 +479,7 @@
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
         return {
-          id: sanitizeAccountId(saved.id || generateAccountId()),
+          id: normalizeOrGenerateId(saved.id || ""),
           name: sanitizeName(saved.name || "ゲスト"),
           emoji: normalizeEmoji(saved.emoji || "🌟")
         };
@@ -505,12 +507,10 @@
     }
 
     function sanitizeAccountId(value) {
-      const sanitized = String(value || "")
+      return String(value || "")
         .toLowerCase()
         .replace(/[^a-z0-9_-]/g, "")
         .slice(0, 24);
-
-      return sanitized || "";
     }
 
     function normalizeOrGenerateId(value) {
@@ -571,7 +571,7 @@
       const saved = localStorage.getItem(STORAGE_KEY);
 
       if (!saved) {
-        el.existingAccountText.textContent = "まだアカウントがありません。下の「アカウントが無い場合」から作成してください。";
+        el.existingAccountText.textContent = "まだアカウントがありません。下の「アカウントが無い場合」から作成するか、ゲストとしてログインしてください。";
         el.loginBtn.disabled = true;
         el.loginIdInput.value = "";
         el.loginIdInput.placeholder = "先にアカウントを作成してください";
@@ -587,7 +587,7 @@
       const saved = localStorage.getItem(STORAGE_KEY);
 
       if (!saved) {
-        setError("アカウントがありません。下の「アカウントが無い場合」から作成してください。");
+        setError("アカウントがありません。下の「アカウントが無い場合」から作成するか、ゲストとしてログインしてください。");
         return;
       }
 
@@ -606,6 +606,22 @@
       }
 
       setError("");
+      window.location.href = "./typing.html";
+    }
+
+    function handleGuestLogin() {
+      const guestAccount = {
+        id: "guest",
+        name: "ゲスト",
+        emoji: "🌟"
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(guestAccount));
+      account = guestAccount;
+
+      setError("");
+      setStatus("ゲストとしてログインします。");
+
       window.location.href = "./typing.html";
     }
 
@@ -651,6 +667,7 @@
     }
 
     el.loginBtn.addEventListener("click", handleLogin);
+    el.guestLoginBtn.addEventListener("click", handleGuestLogin);
 
     el.loginIdInput.addEventListener("keydown", event => {
       if (event.key === "Enter") {
@@ -712,6 +729,7 @@
       console.assert(validateAccount({ id: "ab", name: "テスト", emoji: "🌟" }) !== "", "short id should be invalid");
       console.assert(validateAccount({ id: "abc", name: "テスト", emoji: "🌟" }) === "", "valid account should pass");
       console.assert(!!el.loginIdInput && !!el.loginBtn, "login ID should be required every time");
+      console.assert(!!el.guestLoginBtn, "guest login button should exist");
     }
 
     runTests();
