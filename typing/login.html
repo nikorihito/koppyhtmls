@@ -310,6 +310,59 @@
       border: 1px solid rgba(255,255,255,.16);
     }
 
+    .create-account-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .create-account-box h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .create-account-box p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
+    .create-form-wrap {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.14);
+    }
+
+    .create-form-wrap.open { display: block; }
+
+    .login-existing-box {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(142,232,255,.10);
+      border: 1px solid rgba(142,232,255,.20);
+    }
+
+    .login-existing-box h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .login-existing-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
     .footer-note {
       margin-top: 18px;
       color: var(--muted);
@@ -352,10 +405,21 @@
       </section>
 
       <section class="card">
-        <h2>ログイン / アカウント設定</h2>
-        <p class="lead">名前とアイコンを決めて、タイピングの進行状況と一緒に使えるプロフィールを作ります。</p>
+        <h2>ログイン</h2>
+        <p class="lead">保存済みのアカウントでタイピング画面に進みます。アカウントが無い場合は、下から作成できます。</p>
 
-        <form class="form" id="accountForm">
+        <div class="login-existing-box" id="existingAccountBox">
+          <h3>現在のアカウント</h3>
+          <p id="existingAccountText">保存済みアカウントを確認しています。</p>
+          <a class="button-link" href="./typing.html">このアカウントで始める</a>
+        </div>
+
+        <div class="create-account-box">
+          <h3>アカウントが無い場合</h3>
+          <p>はじめて使う場合は、名前・ID・絵文字アイコンを決めてアカウントを作成してください。</p>
+          <button type="button" class="secondary" id="openCreateFormBtn">アカウントを作成する</button>
+          <div class="create-form-wrap" id="createFormWrap">
+            <form class="form" id="accountForm">
           <div class="input-row">
             <div class="field">
               <label for="emojiInput">アイコン</label>
@@ -396,7 +460,9 @@
               <button type="button" class="danger" id="resetAccountBtn">アカウントをリセット</button>
             </div>
           </div>
-        </form>
+            </form>
+          </div>
+        </div>
       </section>
     </div>
   </main>
@@ -418,10 +484,15 @@
       statusText: document.getElementById('statusText'),
       saveOnlyBtn: document.getElementById('saveOnlyBtn'),
       generateIdBtn: document.getElementById('generateIdBtn'),
-      resetAccountBtn: document.getElementById('resetAccountBtn')
+      resetAccountBtn: document.getElementById('resetAccountBtn'),
+      openCreateFormBtn: document.getElementById('openCreateFormBtn'),
+      createFormWrap: document.getElementById('createFormWrap'),
+      existingAccountBox: document.getElementById('existingAccountBox'),
+      existingAccountText: document.getElementById('existingAccountText')
     };
 
     let account = loadAccount();
+    const hadSavedAccountOnLoad = !!localStorage.getItem(STORAGE_KEY);
 
     function loadAccount() {
       try {
@@ -447,7 +518,10 @@
     function saveAccount(nextAccount) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAccount));
       account = nextAccount;
-      renderAccount();
+      if (hadSavedAccountOnLoad) {
+      el.openCreateFormBtn.textContent = 'アカウントを編集する';
+    }
+    renderAccount();
     }
 
     function generateAccountId() {
@@ -507,6 +581,16 @@
       el.nameInput.value = account.name;
       el.idInput.value = account.id;
       renderPreview();
+      renderExistingAccount();
+    }
+
+    function renderExistingAccount() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        el.existingAccountText.textContent = 'まだアカウントがありません。下の「アカウントが無い場合」から作成してください。';
+        return;
+      }
+      el.existingAccountText.textContent = `${account.emoji} ${account.name}（ID: ${account.id}）でログインできます。`;
     }
 
     function renderPreview() {
@@ -525,6 +609,8 @@
       }
       setError('');
       saveAccount(nextAccount);
+      el.createFormWrap.classList.remove('open');
+      el.openCreateFormBtn.textContent = 'アカウントを編集する';
       setStatus('保存しました。');
       if (redirect) {
         window.location.href = './typing.html';
@@ -535,11 +621,20 @@
     function resetAccount() {
       const ok = confirm('アカウントID・名前・絵文字アイコンをリセットします。よろしいですか？');
       if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
       const fresh = createDefaultAccount();
-      saveAccount(fresh);
+      account = fresh;
       setError('');
+      renderAccount();
+      el.createFormWrap.classList.remove('open');
+      el.openCreateFormBtn.textContent = 'アカウントを作成する';
       setStatus('アカウントをリセットしました。');
     }
+
+    el.openCreateFormBtn.addEventListener('click', () => {
+      el.createFormWrap.classList.toggle('open');
+      el.openCreateFormBtn.textContent = el.createFormWrap.classList.contains('open') ? '作成フォームを閉じる' : (localStorage.getItem(STORAGE_KEY) ? 'アカウントを編集する' : 'アカウントを作成する');
+    });
 
     el.form.addEventListener('submit', event => {
       event.preventDefault();
