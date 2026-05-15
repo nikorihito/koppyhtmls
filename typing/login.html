@@ -20,7 +20,9 @@
       --shadow: 0 20px 60px rgba(0,0,0,.35);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -55,7 +57,7 @@
     }
 
     .app {
-      width: min(980px, calc(100% - 28px));
+      width: min(560px, calc(100% - 28px));
       margin: 0 auto;
       min-height: 100vh;
       display: grid;
@@ -65,111 +67,47 @@
       z-index: 1;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 22px;
-      align-items: stretch;
-    }
-
-    .hero,
     .card {
       border: 1px solid var(--line);
       border-radius: 30px;
       background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
       box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
+      padding: 24px;
       overflow: hidden;
     }
 
-    .hero {
-      padding: 32px;
+    .title-area {
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .title-area .icon {
+      width: 72px;
+      height: 72px;
       display: grid;
-      align-content: space-between;
-      min-height: 560px;
-      position: relative;
+      place-items: center;
+      margin: 0 auto 14px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(142,232,255,.30), rgba(255,223,142,.28));
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 38px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
     }
 
-    .hero::after {
-      content: "🏰";
-      position: absolute;
-      right: 26px;
-      bottom: 22px;
-      font-size: 110px;
-      opacity: .18;
-      filter: drop-shadow(0 0 22px rgba(142,232,255,.45));
-    }
-
-    .hero h1 {
+    h1 {
       margin: 0;
-      font-size: clamp(34px, 5vw, 58px);
+      font-size: clamp(28px, 6vw, 42px);
       letter-spacing: .04em;
-      line-height: 1.18;
       text-shadow: 0 4px 24px rgba(142,232,255,.35);
     }
 
-    .hero p {
-      margin: 14px 0 0;
-      color: var(--muted);
-      line-height: 1.9;
-      font-weight: 700;
-    }
-
-    .preview {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-top: 28px;
-      padding: 16px;
-      border-radius: 24px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.16);
-      width: min(420px, 100%);
-    }
-
-    .preview-icon {
-      width: 64px;
-      height: 64px;
-      display: grid;
-      place-items: center;
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(142,232,255,.30), rgba(255,223,142,.28));
-      border: 1px solid rgba(255,255,255,.22);
-      font-size: 36px;
-    }
-
-    .preview strong {
-      display: block;
-      font-size: 18px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .preview span {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card {
-      padding: 24px;
-    }
-
-    .card h2 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-
-    .card .lead {
-      margin: 0 0 22px;
+    .lead {
+      margin: 10px 0 0;
       color: var(--muted);
       line-height: 1.75;
       font-weight: 700;
+      font-size: 14px;
     }
 
     .login-existing-box {
@@ -182,9 +120,9 @@
       border: 1px solid rgba(142,232,255,.20);
     }
 
-    .login-existing-box h3 {
+    .login-existing-box h2 {
       margin: 0;
-      font-size: 18px;
+      font-size: 20px;
     }
 
     .login-existing-box p {
@@ -209,9 +147,9 @@
       border: 1px solid rgba(255,255,255,.16);
     }
 
-    .create-account-box h3 {
+    .create-account-box h2 {
       margin: 0 0 8px;
-      font-size: 18px;
+      font-size: 20px;
     }
 
     .create-account-box p {
@@ -229,7 +167,9 @@
       border-top: 1px solid rgba(255,255,255,.14);
     }
 
-    .create-form-wrap.open { display: block; }
+    .create-form-wrap.open {
+      display: block;
+    }
 
     .form {
       display: grid;
@@ -273,7 +213,9 @@
       background: rgba(255,255,255,.15);
     }
 
-    input::placeholder { color: rgba(200,211,255,.58); }
+    input::placeholder {
+      color: rgba(200,211,255,.58);
+    }
 
     .emoji-input {
       text-align: center;
@@ -299,7 +241,17 @@
       font-weight: 800;
     }
 
-    .error.show { display: block; }
+    .error.show {
+      display: block;
+    }
+
+    .status {
+      min-height: 24px;
+      color: var(--good);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
 
     .actions {
       display: grid;
@@ -328,6 +280,7 @@
       text-align: center;
       text-decoration: none;
       font-size: 15px;
+      font-family: inherit;
     }
 
     button:hover,
@@ -356,14 +309,6 @@
       filter: none;
     }
 
-    .status {
-      min-height: 24px;
-      color: var(--good);
-      font-size: 13px;
-      font-weight: 900;
-      line-height: 1.5;
-    }
-
     .quick-icons {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -382,26 +327,20 @@
     }
 
     .footer-note {
-      margin-top: 18px;
+      margin: 18px 0 0;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
       text-align: center;
     }
 
-    @media (max-width: 860px) {
-      .app { align-items: start; }
-      .layout { grid-template-columns: 1fr; }
-      .hero { min-height: auto; }
-    }
-
     @media (max-width: 520px) {
       .app {
-        width: min(100% - 18px, 980px);
+        width: min(100% - 18px, 560px);
         padding-top: 14px;
+        align-items: start;
       }
 
-      .hero,
       .card {
         padding: 18px;
         border-radius: 24px;
@@ -423,97 +362,85 @@
 </head>
 <body>
   <main class="app">
-    <div class="layout">
-      <section class="hero">
-        <div>
-          <h1>星降る<br>タイピングアカデミア</h1>
-          <p>ログインIDを入力して、保存済みのアカウントでタイピング画面へ進みます。アカウントが無い場合は、下から作成できます。</p>
+    <section class="card">
+      <div class="title-area">
+        <div class="icon">🌟</div>
+        <h1>ログイン</h1>
+        <p class="lead">星降るタイピングアカデミアを始めるには、保存済みのログインIDを入力してください。</p>
+      </div>
 
-          <div class="preview" aria-label="アカウントプレビュー">
-            <div class="preview-icon" id="previewEmoji">🌟</div>
-            <div>
-              <strong id="previewName">ゲスト</strong>
-              <span id="previewId">ID: guest</span>
-            </div>
-          </div>
+      <div class="login-existing-box" id="existingAccountBox">
+        <h2>ログインID</h2>
+        <p id="existingAccountText">アカウント情報を確認しています。</p>
+
+        <div class="login-id-row">
+          <label for="loginIdInput">ログインID</label>
+          <input id="loginIdInput" maxlength="24" autocomplete="username" placeholder="アカウントIDを入力">
+          <div class="hint">登録済みのアカウントIDを入力してください。</div>
         </div>
 
-        <p class="footer-note">このログインはローカル保存版です。サーバー認証ではなく、この端末のブラウザ内に保存されます。</p>
-      </section>
+        <button type="button" id="loginBtn">ログインして始める</button>
+      </div>
 
-      <section class="card">
-        <h2>ログイン</h2>
-        <p class="lead">保存済みのアカウントIDを毎回入力してください。</p>
+      <div class="error" id="errorBox"></div>
+      <div class="status" id="statusText"></div>
 
-        <div class="login-existing-box" id="existingAccountBox">
-          <h3>現在のアカウント</h3>
-          <p id="existingAccountText">保存済みアカウントを確認しています。</p>
+      <div class="create-account-box">
+        <h2>アカウントが無い場合</h2>
+        <p>はじめて使う場合は、名前・ID・絵文字アイコンを決めてアカウントを作成してください。</p>
 
-          <div class="login-id-row">
-            <label for="loginIdInput">ログインID</label>
-            <input id="loginIdInput" maxlength="24" autocomplete="username" placeholder="アカウントIDを入力">
-            <div class="hint">毎回、登録済みのアカウントIDを入力してください。</div>
-          </div>
+        <button type="button" class="secondary" id="openCreateFormBtn">アカウントを作成する</button>
 
-          <button type="button" id="loginBtn">ログインして始める</button>
-        </div>
-
-        <div class="error" id="errorBox"></div>
-        <div class="status" id="statusText"></div>
-
-        <div class="create-account-box">
-          <h3>アカウントが無い場合</h3>
-          <p>はじめて使う場合は、名前・ID・絵文字アイコンを決めてアカウントを作成してください。</p>
-
-          <button type="button" class="secondary" id="openCreateFormBtn">アカウントを作成する</button>
-
-          <div class="create-form-wrap" id="createFormWrap">
-            <form class="form" id="accountForm">
-              <div class="input-row">
-                <div class="field">
-                  <label for="emojiInput">アイコン</label>
-                  <input id="emojiInput" class="emoji-input" maxlength="4" autocomplete="off" placeholder="🌟">
-                </div>
-
-                <div class="field">
-                  <label for="nameInput">名前</label>
-                  <input id="nameInput" maxlength="20" autocomplete="nickname" placeholder="例：こっぴー">
-                </div>
-              </div>
-
-              <div class="quick-icons" aria-label="アイコン候補">
-                <button type="button" data-emoji="🌟">🌟</button>
-                <button type="button" data-emoji="⌨️">⌨️</button>
-                <button type="button" data-emoji="📚">📚</button>
-                <button type="button" data-emoji="🪄">🪄</button>
-                <button type="button" data-emoji="🐣">🐣</button>
-                <button type="button" data-emoji="🚀">🚀</button>
+        <div class="create-form-wrap" id="createFormWrap">
+          <form class="form" id="accountForm">
+            <div class="input-row">
+              <div class="field">
+                <label for="emojiInput">アイコン</label>
+                <input id="emojiInput" class="emoji-input" maxlength="4" autocomplete="off" placeholder="🌟">
               </div>
 
               <div class="field">
-                <label for="idInput">アカウントID</label>
-                <input id="idInput" maxlength="24" autocomplete="username" placeholder="例：koppy001">
-                <div class="hint">使える文字：英小文字・数字・ハイフン・アンダーバー。大文字や記号は保存時に自動整形します。</div>
+                <label for="nameInput">名前</label>
+                <input id="nameInput" maxlength="20" autocomplete="nickname" placeholder="例：こっぴー">
+              </div>
+            </div>
+
+            <div class="quick-icons" aria-label="アイコン候補">
+              <button type="button" data-emoji="🌟">🌟</button>
+              <button type="button" data-emoji="⌨️">⌨️</button>
+              <button type="button" data-emoji="📚">📚</button>
+              <button type="button" data-emoji="🪄">🪄</button>
+              <button type="button" data-emoji="🐣">🐣</button>
+              <button type="button" data-emoji="🚀">🚀</button>
+            </div>
+
+            <div class="field">
+              <label for="idInput">アカウントID</label>
+              <input id="idInput" maxlength="24" autocomplete="username" placeholder="例：koppy001">
+              <div class="hint">使える文字：英小文字・数字・ハイフン・アンダーバー。大文字や記号は自動整形します。</div>
+            </div>
+
+            <div class="actions">
+              <button type="submit">保存してタイピングへ</button>
+
+              <div class="split-actions">
+                <button type="button" class="secondary" id="saveOnlyBtn">保存だけする</button>
+                <button type="button" class="secondary" id="generateIdBtn">ID自動生成</button>
               </div>
 
-              <div class="actions">
-                <button type="submit">保存してタイピングへ</button>
-
-                <div class="split-actions">
-                  <button type="button" class="secondary" id="saveOnlyBtn">保存だけする</button>
-                  <button type="button" class="secondary" id="generateIdBtn">ID自動生成</button>
-                </div>
-
-                <div class="split-actions">
-                  <a class="button-link secondary" href="./typing.html">タイピングへ戻る</a>
-                  <button type="button" class="danger" id="resetAccountBtn">アカウントをリセット</button>
-                </div>
+              <div class="split-actions">
+                <a class="button-link secondary" href="./typing.html">タイピングへ戻る</a>
+                <button type="button" class="danger" id="resetAccountBtn">アカウントをリセット</button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
-      </section>
-    </div>
+      </div>
+
+      <p class="footer-note">
+        このログインはローカル保存版です。サーバー認証ではなく、この端末のブラウザ内に保存されます。
+      </p>
+    </section>
   </main>
 
   <script>
@@ -529,10 +456,6 @@
 
       loginIdInput: document.getElementById("loginIdInput"),
       loginBtn: document.getElementById("loginBtn"),
-
-      previewEmoji: document.getElementById("previewEmoji"),
-      previewName: document.getElementById("previewName"),
-      previewId: document.getElementById("previewId"),
 
       errorBox: document.getElementById("errorBox"),
       statusText: document.getElementById("statusText"),
@@ -552,6 +475,7 @@
     function loadAccount() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
         return {
           id: sanitizeAccountId(saved.id || generateAccountId()),
           name: sanitizeName(saved.name || "ゲスト"),
@@ -586,7 +510,11 @@
         .replace(/[^a-z0-9_-]/g, "")
         .slice(0, 24);
 
-      return sanitized || generateAccountId();
+      return sanitized || "";
+    }
+
+    function normalizeOrGenerateId(value) {
+      return sanitizeAccountId(value) || generateAccountId();
     }
 
     function sanitizeName(value) {
@@ -600,7 +528,7 @@
 
     function buildAccountFromForm() {
       return {
-        id: sanitizeAccountId(el.idInput.value),
+        id: normalizeOrGenerateId(el.idInput.value),
         name: sanitizeName(el.nameInput.value),
         emoji: normalizeEmoji(el.emojiInput.value)
       };
@@ -625,7 +553,9 @@
 
       if (message) {
         window.setTimeout(() => {
-          if (el.statusText.textContent === message) el.statusText.textContent = "";
+          if (el.statusText.textContent === message) {
+            el.statusText.textContent = "";
+          }
         }, 2200);
       }
     }
@@ -634,16 +564,7 @@
       el.emojiInput.value = account.emoji;
       el.nameInput.value = account.name;
       el.idInput.value = account.id;
-      renderPreview();
       renderExistingAccount();
-    }
-
-    function renderPreview() {
-      const preview = buildAccountFromForm();
-
-      el.previewEmoji.textContent = preview.emoji;
-      el.previewName.textContent = preview.name;
-      el.previewId.textContent = `ID: ${preview.id}`;
     }
 
     function renderExistingAccount() {
@@ -659,7 +580,7 @@
 
       el.loginBtn.disabled = false;
       el.loginIdInput.placeholder = "アカウントIDを入力";
-      el.existingAccountText.textContent = `${account.emoji} ${account.name} のアカウントがあります。ログインIDを入力してください。`;
+      el.existingAccountText.textContent = "保存済みアカウントがあります。ログインIDを入力してください。";
     }
 
     function handleLogin() {
@@ -718,8 +639,7 @@
 
       localStorage.removeItem(STORAGE_KEY);
 
-      const fresh = createDefaultAccount();
-      account = fresh;
+      account = createDefaultAccount();
 
       setError("");
       renderAccount();
@@ -733,7 +653,9 @@
     el.loginBtn.addEventListener("click", handleLogin);
 
     el.loginIdInput.addEventListener("keydown", event => {
-      if (event.key === "Enter") handleLogin();
+      if (event.key === "Enter") {
+        handleLogin();
+      }
     });
 
     el.openCreateFormBtn.addEventListener("click", () => {
@@ -753,11 +675,12 @@
       handleSave({ redirect: true });
     });
 
-    el.saveOnlyBtn.addEventListener("click", () => handleSave({ redirect: false }));
+    el.saveOnlyBtn.addEventListener("click", () => {
+      handleSave({ redirect: false });
+    });
 
     el.generateIdBtn.addEventListener("click", () => {
       el.idInput.value = generateAccountId();
-      renderPreview();
       setStatus("新しいIDを生成しました。保存すると反映されます。");
     });
 
@@ -766,7 +689,6 @@
     document.querySelectorAll("[data-emoji]").forEach(button => {
       button.addEventListener("click", () => {
         el.emojiInput.value = button.dataset.emoji;
-        renderPreview();
       });
     });
 
@@ -775,10 +697,11 @@
         if (input === el.idInput) {
           const cursor = el.idInput.selectionStart;
           el.idInput.value = sanitizeAccountId(el.idInput.value);
-          try { el.idInput.setSelectionRange(cursor, cursor); } catch {}
-        }
 
-        renderPreview();
+          try {
+            el.idInput.setSelectionRange(cursor, cursor);
+          } catch {}
+        }
       });
     });
 
