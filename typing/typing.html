@@ -125,6 +125,48 @@
       font-weight: 800;
     }
 
+    .setting-input {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      padding: 11px 12px;
+      font-weight: 800;
+      outline: none;
+    }
+
+    .setting-input::placeholder {
+      color: rgba(200,211,255,.62);
+    }
+
+    .account-setting-grid {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .emoji-input {
+      text-align: center;
+      font-size: 24px;
+      padding: 9px 8px;
+    }
+
+    .account-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .account-actions button {
+      width: 100%;
+      padding: 9px 10px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+
     .setting-dropdown {
       position: relative;
     }
@@ -291,6 +333,53 @@
     }
 
     .pill strong { color: var(--accent2); }
+
+    .account-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: var(--shadow);
+      min-width: 230px;
+    }
+
+    .account-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(142,232,255,.28), rgba(255,223,142,.24));
+      border: 1px solid rgba(255,255,255,.22);
+      font-size: 26px;
+      flex: 0 0 auto;
+    }
+
+    .account-meta {
+      min-width: 0;
+    }
+
+    .account-meta strong {
+      display: block;
+      color: var(--text);
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .account-meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .screen { display: none; animation: fadeIn .24s ease both; }
     .screen.active { display: block; }
 
@@ -883,10 +972,36 @@
         <p class="lead">教育にも使える、幻想的なタイピング練習ゲーム。ローマ字の複数候補にも対応しています。</p>
       </div>
       <div class="header-right">
+        <div class="account-card" id="accountCard">
+          <div class="account-icon" id="accountIconDisplay">🌟</div>
+          <div class="account-meta">
+            <strong id="accountNameDisplay">ゲスト</strong>
+            <span id="accountIdDisplay">ID: guest</span>
+          </div>
+        </div>
         <div class="pill">現在の称号：<strong id="titleName">見習い魔法タイパー</strong></div>
         <button class="settings-button" id="settingsBtn" aria-label="設定を開く">…</button>
         <div class="settings-panel" id="settingsPanel">
           <h3>設定</h3>
+          <div class="setting-group">
+            <label>アカウント</label>
+            <div class="account-setting-grid">
+              <div>
+                <label for="accountEmojiInput">アイコン</label>
+                <input id="accountEmojiInput" class="setting-input emoji-input" maxlength="4" placeholder="🌟">
+              </div>
+              <div>
+                <label for="accountNameInput">名前</label>
+                <input id="accountNameInput" class="setting-input" maxlength="20" placeholder="名前を入力">
+              </div>
+            </div>
+            <label for="accountIdInput">アカウントID</label>
+            <input id="accountIdInput" class="setting-input" maxlength="24" placeholder="例：koppy001">
+            <div class="account-actions">
+              <button type="button" id="saveAccountBtn">保存</button>
+              <button type="button" class="secondary" id="randomAccountIdBtn">ID自動生成</button>
+            </div>
+          </div>
           <div class="setting-group">
             <label>ジャンル絞り込み</label>
             <div class="setting-dropdown" id="genreDropdown">
@@ -1111,6 +1226,15 @@
 
     const el = {
       titleName: document.getElementById('titleName'),
+      accountCard: document.getElementById('accountCard'),
+      accountIconDisplay: document.getElementById('accountIconDisplay'),
+      accountNameDisplay: document.getElementById('accountNameDisplay'),
+      accountIdDisplay: document.getElementById('accountIdDisplay'),
+      accountEmojiInput: document.getElementById('accountEmojiInput'),
+      accountNameInput: document.getElementById('accountNameInput'),
+      accountIdInput: document.getElementById('accountIdInput'),
+      saveAccountBtn: document.getElementById('saveAccountBtn'),
+      randomAccountIdBtn: document.getElementById('randomAccountIdBtn'),
       hudMode: document.getElementById('hudMode'),
       hudTime: document.getElementById('hudTime'),
       hudScore: document.getElementById('hudScore'),
@@ -1183,10 +1307,43 @@
     let timerId = null;
     let lastWordIndex = -1;
 
+    const account = loadAccount();
+
     const gameSettings = {
       genres: loadSelectedGenres(),
       typingMode: localStorage.getItem('typingAcademiaTypingMode') || 'jp'
     };
+
+    function loadAccount() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('typingAcademiaAccount') || '{}');
+        return {
+          id: sanitizeAccountId(saved.id || generateAccountId()),
+          name: String(saved.name || 'ゲスト').slice(0, 20),
+          emoji: normalizeEmoji(saved.emoji || '🌟')
+        };
+      } catch {
+        return { id: generateAccountId(), name: 'ゲスト', emoji: '🌟' };
+      }
+    }
+
+    function saveAccount() {
+      localStorage.setItem('typingAcademiaAccount', JSON.stringify(account));
+    }
+
+    function generateAccountId() {
+      return 'user-' + Math.random().toString(36).slice(2, 8);
+    }
+
+    function sanitizeAccountId(value) {
+      const sanitized = String(value || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24);
+      return sanitized || generateAccountId();
+    }
+
+    function normalizeEmoji(value) {
+      const text = String(value || '').trim();
+      return [...text][0] || '🌟';
+    }
 
     function loadSelectedGenres() {
       try {
@@ -1663,6 +1820,7 @@
       }
 
       if (state.mode === 'level' && !state.isSkipTest && state.correctWords >= modeConfig.level.targetWords) {
+        markWorldCompleted(state.selectedMap, state.selectedWorld);
         unlockNextWorld();
         finishGame('ワールドクリア！');
         return;
@@ -1750,6 +1908,28 @@
       saveProgress(progress);
     }
 
+    function markWorldCompleted(mapIndex, worldIndex) {
+      const progress = loadProgress();
+      progress[`world-${mapIndex}-${worldIndex}-complete`] = true;
+      saveProgress(progress);
+    }
+
+    function isWorldCompleted(mapIndex, worldIndex) {
+      const progress = loadProgress();
+      return !!progress[`world-${mapIndex}-${worldIndex}-complete`];
+    }
+
+    function markMapCompleted(mapIndex) {
+      const progress = loadProgress();
+      progress[`map-${mapIndex}-complete`] = true;
+      saveProgress(progress);
+    }
+
+    function isMapCompleted(mapIndex) {
+      const progress = loadProgress();
+      return !!progress[`map-${mapIndex}-complete`];
+    }
+
     function unlockMap(mapIndex) {
       unlockWorld(mapIndex, 0);
     }
@@ -1763,6 +1943,7 @@
       let world = state.selectedWorld + 1;
 
       if (world >= 10) {
+        markMapCompleted(state.selectedMap);
         world = 0;
         map += 1;
       }
@@ -1774,7 +1955,7 @@
       el.mapGrid.innerHTML = levelMaps.map((map, i) => {
         const unlocked = i === 0 || isWorldUnlocked(i, 0);
         return `<div class="map-card ${unlocked ? '' : 'locked'}" data-map="${i}">
-          <strong>${map.icon} ${i + 1}. ${escapeHtml(map.name)}</strong>
+          <strong>${map.icon} ${i + 1}. ${escapeHtml(map.name)}${isMapCompleted(i) ? ' 👑' : ''}</strong>
           <span>${escapeHtml(map.theme)}</span>
           <span>${unlocked ? '解放済み' : '未解放'}</span>
           ${unlocked ? '' : '<div class="skip-rule">マップ飛び級条件：8問正解・正確率92%以上・ミス2回以内</div>'}
@@ -1804,7 +1985,7 @@
         const unlocked = isWorldUnlocked(mapIndex, i);
         const sample = raw[1].slice(0, 3).map(word => typeof word === 'string' ? word : word.jp).join(' / ');
         return `<div class="world-card ${unlocked ? '' : 'locked'}" data-map="${mapIndex}" data-world="${i}">
-          <strong>World ${i + 1}：${escapeHtml(raw[0])}</strong>
+          <strong>World ${i + 1}：${escapeHtml(raw[0])}${isWorldCompleted(mapIndex, i) ? ' ⭐' : ''}</strong>
           <span>${escapeHtml(sample)}</span>
           <span>${unlocked ? '解放済み' : '未解放'}</span>
           <div class="actions">${unlocked ? '<button class="mini-button start-world">挑戦する</button>' : '<span class="small-note">前のワールドをクリアすると解放されます</span>'}</div>
@@ -1816,8 +1997,12 @@
         btn.addEventListener('click', () => {
           const mapIndex = Number(card.dataset.map);
           const worldIndex = Number(card.dataset.world);
-          showWorldAdvice(mapIndex, worldIndex);
-          openPreWorldAdvice(mapIndex, worldIndex, 'world');
+          if (worldIndex === 0) {
+            showWorldAdvice(mapIndex, worldIndex);
+            openPreWorldAdvice(mapIndex, worldIndex, 'world');
+          } else {
+            startSelectedMode('level', mapIndex, worldIndex);
+          }
         });
       });
     }
@@ -1997,10 +2182,29 @@
     }
 
     function renderSettingsUi() {
+      renderAccountUi();
       if (!el.genreMenu.dataset.ready) setupGenreOptions();
       renderGenreSelection();
       el.jpModeBtn.classList.toggle('active', gameSettings.typingMode === 'jp');
       el.enModeBtn.classList.toggle('active', gameSettings.typingMode === 'en');
+    }
+
+    function renderAccountUi() {
+      el.accountIconDisplay.textContent = account.emoji;
+      el.accountNameDisplay.textContent = account.name;
+      el.accountIdDisplay.textContent = `ID: ${account.id}`;
+      el.accountEmojiInput.value = account.emoji;
+      el.accountNameInput.value = account.name;
+      el.accountIdInput.value = account.id;
+    }
+
+    function applyAccountForm() {
+      account.emoji = normalizeEmoji(el.accountEmojiInput.value);
+      account.name = String(el.accountNameInput.value || 'ゲスト').trim().slice(0, 20) || 'ゲスト';
+      account.id = sanitizeAccountId(el.accountIdInput.value);
+      saveAccount();
+      renderAccountUi();
+      el.message.textContent = 'アカウント情報を保存しました。';
     }
 
     function setupGenreOptions() {
@@ -2082,10 +2286,16 @@
       console.assert(mapAdviceMessages.length === 10, 'each map should have a Nikorihito advice message');
       console.assert(tutorialLines.length >= 4, 'tutorial should have sequential dialogue lines');
       console.assert(!!el.resetAllBtn, 'reset button should exist');
+      console.assert(!!el.accountCard && !!el.saveAccountBtn, 'account UI should exist');
+      console.assert(sanitizeAccountId('KoPPy 001!!') === 'koppy001', 'account id should be sanitized');
       console.assert(!!el.gameAdviceBox, 'game advice box should exist');
       console.assert(typeof advancePreWorldAdvice === 'function', 'pre-world advice should require next button');
       unlockMapAndPrevious(2);
       console.assert(isWorldUnlocked(0, 0) && isWorldUnlocked(1, 0) && isWorldUnlocked(2, 0), 'jumping maps should unlock previous maps');
+      markMapCompleted(0);
+      console.assert(isMapCompleted(0), 'completed map should show crown marker');
+      markWorldCompleted(0, 0);
+      console.assert(isWorldCompleted(0, 0), 'completed world should show star marker');
       console.assert(romajiRules.kanaRules['し'].includes('shi') && romajiRules.kanaRules['し'].includes('si'), 'し must accept shi and si');
       console.assert(romajiRules.specialRules?.finalN?.enabled, 'finalN special rule must be enabled');
       console.assert(buildCandidatesForWord({ jp: 'し', kana: 'し', roma: '', subject: 'テスト' }).includes('si'), 'し should include si');
@@ -2118,6 +2328,13 @@
     });
 
     el.settingsPanel.addEventListener('click', event => event.stopPropagation());
+
+    el.saveAccountBtn.addEventListener('click', applyAccountForm);
+
+    el.randomAccountIdBtn.addEventListener('click', () => {
+      el.accountIdInput.value = generateAccountId();
+      applyAccountForm();
+    });
 
     el.genreDropdownBtn.addEventListener('click', event => {
       event.stopPropagation();
@@ -2179,8 +2396,14 @@
         'typingAcademiaMapProgress',
         'typingAcademiaTutorialDone',
         'typingAcademiaGenres',
-        'typingAcademiaTypingMode'
+        'typingAcademiaTypingMode',
+        'typingAcademiaAccount'
       ].forEach(key => localStorage.removeItem(key));
+      const freshAccount = loadAccount();
+      account.id = freshAccount.id;
+      account.name = freshAccount.name;
+      account.emoji = freshAccount.emoji;
+      saveAccount();
       gameSettings.genres = ['all'];
       gameSettings.typingMode = 'jp';
       stopTimer();
