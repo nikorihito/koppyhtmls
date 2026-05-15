@@ -20,7 +20,9 @@
       --shadow: 0 20px 60px rgba(0,0,0,.35);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -120,7 +122,9 @@
       flex: 0 0 auto;
     }
 
-    .account-meta { min-width: 0; }
+    .account-meta {
+      min-width: 0;
+    }
 
     .account-meta strong {
       display: block;
@@ -152,7 +156,9 @@
       box-shadow: var(--shadow);
     }
 
-    .pill strong { color: var(--accent2); }
+    .pill strong {
+      color: var(--accent2);
+    }
 
     button,
     .button-link {
@@ -216,7 +222,9 @@
       backdrop-filter: blur(4px);
     }
 
-    .settings-backdrop.open { display: block; }
+    .settings-backdrop.open {
+      display: block;
+    }
 
     .settings-panel {
       position: fixed;
@@ -236,7 +244,9 @@
       transform: translate(-50%, -50%);
     }
 
-    .settings-panel.open { display: block; }
+    .settings-panel.open {
+      display: block;
+    }
 
     .settings-header {
       display: flex;
@@ -289,8 +299,13 @@
       border-color: rgba(255,255,255,.32);
     }
 
-    .settings-tab-panel { display: none; }
-    .settings-tab-panel.active { display: block; }
+    .settings-tab-panel {
+      display: none;
+    }
+
+    .settings-tab-panel.active {
+      display: block;
+    }
 
     .setting-group {
       display: grid;
@@ -325,7 +340,9 @@
       box-shadow: none;
     }
 
-    .setting-dropdown { position: relative; }
+    .setting-dropdown {
+      position: relative;
+    }
 
     .setting-dropdown-button {
       width: 100%;
@@ -457,7 +474,9 @@
       animation: fadeIn .24s ease both;
     }
 
-    .screen.active { display: block; }
+    .screen.active {
+      display: block;
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -583,7 +602,9 @@
       gap: 12px;
     }
 
-    .map-grid { margin-bottom: 18px; }
+    .map-grid {
+      margin-bottom: 18px;
+    }
 
     .map-card,
     .world-card {
@@ -756,7 +777,9 @@
       grid-template-columns: 1fr 1fr;
     }
 
-    .tutorial-actions.hidden { display: none; }
+    .tutorial-actions.hidden {
+      display: none;
+    }
 
     .tutorial-choice {
       min-height: 76px;
@@ -854,9 +877,20 @@
       letter-spacing: .04em;
     }
 
-    .typed { color: var(--good); opacity: .65; }
-    .current { color: var(--accent2); text-decoration: underline; text-underline-offset: 7px; }
-    .remaining { color: #fff; }
+    .typed {
+      color: var(--good);
+      opacity: .65;
+    }
+
+    .current {
+      color: var(--accent2);
+      text-decoration: underline;
+      text-underline-offset: 7px;
+    }
+
+    .remaining {
+      color: #fff;
+    }
 
     .message {
       min-height: 30px;
@@ -986,7 +1020,9 @@
       margin: 22px 0;
     }
 
-    .shake { animation: shake .18s ease; }
+    .shake {
+      animation: shake .18s ease;
+    }
 
     @keyframes shake {
       0%,100% { transform: translateX(0); }
@@ -994,7 +1030,9 @@
       60% { transform: translateX(6px); }
     }
 
-    .pop { animation: pop .25s ease; }
+    .pop {
+      animation: pop .25s ease;
+    }
 
     @keyframes pop {
       0% { transform: scale(.96); }
@@ -1003,22 +1041,72 @@
     }
 
     @media (max-width: 900px) {
-      header { flex-direction: column; align-items: flex-start; }
-      .header-right { flex-wrap: wrap; }
-      .mode-grid { grid-template-columns: 1fr; }
-      .map-grid, .world-grid { grid-template-columns: repeat(2, 1fr); }
-      .game-layout { grid-template-columns: 1fr; }
-      .hud, .result-grid { grid-template-columns: repeat(2, 1fr); }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-right {
+        flex-wrap: wrap;
+      }
+
+      .mode-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .map-grid,
+      .world-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .game-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hud,
+      .result-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 520px) {
-      .app { width: min(100% - 18px, 1180px); padding-top: 16px; }
-      .map-grid, .world-grid { grid-template-columns: 1fr; }
-      .game-main, .side, .result { padding: 14px; }
-      .stage { min-height: 330px; padding: 16px; }
-      .controls, .settings-save-row { flex-direction: column; align-items: stretch; }
-      button, .button-link { width: 100%; }
-      .account-actions, .tutorial-actions, .tutorial-actions.two { grid-template-columns: 1fr; }
+      .app {
+        width: min(100% - 18px, 1180px);
+        padding-top: 16px;
+      }
+
+      .map-grid,
+      .world-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .game-main,
+      .side,
+      .result {
+        padding: 14px;
+      }
+
+      .stage {
+        min-height: 330px;
+        padding: 16px;
+      }
+
+      .controls,
+      .settings-save-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      button,
+      .button-link {
+        width: 100%;
+      }
+
+      .account-actions,
+      .tutorial-actions,
+      .tutorial-actions.two {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -1069,7 +1157,7 @@
               </div>
 
               <div class="account-actions">
-                <a class="login-link-button" href="./login.html">ログアウト</a>
+                <a class="login-link-button" href="./login.html">ログイン・編集</a>
                 <button type="button" class="danger-button" id="deleteAccountBtn">アカウントを消す</button>
               </div>
 
@@ -1484,6 +1572,7 @@
     function loadAccount() {
       try {
         const saved = JSON.parse(localStorage.getItem("typingAcademiaAccount") || "{}");
+
         return {
           id: sanitizeAccountId(saved.id || generateAccountId()),
           name: String(saved.name || "ゲスト").slice(0, 20),
@@ -1611,6 +1700,7 @@
       const reviewWords = mapIndex > 0
         ? levelMaps[mapIndex - 1].worlds.slice(-3).flatMap(world => world[1].slice(0, 2))
         : [];
+
       return [...new Set([...targetWords, ...reviewWords])];
     }
 
@@ -1732,8 +1822,11 @@
       const bank = getActiveWordBank();
 
       let idx = Math.floor(Math.random() * bank.length);
+
       if (bank.length > 1) {
-        while (idx === lastWordIndex) idx = Math.floor(Math.random() * bank.length);
+        while (idx === lastWordIndex) {
+          idx = Math.floor(Math.random() * bank.length);
+        }
       }
 
       lastWordIndex = idx;
@@ -1767,6 +1860,7 @@
 
       if (state.mode !== "level" && gameSettings.typingMode === "en") {
         const en = englishText || item.roma || item.kana || item.jp;
+
         return {
           jp: en,
           kana: null,
@@ -1801,6 +1895,7 @@
 
       if (word.roma) {
         candidates.add(word.roma);
+
         for (const candidate of expandRomaSubstitutions(word.roma)) {
           candidates.add(candidate);
         }
@@ -1831,6 +1926,7 @@
         }
 
         const next = [];
+
         for (const prefix of results) {
           for (const option of options) {
             next.push(prefix + option);
@@ -1895,6 +1991,7 @@
               if (!results.has(next)) {
                 results.add(next);
                 changed = true;
+
                 if (results.size >= 512) break;
               }
 
@@ -1992,8 +2089,11 @@
         state.combo += 1;
         state.maxCombo = Math.max(state.maxCombo, state.combo);
 
-        if (state.candidates.includes(state.typedInput)) completeWord();
-        else renderWord();
+        if (state.candidates.includes(state.typedInput)) {
+          completeWord();
+        } else {
+          renderWord();
+        }
       } else {
         state.missTyped += 1;
         state.combo = 0;
@@ -2517,7 +2617,7 @@
     });
 
     el.resetAllBtn.addEventListener("click", () => {
-      const ok = confirm("レベル、EXP、マップ進行、チュートリアル、設定、アカウントをすべてリセットします。よろしいですか？");
+      const ok = confirm("レベル、EXP、マップ進行、チュートリアル、タイピング設定をリセットします。アカウントは残ります。よろしいですか？");
       if (!ok) return;
 
       [
@@ -2526,15 +2626,8 @@
         "typingAcademiaMapProgress",
         "typingAcademiaTutorialDone",
         "typingAcademiaGenres",
-        "typingAcademiaTypingMode",
-        "typingAcademiaAccount"
+        "typingAcademiaTypingMode"
       ].forEach(key => localStorage.removeItem(key));
-
-      const fresh = loadAccount();
-      account.id = fresh.id;
-      account.name = fresh.name;
-      account.emoji = fresh.emoji;
-      saveAccount();
 
       gameSettings.genres = ["all"];
       gameSettings.typingMode = "jp";
@@ -2544,12 +2637,15 @@
       stopTimer();
       state = createInitialState("normal");
       showScreen("menu");
+
       el.jpWord.textContent = "スペースで開始";
       el.romaWord.innerHTML = "";
       el.message.textContent = "モードを選んだら、スペースキーで開始できます。";
+
+      renderAccountUi();
       renderAll();
 
-      alert("リセットしました。");
+      alert("リセットしました。アカウントは残っています。");
     });
 
     el.tutorialNextBtn.addEventListener("click", () => {
