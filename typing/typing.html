@@ -830,6 +830,19 @@
       font-weight: 900;
       letter-spacing: .06em;
       text-shadow: 0 0 26px rgba(142,232,255,.4);
+      line-height: 1.25;
+    }
+
+    .jp-word ruby {
+      ruby-align: center;
+    }
+
+    .jp-word rt {
+      color: var(--accent2);
+      font-size: .28em;
+      letter-spacing: .03em;
+      text-shadow: none;
+      font-weight: 900;
     }
 
     .roma-word {
@@ -941,6 +954,14 @@
       background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
       box-shadow: 0 0 22px rgba(142,232,255,.58), inset 0 -2px 0 rgba(0,0,0,.18);
       transform: translateY(-3px) scale(1.06);
+    }
+
+    .key.alt-active {
+      color: #dfffe7;
+      background: rgba(169, 255, 203, .16);
+      border-color: rgba(169, 255, 203, .42);
+      box-shadow: 0 0 14px rgba(169, 255, 203, .28), inset 0 -2px 0 rgba(0,0,0,.18);
+      transform: translateY(-1px);
     }
 
     .key.next-shift {
@@ -1202,6 +1223,17 @@
               </div>
               <p class="settings-note">
                 次に押すキーを画面下のキーボードで光らせます。レベルアップモードでは常にONになります。
+              </p>
+            </div>
+
+            <div class="setting-group">
+              <label>漢字の読み仮名</label>
+              <div class="segmented">
+                <button type="button" id="furiganaOnBtn" class="active">ON</button>
+                <button type="button" id="furiganaOffBtn">OFF</button>
+              </div>
+              <p class="settings-note">
+                漢字が含まれる単語や文章に読み仮名を表示します。初期設定はONです。
               </p>
             </div>
 
@@ -1498,6 +1530,8 @@
       enModeBtn: document.getElementById("enModeBtn"),
       keyboardGuideOnBtn: document.getElementById("keyboardGuideOnBtn"),
       keyboardGuideOffBtn: document.getElementById("keyboardGuideOffBtn"),
+      furiganaOnBtn: document.getElementById("furiganaOnBtn"),
+      furiganaOffBtn: document.getElementById("furiganaOffBtn"),
       settingsCancelBtn: document.getElementById("settingsCancelBtn"),
       settingsSaveBtn: document.getElementById("settingsSaveBtn"),
 
@@ -1611,13 +1645,15 @@
     const gameSettings = {
       genres: loadSelectedGenres(),
       typingMode: localStorage.getItem("typingAcademiaTypingMode") || "jp",
-      keyboardGuide: localStorage.getItem("typingAcademiaKeyboardGuide") !== "off"
+      keyboardGuide: localStorage.getItem("typingAcademiaKeyboardGuide") !== "off",
+      furigana: localStorage.getItem("typingAcademiaFurigana") !== "off"
     };
 
     const draftSettings = {
       genres: [...gameSettings.genres],
       typingMode: gameSettings.typingMode,
-      keyboardGuide: gameSettings.keyboardGuide
+      keyboardGuide: gameSettings.keyboardGuide,
+      furigana: gameSettings.furigana
     };
 
     function createInitialState(mode) {
@@ -2100,7 +2136,7 @@
     function renderWord() {
       if (!state.currentWord) return;
 
-      el.jpWord.textContent = `${state.currentWord.jp}　${subjectBadge(state.currentWord.subject)}`;
+      el.jpWord.innerHTML = buildWordHtml(state.currentWord);
 
       const display = getDisplayCandidate();
 
@@ -2113,6 +2149,28 @@
 
         return `<span class="${cls}">${escapeHtml(ch)}</span>`;
       }).join("");
+    }
+
+    function buildWordHtml(word) {
+      const badge = subjectBadge(word.subject);
+      const jp = String(word.jp || "");
+      const kana = String(word.kana || "");
+
+      if (
+        gameSettings.furigana &&
+        gameSettings.typingMode !== "en" &&
+        kana &&
+        kana !== jp &&
+        hasKanji(jp)
+      ) {
+        return `<ruby>${escapeHtml(jp)}<rt>${escapeHtml(kana)}</rt></ruby>　${escapeHtml(badge)}`;
+      }
+
+      return `${escapeHtml(jp)}　${escapeHtml(badge)}`;
+    }
+
+    function hasKanji(text) {
+      return /[一-龯々〆ヵヶ]/.test(String(text || ""));
     }
 
     function subjectBadge(subject) {
@@ -2496,7 +2554,7 @@
       el.keyboardGuide.classList.toggle("hidden", !show);
 
       document.querySelectorAll(".key").forEach(key => {
-        key.classList.remove("active", "next-shift");
+        key.classList.remove("active", "alt-active", "next-shift");
       });
 
       if (!show) return;
@@ -2508,32 +2566,63 @@
         return;
       }
 
-      const display = getDisplayCandidate();
-      const nextChar = display[state.typedInput.length];
+      const possibleNextChars = getPossibleNextChars();
 
-      if (!nextChar) {
+      if (possibleNextChars.length === 0) {
         el.keyboardGuideNote.textContent = "次の問題へ進みます";
         return;
       }
 
-      const keyInfo = normalizeGuideKey(nextChar);
+      const allKeyInfos = possibleNextChars.map(char => normalizeGuideKey(char));
+      const uniqueInfos = [];
+      const usedKeys = new Set();
 
-      if (keyInfo.needShift) {
-        document.querySelectorAll('[data-key="shift"]').forEach(key => {
-          key.classList.add("next-shift");
-        });
+      for (const info of allKeyInfos) {
+        const key = `${info.key}::${info.needShift}`;
+        if (!usedKeys.has(key)) {
+          usedKeys.add(key);
+          uniqueInfos.push(info);
+        }
       }
 
-      const target = document.querySelector(`.key[data-key="${cssEscape(keyInfo.key)}"]`);
+      uniqueInfos.forEach((info, index) => {
+        if (info.needShift) {
+          document.querySelectorAll('[data-key="shift"]').forEach(key => {
+            key.classList.add(index === 0 ? "next-shift" : "alt-active");
+          });
+        }
 
-      if (target) {
-        target.classList.add("active");
-        el.keyboardGuideNote.textContent = keyInfo.needShift
-          ? `次は Shift + ${keyInfo.label} を押します`
-          : `次は ${keyInfo.label} を押します`;
+        const target = document.querySelector(`.key[data-key="${cssEscape(info.key)}"]`);
+
+        if (target) {
+          target.classList.add(index === 0 ? "active" : "alt-active");
+        }
+      });
+
+      if (uniqueInfos.length >= 2) {
+        const labels = uniqueInfos.map(info => info.needShift ? `Shift + ${info.label}` : info.label);
+        el.keyboardGuideNote.textContent = `次は ${labels[0]}。他の候補：${labels.slice(1).join(" / ")}`;
       } else {
-        el.keyboardGuideNote.textContent = `次は ${nextChar} を押します`;
+        const main = uniqueInfos[0];
+        el.keyboardGuideNote.textContent = main.needShift
+          ? `次は Shift + ${main.label} を押します`
+          : `次は ${main.label} を押します`;
       }
+    }
+
+    function getPossibleNextChars() {
+      if (!state.currentWord) return [];
+
+      const chars = new Set();
+
+      for (const candidate of state.candidates) {
+        if (candidate.startsWith(state.typedInput)) {
+          const nextChar = candidate[state.typedInput.length];
+          if (nextChar) chars.add(nextChar);
+        }
+      }
+
+      return [...chars];
     }
 
     function normalizeGuideKey(char) {
@@ -2645,12 +2734,16 @@
 
       el.keyboardGuideOnBtn.classList.toggle("active", draftSettings.keyboardGuide);
       el.keyboardGuideOffBtn.classList.toggle("active", !draftSettings.keyboardGuide);
+
+      el.furiganaOnBtn.classList.toggle("active", draftSettings.furigana);
+      el.furiganaOffBtn.classList.toggle("active", !draftSettings.furigana);
     }
 
     function syncDraftSettingsFromSaved() {
       draftSettings.genres = [...gameSettings.genres];
       draftSettings.typingMode = gameSettings.typingMode;
       draftSettings.keyboardGuide = gameSettings.keyboardGuide;
+      draftSettings.furigana = gameSettings.furigana;
     }
 
     function setupGenreOptions() {
@@ -2712,10 +2805,12 @@
       gameSettings.genres = [...draftSettings.genres];
       gameSettings.typingMode = draftSettings.typingMode;
       gameSettings.keyboardGuide = draftSettings.keyboardGuide;
+      gameSettings.furigana = draftSettings.furigana;
 
       localStorage.setItem("typingAcademiaGenres", JSON.stringify(gameSettings.genres));
       localStorage.setItem("typingAcademiaTypingMode", gameSettings.typingMode);
       localStorage.setItem("typingAcademiaKeyboardGuide", gameSettings.keyboardGuide ? "on" : "off");
+      localStorage.setItem("typingAcademiaFurigana", gameSettings.furigana ? "on" : "off");
 
       closeSettingsPanel();
       el.message.textContent = "設定を保存しました。次に開始する問題から反映されます。";
@@ -2811,6 +2906,16 @@
       renderSettingsUi();
     });
 
+    el.furiganaOnBtn.addEventListener("click", () => {
+      draftSettings.furigana = true;
+      renderSettingsUi();
+    });
+
+    el.furiganaOffBtn.addEventListener("click", () => {
+      draftSettings.furigana = false;
+      renderSettingsUi();
+    });
+
     el.resetAllBtn.addEventListener("click", () => {
       const ok = confirm("レベル、EXP、マップ進行、チュートリアル、タイピング設定をリセットします。アカウントは残ります。よろしいですか？");
       if (!ok) return;
@@ -2822,16 +2927,19 @@
         "typingAcademiaTutorialDone",
         "typingAcademiaGenres",
         "typingAcademiaTypingMode",
-        "typingAcademiaKeyboardGuide"
+        "typingAcademiaKeyboardGuide",
+        "typingAcademiaFurigana"
       ].forEach(key => localStorage.removeItem(key));
 
       gameSettings.genres = ["all"];
       gameSettings.typingMode = "jp";
       gameSettings.keyboardGuide = true;
+      gameSettings.furigana = true;
 
       draftSettings.genres = ["all"];
       draftSettings.typingMode = "jp";
       draftSettings.keyboardGuide = true;
+      draftSettings.furigana = true;
 
       stopTimer();
       state = createInitialState("normal");
