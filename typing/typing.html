@@ -20,9 +20,7 @@
       --shadow: 0 20px 60px rgba(0,0,0,.35);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -122,9 +120,7 @@
       flex: 0 0 auto;
     }
 
-    .account-meta {
-      min-width: 0;
-    }
+    .account-meta { min-width: 0; }
 
     .account-meta strong {
       display: block;
@@ -156,9 +152,7 @@
       box-shadow: var(--shadow);
     }
 
-    .pill strong {
-      color: var(--accent2);
-    }
+    .pill strong { color: var(--accent2); }
 
     button,
     .button-link {
@@ -222,9 +216,7 @@
       backdrop-filter: blur(4px);
     }
 
-    .settings-backdrop.open {
-      display: block;
-    }
+    .settings-backdrop.open { display: block; }
 
     .settings-panel {
       position: fixed;
@@ -244,9 +236,7 @@
       transform: translate(-50%, -50%);
     }
 
-    .settings-panel.open {
-      display: block;
-    }
+    .settings-panel.open { display: block; }
 
     .settings-header {
       display: flex;
@@ -299,13 +289,8 @@
       border-color: rgba(255,255,255,.32);
     }
 
-    .settings-tab-panel {
-      display: none;
-    }
-
-    .settings-tab-panel.active {
-      display: block;
-    }
+    .settings-tab-panel { display: none; }
+    .settings-tab-panel.active { display: block; }
 
     .setting-group {
       display: grid;
@@ -340,9 +325,7 @@
       box-shadow: none;
     }
 
-    .setting-dropdown {
-      position: relative;
-    }
+    .setting-dropdown { position: relative; }
 
     .setting-dropdown-button {
       width: 100%;
@@ -474,9 +457,7 @@
       animation: fadeIn .24s ease both;
     }
 
-    .screen.active {
-      display: block;
-    }
+    .screen.active { display: block; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -602,9 +583,7 @@
       gap: 12px;
     }
 
-    .map-grid {
-      margin-bottom: 18px;
-    }
+    .map-grid { margin-bottom: 18px; }
 
     .map-card,
     .world-card {
@@ -769,17 +748,9 @@
       margin-top: 16px;
     }
 
-    .tutorial-actions.one {
-      grid-template-columns: 1fr;
-    }
-
-    .tutorial-actions.two {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .tutorial-actions.hidden {
-      display: none;
-    }
+    .tutorial-actions.one { grid-template-columns: 1fr; }
+    .tutorial-actions.two { grid-template-columns: 1fr 1fr; }
+    .tutorial-actions.hidden { display: none; }
 
     .tutorial-choice {
       min-height: 76px;
@@ -821,9 +792,7 @@
       font-size: 12px;
     }
 
-    .hud-card strong {
-      font-size: 22px;
-    }
+    .hud-card strong { font-size: 22px; }
 
     .stage {
       position: relative;
@@ -877,20 +846,9 @@
       letter-spacing: .04em;
     }
 
-    .typed {
-      color: var(--good);
-      opacity: .65;
-    }
-
-    .current {
-      color: var(--accent2);
-      text-decoration: underline;
-      text-underline-offset: 7px;
-    }
-
-    .remaining {
-      color: #fff;
-    }
+    .typed { color: var(--good); opacity: .65; }
+    .current { color: var(--accent2); text-decoration: underline; text-underline-offset: 7px; }
+    .remaining { color: #fff; }
 
     .message {
       min-height: 30px;
@@ -942,6 +900,64 @@
       background: linear-gradient(90deg, var(--danger), #ffb08e);
     }
 
+    .keyboard-guide {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.16);
+      display: grid;
+      gap: 8px;
+    }
+
+    .keyboard-guide.hidden { display: none; }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .key {
+      min-width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--text);
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      font-weight: 900;
+      font-size: 13px;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,.18);
+      transition: transform .12s ease, background .12s ease, color .12s ease, box-shadow .12s ease;
+    }
+
+    .key.wide { min-width: 58px; }
+    .key.space { min-width: 210px; }
+
+    .key.active {
+      color: #0b1530;
+      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
+      box-shadow: 0 0 22px rgba(142,232,255,.58), inset 0 -2px 0 rgba(0,0,0,.18);
+      transform: translateY(-3px) scale(1.06);
+    }
+
+    .key.next-shift {
+      color: #0b1530;
+      background: linear-gradient(135deg, #ffdf8e, #fff3bf);
+      box-shadow: 0 0 18px rgba(255,223,142,.52), inset 0 -2px 0 rgba(0,0,0,.18);
+      transform: translateY(-2px);
+    }
+
+    .keyboard-guide-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
     .controls {
       display: flex;
       justify-content: space-between;
@@ -950,9 +966,7 @@
       margin-top: 18px;
     }
 
-    .side {
-      padding: 18px;
-    }
+    .side { padding: 18px; }
 
     .side h3 {
       margin: 0 0 10px;
@@ -1020,9 +1034,7 @@
       margin: 22px 0;
     }
 
-    .shake {
-      animation: shake .18s ease;
-    }
+    .shake { animation: shake .18s ease; }
 
     @keyframes shake {
       0%,100% { transform: translateX(0); }
@@ -1030,9 +1042,7 @@
       60% { transform: translateX(6px); }
     }
 
-    .pop {
-      animation: pop .25s ease;
-    }
+    .pop { animation: pop .25s ease; }
 
     @keyframes pop {
       0% { transform: scale(.96); }
@@ -1041,32 +1051,12 @@
     }
 
     @media (max-width: 900px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .header-right {
-        flex-wrap: wrap;
-      }
-
-      .mode-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .map-grid,
-      .world-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .game-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .hud,
-      .result-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      header { flex-direction: column; align-items: flex-start; }
+      .header-right { flex-wrap: wrap; }
+      .mode-grid { grid-template-columns: 1fr; }
+      .map-grid, .world-grid { grid-template-columns: repeat(2, 1fr); }
+      .game-layout { grid-template-columns: 1fr; }
+      .hud, .result-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 520px) {
@@ -1106,6 +1096,25 @@
       .tutorial-actions,
       .tutorial-actions.two {
         grid-template-columns: 1fr;
+      }
+
+      .keyboard-guide {
+        overflow-x: auto;
+      }
+
+      .keyboard-row {
+        justify-content: flex-start;
+        min-width: 620px;
+      }
+
+      .key {
+        min-width: 32px;
+        height: 32px;
+        font-size: 12px;
+      }
+
+      .key.space {
+        min-width: 180px;
       }
     }
   </style>
@@ -1183,6 +1192,17 @@
                 <button type="button" id="jpModeBtn" class="active">日本語</button>
                 <button type="button" id="enModeBtn">英語</button>
               </div>
+            </div>
+
+            <div class="setting-group">
+              <label>キーボードガイド</label>
+              <div class="segmented">
+                <button type="button" id="keyboardGuideOnBtn" class="active">ON</button>
+                <button type="button" id="keyboardGuideOffBtn">OFF</button>
+              </div>
+              <p class="settings-note">
+                次に押すキーを画面下のキーボードで光らせます。レベルアップモードでは常にONになります。
+              </p>
             </div>
 
             <p class="settings-note">
@@ -1321,6 +1341,67 @@
             <div class="time-gauge" id="timeGauge"><div id="timeGaugeFill"></div></div>
           </div>
 
+          <div class="keyboard-guide" id="keyboardGuide">
+            <div class="keyboard-guide-note" id="keyboardGuideNote">次に押すキーが光ります</div>
+
+            <div class="keyboard-row">
+              <div class="key" data-key="1">1</div>
+              <div class="key" data-key="2">2</div>
+              <div class="key" data-key="3">3</div>
+              <div class="key" data-key="4">4</div>
+              <div class="key" data-key="5">5</div>
+              <div class="key" data-key="6">6</div>
+              <div class="key" data-key="7">7</div>
+              <div class="key" data-key="8">8</div>
+              <div class="key" data-key="9">9</div>
+              <div class="key" data-key="0">0</div>
+              <div class="key" data-key="-">-</div>
+            </div>
+
+            <div class="keyboard-row">
+              <div class="key" data-key="q">Q</div>
+              <div class="key" data-key="w">W</div>
+              <div class="key" data-key="e">E</div>
+              <div class="key" data-key="r">R</div>
+              <div class="key" data-key="t">T</div>
+              <div class="key" data-key="y">Y</div>
+              <div class="key" data-key="u">U</div>
+              <div class="key" data-key="i">I</div>
+              <div class="key" data-key="o">O</div>
+              <div class="key" data-key="p">P</div>
+            </div>
+
+            <div class="keyboard-row">
+              <div class="key" data-key="a">A</div>
+              <div class="key" data-key="s">S</div>
+              <div class="key" data-key="d">D</div>
+              <div class="key" data-key="f">F</div>
+              <div class="key" data-key="g">G</div>
+              <div class="key" data-key="h">H</div>
+              <div class="key" data-key="j">J</div>
+              <div class="key" data-key="k">K</div>
+              <div class="key" data-key="l">L</div>
+            </div>
+
+            <div class="keyboard-row">
+              <div class="key wide" data-key="shift">Shift</div>
+              <div class="key" data-key="z">Z</div>
+              <div class="key" data-key="x">X</div>
+              <div class="key" data-key="c">C</div>
+              <div class="key" data-key="v">V</div>
+              <div class="key" data-key="b">B</div>
+              <div class="key" data-key="n">N</div>
+              <div class="key" data-key="m">M</div>
+              <div class="key" data-key=",">,</div>
+              <div class="key" data-key=".">.</div>
+              <div class="key" data-key="/">/</div>
+            </div>
+
+            <div class="keyboard-row">
+              <div class="key space" data-key=" ">Space</div>
+            </div>
+          </div>
+
           <div class="controls">
             <button id="startBtn">スタート / 再開</button>
             <button class="secondary" id="backBtn">戻る</button>
@@ -1415,6 +1496,8 @@
       selectedGenreChips: document.getElementById("selectedGenreChips"),
       jpModeBtn: document.getElementById("jpModeBtn"),
       enModeBtn: document.getElementById("enModeBtn"),
+      keyboardGuideOnBtn: document.getElementById("keyboardGuideOnBtn"),
+      keyboardGuideOffBtn: document.getElementById("keyboardGuideOffBtn"),
       settingsCancelBtn: document.getElementById("settingsCancelBtn"),
       settingsSaveBtn: document.getElementById("settingsSaveBtn"),
 
@@ -1462,6 +1545,8 @@
       timeGaugeFill: document.getElementById("timeGaugeFill"),
       timeGaugeLabel: document.getElementById("timeGaugeLabel"),
       timeGaugeTitle: document.getElementById("timeGaugeTitle"),
+      keyboardGuide: document.getElementById("keyboardGuide"),
+      keyboardGuideNote: document.getElementById("keyboardGuideNote"),
 
       sideLevel: document.getElementById("sideLevel"),
       sideExp: document.getElementById("sideExp"),
@@ -1525,12 +1610,14 @@
 
     const gameSettings = {
       genres: loadSelectedGenres(),
-      typingMode: localStorage.getItem("typingAcademiaTypingMode") || "jp"
+      typingMode: localStorage.getItem("typingAcademiaTypingMode") || "jp",
+      keyboardGuide: localStorage.getItem("typingAcademiaKeyboardGuide") !== "off"
     };
 
     const draftSettings = {
       genres: [...gameSettings.genres],
-      typingMode: gameSettings.typingMode
+      typingMode: gameSettings.typingMode,
+      keyboardGuide: gameSettings.keyboardGuide
     };
 
     function createInitialState(mode) {
@@ -1683,6 +1770,7 @@
       }
 
       renderHud();
+      renderKeyboardGuide();
     }
 
     function stopTimer() {
@@ -1837,6 +1925,7 @@
       state.candidates = buildCandidatesForWord(state.currentWord);
 
       renderWord();
+      renderKeyboardGuide();
     }
 
     function getActiveWordBank() {
@@ -2206,6 +2295,7 @@
       el.resultCombo.textContent = state.maxCombo;
 
       updateTitle();
+      renderKeyboardGuide();
     }
 
     function makeResultMessage() {
@@ -2394,6 +2484,93 @@
       el.timeGauge.classList.toggle("danger", percent <= 20);
     }
 
+    function shouldShowKeyboardGuide() {
+      return state.mode === "level" || gameSettings.keyboardGuide;
+    }
+
+    function renderKeyboardGuide() {
+      if (!el.keyboardGuide) return;
+
+      const show = shouldShowKeyboardGuide();
+
+      el.keyboardGuide.classList.toggle("hidden", !show);
+
+      document.querySelectorAll(".key").forEach(key => {
+        key.classList.remove("active", "next-shift");
+      });
+
+      if (!show) return;
+
+      if (!state.currentWord || !state.running) {
+        el.keyboardGuideNote.textContent = state.mode === "level"
+          ? "レベルアップモードではキーボードガイドが常に表示されます"
+          : "スタートすると次に押すキーが光ります";
+        return;
+      }
+
+      const display = getDisplayCandidate();
+      const nextChar = display[state.typedInput.length];
+
+      if (!nextChar) {
+        el.keyboardGuideNote.textContent = "次の問題へ進みます";
+        return;
+      }
+
+      const keyInfo = normalizeGuideKey(nextChar);
+
+      if (keyInfo.needShift) {
+        document.querySelectorAll('[data-key="shift"]').forEach(key => {
+          key.classList.add("next-shift");
+        });
+      }
+
+      const target = document.querySelector(`.key[data-key="${cssEscape(keyInfo.key)}"]`);
+
+      if (target) {
+        target.classList.add("active");
+        el.keyboardGuideNote.textContent = keyInfo.needShift
+          ? `次は Shift + ${keyInfo.label} を押します`
+          : `次は ${keyInfo.label} を押します`;
+      } else {
+        el.keyboardGuideNote.textContent = `次は ${nextChar} を押します`;
+      }
+    }
+
+    function normalizeGuideKey(char) {
+      const raw = String(char || "");
+      const lower = raw.toLowerCase();
+
+      const shiftMap = {
+        "A": "a", "B": "b", "C": "c", "D": "d", "E": "e",
+        "F": "f", "G": "g", "H": "h", "I": "i", "J": "j",
+        "K": "k", "L": "l", "M": "m", "N": "n", "O": "o",
+        "P": "p", "Q": "q", "R": "r", "S": "s", "T": "t",
+        "U": "u", "V": "v", "W": "w", "X": "x", "Y": "y", "Z": "z",
+        "!": "1", "\"": "2", "#": "3", "$": "4", "%": "5",
+        "&": "6", "'": "7", "(": "8", ")": "9",
+        "?": "/", "_": "-"
+      };
+
+      if (raw === " ") {
+        return { key: " ", label: "Space", needShift: false };
+      }
+
+      if (shiftMap[raw]) {
+        return { key: shiftMap[raw], label: raw, needShift: true };
+      }
+
+      return {
+        key: lower,
+        label: raw === " " ? "Space" : raw.toUpperCase(),
+        needShift: false
+      };
+    }
+
+    function cssEscape(value) {
+      if (window.CSS && CSS.escape) return CSS.escape(value);
+      return String(value).replace(/["\\]/g, "\\$&");
+    }
+
     function renderSide() {
       el.sideLevel.textContent = state.level;
       el.sideExp.textContent = `${state.exp} / ${expToNext(state.level)}`;
@@ -2465,11 +2642,15 @@
 
       el.jpModeBtn.classList.toggle("active", draftSettings.typingMode === "jp");
       el.enModeBtn.classList.toggle("active", draftSettings.typingMode === "en");
+
+      el.keyboardGuideOnBtn.classList.toggle("active", draftSettings.keyboardGuide);
+      el.keyboardGuideOffBtn.classList.toggle("active", !draftSettings.keyboardGuide);
     }
 
     function syncDraftSettingsFromSaved() {
       draftSettings.genres = [...gameSettings.genres];
       draftSettings.typingMode = gameSettings.typingMode;
+      draftSettings.keyboardGuide = gameSettings.keyboardGuide;
     }
 
     function setupGenreOptions() {
@@ -2530,9 +2711,11 @@
     function saveSettings() {
       gameSettings.genres = [...draftSettings.genres];
       gameSettings.typingMode = draftSettings.typingMode;
+      gameSettings.keyboardGuide = draftSettings.keyboardGuide;
 
       localStorage.setItem("typingAcademiaGenres", JSON.stringify(gameSettings.genres));
       localStorage.setItem("typingAcademiaTypingMode", gameSettings.typingMode);
+      localStorage.setItem("typingAcademiaKeyboardGuide", gameSettings.keyboardGuide ? "on" : "off");
 
       closeSettingsPanel();
       el.message.textContent = "設定を保存しました。次に開始する問題から反映されます。";
@@ -2566,6 +2749,8 @@
       renderSettingsUi();
 
       if (state.currentWord) renderWord();
+
+      renderKeyboardGuide();
     }
 
     function escapeHtml(value) {
@@ -2616,6 +2801,16 @@
       renderSettingsUi();
     });
 
+    el.keyboardGuideOnBtn.addEventListener("click", () => {
+      draftSettings.keyboardGuide = true;
+      renderSettingsUi();
+    });
+
+    el.keyboardGuideOffBtn.addEventListener("click", () => {
+      draftSettings.keyboardGuide = false;
+      renderSettingsUi();
+    });
+
     el.resetAllBtn.addEventListener("click", () => {
       const ok = confirm("レベル、EXP、マップ進行、チュートリアル、タイピング設定をリセットします。アカウントは残ります。よろしいですか？");
       if (!ok) return;
@@ -2626,13 +2821,17 @@
         "typingAcademiaMapProgress",
         "typingAcademiaTutorialDone",
         "typingAcademiaGenres",
-        "typingAcademiaTypingMode"
+        "typingAcademiaTypingMode",
+        "typingAcademiaKeyboardGuide"
       ].forEach(key => localStorage.removeItem(key));
 
       gameSettings.genres = ["all"];
       gameSettings.typingMode = "jp";
+      gameSettings.keyboardGuide = true;
+
       draftSettings.genres = ["all"];
       draftSettings.typingMode = "jp";
+      draftSettings.keyboardGuide = true;
 
       stopTimer();
       state = createInitialState("normal");
