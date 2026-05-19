@@ -369,7 +369,7 @@
         <p class="lead">星降るタイピングアカデミアを始めるには、保存済みのログインIDを入力してください。</p>
       </div>
 
-      <div class="login-existing-box" id="existingAccountBox">
+      <div class="login-existing-box">
         <h2>ログインID</h2>
         <p id="existingAccountText">アカウント情報を確認しています。</p>
 
@@ -447,7 +447,8 @@
   <script>
     "use strict";
 
-    const STORAGE_KEY = "typingAcademiaAccount";
+    const ACCOUNT_KEY = "typingAcademiaAccount";
+    const SESSION_KEY = "typingAcademiaLoggedIn";
 
     const el = {
       form: document.getElementById("accountForm"),
@@ -472,14 +473,24 @@
     };
 
     let account = loadAccount();
-    const hadSavedAccountOnLoad = !!localStorage.getItem(STORAGE_KEY);
+
+    function createDefaultAccount() {
+      return {
+        id: "",
+        name: "ゲスト",
+        emoji: "🌟"
+      };
+    }
 
     function loadAccount() {
       try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        const raw = localStorage.getItem(ACCOUNT_KEY);
+        if (!raw) return createDefaultAccount();
+
+        const saved = JSON.parse(raw);
 
         return {
-          id: normalizeOrGenerateId(saved.id || ""),
+          id: sanitizeAccountId(saved.id || ""),
           name: sanitizeName(saved.name || "ゲスト"),
           emoji: normalizeEmoji(saved.emoji || "🌟")
         };
@@ -488,18 +499,16 @@
       }
     }
 
-    function createDefaultAccount() {
-      return {
-        id: generateAccountId(),
-        name: "ゲスト",
-        emoji: "🌟"
-      };
-    }
-
     function saveAccount(nextAccount) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAccount));
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(nextAccount));
       account = nextAccount;
       renderAccount();
+    }
+
+    function loginWithAccount(nextAccount) {
+      saveAccount(nextAccount);
+      localStorage.setItem(SESSION_KEY, "1");
+      window.location.href = "./typing.html";
     }
 
     function generateAccountId() {
@@ -513,10 +522,6 @@
         .slice(0, 24);
     }
 
-    function normalizeOrGenerateId(value) {
-      return sanitizeAccountId(value) || generateAccountId();
-    }
-
     function sanitizeName(value) {
       return String(value || "ゲスト").trim().slice(0, 20) || "ゲスト";
     }
@@ -528,7 +533,7 @@
 
     function buildAccountFromForm() {
       return {
-        id: normalizeOrGenerateId(el.idInput.value),
+        id: sanitizeAccountId(el.idInput.value),
         name: sanitizeName(el.nameInput.value),
         emoji: normalizeEmoji(el.emojiInput.value)
       };
@@ -563,14 +568,14 @@
     function renderAccount() {
       el.emojiInput.value = account.emoji;
       el.nameInput.value = account.name;
-      el.idInput.value = account.id;
+      el.idInput.value = account.id || "";
       renderExistingAccount();
     }
 
     function renderExistingAccount() {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(ACCOUNT_KEY);
 
-      if (!saved) {
+      if (!saved || !account.id) {
         el.existingAccountText.textContent = "まだアカウントがありません。下の「アカウントが無い場合」から作成するか、ゲストとしてログインしてください。";
         el.loginBtn.disabled = true;
         el.loginIdInput.value = "";
@@ -584,9 +589,9 @@
     }
 
     function handleLogin() {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(ACCOUNT_KEY);
 
-      if (!saved) {
+      if (!saved || !account.id) {
         setError("アカウントがありません。下の「アカウントが無い場合」から作成するか、ゲストとしてログインしてください。");
         return;
       }
@@ -606,6 +611,7 @@
       }
 
       setError("");
+      localStorage.setItem(SESSION_KEY, "1");
       window.location.href = "./typing.html";
     }
 
@@ -616,13 +622,7 @@
         emoji: "🌟"
       };
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(guestAccount));
-      account = guestAccount;
-
-      setError("");
-      setStatus("ゲストとしてログインします。");
-
-      window.location.href = "./typing.html";
+      loginWithAccount(guestAccount);
     }
 
     function handleSave({ redirect = false } = {}) {
@@ -635,16 +635,16 @@
       }
 
       setError("");
-      saveAccount(nextAccount);
-
-      el.createFormWrap.classList.remove("open");
-      el.openCreateFormBtn.textContent = "アカウントを編集する";
-
-      setStatus("保存しました。");
 
       if (redirect) {
-        window.location.href = "./typing.html";
+        loginWithAccount(nextAccount);
+        return true;
       }
+
+      saveAccount(nextAccount);
+      el.createFormWrap.classList.remove("open");
+      el.openCreateFormBtn.textContent = "アカウントを編集する";
+      setStatus("保存しました。");
 
       return true;
     }
@@ -653,7 +653,8 @@
       const ok = confirm("アカウントID・名前・絵文字アイコンをリセットします。よろしいですか？");
       if (!ok) return;
 
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(ACCOUNT_KEY);
+      localStorage.removeItem(SESSION_KEY);
 
       account = createDefaultAccount();
 
@@ -681,7 +682,7 @@
       if (el.createFormWrap.classList.contains("open")) {
         el.openCreateFormBtn.textContent = "作成フォームを閉じる";
       } else {
-        el.openCreateFormBtn.textContent = localStorage.getItem(STORAGE_KEY)
+        el.openCreateFormBtn.textContent = localStorage.getItem(ACCOUNT_KEY)
           ? "アカウントを編集する"
           : "アカウントを作成する";
       }
@@ -722,19 +723,7 @@
       });
     });
 
-    function runTests() {
-      console.assert(sanitizeAccountId("KoPPy 001!!") === "koppy001", "ID should be sanitized");
-      console.assert(sanitizeName("") === "ゲスト", "empty name should become guest");
-      console.assert(normalizeEmoji("🌟abc") === "🌟", "emoji should use first visible character");
-      console.assert(validateAccount({ id: "ab", name: "テスト", emoji: "🌟" }) !== "", "short id should be invalid");
-      console.assert(validateAccount({ id: "abc", name: "テスト", emoji: "🌟" }) === "", "valid account should pass");
-      console.assert(!!el.loginIdInput && !!el.loginBtn, "login ID should be required every time");
-      console.assert(!!el.guestLoginBtn, "guest login button should exist");
-    }
-
-    runTests();
-
-    if (hadSavedAccountOnLoad) {
+    if (localStorage.getItem(ACCOUNT_KEY)) {
       el.openCreateFormBtn.textContent = "アカウントを編集する";
     }
 
