@@ -19,6 +19,7 @@
       --shadow: 0 22px 60px rgba(0, 100, 145, .18);
       --danger: #ff5d73;
       --good: #16a66f;
+      --locked: rgba(82, 120, 138, .48);
     }
 
     * { box-sizing: border-box; }
@@ -98,7 +99,7 @@
       width: min(160px, 26vw);
       height: min(160px, 26vw);
       background: url("./ニコリヒト.png") center / contain no-repeat;
-      opacity: .14;
+      opacity: .13;
       filter: drop-shadow(0 18px 28px rgba(0, 85, 130, .28));
       pointer-events: none;
       z-index: -1;
@@ -213,7 +214,11 @@
     .hud-card,
     .stage,
     .side-card,
-    .modal {
+    .modal,
+    .map-card,
+    .world-card,
+    .tutorial-card,
+    .speech-stage {
       border: 1px solid var(--line);
       background:
         linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.62)),
@@ -292,10 +297,11 @@
       font-weight: 800;
     }
 
-    .tag {
-      position: absolute;
-      right: 18px;
-      bottom: 18px;
+    .tag,
+    .lesson-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 7px 12px;
       border-radius: 999px;
       color: var(--navy);
@@ -305,6 +311,230 @@
       font-size: 12px;
     }
 
+    .tag {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+    }
+
+    .tutorial-card,
+    .map-wrap {
+      padding: 22px;
+      border-radius: 32px;
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .map-header h2 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 36px);
+    }
+
+    .map-header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 800;
+    }
+
+    .map-grid,
+    .world-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .map-grid { margin-bottom: 18px; }
+
+    .map-card,
+    .world-card {
+      padding: 14px;
+      border-radius: 18px;
+      color: var(--navy);
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(0, 100, 145, .10);
+      transition: transform .15s ease, opacity .15s ease, border-color .15s ease;
+    }
+
+    .map-card:hover,
+    .world-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0, 168, 216, .48);
+    }
+
+    .map-card.locked,
+    .world-card.locked {
+      opacity: .55;
+      cursor: default;
+      filter: grayscale(.3);
+    }
+
+    .map-card.locked:hover,
+    .world-card.locked:hover {
+      transform: none;
+      border-color: var(--line);
+    }
+
+    .map-card strong,
+    .world-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .map-card span,
+    .world-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .map-card .status,
+    .world-card .status {
+      margin-top: 8px;
+      color: var(--blue);
+      font-weight: 1000;
+    }
+
+    .skip-rule {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: var(--navy);
+      background: rgba(255,224,110,.22);
+      border: 1px solid rgba(255, 200, 40, .26);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.6;
+    }
+
+    .actions,
+    .game-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .speech-stage {
+      min-height: 340px;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      border-radius: 28px;
+    }
+
+    .speech-row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 16px;
+      width: min(780px, 100%);
+      align-items: end;
+    }
+
+    .speech-row.reverse {
+      grid-template-columns: minmax(0, 1fr) 96px;
+    }
+
+    .speech-row.reverse img {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .speech-row.reverse .speech-bubble {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .speech-row img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      border-radius: 22px;
+      background: rgba(255,255,255,.58);
+      border: 1px solid rgba(0,118,165,.14);
+      filter: drop-shadow(0 10px 18px rgba(0, 100, 145, .20));
+    }
+
+    .speech-bubble {
+      position: relative;
+      padding: 18px 20px;
+      border-radius: 24px;
+      color: var(--navy);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 16px 40px rgba(0, 100, 145, .16);
+      font-weight: 900;
+      line-height: 1.85;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -12px;
+      bottom: 24px;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-right: 14px solid rgba(255,255,255,.92);
+    }
+
+    .speech-row.reverse .speech-bubble::before {
+      left: auto;
+      right: -12px;
+      border-right: 0;
+      border-left: 14px solid rgba(255,255,255,.92);
+    }
+
+    .speech-name {
+      display: inline-flex;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--aqua), var(--yellow));
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 1000;
+    }
+
+    .speech-text {
+      min-height: 58px;
+      font-size: clamp(16px, 2vw, 20px);
+    }
+
+    .speech-progress {
+      margin-top: 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .tutorial-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .tutorial-actions.two { grid-template-columns: 1fr 1fr; }
+    .tutorial-actions.one { grid-template-columns: 1fr; }
+    .tutorial-actions.hidden { display: none; }
+
+    .tutorial-choice {
+      min-height: 76px;
+      border-radius: 18px;
+      white-space: normal;
+      line-height: 1.5;
+    }
+
     .game-layout {
       display: grid;
       grid-template-columns: 1fr 310px;
@@ -312,6 +542,7 @@
     }
 
     .game-main {
+      min-height: 600px;
       padding: 22px;
       border-radius: 32px;
     }
@@ -395,12 +626,22 @@
     }
 
     .kana {
-      min-height: 26px;
-      margin-bottom: 10px;
-      color: var(--muted);
-      font-weight: 900;
-      letter-spacing: .06em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      margin: 0 auto 12px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: rgba(255, 255, 255, .66);
+      border: 1px solid rgba(0, 118, 165, .14);
+      font-weight: 1000;
+      letter-spacing: .08em;
+      box-shadow: 0 8px 18px rgba(0, 100, 145, .08);
     }
+
+    .kana:empty { display: none; }
 
     .roma-word {
       display: inline-flex;
@@ -545,11 +786,21 @@
       padding-left: 20px;
     }
 
-    .game-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
+    .quest-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .quest-list li {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.52);
+      border: 1px solid rgba(0,118,165,.12);
+      color: var(--navy);
+      font-weight: 900;
     }
 
     .settings-backdrop,
@@ -659,6 +910,11 @@
       .side {
         grid-template-columns: 1fr 1fr;
       }
+
+      .map-grid,
+      .world-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     @media (max-width: 720px) {
@@ -680,8 +936,13 @@
       }
 
       .side,
-      .result-grid {
+      .result-grid,
+      .tutorial-actions {
         grid-template-columns: 1fr;
+      }
+
+      .map-header {
+        display: grid;
       }
 
       .keyboard-guide {
@@ -699,6 +960,31 @@
       .game-main {
         padding: 16px;
         border-radius: 26px;
+      }
+
+      .speech-row,
+      .speech-row.reverse {
+        grid-template-columns: 68px minmax(0, 1fr);
+      }
+
+      .speech-row.reverse img {
+        grid-column: 1;
+      }
+
+      .speech-row.reverse .speech-bubble {
+        grid-column: 2;
+      }
+
+      .speech-row img {
+        width: 62px;
+        height: 62px;
+      }
+
+      .speech-row.reverse .speech-bubble::before {
+        left: -12px;
+        right: auto;
+        border-left: 0;
+        border-right: 14px solid rgba(255,255,255,.92);
       }
     }
   </style>
@@ -724,8 +1010,8 @@
           <article class="card mode-card" data-mode="level">
             <div class="mode-icon">⌨️</div>
             <h2>レベルアップモード</h2>
-            <p>ホームポジションから順番に進める学習向けモードです。授業・育成用に使いやすい構成です。</p>
-            <span class="tag">育成向け</span>
+            <p>10マップ × 各10ワールドを進む学習向けモードです。F/Jから始めて、上段・下段・大文字・記号・長文へ進みます。</p>
+            <span class="tag">育成・授業向け</span>
           </article>
 
           <article class="card mode-card" data-mode="normal">
@@ -741,6 +1027,90 @@
             <p>1問ごとに10秒。ミスをすると残り時間が減る、テンポ重視のモードです。</p>
             <span class="tag">速さ重視</span>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="levelIntroScreen" class="screen">
+      <div class="tutorial-card">
+        <div class="map-header">
+          <div>
+            <h2>レベルアップモードのはじめに</h2>
+            <p>ニコリヒトとつるつる君が、今のタイピングレベルを確認します。</p>
+          </div>
+          <span class="lesson-chip">専用カリキュラム</span>
+        </div>
+
+        <div class="speech-stage">
+          <div class="speech-row" id="introSpeechRow">
+            <img id="introSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
+            <div class="speech-bubble">
+              <div class="speech-name" id="introSpeakerName">ニコリヒト</div>
+              <div class="speech-text" id="introSpeechText">ここでは、FとJのホームポジションから少しずつ練習していくよ。</div>
+              <div class="speech-progress" id="introSpeechProgress">1 / 4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-actions" id="introNextActions">
+          <button type="button" id="introNextButton">次へ</button>
+        </div>
+
+        <div class="tutorial-actions two hidden" id="introChoiceActions">
+          <button type="button" class="tutorial-choice" id="startFromMap1Button">はじめて・ゆっくり練習したい<br>マップ1から</button>
+          <button type="button" class="tutorial-choice" id="startFromMap5Button">それなりにできる<br>マップ5から</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="levelMapScreen" class="screen">
+      <div class="map-wrap panel">
+        <div class="map-header">
+          <div>
+            <h2>レベルアップマップ</h2>
+            <p>マップを選び、各マップの10ワールドを順番にクリアしていきます。未解放マップは飛び級テストで解放できます。</p>
+            <span class="lesson-chip" id="levelProgressChip">まずはマップを選んでください</span>
+          </div>
+          <button type="button" class="secondary" id="levelBackModeButton">モード選択に戻る</button>
+        </div>
+
+        <div class="map-grid" id="levelMapGrid"></div>
+
+        <div class="map-header">
+          <div>
+            <h2 id="worldSelectTitle">ワールド選択</h2>
+            <p id="worldSelectDescription">マップを選ぶと、10個のワールドが表示されます。</p>
+          </div>
+        </div>
+
+        <div class="world-grid" id="worldGrid"></div>
+      </div>
+    </section>
+
+    <section id="worldAdviceScreen" class="screen">
+      <div class="tutorial-card">
+        <div class="map-header">
+          <div>
+            <h2>ワールド開始前アドバイス</h2>
+            <p>ニコリヒトとつるつる君の会話を読んでから、ワールドを開始します。</p>
+          </div>
+          <span class="lesson-chip" id="adviceWorldChip">ワールド</span>
+        </div>
+
+        <div class="speech-stage">
+          <div class="speech-row" id="adviceSpeechRow">
+            <img id="adviceSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
+            <div class="speech-bubble">
+              <div class="speech-name" id="adviceSpeakerName">ニコリヒト</div>
+              <div class="speech-text" id="adviceSpeechText">このワールドのアドバイスを確認しよう。</div>
+              <div class="speech-progress" id="adviceSpeechProgress">1 / 4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-actions two">
+          <button type="button" class="secondary" id="adviceBackMapButton">マップに戻る</button>
+          <button type="button" id="adviceNextButton">次へ</button>
         </div>
       </div>
     </section>
@@ -781,7 +1151,7 @@
               <div class="key" data-key="q">Q</div><div class="key" data-key="w">W</div><div class="key" data-key="e">E</div><div class="key" data-key="r">R</div><div class="key" data-key="t">T</div><div class="key" data-key="y">Y</div><div class="key" data-key="u">U</div><div class="key" data-key="i">I</div><div class="key" data-key="o">O</div><div class="key" data-key="p">P</div>
             </div>
             <div class="keyboard-row">
-              <div class="key" data-key="a">A</div><div class="key" data-key="s">S</div><div class="key" data-key="d">D</div><div class="key" data-key="f">F</div><div class="key" data-key="g">G</div><div class="key" data-key="h">H</div><div class="key" data-key="j">J</div><div class="key" data-key="k">K</div><div class="key" data-key="l">L</div>
+              <div class="key" data-key="a">A</div><div class="key" data-key="s">S</div><div class="key" data-key="d">D</div><div class="key" data-key="f">F</div><div class="key" data-key="g">G</div><div class="key" data-key="h">H</div><div class="key" data-key="j">J</div><div class="key" data-key="k">K</div><div class="key" data-key="l">L</div><div class="key" data-key=";">;</div>
             </div>
             <div class="keyboard-row">
               <div class="key wide" data-key="shift">Shift</div><div class="key" data-key="z">Z</div><div class="key" data-key="x">X</div><div class="key" data-key="c">C</div><div class="key" data-key="v">V</div><div class="key" data-key="b">B</div><div class="key" data-key="n">N</div><div class="key" data-key="m">M</div><div class="key" data-key=",">,</div><div class="key" data-key=".">.</div><div class="key" data-key="/">/</div>
@@ -794,15 +1164,23 @@
           <div class="game-actions">
             <button type="button" id="startButton">スタート / 再開</button>
             <button type="button" class="secondary" id="pauseButton">一時停止</button>
-            <button type="button" class="secondary" id="backButton">モード選択に戻る</button>
+            <button type="button" class="secondary" id="backButton">戻る</button>
           </div>
         </div>
 
         <aside class="side">
           <div class="side-card">
-            <h3>ステータス</h3>
+            <h3>アカデミア情報</h3>
             <p id="levelText">レベル 1 / EXP 0</p>
             <p id="bestText">最高スコア 0</p>
+            <p id="levelModeText">レベルアップ：マップ1-1</p>
+          </div>
+
+          <div class="side-card">
+            <h3>クエスト</h3>
+            <ul class="quest-list" id="questList">
+              <li>モードを選んでください。</li>
+            </ul>
           </div>
 
           <div class="side-card">
@@ -810,7 +1188,8 @@
             <ul>
               <li>日本語入力モードはOFFにします。</li>
               <li>間違えたキーは入力されません。</li>
-              <li>日本語は表示されたローマ字を打ちます。</li>
+              <li>例：し は shi / si どちらもOK。</li>
+              <li>ん は語中なら n / nn どちらもOK、語末なら nn のみOK。</li>
             </ul>
           </div>
 
@@ -844,6 +1223,7 @@
           <button type="button" data-keyboard="on" id="keyboardOnButton">ON</button>
           <button type="button" data-keyboard="off" id="keyboardOffButton">OFF</button>
         </div>
+        <p class="lead">レベルアップモードでは常にONになります。</p>
       </div>
 
       <div class="setting-group">
@@ -856,7 +1236,7 @@
 
       <div class="game-actions">
         <button type="button" id="saveSettingsButton">設定を保存する</button>
-        <button type="button" class="danger" id="resetDataButton">記録をリセットする</button>
+        <button type="button" class="danger" id="resetDataButton">全てをリセットする</button>
       </div>
     </section>
   </div>
@@ -879,7 +1259,7 @@
 
       <div class="game-actions">
         <button type="button" id="retryButton">もう一度挑戦</button>
-        <button type="button" class="secondary" id="resultBackButton">モード選択に戻る</button>
+        <button type="button" class="secondary" id="resultBackButton">戻る</button>
       </div>
     </section>
   </div>
@@ -890,9 +1270,140 @@
     const ACCOUNT_KEY = "typingAcademiaAccount";
     const SESSION_KEY = "typingAcademiaLoggedIn";
     const RECORD_KEY = "nikoriTypingRecord";
+    const LEVEL_RECORD_KEY = "nikoriTypingLevelRecord";
     const SETTINGS_KEY = "nikoriTypingSettings";
 
-    const DATA = {
+    const NIKORI_IMG = "./ニコリヒト.png";
+    const TSURU_IMG = "./つるつる君.png";
+
+    const LEVEL_MAPS = [
+      { title: "ホームポジション", theme: "F/Jから始める基本", worlds: [
+        w("FとJ", "人差し指の基準キー", ["fj", "jf", "ff", "jj", "fjjf"], "FとJに人差し指を置いて、画面を見ながら打とう。"),
+        w("DとK", "中指を使う", ["dk", "kd", "dd", "kk", "fjdk"], "F/JのとなりにあるD/Kへ、指を少しだけ動かそう。"),
+        w("SとL", "薬指を使う", ["sl", "ls", "ss", "ll", "fjdk sl"], "薬指は少し動かしにくいので、ゆっくり正確に。"),
+        w("Aと;", "小指を使う", ["a;", ";a", "aa", ";;", "asdf jkl;"], "小指は力を入れすぎず、軽く押そう。"),
+        w("左手ホーム", "A/S/D/F", ["asdf", "fdsa", "sad", "fad", "dad"], "左手だけでホーム段を安定させよう。"),
+        w("右手ホーム", "J/K/L/;", ["jkl;", ";lkj", "jak", "kill", "fall"], "右手だけでリズムを作ろう。"),
+        w("交互入力", "左右を交互に使う", ["fjdk", "slfj", "asdf jkl;", "jak", "fall"], "左右の手を交互に使うと速くなりやすい。"),
+        w("短い単語", "ホーム段だけ", ["dad", "sad", "fall", "ask", "jazz"], "打てる文字だけで短い単語に挑戦。"),
+        w("ホーム復習", "安定確認", ["asdf", "jkl;", "fjfj", "dkdk", "slsl"], "ミスを減らすことを最優先にしよう。"),
+        w("マップ1クリア", "総仕上げ", ["asdf jkl;", "fj dk sl a;", "dad ask fall", "jazz", "fjfj dkdk"], "ホームポジションの仕上げです。")
+      ]},
+      { title: "上段キー", theme: "QWERTYUIOP", worlds: [
+        w("RとU", "人差し指上段", ["ru", "ur", "fur", "jru", "frju"], "F/Jから上へ指を伸ばして、すぐ戻そう。"),
+        w("EとI", "中指上段", ["ei", "ie", "field", "kite", "fire"], "上段を押したらホームに戻すのが基本。"),
+        w("WとO", "薬指上段", ["wo", "ow", "slow", "world", "wood"], "手首を浮かせすぎず、指だけで押そう。"),
+        w("QとP", "小指上段", ["qp", "pq", "pop", "quick", "paper"], "遠いキーは焦らず正確に。"),
+        w("TとY", "人差し指中央寄り", ["ty", "yt", "try", "yet", "type"], "T/Yは押し間違えやすいので位置を覚えよう。"),
+        w("上段左手", "QWERT", ["qwert", "tree", "were", "write", "treat"], "左手上段をまとめて練習。"),
+        w("上段右手", "YUIOP", ["yuiop", "you", "pilot", "input", "option"], "右手上段をまとめて練習。"),
+        w("上段単語", "英単語", ["type", "quiet", "power", "write", "tower"], "上段を使う単語を正確に。"),
+        w("ホーム＋上段", "混合", ["type faster", "write words", "power input", "quiet room", "your point"], "ホーム段と上段を行き来しよう。"),
+        w("マップ2クリア", "上段総仕上げ", ["quick type", "write your word", "powerful input", "quiet tower", "typing world"], "上段の総仕上げです。")
+      ]},
+      { title: "下段キー", theme: "ZXCVBNM", worlds: [
+        w("VとM", "人差し指下段", ["vm", "mv", "move", "vim", "mvm"], "指を下に動かしたらホームへ戻そう。"),
+        w("Cと,", "中指下段", ["c,", ",c", "cat", "comma", "click"], "コンマも文字と同じように練習。"),
+        w("Xと.", "薬指下段", ["x.", ".x", "box", "mix", "next"], "下段は押す位置を見失いやすいので丁寧に。"),
+        w("Zと/", "小指下段", ["z/", "/z", "zip", "zoom", "zero"], "小指下段はゆっくりでOK。"),
+        w("BとN", "中央下段", ["bn", "nb", "banana", "button", "number"], "B/Nは左右の境目なので位置を確認。"),
+        w("下段左手", "ZXCVB", ["zxcvb", "cave", "vex", "box", "cab"], "左手下段をまとめて練習。"),
+        w("下段右手", "BNM,./", ["bnm", "moon", "number", "comma", "minimum"], "右手下段をまとめて練習。"),
+        w("下段単語", "英単語", ["move", "next", "banana", "zoom", "comic"], "下段入り単語に挑戦。"),
+        w("ホーム＋下段", "混合", ["move fast", "next word", "comic book", "zoom in", "banana milk"], "ホーム段と下段を行き来しよう。"),
+        w("マップ3クリア", "下段総仕上げ", ["next comic", "move banana", "zoom number", "box and mix", "comma period"], "下段の総仕上げです。")
+      ]},
+      { title: "全アルファベット", theme: "A〜Z総合", worlds: [
+        w("短い英単語1", "3〜4文字", ["cat", "dog", "sun", "moon", "star"], "短い単語で正確さを上げよう。"),
+        w("短い英単語2", "4〜5文字", ["water", "beach", "ocean", "happy", "smile"], "見てすぐ打つ練習です。"),
+        w("左手多め", "左手強化", ["tree", "craft", "safe", "after", "great"], "左手が多い単語を集中的に。"),
+        w("右手多め", "右手強化", ["jump", "milk", "point", "join", "union"], "右手が多い単語を集中的に。"),
+        w("交互単語", "左右交互", ["magic", "typing", "planet", "forest", "future"], "交互に打つ感覚を作ろう。"),
+        w("英語フレーズ1", "短文", ["nice day", "good job", "keep going", "try again", "well done"], "スペースも含めて入力。"),
+        w("英語フレーズ2", "短文", ["type the word", "look at screen", "use both hands", "do not rush", "stay relaxed"], "画面を見ながら打とう。"),
+        w("スピード確認", "テンポ", ["fast", "clear", "smooth", "rhythm", "focus"], "速さよりリズムを重視。"),
+        w("正確さ確認", "ノーミス目標", ["correct", "practice", "keyboard", "position", "challenge"], "ミスを減らす練習。"),
+        w("マップ4クリア", "総合", ["typing is fun", "use both hands", "keep good rhythm", "practice every day", "focus on accuracy"], "アルファベット総仕上げです。")
+      ]},
+      { title: "日本語ローマ字", theme: "かな→ローマ字", worlds: [
+        w("あ行・か行", "基本", ["aiueo", "kakikukeko", "aka", "iku", "koi"], "母音とK行を確認。"),
+        w("さ行・た行", "shi/si対応", ["sasisuseso", "tatituteto", "shi", "si", "tako"], "しはshi/siどちらでもOK。"),
+        w("な行・は行", "基本", ["naninuneno", "hahifuheho", "nami", "hana", "fune"], "H行とN行を練習。"),
+        w("ま行・や行", "基本", ["mamimumemo", "yayuyo", "umi", "yama", "mizu"], "短い日本語を打とう。"),
+        w("ら行・わ行", "基本", ["rarirurero", "wawon", "ringo", "wani", "yoru"], "R行を安定させよう。"),
+        w("濁音", "がざだば", ["gakkou", "zabuton", "dango", "buta", "genki"], "濁音も同じリズムで。"),
+        w("半濁音", "ぱぴぷぺぽ", ["panda", "piano", "pu-ru", "pen", "pon"], "Pを使う音を練習。"),
+        w("拗音", "きゃ・しゅ", ["kya", "kyu", "kyo", "shu", "cho"], "小さいゃゅょに注意。"),
+        w("促音", "小さいっ", ["kitte", "gakkou", "zasshi", "kekka", "yukkuri"], "小さいっは子音を重ねます。"),
+        w("マップ5クリア", "日本語総合", ["nikorihito", "taipingu", "puroguramingu", "mainichi renshuu", "tanoshiku utou"], "日本語ローマ字の総仕上げ。")
+      ]},
+      { title: "大文字", theme: "Shift練習", worlds: [
+        w("左手Shift", "右手文字", ["J", "K", "L", "P", "U"], "Shiftを押しながら大文字を入力。"),
+        w("右手Shift", "左手文字", ["A", "S", "D", "F", "Q"], "反対側のShiftを使うと安定します。"),
+        w("名前", "先頭大文字", ["Nikori", "Koppy", "Tsuru", "Minecraft", "Python"], "名前の先頭だけ大文字。"),
+        w("英単語大文字", "単語", ["Ocean", "Beach", "Typing", "Keyboard", "Practice"], "Shift操作に慣れよう。"),
+        w("短文1", "文頭大文字", ["Good job", "Nice work", "Keep going", "Try again", "Well done"], "文頭を大文字にします。"),
+        w("短文2", "大文字入り", ["I can type", "I like coding", "This is fun", "You can do it", "Let us try"], "Iは大文字で打とう。"),
+        w("連続大文字", "略語", ["USA", "CPU", "HTML", "CSS", "JS"], "大文字が続く場合の練習。"),
+        w("大文字混合", "複合", ["NikoType", "BlueOcean", "CodeLab", "TypeGame", "KeyMaster"], "大文字と小文字の切替。"),
+        w("正確さ確認", "ノーミス", ["Shift Key", "Home Position", "Typing Beach", "Ocean Pop", "Nikori Lab"], "Shiftミスを減らそう。"),
+        w("マップ6クリア", "大文字総合", ["Nikori Typing", "Keep Good Rhythm", "Practice Every Day", "Use Both Hands", "Focus On Accuracy"], "大文字の総仕上げです。")
+      ]},
+      { title: "数字", theme: "1〜0", worlds: [
+        w("1〜5", "左側数字", ["12345", "111", "234", "451", "15243"], "上の数字キーを使おう。"),
+        w("6〜0", "右側数字", ["67890", "666", "789", "906", "69078"], "右側数字キーを確認。"),
+        w("数字交互", "混合", ["123", "456", "789", "2026", "1010"], "数字を見て正確に。"),
+        w("日付", "日付入力", ["6/14", "7/29", "5/26", "12/31", "1/1"], "スラッシュも練習。"),
+        w("時刻", "時間", ["10:00", "16:30", "18:45", "9:15", "20:00"], "コロン入力に注意。"),
+        w("金額", "数字列", ["1200", "3000", "4800", "10000", "15000"], "数字列を安定させよう。"),
+        w("番号", "ID", ["user001", "room123", "map05", "world10", "level99"], "英数字混合の練習。"),
+        w("計算風", "記号混合", ["1+2", "5-3", "10/2", "3*4", "8=8"], "記号も焦らず。"),
+        w("長め数字", "連続", ["1234567890", "20260614", "31415926", "100200300", "987654321"], "長い数字を正確に。"),
+        w("マップ7クリア", "数字総合", ["map1 world10", "score 1000", "level 25", "time 60", "room 2026"], "数字の総仕上げです。")
+      ]},
+      { title: "記号", theme: "よく使う記号", worlds: [
+        w("ピリオド", "英文末", ["a.", "go.", "ok.", "yes.", "done."], "文末のピリオドを入力。"),
+        w("コンマ", "区切り", ["a,b", "red, blue", "one, two", "yes, I can", "go, go"], "コンマ後のスペースも練習。"),
+        w("ハイフン", "単語接続", ["blue-ocean", "mini-game", "type-speed", "level-up", "home-row"], "ハイフンの位置を確認。"),
+        w("スラッシュ", "区切り", ["on/off", "yes/no", "html/css", "map/world", "10/10"], "スラッシュ入力。"),
+        w("コロン", "時刻", ["time:10", "score:100", "level:5", "map:3", "id:guest"], "コロン入力。"),
+        w("セミコロン", "右小指", [";", ";;", "a;", "jkl;", "home;"], "セミコロンは右小指。"),
+        w("クォート", "引用", ["'a'", "'type'", "'key'", "'word'", "'go'"], "クォートに挑戦。"),
+        w("括弧", "コード風", ["a()", "run()", "print()", "if()", "key()"], "コードでよく使う形。"),
+        w("記号混合", "実践", ["user-id:001", "on/off:yes", "map-1/world-2", "score:1000", "html/css/js"], "いくつかの記号を混ぜます。"),
+        w("マップ8クリア", "記号総合", ["print('hello')", "user-id:2026", "level-up:10/10", "html/css", "time:16:30"], "記号の総仕上げです。")
+      ]},
+      { title: "英語フレーズ", theme: "短文入力", worlds: [
+        w("あいさつ", "短い文", ["Good morning", "Good afternoon", "Good evening", "See you", "Thank you"], "文頭大文字とスペースを確認。"),
+        w("教室英語", "授業向け", ["Open your book", "Look at the screen", "Listen carefully", "Raise your hand", "Try one more time"], "授業で使う英語。"),
+        w("タイピング英語", "練習文", ["Type the word", "Use both hands", "Keep your rhythm", "Do not rush", "Check the next key"], "タイピング用の短文。"),
+        w("マイクラ英語", "Minecraft", ["Build a house", "Find the village", "Use the command", "Collect the blocks", "Open the chest"], "マイクラっぽい英語。"),
+        w("前向き表現", "励まし", ["You can do it", "Keep going", "Nice challenge", "Good progress", "Well done"], "楽しく続けるための言葉。"),
+        w("質問文", "疑問文", ["What is this", "Where are you", "Can you type", "Do you like it", "How about you"], "質問文を打ちます。"),
+        w("少し長い文1", "文", ["I like typing games", "This lesson is fun", "I can type faster", "Practice makes progress", "Accuracy is important"], "少し長い文に挑戦。"),
+        w("少し長い文2", "文", ["Look at the word and type", "Keep your fingers on home row", "Start slowly and clearly", "Use the keyboard guide", "Typing is a useful skill"], "意味のある文を打とう。"),
+        w("英語まとめ", "総合", ["Good typing starts slowly", "Use both hands every time", "Check the screen carefully", "Keep practicing every day", "You are getting better"], "英文入力のまとめ。"),
+        w("マップ9クリア", "英語総合", ["Typing is fun and useful", "I can learn with Nikori", "The ocean theme is bright", "Keep a smooth rhythm", "Accuracy comes before speed"], "英語フレーズの総仕上げです。")
+      ]},
+      { title: "長文チャレンジ", theme: "実践入力", worlds: [
+        w("短文連続1", "基礎", ["I can type the word.", "The blue ocean is bright.", "Nikori Typing is fun.", "Use both hands.", "Keep good rhythm."], "ピリオドまで正確に。"),
+        w("短文連続2", "基礎", ["Look at the screen.", "Press the next key.", "Do not rush.", "Try again slowly.", "Good typing starts here."], "英文をまとまりで見よう。"),
+        w("日本語ローマ字文1", "日本語", ["umi mitai ni akarui", "tanoshiku renshuu shiyou", "mainichi sukoshi zutsu", "kotoba wo utou", "nikori to issho"], "日本語をローマ字文で入力。"),
+        w("日本語ローマ字文2", "日本語", ["taipingu wo motto tanoshiku", "rithumu yoku utou", "seikaku ni nyuuryoku", "keyboard wo miyou", "shizuka ni tsuzukeyou"], "長めのローマ字に挑戦。"),
+        w("コード風1", "HTML/CSS", ["<div class='card'>", "body { margin: 0; }", "const score = 100;", "function startGame()", "console.log('start')"], "記号も含めてコード風に。"),
+        w("コード風2", "JavaScript", ["let level = 1;", "if (score > best)", "return true;", "addEventListener('click')", "localStorage.setItem('key')"], "実践的な文字列。"),
+        w("説明文1", "長文", ["Typing is easier when you relax your hands.", "Accuracy is more important than speed at first.", "Practice a little every day and keep going.", "Look at the word before you start typing.", "Home position helps your fingers return quickly."], "文章単位で入力。"),
+        w("説明文2", "長文", ["The keyboard guide shows the next key clearly.", "Level up mode has ten maps and ten worlds.", "Each world gives you a small typing mission.", "Clear the worlds to unlock the next map.", "A skip test can open a locked map."], "レベルアップの説明文。"),
+        w("最終確認", "総合", ["Nikori Typing helps you practice step by step.", "Use both hands and keep a smooth rhythm.", "Read the advice before starting each world.", "Clear all ten maps to finish the curriculum.", "You can type better with steady practice."], "総合力の確認です。"),
+        w("完全クリア", "最終ワールド", ["Congratulations on clearing the final challenge.", "You have practiced letters, numbers, symbols, and sentences.", "Keep typing with accuracy, rhythm, and confidence.", "Nikori Typing is your bright practice beach.", "Great work. You are a keyboard master."], "最終ワールドです。")
+      ]}
+    ];
+
+    function w(title, desc, targets, advice) {
+      return { title, desc, targets, advice, goal: 8 };
+    }
+
+    const NORMAL_WORDS = {
       ja: [
         { jp: "海", kana: "うみ", targets: ["umi"] },
         { jp: "波", kana: "なみ", targets: ["nami"] },
@@ -926,18 +1437,6 @@
         { jp: "correct", kana: "正しい", targets: ["correct"] },
         { jp: "smooth rhythm", kana: "なめらかなリズム", targets: ["smooth rhythm"] },
         { jp: "keep learning", kana: "学び続ける", targets: ["keep learning"] }
-      ],
-      level: [
-        { jp: "f j", kana: "ホームポジション", targets: ["fj"] },
-        { jp: "j f", kana: "ホームポジション", targets: ["jf"] },
-        { jp: "d k", kana: "となりのキー", targets: ["dk"] },
-        { jp: "s l", kana: "外側のキー", targets: ["sl"] },
-        { jp: "a ;", kana: "左端と右端", targets: ["a;"] },
-        { jp: "asdf", kana: "左手ホーム", targets: ["asdf"] },
-        { jp: "jkl;", kana: "右手ホーム", targets: ["jkl;"] },
-        { jp: "fjdk", kana: "交互入力", targets: ["fjdk"] },
-        { jp: "nikori", kana: "ニコリ", targets: ["nikori"] },
-        { jp: "typing", kana: "タイピング", targets: ["typing"] }
       ]
     };
 
@@ -945,7 +1444,12 @@
       account: loadAccount(),
       settings: loadSettings(),
       record: loadRecord(),
+      levelRecord: loadLevelRecord(),
       mode: "",
+      levelKind: "world",
+      selectedMap: 0,
+      selectedWorld: 0,
+      skipTargetMap: 0,
       running: false,
       paused: false,
       words: [],
@@ -961,7 +1465,9 @@
       correctWords: 0,
       combo: 0,
       bestCombo: 0,
-      levelGoal: 10
+      worldGoal: 8,
+      introIndex: 0,
+      adviceIndex: 0
     };
 
     const el = {
@@ -969,7 +1475,34 @@
       settingsButton: document.getElementById("settingsButton"),
       logoutButton: document.getElementById("logoutButton"),
       modeScreen: document.getElementById("modeScreen"),
+      levelIntroScreen: document.getElementById("levelIntroScreen"),
+      levelMapScreen: document.getElementById("levelMapScreen"),
+      worldAdviceScreen: document.getElementById("worldAdviceScreen"),
       gameScreen: document.getElementById("gameScreen"),
+      levelMapGrid: document.getElementById("levelMapGrid"),
+      worldGrid: document.getElementById("worldGrid"),
+      levelProgressChip: document.getElementById("levelProgressChip"),
+      worldSelectTitle: document.getElementById("worldSelectTitle"),
+      worldSelectDescription: document.getElementById("worldSelectDescription"),
+      levelBackModeButton: document.getElementById("levelBackModeButton"),
+      introSpeechRow: document.getElementById("introSpeechRow"),
+      introSpeakerImage: document.getElementById("introSpeakerImage"),
+      introSpeakerName: document.getElementById("introSpeakerName"),
+      introSpeechText: document.getElementById("introSpeechText"),
+      introSpeechProgress: document.getElementById("introSpeechProgress"),
+      introNextButton: document.getElementById("introNextButton"),
+      introNextActions: document.getElementById("introNextActions"),
+      introChoiceActions: document.getElementById("introChoiceActions"),
+      startFromMap1Button: document.getElementById("startFromMap1Button"),
+      startFromMap5Button: document.getElementById("startFromMap5Button"),
+      adviceWorldChip: document.getElementById("adviceWorldChip"),
+      adviceSpeechRow: document.getElementById("adviceSpeechRow"),
+      adviceSpeakerImage: document.getElementById("adviceSpeakerImage"),
+      adviceSpeakerName: document.getElementById("adviceSpeakerName"),
+      adviceSpeechText: document.getElementById("adviceSpeechText"),
+      adviceSpeechProgress: document.getElementById("adviceSpeechProgress"),
+      adviceBackMapButton: document.getElementById("adviceBackMapButton"),
+      adviceNextButton: document.getElementById("adviceNextButton"),
       modeLabel: document.getElementById("modeLabel"),
       timeLabel: document.getElementById("timeLabel"),
       scoreLabel: document.getElementById("scoreLabel"),
@@ -988,6 +1521,8 @@
       backButton: document.getElementById("backButton"),
       levelText: document.getElementById("levelText"),
       bestText: document.getElementById("bestText"),
+      levelModeText: document.getElementById("levelModeText"),
+      questList: document.getElementById("questList"),
       settingsSummary: document.getElementById("settingsSummary"),
       settingsBackdrop: document.getElementById("settingsBackdrop"),
       settingsCloseButton: document.getElementById("settingsCloseButton"),
@@ -1010,16 +1545,19 @@
       resultBackButton: document.getElementById("resultBackButton")
     };
 
+    const introLines = [
+      { speaker: "ニコリヒト", image: NIKORI_IMG, text: "ここでは、FとJのホームポジションから少しずつ練習していくよ。" },
+      { speaker: "つるつる君", image: TSURU_IMG, reverse: true, text: "いきなり速く打とうとしなくていいんだね。まずは正確さが大事。" },
+      { speaker: "ニコリヒト", image: NIKORI_IMG, text: "10マップ、各10ワールド。クリアすると次のワールドやマップが開放されるよ。" },
+      { speaker: "つるつる君", image: TSURU_IMG, reverse: true, text: "途中から始めたい人は、マップ5から始めることもできるよ。" }
+    ];
+
     function loadAccount() {
       try {
         const raw = localStorage.getItem(ACCOUNT_KEY);
         if (!raw) return { id: "guest", name: "ゲスト", emoji: "⌨️" };
         const saved = JSON.parse(raw);
-        return {
-          id: saved.id || "guest",
-          name: saved.name || "ゲスト",
-          emoji: saved.emoji || "⌨️"
-        };
+        return { id: saved.id || "guest", name: saved.name || "ゲスト", emoji: saved.emoji || "⌨️" };
       } catch {
         return { id: "guest", name: "ゲスト", emoji: "⌨️" };
       }
@@ -1027,12 +1565,7 @@
 
     function loadSettings() {
       try {
-        return {
-          lang: "ja",
-          keyboard: true,
-          kana: true,
-          ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")
-        };
+        return { lang: "ja", keyboard: true, kana: true, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
       } catch {
         return { lang: "ja", keyboard: true, kana: true };
       }
@@ -1040,14 +1573,22 @@
 
     function loadRecord() {
       try {
-        return {
-          bestScore: 0,
-          exp: 0,
-          level: 1,
-          ...JSON.parse(localStorage.getItem(RECORD_KEY) || "{}")
-        };
+        return { bestScore: 0, exp: 0, level: 1, ...JSON.parse(localStorage.getItem(RECORD_KEY) || "{}") };
       } catch {
         return { bestScore: 0, exp: 0, level: 1 };
+      }
+    }
+
+    function loadLevelRecord() {
+      const initial = { unlockedMap: 0, completed: Array.from({ length: 10 }, () => Array(10).fill(false)) };
+      try {
+        const saved = JSON.parse(localStorage.getItem(LEVEL_RECORD_KEY) || "{}");
+        const completed = Array.from({ length: 10 }, (_, mi) =>
+          Array.from({ length: 10 }, (_, wi) => !!(saved.completed && saved.completed[mi] && saved.completed[mi][wi]))
+        );
+        return { unlockedMap: Math.min(9, Math.max(0, Number(saved.unlockedMap || 0))), completed };
+      } catch {
+        return initial;
       }
     }
 
@@ -1055,62 +1596,259 @@
       localStorage.setItem(RECORD_KEY, JSON.stringify(state.record));
     }
 
+    function saveLevelRecord() {
+      localStorage.setItem(LEVEL_RECORD_KEY, JSON.stringify(state.levelRecord));
+    }
+
     function saveSettings() {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
     }
 
     function showScreen(name) {
-      el.modeScreen.classList.toggle("active", name === "mode");
-      el.gameScreen.classList.toggle("active", name === "game");
+      const map = {
+        mode: el.modeScreen,
+        levelIntro: el.levelIntroScreen,
+        levelMap: el.levelMapScreen,
+        worldAdvice: el.worldAdviceScreen,
+        game: el.gameScreen
+      };
+      Object.entries(map).forEach(([key, node]) => node.classList.toggle("active", key === name));
     }
 
     function shuffle(list) {
       return [...list].sort(() => Math.random() - 0.5);
     }
 
-    function pickWord() {
-      if (!state.words.length) {
-        state.words = getWordPool();
-      }
-      const index = Math.floor(Math.random() * state.words.length);
-      return state.words.splice(index, 1)[0];
-    }
-
-    function getWordPool() {
-      if (state.mode === "level") return shuffle(DATA.level);
-      return shuffle(DATA[state.settings.lang]);
-    }
-
     function modeName(mode) {
-      return {
-        level: "レベル",
-        normal: "ノーマル",
-        endless: "エンドレス"
-      }[mode] || "-";
+      return { level: "レベル", normal: "ノーマル", endless: "エンドレス" }[mode] || "-";
+    }
+
+    function renderIntro() {
+      const line = introLines[state.introIndex];
+      el.introSpeechRow.classList.toggle("reverse", !!line.reverse);
+      el.introSpeakerImage.src = line.image;
+      el.introSpeakerImage.alt = line.speaker;
+      el.introSpeakerName.textContent = line.speaker;
+      el.introSpeechText.textContent = line.text;
+      el.introSpeechProgress.textContent = `${state.introIndex + 1} / ${introLines.length}`;
+      el.introNextActions.classList.toggle("hidden", state.introIndex >= introLines.length - 1);
+      el.introChoiceActions.classList.toggle("hidden", state.introIndex < introLines.length - 1);
+    }
+
+    function openLevelIntro() {
+      state.mode = "level";
+      state.introIndex = 0;
+      renderIntro();
+      showScreen("levelIntro");
+    }
+
+    function unlockThrough(mapIndex) {
+      state.levelRecord.unlockedMap = Math.max(state.levelRecord.unlockedMap, Math.min(9, mapIndex));
+      saveLevelRecord();
+    }
+
+    function openLevelMap(selectedMap = state.selectedMap) {
+      state.mode = "level";
+      state.selectedMap = Math.min(9, Math.max(0, selectedMap));
+      renderLevelMap();
+      renderWorldGrid();
+      showScreen("levelMap");
+    }
+
+    function isWorldUnlocked(mapIndex, worldIndex) {
+      if (mapIndex > state.levelRecord.unlockedMap) return false;
+      if (worldIndex === 0) return true;
+      return !!state.levelRecord.completed[mapIndex][worldIndex - 1];
+    }
+
+    function renderLevelMap() {
+      el.levelMapGrid.innerHTML = LEVEL_MAPS.map((map, index) => {
+        const locked = index > state.levelRecord.unlockedMap;
+        const clearedCount = state.levelRecord.completed[index].filter(Boolean).length;
+        return `
+          <button type="button" class="map-card ${locked ? "locked" : ""}" data-map="${index}" ${locked ? "" : ""}>
+            <strong>${index + 1}. ${escapeHtml(map.title)}</strong>
+            <span>${escapeHtml(map.theme)}</span>
+            <span class="status">${locked ? "🔒 未解放 / 飛び級テスト" : `進行 ${clearedCount}/10`}</span>
+          </button>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-map]").forEach(button => {
+        button.addEventListener("click", () => {
+          const mapIndex = Number(button.dataset.map);
+          if (mapIndex > state.levelRecord.unlockedMap) {
+            startSkipTest(mapIndex);
+            return;
+          }
+          state.selectedMap = mapIndex;
+          renderWorldGrid();
+        });
+      });
+
+      const totalCleared = state.levelRecord.completed.flat().filter(Boolean).length;
+      el.levelProgressChip.textContent = `クリア済み ${totalCleared} / 100　開放中：マップ${state.levelRecord.unlockedMap + 1}`;
+    }
+
+    function renderWorldGrid() {
+      const map = LEVEL_MAPS[state.selectedMap];
+      el.worldSelectTitle.textContent = `ワールド選択：マップ${state.selectedMap + 1} ${map.title}`;
+      el.worldSelectDescription.textContent = map.theme;
+
+      el.worldGrid.innerHTML = map.worlds.map((world, index) => {
+        const unlocked = isWorldUnlocked(state.selectedMap, index);
+        const cleared = state.levelRecord.completed[state.selectedMap][index];
+        return `
+          <button type="button" class="world-card ${unlocked ? "" : "locked"}" data-world="${index}">
+            <strong>${state.selectedMap + 1}-${index + 1}. ${escapeHtml(world.title)}</strong>
+            <span>${escapeHtml(world.desc)}</span>
+            <span class="status">${cleared ? "✅ クリア済み" : unlocked ? "開始できます" : "🔒 前のワールドをクリア"}</span>
+          </button>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-world]").forEach(button => {
+        button.addEventListener("click", () => {
+          const worldIndex = Number(button.dataset.world);
+          if (!isWorldUnlocked(state.selectedMap, worldIndex)) return;
+          openWorldAdvice(state.selectedMap, worldIndex);
+        });
+      });
+    }
+
+    function openWorldAdvice(mapIndex, worldIndex) {
+      state.selectedMap = mapIndex;
+      state.selectedWorld = worldIndex;
+      state.adviceIndex = 0;
+      renderAdvice();
+      showScreen("worldAdvice");
+    }
+
+    function getAdviceLines() {
+      const map = LEVEL_MAPS[state.selectedMap];
+      const world = map.worlds[state.selectedWorld];
+      return [
+        { speaker: "ニコリヒト", image: NIKORI_IMG, text: `今回は「${world.title}」。${world.desc}を練習するよ。` },
+        { speaker: "つるつる君", image: TSURU_IMG, reverse: true, text: world.advice },
+        { speaker: "ニコリヒト", image: NIKORI_IMG, text: `目標は${world.goal}問正解。速さより、まずはミスを減らそう。` },
+        { speaker: "つるつる君", image: TSURU_IMG, reverse: true, text: "準備ができたら、スペースキーかスタートボタンで開始！" }
+      ];
+    }
+
+    function renderAdvice() {
+      const map = LEVEL_MAPS[state.selectedMap];
+      const world = map.worlds[state.selectedWorld];
+      const lines = getAdviceLines();
+      const line = lines[state.adviceIndex];
+      el.adviceWorldChip.textContent = `マップ${state.selectedMap + 1}-${state.selectedWorld + 1} ${world.title}`;
+      el.adviceSpeechRow.classList.toggle("reverse", !!line.reverse);
+      el.adviceSpeakerImage.src = line.image;
+      el.adviceSpeakerImage.alt = line.speaker;
+      el.adviceSpeakerName.textContent = line.speaker;
+      el.adviceSpeechText.textContent = line.text;
+      el.adviceSpeechProgress.textContent = `${state.adviceIndex + 1} / ${lines.length}`;
+      el.adviceNextButton.textContent = state.adviceIndex >= lines.length - 1 ? "ワールド開始" : "次へ";
+    }
+
+    function startSkipTest(mapIndex) {
+      state.mode = "level";
+      state.levelKind = "skip";
+      state.skipTargetMap = mapIndex;
+      state.selectedMap = mapIndex;
+      resetStats();
+      state.worldGoal = 8;
+      state.totalTime = 60;
+      state.timeLeft = 60;
+      state.words = buildSkipWords(mapIndex);
+      showScreen("game");
+      el.modeLabel.textContent = "飛び級";
+      el.wordLabel.textContent = `マップ${mapIndex + 1} 飛び級テスト`;
+      el.kanaLabel.textContent = "8問正解で解放";
+      renderTarget("space");
+      el.messageLabel.textContent = "スペースキーまたは「スタート」で開始できます。";
+      updateHud();
+      updateMeta();
+      updateQuestList();
+      updateKeyboardGuide();
+    }
+
+    function buildSkipWords(mapIndex) {
+      const pool = [];
+      for (let i = Math.max(0, mapIndex - 2); i <= mapIndex; i++) {
+        LEVEL_MAPS[i].worlds.forEach(world => {
+          world.targets.slice(0, 2).forEach(t => pool.push(makeWordFromTarget(t, world.title)));
+        });
+      }
+      return shuffle(pool);
+    }
+
+    function startLevelWorld(mapIndex, worldIndex) {
+      state.mode = "level";
+      state.levelKind = "world";
+      state.selectedMap = mapIndex;
+      state.selectedWorld = worldIndex;
+      const world = LEVEL_MAPS[mapIndex].worlds[worldIndex];
+
+      resetStats();
+      state.worldGoal = world.goal;
+      state.totalTime = 0;
+      state.timeLeft = 0;
+      state.words = buildWorldWords(world);
+
+      showScreen("game");
+      el.modeLabel.textContent = "レベル";
+      el.wordLabel.textContent = `マップ${mapIndex + 1}-${worldIndex + 1}`;
+      el.kanaLabel.textContent = world.title;
+      renderTarget("space");
+      el.messageLabel.textContent = "スペースキーまたは「スタート」で開始できます。";
+      updateHud();
+      updateMeta();
+      updateQuestList();
+      updateKeyboardGuide();
+    }
+
+    function buildWorldWords(world) {
+      const base = world.targets.map(target => makeWordFromTarget(target, world.title));
+      const repeated = [];
+      while (repeated.length < Math.max(12, world.goal + 4)) {
+        repeated.push(...shuffle(base));
+      }
+      return repeated;
+    }
+
+    function makeWordFromTarget(target, title) {
+      return { jp: target, kana: title, targets: [String(target).toLowerCase()] };
     }
 
     function startMode(mode) {
+      if (mode === "level") {
+        openLevelIntro();
+        return;
+      }
+
       state.mode = mode;
-      state.running = false;
-      state.paused = false;
+      state.levelKind = "";
       resetStats();
-      state.totalTime = mode === "normal" ? 60 : mode === "endless" ? 10 : 0;
+      state.totalTime = mode === "normal" ? 60 : 10;
       state.timeLeft = state.totalTime;
       state.words = getWordPool();
 
       showScreen("game");
       el.modeLabel.textContent = modeName(mode);
       el.messageLabel.textContent = "スペースキーまたは「スタート」で開始できます。";
-      el.wordLabel.textContent = mode === "level" ? "レベルアップ練習" : "準備完了";
-      el.kanaLabel.textContent = mode === "level" ? "10問正解でクリア" : "";
+      el.wordLabel.textContent = "準備完了";
+      el.kanaLabel.textContent = "";
       renderTarget("space");
       updateHud();
       updateMeta();
+      updateQuestList();
       updateKeyboardGuide();
     }
 
     function resetStats() {
       clearTimer();
+      state.running = false;
+      state.paused = false;
       state.score = 0;
       state.typedCount = 0;
       state.mistakes = 0;
@@ -1120,6 +1858,23 @@
       state.typed = "";
       state.current = null;
       state.targets = [];
+    }
+
+    function getWordPool() {
+      return shuffle(NORMAL_WORDS[state.settings.lang]);
+    }
+
+    function pickWord() {
+      if (!state.words.length) {
+        if (state.mode === "level" && state.levelKind === "world") {
+          state.words = buildWorldWords(LEVEL_MAPS[state.selectedMap].worlds[state.selectedWorld]);
+        } else if (state.mode === "level" && state.levelKind === "skip") {
+          state.words = buildSkipWords(state.skipTargetMap);
+        } else {
+          state.words = getWordPool();
+        }
+      }
+      return state.words.shift();
     }
 
     function startGame() {
@@ -1134,7 +1889,9 @@
 
       state.running = true;
       state.paused = false;
-      state.timeLeft = state.mode === "normal" ? 60 : state.mode === "endless" ? 10 : 0;
+      if (state.mode === "normal") state.timeLeft = 60;
+      if (state.mode === "endless") state.timeLeft = 10;
+      if (state.mode === "level" && state.levelKind === "skip") state.timeLeft = 60;
       nextWord();
       startTimer();
     }
@@ -1153,7 +1910,7 @@
 
     function startTimer() {
       clearTimer();
-      if (state.mode === "level") return;
+      if (state.mode === "level" && state.levelKind === "world") return;
 
       state.timerId = setInterval(() => {
         if (!state.running || state.paused) return;
@@ -1189,9 +1946,19 @@
       updateKeyboardGuide();
     }
 
+    function getReading(word) {
+      if (!word) return "";
+      return word.kana || word.yomi || word.reading || word.hiragana || "";
+    }
+
+    function updateReadingDisplay() {
+      const reading = getReading(state.current);
+      el.kanaLabel.textContent = state.settings.kana && reading ? reading : "";
+    }
+
     function renderWord() {
       el.wordLabel.textContent = state.current.jp;
-      el.kanaLabel.textContent = state.settings.kana ? state.current.kana : "";
+      updateReadingDisplay();
       renderTarget(bestDisplayTarget());
     }
 
@@ -1254,9 +2021,8 @@
       } else {
         state.mistakes++;
         state.combo = 0;
-        if (state.mode === "endless") {
-          state.timeLeft = Math.max(0, state.timeLeft - 1.5);
-        }
+        if (state.mode === "endless") state.timeLeft = Math.max(0, state.timeLeft - 1.5);
+        if (state.mode === "level" && state.levelKind === "skip") state.timeLeft = Math.max(0, state.timeLeft - 1);
         el.messageLabel.textContent = "違うキーです。正しいキーを確認しましょう。";
       }
 
@@ -1271,7 +2037,7 @@
       state.bestCombo = Math.max(state.bestCombo, state.combo);
       state.score += base + comboBonus + Math.max(0, Math.floor(state.timeLeft));
 
-      if (state.mode === "level" && state.correctWords >= state.levelGoal) {
+      if (state.mode === "level" && state.correctWords >= state.worldGoal) {
         finishGame();
         return;
       }
@@ -1287,7 +2053,8 @@
       state.paused = false;
 
       const accuracy = calcAccuracy();
-      const earnedExp = Math.max(5, Math.floor(state.score / 20) + state.correctWords * 2);
+      const success = resolveLevelSuccess(accuracy);
+      const earnedExp = Math.max(5, Math.floor(state.score / 20) + state.correctWords * 2 + (success ? 20 : 0));
       state.record.exp += earnedExp;
       while (state.record.exp >= state.record.level * 100) {
         state.record.exp -= state.record.level * 100;
@@ -1296,15 +2063,45 @@
       state.record.bestScore = Math.max(state.record.bestScore, state.score);
       saveRecord();
 
+      let message = `EXP +${earnedExp}。${state.correctWords}問正解しました。`;
+
+      if (state.mode === "level" && state.levelKind === "world") {
+        if (success) {
+          state.levelRecord.completed[state.selectedMap][state.selectedWorld] = true;
+          if (state.selectedWorld === 9 && state.selectedMap < 9) {
+            state.levelRecord.unlockedMap = Math.max(state.levelRecord.unlockedMap, state.selectedMap + 1);
+          }
+          saveLevelRecord();
+          message = `ワールドクリア。${state.selectedMap + 1}-${state.selectedWorld + 1}を完了しました。`;
+        } else {
+          message = "あと少しです。正確率80%以上を目指して、もう一度挑戦しましょう。";
+        }
+      }
+
+      if (state.mode === "level" && state.levelKind === "skip") {
+        if (success) {
+          unlockThrough(state.skipTargetMap);
+          message = `飛び級テスト合格。マップ${state.skipTargetMap + 1}を解放しました。`;
+        } else {
+          message = "飛び級テストは未合格です。8問正解・正確率80%以上を目指しましょう。";
+        }
+      }
+
       el.resultScore.textContent = state.score;
       el.resultAccuracy.textContent = accuracy + "%";
       el.resultTyped.textContent = state.typedCount;
       el.resultCombo.textContent = state.bestCombo;
-      el.resultMessage.textContent = `EXP +${earnedExp}。${state.correctWords}問正解しました。`;
+      el.resultMessage.textContent = message;
       el.resultBackdrop.classList.add("open");
 
       updateHud();
       updateMeta();
+      updateQuestList();
+    }
+
+    function resolveLevelSuccess(accuracy) {
+      if (state.mode !== "level") return true;
+      return state.correctWords >= state.worldGoal && accuracy >= 80;
     }
 
     function calcAccuracy() {
@@ -1317,18 +2114,18 @@
       el.scoreLabel.textContent = state.score;
       el.accuracyLabel.textContent = `${calcAccuracy()}%`;
 
-      if (state.mode === "level") {
+      if (state.mode === "level" && state.levelKind === "world") {
         el.timeLabel.textContent = "-";
-        el.gaugeText.textContent = "進行状況";
-        const pct = Math.min(100, (state.correctWords / state.levelGoal) * 100);
+        el.gaugeText.textContent = "ワールド進行";
+        const pct = Math.min(100, (state.correctWords / state.worldGoal) * 100);
         el.timeGaugeBar.style.width = `${pct}%`;
-        el.progressText.textContent = `${state.correctWords} / ${state.levelGoal}`;
+        el.progressText.textContent = `${state.correctWords} / ${state.worldGoal}`;
         el.timeGauge.classList.remove("warning", "danger");
         return;
       }
 
       el.timeLabel.textContent = `${Math.ceil(state.timeLeft)}秒`;
-      el.gaugeText.textContent = "残り時間ゲージ";
+      el.gaugeText.textContent = state.mode === "level" && state.levelKind === "skip" ? "飛び級テスト残り時間" : "残り時間ゲージ";
       const pct = state.totalTime ? Math.max(0, Math.min(100, (state.timeLeft / state.totalTime) * 100)) : 0;
       el.timeGaugeBar.style.width = `${pct}%`;
       el.progressText.textContent = `${Math.ceil(state.timeLeft)}秒`;
@@ -1341,13 +2138,45 @@
       el.accountPill.textContent = `${account.emoji || "⌨️"} ${account.name || "ゲスト"} / ID: ${account.id || "guest"}`;
       el.levelText.textContent = `レベル ${state.record.level} / EXP ${state.record.exp}`;
       el.bestText.textContent = `最高スコア ${state.record.bestScore}`;
-      el.settingsSummary.textContent = `${state.settings.lang === "ja" ? "日本語" : "英語"} / キーボード${state.settings.keyboard ? "ON" : "OFF"} / 読み仮名${state.settings.kana ? "ON" : "OFF"}`;
+
+      const totalCleared = state.levelRecord.completed.flat().filter(Boolean).length;
+      if (state.mode === "level" && state.levelKind === "world") {
+        el.levelModeText.textContent = `レベルアップ：マップ${state.selectedMap + 1}-${state.selectedWorld + 1} / クリア ${totalCleared}/100`;
+      } else {
+        el.levelModeText.textContent = `レベルアップ：開放中 マップ${state.levelRecord.unlockedMap + 1} / クリア ${totalCleared}/100`;
+      }
+
+      const keyboardText = (state.mode === "level" || state.settings.keyboard) ? "ON" : "OFF";
+      el.settingsSummary.textContent = `${state.settings.lang === "ja" ? "日本語" : "英語"} / キーボード${keyboardText} / 読み仮名${state.settings.kana ? "ON" : "OFF"}`;
       updateSettingButtons();
       updateKeyboardGuide();
     }
 
+    function updateQuestList() {
+      if (state.mode === "level" && state.levelKind === "world") {
+        const world = LEVEL_MAPS[state.selectedMap].worlds[state.selectedWorld];
+        el.questList.innerHTML = `
+          <li>目標：${world.goal}問正解</li>
+          <li>正確率：80%以上</li>
+          <li>練習内容：${escapeHtml(world.title)}</li>
+        `;
+      } else if (state.mode === "level" && state.levelKind === "skip") {
+        el.questList.innerHTML = `
+          <li>飛び級：マップ${state.skipTargetMap + 1}解放</li>
+          <li>目標：8問正解</li>
+          <li>正確率：80%以上</li>
+        `;
+      } else if (state.mode === "normal") {
+        el.questList.innerHTML = `<li>60秒で高スコアを目指しましょう。</li><li>正確率90%以上を目標にしましょう。</li>`;
+      } else if (state.mode === "endless") {
+        el.questList.innerHTML = `<li>1問ごとの残り時間に注意しましょう。</li><li>ミスをすると時間が減ります。</li>`;
+      } else {
+        el.questList.innerHTML = `<li>モードを選んでください。</li>`;
+      }
+    }
+
     function updateKeyboardGuide() {
-      el.keyboardGuide.classList.toggle("hidden", !state.settings.keyboard);
+      el.keyboardGuide.classList.toggle("hidden", !(state.mode === "level" || state.settings.keyboard));
     }
 
     function updateSettingButtons() {
@@ -1359,6 +2188,18 @@
       el.kanaOffButton.classList.toggle("active", !state.settings.kana);
     }
 
+    function returnFromGame() {
+      clearTimer();
+      state.running = false;
+      state.paused = false;
+
+      if (state.mode === "level") {
+        openLevelMap(state.selectedMap);
+      } else {
+        showScreen("mode");
+      }
+    }
+
     function escapeHtml(value) {
       return String(value)
         .replaceAll("&", "&amp;")
@@ -1368,43 +2209,77 @@
         .replaceAll("'", "&#039;");
     }
 
-    function returnToMode() {
-      clearTimer();
-      state.running = false;
-      state.paused = false;
-      showScreen("mode");
-      el.resultBackdrop.classList.remove("open");
-    }
-
     document.querySelectorAll(".mode-card").forEach(card => {
       card.addEventListener("click", () => startMode(card.dataset.mode));
     });
 
+    el.introNextButton.addEventListener("click", () => {
+      state.introIndex = Math.min(introLines.length - 1, state.introIndex + 1);
+      renderIntro();
+    });
+
+    el.startFromMap1Button.addEventListener("click", () => {
+      unlockThrough(0);
+      openLevelMap(0);
+    });
+
+    el.startFromMap5Button.addEventListener("click", () => {
+      unlockThrough(4);
+      openLevelMap(4);
+    });
+
+    el.levelBackModeButton.addEventListener("click", () => {
+      state.mode = "";
+      showScreen("mode");
+      updateMeta();
+      updateQuestList();
+    });
+
+    el.adviceBackMapButton.addEventListener("click", () => openLevelMap(state.selectedMap));
+    el.adviceNextButton.addEventListener("click", () => {
+      const lines = getAdviceLines();
+      if (state.adviceIndex >= lines.length - 1) {
+        startLevelWorld(state.selectedMap, state.selectedWorld);
+        return;
+      }
+      state.adviceIndex++;
+      renderAdvice();
+    });
+
     el.startButton.addEventListener("click", startGame);
     el.pauseButton.addEventListener("click", pauseGame);
-    el.backButton.addEventListener("click", returnToMode);
+    el.backButton.addEventListener("click", returnFromGame);
     el.settingsButton.addEventListener("click", () => el.settingsBackdrop.classList.add("open"));
     el.settingsCloseButton.addEventListener("click", () => el.settingsBackdrop.classList.remove("open"));
 
-    el.langJaButton.addEventListener("click", () => { state.settings.lang = "ja"; updateSettingButtons(); });
-    el.langEnButton.addEventListener("click", () => { state.settings.lang = "en"; updateSettingButtons(); });
-    el.keyboardOnButton.addEventListener("click", () => { state.settings.keyboard = true; updateSettingButtons(); updateKeyboardGuide(); });
-    el.keyboardOffButton.addEventListener("click", () => { state.settings.keyboard = false; updateSettingButtons(); updateKeyboardGuide(); });
-    el.kanaOnButton.addEventListener("click", () => { state.settings.kana = true; updateSettingButtons(); });
-    el.kanaOffButton.addEventListener("click", () => { state.settings.kana = false; updateSettingButtons(); });
-
-    el.saveSettingsButton.addEventListener("click", () => {
+    function applySettingsNow() {
       saveSettings();
       updateMeta();
+      updateKeyboardGuide();
       if (state.current) renderWord();
+    }
+
+    el.langJaButton.addEventListener("click", () => { state.settings.lang = "ja"; applySettingsNow(); });
+    el.langEnButton.addEventListener("click", () => { state.settings.lang = "en"; applySettingsNow(); });
+    el.keyboardOnButton.addEventListener("click", () => { state.settings.keyboard = true; applySettingsNow(); });
+    el.keyboardOffButton.addEventListener("click", () => { state.settings.keyboard = false; applySettingsNow(); });
+    el.kanaOnButton.addEventListener("click", () => { state.settings.kana = true; applySettingsNow(); });
+    el.kanaOffButton.addEventListener("click", () => { state.settings.kana = false; applySettingsNow(); });
+
+    el.saveSettingsButton.addEventListener("click", () => {
+      applySettingsNow();
       el.settingsBackdrop.classList.remove("open");
     });
 
     el.resetDataButton.addEventListener("click", () => {
-      if (!confirm("最高スコア・EXP・レベルをリセットします。よろしいですか？")) return;
+      if (!confirm("最高スコア・EXP・レベル・レベルアップ進行をすべてリセットします。よろしいですか？")) return;
       state.record = { bestScore: 0, exp: 0, level: 1 };
+      state.levelRecord = { unlockedMap: 0, completed: Array.from({ length: 10 }, () => Array(10).fill(false)) };
       saveRecord();
+      saveLevelRecord();
       updateMeta();
+      updateQuestList();
+      if (el.levelMapScreen.classList.contains("active")) openLevelMap(0);
     });
 
     el.logoutButton.addEventListener("click", () => {
@@ -1415,14 +2290,25 @@
     el.resultCloseButton.addEventListener("click", () => el.resultBackdrop.classList.remove("open"));
     el.retryButton.addEventListener("click", () => {
       el.resultBackdrop.classList.remove("open");
-      startMode(state.mode || "normal");
+      if (state.mode === "level" && state.levelKind === "world") {
+        startLevelWorld(state.selectedMap, state.selectedWorld);
+      } else if (state.mode === "level" && state.levelKind === "skip") {
+        startSkipTest(state.skipTargetMap);
+      } else {
+        startMode(state.mode || "normal");
+      }
       startGame();
     });
-    el.resultBackButton.addEventListener("click", returnToMode);
+
+    el.resultBackButton.addEventListener("click", () => {
+      el.resultBackdrop.classList.remove("open");
+      returnFromGame();
+    });
 
     document.addEventListener("keydown", handleKey);
 
     updateMeta();
+    updateQuestList();
   </script>
 </body>
 </html>
