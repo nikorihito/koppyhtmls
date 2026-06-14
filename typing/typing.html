@@ -1,40 +1,38 @@
-<!-- typing.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>星降るタイピングアカデミア</title>
-
+  <title>ニコリタイピング</title>
   <style>
     :root {
-      --bg1: #10142d;
-      --bg2: #24164a;
-      --bg3: #0e3b4f;
-      --text: #f8fbff;
-      --muted: #c8d3ff;
-      --line: rgba(255,255,255,.22);
-      --accent: #8ee8ff;
-      --accent2: #ffdf8e;
-      --good: #a9ffcb;
-      --danger: #ff7b91;
-      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --bg: #e8fbff;
+      --bg2: #b6f2ff;
+      --blue: #00a8d8;
+      --blue2: #23c7ec;
+      --aqua: #58e6f2;
+      --yellow: #ffe06e;
+      --navy: #06354f;
+      --muted: #52788a;
+      --line: rgba(0, 118, 165, .18);
+      --white: rgba(255,255,255,.78);
+      --shadow: 0 22px 60px rgba(0, 100, 145, .18);
+      --danger: #ff5d73;
+      --good: #16a66f;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
+    html,
     body {
       margin: 0;
-      min-height: 100vh;
-      color: var(--text);
+      min-height: 100%;
+      color: var(--navy);
       font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, system-ui, sans-serif;
       background:
-        radial-gradient(circle at 15% 20%, rgba(142,232,255,.28), transparent 28%),
-        radial-gradient(circle at 85% 10%, rgba(255,223,142,.20), transparent 26%),
-        radial-gradient(circle at 50% 90%, rgba(155,119,255,.28), transparent 35%),
-        linear-gradient(135deg, var(--bg1), var(--bg2) 50%, var(--bg3));
+        radial-gradient(circle at 18% 16%, rgba(255, 224, 110, .35), transparent 20%),
+        radial-gradient(circle at 82% 12%, rgba(255,255,255,.85), transparent 18%),
+        linear-gradient(180deg, #f7feff 0%, var(--bg) 35%, var(--bg2) 100%);
       overflow-x: hidden;
     }
 
@@ -42,474 +40,191 @@
       content: "";
       position: fixed;
       inset: 0;
+      z-index: 0;
       pointer-events: none;
       background-image:
-        radial-gradient(circle, rgba(255,255,255,.85) 0 1px, transparent 1.5px),
-        radial-gradient(circle, rgba(142,232,255,.65) 0 1px, transparent 1.5px);
-      background-size: 110px 110px, 170px 170px;
-      background-position: 0 0, 40px 70px;
-      animation: stars 28s linear infinite;
-      opacity: .42;
+        radial-gradient(circle, rgba(255,255,255,.95) 0 2px, transparent 2.7px),
+        radial-gradient(circle, rgba(0,168,216,.24) 0 3px, transparent 3.8px),
+        linear-gradient(135deg, transparent 0 45%, rgba(255,255,255,.22) 46% 54%, transparent 55%);
+      background-size: 120px 120px, 180px 180px, 280px 280px;
+      background-position: 0 0, 52px 76px, 0 0;
+      animation: bubbles 26s linear infinite;
+      opacity: .58;
     }
 
-    @keyframes stars {
+    body::after {
+      content: "";
+      position: fixed;
+      left: -10%;
+      right: -10%;
+      bottom: -96px;
+      height: 245px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .9;
+      background:
+        radial-gradient(130px 58px at 8% 22%, rgba(255,255,255,.54) 0 62%, transparent 64%),
+        radial-gradient(150px 64px at 28% 18%, rgba(255,255,255,.38) 0 62%, transparent 64%),
+        radial-gradient(160px 68px at 50% 22%, rgba(255,255,255,.48) 0 62%, transparent 64%),
+        radial-gradient(150px 64px at 72% 18%, rgba(255,255,255,.38) 0 62%, transparent 64%),
+        radial-gradient(170px 72px at 92% 22%, rgba(255,255,255,.50) 0 62%, transparent 64%),
+        linear-gradient(180deg, rgba(0,168,216,.08), rgba(0,168,216,.24));
+      animation: wave 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes bubbles {
       from { transform: translateY(0); }
-      to { transform: translateY(110px); }
+      to { transform: translateY(120px); }
     }
 
-    ruby {
-      ruby-align: center;
-    }
-
-    rt {
-      color: var(--accent2);
-      font-size: .55em;
-      font-weight: 900;
-      letter-spacing: .03em;
-      line-height: 1;
-      text-shadow: none;
+    @keyframes wave {
+      from { transform: translateX(-18px) translateY(0); }
+      to { transform: translateX(18px) translateY(-8px); }
     }
 
     .app {
-      width: min(1180px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 28px 0 40px;
       position: relative;
       z-index: 1;
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .app::after {
+      content: "";
+      position: fixed;
+      right: 22px;
+      bottom: 20px;
+      width: min(160px, 26vw);
+      height: min(160px, 26vw);
+      background: url("./ニコリヒト.png") center / contain no-repeat;
+      opacity: .14;
+      filter: drop-shadow(0 18px 28px rgba(0, 85, 130, .28));
+      pointer-events: none;
+      z-index: -1;
     }
 
     header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 20px;
+      align-items: flex-start;
+      gap: 18px;
       margin-bottom: 20px;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(28px, 5vw, 52px);
-      letter-spacing: .04em;
-      text-shadow: 0 4px 24px rgba(142,232,255,.35);
+      font-size: clamp(34px, 6vw, 60px);
+      letter-spacing: .06em;
+      line-height: 1.1;
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: 128px;
+      height: 7px;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue), var(--aqua), var(--yellow));
     }
 
     .lead {
-      margin: 8px 0 0;
+      margin: 12px 0 0;
       color: var(--muted);
+      font-weight: 900;
       line-height: 1.7;
     }
 
-    .header-right {
+    .top-actions {
       display: flex;
       align-items: center;
       gap: 10px;
-      position: relative;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
-    .account-card {
-      display: flex;
+    .account-pill {
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      min-width: 230px;
-      padding: 12px 14px;
-      border-radius: 20px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow: var(--shadow);
-    }
-
-    .account-card.inner {
-      width: 100%;
-      min-width: 0;
-      box-shadow: none;
-    }
-
-    .account-icon {
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
-      border-radius: 16px;
-      background: linear-gradient(135deg, rgba(142,232,255,.28), rgba(255,223,142,.24));
-      border: 1px solid rgba(255,255,255,.22);
-      font-size: 26px;
-      flex: 0 0 auto;
-    }
-
-    .account-meta {
-      min-width: 0;
-    }
-
-    .account-meta strong {
-      display: block;
-      color: var(--text);
-      font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .account-meta span {
-      display: block;
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 12px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .pill {
-      min-width: 190px;
-      padding: 14px 16px;
+      gap: 8px;
+      padding: 11px 14px;
       border: 1px solid var(--line);
       border-radius: 999px;
-      background: rgba(255,255,255,.09);
-      backdrop-filter: blur(14px);
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-
-    .pill strong {
-      color: var(--accent2);
+      background: rgba(255,255,255,.64);
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 12px 28px rgba(0, 100, 145, .08);
     }
 
     button,
     .button-link {
       border: 0;
       border-radius: 999px;
-      padding: 12px 18px;
-      color: #0b1530;
-      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(0,0,0,.22);
-      transition: transform .15s ease, filter .15s ease;
-      text-decoration: none;
-      text-align: center;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
+      padding: 12px 17px;
+      color: var(--navy);
+      background: linear-gradient(135deg, var(--blue2) 0%, var(--aqua) 54%, var(--yellow) 100%);
       font-family: inherit;
+      font-weight: 1000;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 13px 26px rgba(0, 122, 170, .20);
+      transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
     }
 
     button:hover,
     .button-link:hover {
       transform: translateY(-2px);
-      filter: brightness(1.05);
+      filter: brightness(1.03);
+      box-shadow: 0 18px 34px rgba(0, 122, 170, .24);
     }
 
     button.secondary,
     .button-link.secondary {
-      color: var(--text);
-      background: rgba(255,255,255,.13);
-      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.68);
+      border: 1px solid rgba(0, 118, 165, .18);
+      box-shadow: none;
     }
 
-    .danger-button {
+    button.danger {
       color: #fff;
-      background: rgba(255,123,145,.18);
-      border: 1px solid rgba(255,123,145,.34);
+      background: linear-gradient(135deg, var(--danger), #ff90a1);
     }
 
-    .settings-button {
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      padding: 0;
-      border-radius: 999px;
-      color: var(--text);
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.22);
-      font-size: 24px;
-      line-height: 1;
-      box-shadow: var(--shadow);
-    }
-
-    .settings-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 90;
-      display: none;
-      background: rgba(0,0,0,.45);
-      backdrop-filter: blur(4px);
-    }
-
-    .settings-backdrop.open {
-      display: block;
-    }
-
-    .settings-panel {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      z-index: 100;
-      width: min(860px, calc(100vw - 28px));
-      max-height: min(760px, calc(100vh - 28px));
-      overflow: auto;
-      padding: 24px;
-      border-radius: 28px;
-      background: rgba(20, 25, 55, .96);
-      border: 1px solid rgba(255,255,255,.22);
-      box-shadow: 0 28px 90px rgba(0,0,0,.46);
-      backdrop-filter: blur(22px);
-      display: none;
-      transform: translate(-50%, -50%);
-    }
-
-    .settings-panel.open {
-      display: block;
-    }
-
-    .settings-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .settings-header h3 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    .settings-close-button {
-      width: 42px;
-      height: 42px;
-      padding: 0;
-      border-radius: 999px;
-      color: var(--text);
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.20);
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
       box-shadow: none;
     }
 
-    .settings-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 18px;
-      padding: 6px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.14);
-    }
-
-    .settings-tab-button {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 14px;
-      color: var(--text);
-      background: transparent;
-      border: 1px solid transparent;
-      box-shadow: none;
-    }
-
-    .settings-tab-button.active {
-      color: #0b1530;
-      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
-      border-color: rgba(255,255,255,.32);
-    }
-
-    .settings-tab-panel {
-      display: none;
-    }
-
-    .settings-tab-panel.active {
-      display: block;
-    }
-
-    .setting-group {
-      display: grid;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .setting-group label {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .account-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .login-link-button {
-      width: 100%;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      border-radius: 16px;
-      padding: 10px 12px;
-      color: #0b1530;
-      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
-      font-weight: 900;
-      box-shadow: none;
-    }
-
-    .setting-dropdown {
-      position: relative;
-    }
-
-    .setting-dropdown-button {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.20);
-      background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
-      color: var(--text);
-      padding: 12px 14px;
-      font-weight: 900;
-      box-shadow: none;
-      text-align: left;
-    }
-
-    .setting-dropdown-button::after {
-      content: "▾";
-      color: var(--accent2);
-      font-size: 14px;
-      transition: transform .18s ease;
-    }
-
-    .setting-dropdown.open .setting-dropdown-button::after {
-      transform: rotate(180deg);
-    }
-
-    .genre-menu {
-      display: none;
-      position: absolute;
-      z-index: 20;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      max-height: 260px;
-      overflow: auto;
-      padding: 10px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(17, 22, 50, .98);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-    }
-
-    .setting-dropdown.open .genre-menu {
-      display: grid;
-      gap: 8px;
-    }
-
-    .genre-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      font-weight: 800;
-      box-shadow: none;
-      text-align: left;
-    }
-
-    .genre-option.active {
-      color: #0b1530;
-      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
-      border-color: rgba(255,255,255,.36);
-    }
-
-    .selected-genre-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .selected-genre-chip {
-      padding: 5px 8px;
-      border-radius: 999px;
-      background: rgba(142,232,255,.13);
-      border: 1px solid rgba(142,232,255,.22);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .segmented {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .segmented button {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      color: var(--text);
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow: none;
-    }
-
-    .segmented button.active {
-      color: #0b1530;
-      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
-    }
-
-    .settings-note {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .settings-save-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(255,255,255,.14);
-    }
-
-    .screen {
-      display: none;
-      animation: fadeIn .24s ease both;
-    }
-
-    .screen.active {
-      display: block;
-    }
+    .screen { display: none; animation: fadeIn .25s ease both; }
+    .screen.active { display: block; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
+    .panel,
+    .card,
+    .hud-card,
+    .stage,
+    .side-card,
+    .modal {
       border: 1px solid var(--line);
-      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.62)),
+        radial-gradient(circle at 18% 0%, rgba(0,168,216,.14), transparent 34%);
       box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
-      overflow: hidden;
     }
 
-    .mode-reset-row {
-      padding: 18px 22px 0;
-      display: flex;
-      justify-content: flex-end;
+    .panel {
+      border-radius: 32px;
+      overflow: hidden;
     }
 
     .mode-grid {
@@ -523,18 +238,32 @@
       position: relative;
       min-height: 250px;
       padding: 24px;
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,.20);
-      background:
-        linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.07)),
-        radial-gradient(circle at 20% 10%, rgba(142,232,255,.28), transparent 36%);
+      border-radius: 26px;
+      color: var(--navy);
       cursor: pointer;
-      transition: transform .2s ease, border-color .2s ease;
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .mode-card::before {
+      content: "";
+      position: absolute;
+      left: -20%;
+      right: -20%;
+      top: -42px;
+      height: 92px;
+      pointer-events: none;
+      background:
+        radial-gradient(72px 32px at 10% 70%, rgba(0,168,216,.17) 0 64%, transparent 66%),
+        radial-gradient(86px 38px at 32% 66%, rgba(0,168,216,.13) 0 64%, transparent 66%),
+        radial-gradient(92px 40px at 54% 70%, rgba(0,168,216,.15) 0 64%, transparent 66%),
+        radial-gradient(80px 36px at 78% 66%, rgba(0,168,216,.13) 0 64%, transparent 66%);
     }
 
     .mode-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(142,232,255,.72);
+      transform: translateY(-6px);
+      border-color: rgba(0, 168, 216, .48);
+      box-shadow: 0 24px 56px rgba(0, 122, 170, .22);
     }
 
     .mode-icon {
@@ -543,22 +272,24 @@
       display: grid;
       place-items: center;
       margin-bottom: 16px;
-      border-radius: 20px;
-      background: rgba(255,255,255,.16);
-      border: 1px solid rgba(255,255,255,.2);
-      font-size: 34px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(0,168,216,.18), rgba(255,224,110,.35));
+      border: 1px solid rgba(0, 140, 190, .18);
+      font-size: 32px;
+      box-shadow: inset 0 -4px 0 rgba(0, 120, 170, .08);
     }
 
     .mode-card h2 {
       margin: 0 0 10px;
       font-size: 24px;
+      letter-spacing: .03em;
     }
 
     .mode-card p {
       margin: 0;
       color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
+      line-height: 1.75;
+      font-weight: 800;
     }
 
     .tag {
@@ -567,239 +298,11 @@
       bottom: 18px;
       padding: 7px 12px;
       border-radius: 999px;
-      color: var(--accent2);
-      background: rgba(255,255,255,.14);
-      border: 1px solid rgba(255,255,255,.18);
-      font-weight: 800;
+      color: var(--navy);
+      background: rgba(255,224,110,.42);
+      border: 1px solid rgba(255, 200, 40, .28);
+      font-weight: 1000;
       font-size: 12px;
-    }
-
-    .map-wrap,
-    .tutorial-card {
-      padding: 22px;
-    }
-
-    .map-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .map-header h2 {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 4vw, 36px);
-    }
-
-    .map-header p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .lesson-chip {
-      display: inline-flex;
-      margin-top: 10px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      color: var(--accent2);
-      background: rgba(255,255,255,.13);
-      border: 1px solid rgba(255,255,255,.17);
-      font-weight: 800;
-    }
-
-    .map-grid,
-    .world-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .map-grid {
-      margin-bottom: 18px;
-    }
-
-    .map-card,
-    .world-card {
-      padding: 14px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.11);
-      color: var(--text);
-      text-align: left;
-    }
-
-    .map-card.locked,
-    .world-card.locked {
-      opacity: .5;
-    }
-
-    .map-card strong,
-    .world-card strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 16px;
-    }
-
-    .map-card span,
-    .world-card span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .skip-rule {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      color: var(--accent2);
-      background: rgba(255,223,142,.10);
-      border: 1px solid rgba(255,223,142,.22);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .speech-stage {
-      min-height: 340px;
-      display: grid;
-      place-items: center;
-      padding: 18px;
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at 25% 20%, rgba(142,232,255,.16), transparent 34%),
-        rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.16);
-    }
-
-    .speech-row {
-      display: grid;
-      grid-template-columns: 92px minmax(0, 1fr);
-      gap: 16px;
-      width: min(760px, 100%);
-      align-items: end;
-    }
-
-    .speech-row.reverse {
-      grid-template-columns: minmax(0, 1fr) 92px;
-    }
-
-    .speech-row.reverse img {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .speech-row.reverse .speech-bubble {
-      grid-column: 1;
-      grid-row: 1;
-      min-width: 0;
-    }
-
-    .speech-row:not(.reverse) img {
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    .speech-row:not(.reverse) .speech-bubble {
-      grid-column: 2;
-      grid-row: 1;
-      min-width: 0;
-    }
-
-    .speech-row img {
-      width: 88px;
-      height: 88px;
-      object-fit: contain;
-      border-radius: 22px;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.18);
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
-    }
-
-    .speech-bubble {
-      position: relative;
-      padding: 18px 20px;
-      border-radius: 24px;
-      color: #172036;
-      background: rgba(255,255,255,.92);
-      box-shadow: 0 16px 40px rgba(0,0,0,.24);
-      font-weight: 800;
-      line-height: 1.85;
-    }
-
-    .speech-bubble::before {
-      content: "";
-      position: absolute;
-      left: -12px;
-      bottom: 24px;
-      border-top: 10px solid transparent;
-      border-bottom: 10px solid transparent;
-      border-right: 14px solid rgba(255,255,255,.92);
-    }
-
-    .speech-row.reverse .speech-bubble::before {
-      left: auto;
-      right: -12px;
-      border-right: 0;
-      border-left: 14px solid rgba(255,255,255,.92);
-    }
-
-    .speech-name {
-      display: inline-flex;
-      margin-bottom: 8px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
-      color: #0b1530;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .speech-text {
-      min-height: 58px;
-      font-size: clamp(16px, 2vw, 20px);
-    }
-
-    .speech-progress {
-      margin-top: 12px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .tutorial-actions {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .tutorial-actions.one {
-      grid-template-columns: 1fr;
-    }
-
-    .tutorial-actions.two {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .tutorial-actions.hidden {
-      display: none;
-    }
-
-    .tutorial-choice {
-      min-height: 76px;
-      border-radius: 18px;
-      white-space: normal;
-      line-height: 1.5;
     }
 
     .game-layout {
@@ -809,8 +312,8 @@
     }
 
     .game-main {
-      min-height: 600px;
       padding: 22px;
+      border-radius: 32px;
     }
 
     .hud {
@@ -822,9 +325,7 @@
 
     .hud-card {
       padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 20px;
       text-align: center;
     }
 
@@ -833,57 +334,72 @@
       margin-bottom: 5px;
       color: var(--muted);
       font-size: 12px;
+      font-weight: 900;
     }
 
     .hud-card strong {
-      font-size: 22px;
+      font-size: 23px;
     }
 
     .stage {
       position: relative;
-      min-height: 390px;
+      min-height: 380px;
       display: grid;
       place-items: center;
-      padding: 30px;
+      padding: 28px;
       overflow: hidden;
-      border-radius: 26px;
-      border: 1px solid rgba(255,255,255,.17);
+      border-radius: 30px;
       background:
-        linear-gradient(180deg, rgba(16,20,45,.25), rgba(5,12,26,.55)),
-        radial-gradient(circle at 50% 20%, rgba(142,232,255,.22), transparent 36%);
+        radial-gradient(circle at 50% 16%, rgba(255,224,110,.20), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,.76), rgba(219,249,255,.62));
     }
 
-    .castle {
+    .stage::before {
+      content: "";
       position: absolute;
-      left: 28px;
-      bottom: 40px;
-      opacity: .35;
-      font-size: 80px;
-      filter: drop-shadow(0 0 18px rgba(142,232,255,.4));
+      inset: auto -12% -60px -12%;
+      height: 150px;
+      opacity: .7;
+      background:
+        radial-gradient(120px 48px at 12% 25%, rgba(0,168,216,.12) 0 60%, transparent 62%),
+        radial-gradient(140px 52px at 34% 20%, rgba(0,168,216,.10) 0 60%, transparent 62%),
+        radial-gradient(150px 56px at 58% 25%, rgba(0,168,216,.12) 0 60%, transparent 62%),
+        radial-gradient(140px 52px at 82% 20%, rgba(0,168,216,.10) 0 60%, transparent 62%);
+    }
+
+    .character-mark {
+      position: absolute;
+      left: 24px;
+      bottom: 28px;
+      width: 110px;
+      height: 110px;
+      background: url("./ニコリヒト.png") center / contain no-repeat;
+      opacity: .18;
+      filter: drop-shadow(0 12px 20px rgba(0, 120, 170, .30));
     }
 
     .word-box {
-      width: min(760px, 100%);
       position: relative;
       z-index: 2;
+      width: min(760px, 100%);
       text-align: center;
     }
 
     .jp-word {
       margin-bottom: 14px;
-      font-size: clamp(30px, 5vw, 58px);
-      font-weight: 900;
+      color: #052e45;
+      font-size: clamp(34px, 5vw, 62px);
+      font-weight: 1000;
       letter-spacing: .06em;
-      text-shadow: 0 0 26px rgba(142,232,255,.4);
       line-height: 1.32;
     }
 
-    .jp-word rt {
-      color: var(--accent2);
-      font-size: .28em;
-      letter-spacing: .03em;
-      text-shadow: none;
+    .kana {
+      min-height: 26px;
+      margin-bottom: 10px;
+      color: var(--muted);
       font-weight: 900;
+      letter-spacing: .06em;
     }
 
     .roma-word {
@@ -891,43 +407,38 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 2px;
-      padding: 16px 18px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.18);
-      font-size: clamp(24px, 4vw, 42px);
+      min-height: 76px;
+      padding: 17px 20px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.76);
+      border: 1px solid rgba(0, 120, 170, .18);
+      color: var(--navy);
+      font-size: clamp(28px, 4vw, 46px);
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       letter-spacing: .04em;
     }
 
-    .typed {
-      color: var(--good);
-      opacity: .65;
-    }
-
+    .typed { color: var(--good); opacity: .68; }
     .current {
-      color: var(--accent2);
+      color: #008fbd;
       text-decoration: underline;
       text-underline-offset: 7px;
     }
-
-    .remaining {
-      color: #fff;
-    }
+    .remaining { color: var(--navy); }
 
     .message {
       min-height: 30px;
       margin-top: 18px;
       color: var(--muted);
-      font-weight: 800;
+      font-weight: 900;
     }
 
     .time-gauge-box {
       margin-top: 16px;
       padding: 12px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 20px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(0, 120, 170, .14);
     }
 
     .time-gauge-head {
@@ -937,7 +448,7 @@
       margin-bottom: 8px;
       color: var(--muted);
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 900;
     }
 
     .time-gauge {
@@ -945,39 +456,32 @@
       height: 16px;
       border-radius: 999px;
       overflow: hidden;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0, 120, 170, .10);
+      border: 1px solid rgba(0, 120, 170, .12);
     }
 
     .time-gauge > div {
       height: 100%;
       width: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--good), var(--accent), var(--accent2));
-      transition: width .18s ease;
+      background: linear-gradient(90deg, var(--good), var(--blue2), var(--yellow));
+      transition: width .16s ease;
     }
 
-    .time-gauge.warning > div {
-      background: linear-gradient(90deg, var(--accent2), #fff1b8);
-    }
-
-    .time-gauge.danger > div {
-      background: linear-gradient(90deg, var(--danger), #ffb08e);
-    }
+    .time-gauge.warning > div { background: linear-gradient(90deg, var(--yellow), #fff2b3); }
+    .time-gauge.danger > div { background: linear-gradient(90deg, var(--danger), #ffb08e); }
 
     .keyboard-guide {
       margin-top: 16px;
       padding: 14px;
-      border-radius: 22px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 24px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(0, 120, 170, .14);
       display: grid;
       gap: 8px;
     }
 
-    .keyboard-guide.hidden {
-      display: none;
-    }
+    .keyboard-guide.hidden { display: none; }
 
     .keyboard-row {
       display: flex;
@@ -991,216 +495,192 @@
       display: grid;
       place-items: center;
       border-radius: 10px;
-      color: var(--text);
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.18);
-      font-weight: 900;
+      color: var(--navy);
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(0, 120, 170, .18);
+      font-weight: 1000;
       font-size: 13px;
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,.18);
+      box-shadow: inset 0 -3px 0 rgba(0, 120, 170, .10), 0 6px 12px rgba(0, 120, 170, .08);
       transition: transform .12s ease, background .12s ease, color .12s ease, box-shadow .12s ease;
     }
 
-    .key.wide {
-      min-width: 58px;
-    }
-
-    .key.space {
-      min-width: 210px;
-    }
+    .key.wide { min-width: 72px; }
+    .key.space { min-width: 220px; }
 
     .key.active {
-      color: #0b1530;
-      background: linear-gradient(135deg, #8ee8ff, #ffdf8e);
-      box-shadow: 0 0 22px rgba(142,232,255,.58), inset 0 -2px 0 rgba(0,0,0,.18);
-      transform: translateY(-3px) scale(1.06);
-    }
-
-    .key.alt-active {
-      color: #dfffe7;
-      background: rgba(169, 255, 203, .16);
-      border-color: rgba(169, 255, 203, .42);
-      box-shadow: 0 0 14px rgba(169, 255, 203, .28), inset 0 -2px 0 rgba(0,0,0,.18);
-      transform: translateY(-1px);
-    }
-
-    .key.next-shift {
-      color: #0b1530;
-      background: linear-gradient(135deg, #ffdf8e, #fff3bf);
-      box-shadow: 0 0 18px rgba(255,223,142,.52), inset 0 -2px 0 rgba(0,0,0,.18);
       transform: translateY(-2px);
-    }
-
-    .keyboard-guide-note {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.6;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-top: 18px;
+      color: #062f45;
+      background: linear-gradient(135deg, var(--aqua), var(--yellow));
+      box-shadow:
+        inset 0 -3px 0 rgba(0, 120, 170, .16),
+        0 0 0 4px rgba(0, 168, 216, .16);
     }
 
     .side {
-      padding: 18px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
     }
 
-    .side h3 {
+    .side-card {
+      padding: 18px;
+      border-radius: 26px;
+    }
+
+    .side-card h3 {
       margin: 0 0 10px;
       font-size: 18px;
     }
 
-    .small-note {
+    .side-card p,
+    .side-card li {
       color: var(--muted);
       font-size: 13px;
+      font-weight: 800;
       line-height: 1.7;
     }
 
-    .bar {
-      width: 100%;
-      height: 12px;
-      border-radius: 999px;
-      overflow: hidden;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.16);
+    .side-card ul {
+      margin: 0;
+      padding-left: 20px;
     }
 
-    .bar > div {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #8ee8ff, #ffdf8e);
-      transition: width .2s ease;
-    }
-
-    .quest-list {
-      display: grid;
+    .game-actions {
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      margin: 12px 0 20px;
+      margin-top: 16px;
     }
 
-    .quest {
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.14);
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.55;
+    .settings-backdrop,
+    .result-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 80, 120, .22);
+      backdrop-filter: blur(6px);
     }
 
-    .quest.done {
-      color: var(--good);
-      border-color: rgba(169,255,203,.35);
-      background: rgba(169,255,203,.08);
+    .settings-backdrop.open,
+    .result-backdrop.open {
+      display: flex;
     }
 
-    .result {
-      padding: 30px;
-      text-align: center;
+    .modal {
+      width: min(560px, 100%);
+      border-radius: 30px;
+      padding: 22px;
     }
 
-    .result h2 {
-      margin: 0 0 14px;
-      font-size: clamp(30px, 5vw, 52px);
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .setting-group {
+      padding: 14px 0;
+      border-top: 1px solid rgba(0, 118, 165, .14);
+    }
+
+    .setting-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 1000;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .segmented button {
+      box-shadow: none;
+      background: rgba(255,255,255,.68);
+      border: 1px solid rgba(0, 118, 165, .18);
+    }
+
+    .segmented button.active {
+      background: linear-gradient(135deg, var(--blue2), var(--aqua), var(--yellow));
     }
 
     .result-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-      margin: 22px 0;
+      margin: 14px 0 18px;
     }
 
-    .shake {
-      animation: shake .18s ease;
+    .result-item {
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.66);
+      border: 1px solid rgba(0, 118, 165, .14);
+      text-align: center;
     }
 
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      30% { transform: translateX(-6px); }
-      60% { transform: translateX(6px); }
+    .result-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
     }
 
-    .pop {
-      animation: pop .25s ease;
+    .result-item strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 28px;
     }
 
-    @keyframes pop {
-      0% { transform: scale(.96); }
-      60% { transform: scale(1.04); }
-      100% { transform: scale(1); }
-    }
+    .hidden { display: none !important; }
 
-    @media (max-width: 900px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .header-right {
-        flex-wrap: wrap;
-      }
-
-      .mode-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .map-grid,
-      .world-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
+    @media (max-width: 980px) {
+      .mode-grid,
       .game-layout {
         grid-template-columns: 1fr;
       }
 
-      .hud,
-      .result-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .mode-card {
+        min-height: auto;
+      }
+
+      .side {
+        grid-template-columns: 1fr 1fr;
       }
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 720px) {
       .app {
         width: min(100% - 18px, 1180px);
         padding-top: 16px;
       }
 
-      .map-grid,
-      .world-grid {
-        grid-template-columns: 1fr;
+      header {
+        display: grid;
       }
 
-      .game-main,
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .hud {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
       .side,
-      .result {
-        padding: 14px;
-      }
-
-      .stage {
-        min-height: 330px;
-        padding: 16px;
-      }
-
-      .controls,
-      .settings-save-row {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      button,
-      .button-link {
-        width: 100%;
-      }
-
-      .account-actions,
-      .tutorial-actions,
-      .tutorial-actions.two {
+      .result-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1210,2100 +690,739 @@
 
       .keyboard-row {
         justify-content: flex-start;
-        min-width: 620px;
-      }
-
-      .key {
-        min-width: 32px;
-        height: 32px;
-        font-size: 12px;
       }
 
       .key.space {
-        min-width: 180px;
+        min-width: 150px;
+      }
+
+      .game-main {
+        padding: 16px;
+        border-radius: 26px;
       }
     }
   </style>
 </head>
-
 <body>
-  <div class="app">
+  <main class="app">
     <header>
       <div>
-        <h1>星降るタイピングアカデミア</h1>
-        <p class="lead">教育にも使える、幻想的なタイピング練習ゲーム。ローマ字の複数候補にも対応しています。</p>
+        <h1>ニコリタイピング</h1>
+        <p class="lead">タイピングを、もっと楽しく。海みたいに明るく、リズムよく練習しよう。</p>
       </div>
-
-      <div class="settings-backdrop" id="settingsBackdrop"></div>
-
-      <div class="header-right">
-        <div class="account-card" id="accountCard">
-          <div class="account-icon" id="accountIconDisplay">🌟</div>
-          <div class="account-meta">
-            <strong id="accountNameDisplay">ゲスト</strong>
-            <span id="accountIdDisplay">ID: guest</span>
-          </div>
-        </div>
-
-        <div class="pill">現在の称号：<strong id="titleName">見習い魔法タイパー</strong></div>
-
-        <button class="settings-button" id="settingsBtn" aria-label="設定を開く">⚙</button>
-
-        <div class="settings-panel" id="settingsPanel">
-          <div class="settings-header">
-            <h3>設定</h3>
-            <button type="button" class="settings-close-button" id="settingsCloseBtn">×</button>
-          </div>
-
-          <div class="settings-tabs" role="tablist">
-            <button type="button" class="settings-tab-button active" id="accountTabBtn">アカウント</button>
-            <button type="button" class="settings-tab-button" id="typingTabBtn">タイピング</button>
-          </div>
-
-          <div class="settings-tab-panel active" id="accountTabPanel">
-            <div class="setting-group">
-              <label>現在のアカウント</label>
-
-              <div class="account-card inner">
-                <div class="account-icon" id="settingsAccountIconDisplay">🌟</div>
-                <div class="account-meta">
-                  <strong id="settingsAccountNameDisplay">ゲスト</strong>
-                  <span id="settingsAccountIdDisplay">ID: guest</span>
-                </div>
-              </div>
-
-              <div class="account-actions">
-                <a class="login-link-button" href="./login.html">ログイン・編集</a>
-                <button type="button" class="danger-button" id="deleteAccountBtn">ログアウト・削除</button>
-              </div>
-
-              <p class="settings-note">
-                アカウントID・名前・絵文字アイコンの作成や編集、ログインID入力は login.html で行います。
-              </p>
-            </div>
-          </div>
-
-          <div class="settings-tab-panel" id="typingTabPanel">
-            <div class="setting-group">
-              <label>ジャンル絞り込み</label>
-              <div class="setting-dropdown" id="genreDropdown">
-                <button type="button" class="setting-dropdown-button" id="genreDropdownBtn">すべて</button>
-                <div class="genre-menu" id="genreMenu"></div>
-              </div>
-              <div class="selected-genre-chips" id="selectedGenreChips"></div>
-            </div>
-
-            <div class="setting-group">
-              <label>タイピング方式</label>
-              <div class="segmented">
-                <button type="button" id="jpModeBtn" class="active">日本語</button>
-                <button type="button" id="enModeBtn">英語</button>
-              </div>
-            </div>
-
-            <div class="setting-group">
-              <label>キーボードガイド</label>
-              <div class="segmented">
-                <button type="button" id="keyboardGuideOnBtn" class="active">ON</button>
-                <button type="button" id="keyboardGuideOffBtn">OFF</button>
-              </div>
-              <p class="settings-note">
-                次に押すキーを画面下のキーボードで光らせます。レベルアップモードでは常にONになります。
-              </p>
-            </div>
-
-            <div class="setting-group">
-              <label>読み仮名</label>
-              <div class="segmented">
-                <button type="button" id="furiganaOnBtn" class="active">ON</button>
-                <button type="button" id="furiganaOffBtn">OFF</button>
-              </div>
-              <p class="settings-note">
-                問題文だけでなく、画面内の見出し・ボタン・説明文などにも読み仮名を表示します。初期設定はONです。
-              </p>
-            </div>
-
-            <p class="settings-note">
-              ジャンル絞り込みと英語/日本語切り替えは、ノーマル・エンドレスモードに適用されます。レベルアップモードは専用カリキュラムです。
-            </p>
-
-            <div class="settings-save-row">
-              <button type="button" class="secondary" id="settingsCancelBtn">キャンセル</button>
-              <button type="button" id="settingsSaveBtn">設定を保存する</button>
-            </div>
-          </div>
-        </div>
+      <div class="top-actions">
+        <div class="account-pill" id="accountPill">⌨️ ゲスト / ID: guest</div>
+        <button type="button" class="secondary" id="settingsButton">設定</button>
+        <a class="button-link secondary" href="./login.html">ログイン・編集</a>
+        <button type="button" class="secondary" id="logoutButton">ログアウト</button>
       </div>
     </header>
 
-    <section id="menuScreen" class="screen active panel">
-      <div class="mode-reset-row">
-        <button class="secondary" id="resetAllBtn">全てをリセットする</button>
-      </div>
+    <section id="modeScreen" class="screen active">
+      <div class="panel">
+        <div class="mode-grid">
+          <article class="card mode-card" data-mode="level">
+            <div class="mode-icon">⌨️</div>
+            <h2>レベルアップモード</h2>
+            <p>ホームポジションから順番に進める学習向けモードです。授業・育成用に使いやすい構成です。</p>
+            <span class="tag">育成向け</span>
+          </article>
 
-      <div class="mode-grid">
-        <article class="mode-card" data-mode="level">
-          <div class="mode-icon">🏰</div>
-          <h2>レベルアップモード</h2>
-          <p>10マップ × 各10ワールドを進む学習向けモードです。F/Jから始めて、上段・下段・大文字・記号・長文へ進みます。</p>
-          <span class="tag">育成・授業向け</span>
-        </article>
+          <article class="card mode-card" data-mode="normal">
+            <div class="mode-icon">🌊</div>
+            <h2>ノーマルモード</h2>
+            <p>60秒で高スコアを目指します。日本語・英語の切り替えにも対応しています。</p>
+            <span class="tag">標準</span>
+          </article>
 
-        <article class="mode-card" data-mode="normal">
-          <div class="mode-icon">⌨️</div>
-          <h2>ノーマルモード</h2>
-          <p>60秒で高スコアを目指す標準モードです。日本語の単語や短文、または英語で入力します。</p>
-          <span class="tag">普通</span>
-        </article>
-
-        <article class="mode-card" data-mode="endless">
-          <div class="mode-icon">⏳</div>
-          <h2>エンドレスモード</h2>
-          <p>1問ごとに10秒。ミスるとその問題の残り時間が減る、速さ重視のモードです。</p>
-          <span class="tag">速さ重視</span>
-        </article>
-      </div>
-    </section>
-
-    <section id="levelTutorialScreen" class="screen panel tutorial-card">
-      <h2>レベルアップモードのはじめに</h2>
-      <p class="lead">ニコリヒトとつるつる君が、今のタイピングレベルを確認します。</p>
-
-      <div class="speech-stage">
-        <div class="speech-row" id="tutorialSpeechRow">
-          <img id="tutorialSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
-          <div class="speech-bubble">
-            <span class="speech-name" id="tutorialSpeakerName">ニコリヒト</span>
-            <div class="speech-text" id="tutorialSpeechText">ここでは、FとJのホームポジションから少しずつ練習していくよ。</div>
-          </div>
+          <article class="card mode-card" data-mode="endless">
+            <div class="mode-icon">⚡</div>
+            <h2>エンドレスモード</h2>
+            <p>1問ごとに10秒。ミスをすると残り時間が減る、テンポ重視のモードです。</p>
+            <span class="tag">速さ重視</span>
+          </article>
         </div>
-      </div>
-
-      <div class="speech-progress" id="tutorialProgress">1 / 4</div>
-
-      <div class="tutorial-actions one" id="tutorialNextActions">
-        <button class="tutorial-choice" id="tutorialNextBtn">次へ</button>
-      </div>
-
-      <div class="tutorial-actions hidden" id="tutorialChoiceActions">
-        <button class="tutorial-choice secondary" id="tutorialBeginnerBtn">はじめて・ゆっくり練習したい<br>マップ1から</button>
-        <button class="tutorial-choice" id="tutorialIntermediateBtn">それなりにできる<br>マップ5から</button>
-        <button class="tutorial-choice secondary" id="tutorialSkipBtn">あとで選ぶ<br>マップを見る</button>
-      </div>
-    </section>
-
-    <section id="preWorldAdviceScreen" class="screen panel tutorial-card">
-      <h2 id="preWorldAdviceTitle">ワールド開始前アドバイス</h2>
-      <p class="lead" id="preWorldAdviceLead">ニコリヒトとつるつる君の会話を読んでから、ワールドを開始します。</p>
-
-      <div class="speech-stage">
-        <div class="speech-row" id="preWorldSpeechRow">
-          <img id="preWorldSpeakerImage" src="./ニコリヒト.png" alt="ニコリヒト">
-          <div class="speech-bubble">
-            <span class="speech-name" id="preWorldSpeakerName">ニコリヒト</span>
-            <div class="speech-text" id="preWorldSpeechText">このワールドのアドバイスを確認しよう。</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="speech-progress" id="preWorldProgress">1 / 4</div>
-
-      <div class="tutorial-actions two">
-        <button class="tutorial-choice secondary" id="preWorldBackBtn">マップに戻る</button>
-        <button class="tutorial-choice" id="preWorldNextBtn">次へ</button>
-      </div>
-    </section>
-
-    <section id="mapScreen" class="screen panel">
-      <div class="map-wrap">
-        <div class="map-header">
-          <div>
-            <h2>レベルアップマップ</h2>
-            <p>マップを選び、各マップの10ワールドを順番にクリアしていきます。未解放マップは飛び級テストで解放できます。</p>
-            <div class="lesson-chip" id="selectedMapInfo">まずはマップを選んでください</div>
-          </div>
-          <button class="secondary" id="mapBackBtn">モード選択に戻る</button>
-        </div>
-
-        <div class="map-grid" id="mapGrid"></div>
-
-        <h3 id="worldTitle">ワールド選択</h3>
-        <div class="world-grid" id="worldGrid"></div>
       </div>
     </section>
 
     <section id="gameScreen" class="screen">
       <div class="game-layout">
-        <main class="panel game-main">
+        <div class="panel game-main">
           <div class="hud">
-            <div class="hud-card"><span>モード</span><strong id="hudMode">-</strong></div>
-            <div class="hud-card"><span>残り時間</span><strong id="hudTime">-</strong></div>
-            <div class="hud-card"><span>スコア</span><strong id="hudScore">0</strong></div>
-            <div class="hud-card"><span>正確率</span><strong id="hudAcc">100%</strong></div>
+            <div class="hud-card"><span>モード</span><strong id="modeLabel">-</strong></div>
+            <div class="hud-card"><span>残り時間</span><strong id="timeLabel">-</strong></div>
+            <div class="hud-card"><span>スコア</span><strong id="scoreLabel">0</strong></div>
+            <div class="hud-card"><span>正確率</span><strong id="accuracyLabel">100%</strong></div>
           </div>
 
-          <div id="stage" class="stage">
-            <div class="castle">🏯</div>
+          <div class="stage">
+            <div class="character-mark" aria-hidden="true"></div>
             <div class="word-box">
-              <div class="jp-word" id="jpWord">スペースで開始</div>
-              <div class="roma-word" id="romaWord"></div>
-              <div class="message" id="message">モードを選んだら、スペースキーで開始できます。</div>
+              <div class="jp-word" id="wordLabel">モードを選んでください</div>
+              <div class="kana" id="kanaLabel"></div>
+              <div class="roma-word" id="romaLabel"><span class="remaining">Space</span></div>
+              <div class="message" id="messageLabel">スペースキーまたは「スタート」で開始できます。</div>
             </div>
           </div>
 
           <div class="time-gauge-box">
             <div class="time-gauge-head">
-              <span id="timeGaugeTitle">残り時間ゲージ</span>
-              <span id="timeGaugeLabel">-</span>
+              <span id="gaugeText">残り時間ゲージ</span>
+              <span id="progressText">-</span>
             </div>
-            <div class="time-gauge" id="timeGauge"><div id="timeGaugeFill"></div></div>
+            <div class="time-gauge" id="timeGauge"><div id="timeGaugeBar"></div></div>
           </div>
 
-          <div class="keyboard-guide" id="keyboardGuide">
-            <div class="keyboard-guide-note" id="keyboardGuideNote">次に押すキーが光ります</div>
-
+          <div class="keyboard-guide" id="keyboardGuide" aria-label="キーボードガイド">
             <div class="keyboard-row">
-              <div class="key" data-key="1">1</div>
-              <div class="key" data-key="2">2</div>
-              <div class="key" data-key="3">3</div>
-              <div class="key" data-key="4">4</div>
-              <div class="key" data-key="5">5</div>
-              <div class="key" data-key="6">6</div>
-              <div class="key" data-key="7">7</div>
-              <div class="key" data-key="8">8</div>
-              <div class="key" data-key="9">9</div>
-              <div class="key" data-key="0">0</div>
-              <div class="key" data-key="-">-</div>
+              <div class="key" data-key="1">1</div><div class="key" data-key="2">2</div><div class="key" data-key="3">3</div><div class="key" data-key="4">4</div><div class="key" data-key="5">5</div><div class="key" data-key="6">6</div><div class="key" data-key="7">7</div><div class="key" data-key="8">8</div><div class="key" data-key="9">9</div><div class="key" data-key="0">0</div><div class="key" data-key="-">-</div>
             </div>
-
             <div class="keyboard-row">
-              <div class="key" data-key="q">Q</div>
-              <div class="key" data-key="w">W</div>
-              <div class="key" data-key="e">E</div>
-              <div class="key" data-key="r">R</div>
-              <div class="key" data-key="t">T</div>
-              <div class="key" data-key="y">Y</div>
-              <div class="key" data-key="u">U</div>
-              <div class="key" data-key="i">I</div>
-              <div class="key" data-key="o">O</div>
-              <div class="key" data-key="p">P</div>
+              <div class="key" data-key="q">Q</div><div class="key" data-key="w">W</div><div class="key" data-key="e">E</div><div class="key" data-key="r">R</div><div class="key" data-key="t">T</div><div class="key" data-key="y">Y</div><div class="key" data-key="u">U</div><div class="key" data-key="i">I</div><div class="key" data-key="o">O</div><div class="key" data-key="p">P</div>
             </div>
-
             <div class="keyboard-row">
-              <div class="key" data-key="a">A</div>
-              <div class="key" data-key="s">S</div>
-              <div class="key" data-key="d">D</div>
-              <div class="key" data-key="f">F</div>
-              <div class="key" data-key="g">G</div>
-              <div class="key" data-key="h">H</div>
-              <div class="key" data-key="j">J</div>
-              <div class="key" data-key="k">K</div>
-              <div class="key" data-key="l">L</div>
+              <div class="key" data-key="a">A</div><div class="key" data-key="s">S</div><div class="key" data-key="d">D</div><div class="key" data-key="f">F</div><div class="key" data-key="g">G</div><div class="key" data-key="h">H</div><div class="key" data-key="j">J</div><div class="key" data-key="k">K</div><div class="key" data-key="l">L</div>
             </div>
-
             <div class="keyboard-row">
-              <div class="key wide" data-key="shift">Shift</div>
-              <div class="key" data-key="z">Z</div>
-              <div class="key" data-key="x">X</div>
-              <div class="key" data-key="c">C</div>
-              <div class="key" data-key="v">V</div>
-              <div class="key" data-key="b">B</div>
-              <div class="key" data-key="n">N</div>
-              <div class="key" data-key="m">M</div>
-              <div class="key" data-key=",">,</div>
-              <div class="key" data-key=".">.</div>
-              <div class="key" data-key="/">/</div>
+              <div class="key wide" data-key="shift">Shift</div><div class="key" data-key="z">Z</div><div class="key" data-key="x">X</div><div class="key" data-key="c">C</div><div class="key" data-key="v">V</div><div class="key" data-key="b">B</div><div class="key" data-key="n">N</div><div class="key" data-key="m">M</div><div class="key" data-key=",">,</div><div class="key" data-key=".">.</div><div class="key" data-key="/">/</div>
             </div>
-
             <div class="keyboard-row">
               <div class="key space" data-key=" ">Space</div>
             </div>
           </div>
 
-          <div class="controls">
-            <button id="startBtn">スタート / 再開</button>
-            <button class="secondary" id="backBtn">戻る</button>
+          <div class="game-actions">
+            <button type="button" id="startButton">スタート / 再開</button>
+            <button type="button" class="secondary" id="pauseButton">一時停止</button>
+            <button type="button" class="secondary" id="backButton">モード選択に戻る</button>
           </div>
-        </main>
+        </div>
 
-        <aside class="panel side">
-          <h3>🌟 アカデミア情報</h3>
-          <div class="small-note">レベル <span id="sideLevel">1</span> / EXP <span id="sideExp">0</span></div>
-          <div class="bar"><div id="expBar"></div></div>
+        <aside class="side">
+          <div class="side-card">
+            <h3>ステータス</h3>
+            <p id="levelText">レベル 1 / EXP 0</p>
+            <p id="bestText">最高スコア 0</p>
+          </div>
 
-          <h3 style="margin-top:18px;">📜 クエスト</h3>
-          <div class="quest-list" id="questList"></div>
+          <div class="side-card">
+            <h3>入力ルール</h3>
+            <ul>
+              <li>日本語入力モードはOFFにします。</li>
+              <li>間違えたキーは入力されません。</li>
+              <li>日本語は表示されたローマ字を打ちます。</li>
+            </ul>
+          </div>
 
-          <h3>📘 入力ルール</h3>
-          <p class="small-note">
-            例：し は <b>shi</b> / <b>si</b> どちらもOK。<br>
-            ん は語中なら <b>n</b> / <b>nn</b> どちらもOK、語末なら <b>nn</b> のみOK。
-          </p>
+          <div class="side-card">
+            <h3>現在の設定</h3>
+            <p id="settingsSummary">日本語 / キーボードON</p>
+          </div>
         </aside>
       </div>
     </section>
+  </main>
 
-    <section id="resultScreen" class="screen panel result">
-      <h2 id="resultTitle">結果発表</h2>
-      <p id="resultMessage" class="small-note"></p>
-
-      <div class="result-grid">
-        <div class="hud-card"><span>スコア</span><strong id="resultScore">0</strong></div>
-        <div class="hud-card"><span>正確率</span><strong id="resultAcc">0%</strong></div>
-        <div class="hud-card"><span>打鍵数</span><strong id="resultTyped">0</strong></div>
-        <div class="hud-card"><span>最高コンボ</span><strong id="resultCombo">0</strong></div>
+  <div class="settings-backdrop" id="settingsBackdrop">
+    <section class="modal" aria-label="設定">
+      <div class="modal-head">
+        <h2>設定</h2>
+        <button type="button" class="secondary" id="settingsCloseButton">閉じる</button>
       </div>
 
-      <button id="retryBtn">もう一度挑戦</button>
-      <button class="secondary" id="menuBtn">戻る</button>
+      <div class="setting-group">
+        <label>タイピング方式</label>
+        <div class="segmented">
+          <button type="button" data-lang="ja" id="langJaButton">日本語</button>
+          <button type="button" data-lang="en" id="langEnButton">英語</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label>キーボードガイド</label>
+        <div class="segmented">
+          <button type="button" data-keyboard="on" id="keyboardOnButton">ON</button>
+          <button type="button" data-keyboard="off" id="keyboardOffButton">OFF</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label>読み仮名</label>
+        <div class="segmented">
+          <button type="button" data-kana="on" id="kanaOnButton">ON</button>
+          <button type="button" data-kana="off" id="kanaOffButton">OFF</button>
+        </div>
+      </div>
+
+      <div class="game-actions">
+        <button type="button" id="saveSettingsButton">設定を保存する</button>
+        <button type="button" class="danger" id="resetDataButton">記録をリセットする</button>
+      </div>
     </section>
   </div>
 
-  <script src="./typing_words.js"></script>
-  <script src="./romaji_rules.js"></script>
+  <div class="result-backdrop" id="resultBackdrop">
+    <section class="modal" aria-label="結果">
+      <div class="modal-head">
+        <h2>結果発表</h2>
+        <button type="button" class="secondary" id="resultCloseButton">閉じる</button>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-item"><span>スコア</span><strong id="resultScore">0</strong></div>
+        <div class="result-item"><span>正確率</span><strong id="resultAccuracy">0%</strong></div>
+        <div class="result-item"><span>打鍵数</span><strong id="resultTyped">0</strong></div>
+        <div class="result-item"><span>最高コンボ</span><strong id="resultCombo">0</strong></div>
+      </div>
+
+      <p class="lead" id="resultMessage">おつかれさまでした。</p>
+
+      <div class="game-actions">
+        <button type="button" id="retryButton">もう一度挑戦</button>
+        <button type="button" class="secondary" id="resultBackButton">モード選択に戻る</button>
+      </div>
+    </section>
+  </div>
 
   <script>
     "use strict";
 
     const ACCOUNT_KEY = "typingAcademiaAccount";
     const SESSION_KEY = "typingAcademiaLoggedIn";
+    const RECORD_KEY = "nikoriTypingRecord";
+    const SETTINGS_KEY = "nikoriTypingSettings";
 
-    function requireLogin() {
-      const loggedIn = localStorage.getItem(SESSION_KEY) === "1";
-      const accountRaw = localStorage.getItem(ACCOUNT_KEY);
-
-      if (!loggedIn || !accountRaw) {
-        window.location.href = "./login.html";
-        return false;
-      }
-
-      try {
-        const account = JSON.parse(accountRaw);
-
-        if (!account.id) {
-          window.location.href = "./login.html";
-          return false;
-        }
-      } catch {
-        window.location.href = "./login.html";
-        return false;
-      }
-
-      return true;
-    }
-
-    if (!requireLogin()) {
-      throw new Error("ログインが必要です。");
-    }
-
-    const typingData = window.TYPING_ACADEMIA_DATA;
-    const romajiRules = window.ROMAJI_RULES;
-
-    if (!typingData) throw new Error("typing_words.js が読み込まれていません。");
-    if (!romajiRules) throw new Error("romaji_rules.js が読み込まれていません。");
-
-    const wordBank = typingData.wordBank || [];
-    const levelMaps = typingData.levelMaps || [];
-
-    const modeConfig = {
-      level: { label: "育成", time: 75, mistakePenalty: 0, targetWords: 10 },
-      normal: { label: "普通", time: 60, mistakePenalty: 0, targetWords: Infinity },
-      endless: { label: "速さ", time: 10, mistakePenalty: 1.5, targetWords: Infinity }
+    const DATA = {
+      ja: [
+        { jp: "海", kana: "うみ", targets: ["umi"] },
+        { jp: "波", kana: "なみ", targets: ["nami"] },
+        { jp: "青空", kana: "あおぞら", targets: ["aozora"] },
+        { jp: "砂浜", kana: "すなはま", targets: ["sunahama"] },
+        { jp: "しぶき", kana: "しぶき", targets: ["shibuki", "sibuki"] },
+        { jp: "ヨット", kana: "よっと", targets: ["yotto"] },
+        { jp: "貝がら", kana: "かいがら", targets: ["kaigara"] },
+        { jp: "灯台", kana: "とうだい", targets: ["toudai", "todai"] },
+        { jp: "水平線", kana: "すいへいせん", targets: ["suiheisen"] },
+        { jp: "南風", kana: "みなみかぜ", targets: ["minamikaze"] },
+        { jp: "タイピング", kana: "たいぴんぐ", targets: ["taipingu"] },
+        { jp: "プログラミング", kana: "ぷろぐらみんぐ", targets: ["puroguramingu"] },
+        { jp: "キーボード", kana: "きーぼーど", targets: ["ki-bo-do"] },
+        { jp: "ホームポジション", kana: "ほーむぽじしょん", targets: ["ho-mupozishon", "ho-mupozisyon"] },
+        { jp: "ニコリヒト", kana: "にこりひと", targets: ["nikorihito"] },
+        { jp: "ことばを打つ", kana: "ことばをうつ", targets: ["kotobawoutsu"] },
+        { jp: "正しく入力", kana: "ただしくにゅうりょく", targets: ["tadashikunyuryoku", "tadasikunyuryoku"] },
+        { jp: "楽しく練習", kana: "たのしくれんしゅう", targets: ["tanoshikurenshuu", "tanosikurenshuu"] },
+        { jp: "毎日少しずつ", kana: "まいにちすこしずつ", targets: ["mainichisukoshizutsu", "mainitisukosizutu"] },
+        { jp: "リズムよく打とう", kana: "りずむよくうとう", targets: ["rizumuyokuutou"] }
+      ],
+      en: [
+        { jp: "ocean", kana: "海", targets: ["ocean"] },
+        { jp: "beach", kana: "砂浜", targets: ["beach"] },
+        { jp: "typing", kana: "タイピング", targets: ["typing"] },
+        { jp: "keyboard", kana: "キーボード", targets: ["keyboard"] },
+        { jp: "programming", kana: "プログラミング", targets: ["programming"] },
+        { jp: "practice", kana: "練習", targets: ["practice"] },
+        { jp: "challenge", kana: "挑戦", targets: ["challenge"] },
+        { jp: "correct", kana: "正しい", targets: ["correct"] },
+        { jp: "smooth rhythm", kana: "なめらかなリズム", targets: ["smooth rhythm"] },
+        { jp: "keep learning", kana: "学び続ける", targets: ["keep learning"] }
+      ],
+      level: [
+        { jp: "f j", kana: "ホームポジション", targets: ["fj"] },
+        { jp: "j f", kana: "ホームポジション", targets: ["jf"] },
+        { jp: "d k", kana: "となりのキー", targets: ["dk"] },
+        { jp: "s l", kana: "外側のキー", targets: ["sl"] },
+        { jp: "a ;", kana: "左端と右端", targets: ["a;"] },
+        { jp: "asdf", kana: "左手ホーム", targets: ["asdf"] },
+        { jp: "jkl;", kana: "右手ホーム", targets: ["jkl;"] },
+        { jp: "fjdk", kana: "交互入力", targets: ["fjdk"] },
+        { jp: "nikori", kana: "ニコリ", targets: ["nikori"] },
+        { jp: "typing", kana: "タイピング", targets: ["typing"] }
+      ]
     };
 
-    const screens = {
-      menu: document.getElementById("menuScreen"),
-      tutorial: document.getElementById("levelTutorialScreen"),
-      preWorldAdvice: document.getElementById("preWorldAdviceScreen"),
-      map: document.getElementById("mapScreen"),
-      game: document.getElementById("gameScreen"),
-      result: document.getElementById("resultScreen")
+    const state = {
+      account: loadAccount(),
+      settings: loadSettings(),
+      record: loadRecord(),
+      mode: "",
+      running: false,
+      paused: false,
+      words: [],
+      current: null,
+      targets: [],
+      typed: "",
+      timerId: null,
+      totalTime: 60,
+      timeLeft: 60,
+      score: 0,
+      typedCount: 0,
+      mistakes: 0,
+      correctWords: 0,
+      combo: 0,
+      bestCombo: 0,
+      levelGoal: 10
     };
 
     const el = {
-      titleName: document.getElementById("titleName"),
-      accountIconDisplay: document.getElementById("accountIconDisplay"),
-      accountNameDisplay: document.getElementById("accountNameDisplay"),
-      accountIdDisplay: document.getElementById("accountIdDisplay"),
-      settingsAccountIconDisplay: document.getElementById("settingsAccountIconDisplay"),
-      settingsAccountNameDisplay: document.getElementById("settingsAccountNameDisplay"),
-      settingsAccountIdDisplay: document.getElementById("settingsAccountIdDisplay"),
-
-      settingsBtn: document.getElementById("settingsBtn"),
-      settingsBackdrop: document.getElementById("settingsBackdrop"),
-      settingsPanel: document.getElementById("settingsPanel"),
-      settingsCloseBtn: document.getElementById("settingsCloseBtn"),
-      accountTabBtn: document.getElementById("accountTabBtn"),
-      typingTabBtn: document.getElementById("typingTabBtn"),
-      accountTabPanel: document.getElementById("accountTabPanel"),
-      typingTabPanel: document.getElementById("typingTabPanel"),
-      deleteAccountBtn: document.getElementById("deleteAccountBtn"),
-
-      genreDropdown: document.getElementById("genreDropdown"),
-      genreDropdownBtn: document.getElementById("genreDropdownBtn"),
-      genreMenu: document.getElementById("genreMenu"),
-      selectedGenreChips: document.getElementById("selectedGenreChips"),
-      jpModeBtn: document.getElementById("jpModeBtn"),
-      enModeBtn: document.getElementById("enModeBtn"),
-      keyboardGuideOnBtn: document.getElementById("keyboardGuideOnBtn"),
-      keyboardGuideOffBtn: document.getElementById("keyboardGuideOffBtn"),
-      furiganaOnBtn: document.getElementById("furiganaOnBtn"),
-      furiganaOffBtn: document.getElementById("furiganaOffBtn"),
-      settingsCancelBtn: document.getElementById("settingsCancelBtn"),
-      settingsSaveBtn: document.getElementById("settingsSaveBtn"),
-
-      resetAllBtn: document.getElementById("resetAllBtn"),
-
-      tutorialSpeechRow: document.getElementById("tutorialSpeechRow"),
-      tutorialSpeakerImage: document.getElementById("tutorialSpeakerImage"),
-      tutorialSpeakerName: document.getElementById("tutorialSpeakerName"),
-      tutorialSpeechText: document.getElementById("tutorialSpeechText"),
-      tutorialProgress: document.getElementById("tutorialProgress"),
-      tutorialNextBtn: document.getElementById("tutorialNextBtn"),
-      tutorialNextActions: document.getElementById("tutorialNextActions"),
-      tutorialChoiceActions: document.getElementById("tutorialChoiceActions"),
-      tutorialBeginnerBtn: document.getElementById("tutorialBeginnerBtn"),
-      tutorialIntermediateBtn: document.getElementById("tutorialIntermediateBtn"),
-      tutorialSkipBtn: document.getElementById("tutorialSkipBtn"),
-
-      preWorldAdviceTitle: document.getElementById("preWorldAdviceTitle"),
-      preWorldAdviceLead: document.getElementById("preWorldAdviceLead"),
-      preWorldSpeechRow: document.getElementById("preWorldSpeechRow"),
-      preWorldSpeakerImage: document.getElementById("preWorldSpeakerImage"),
-      preWorldSpeakerName: document.getElementById("preWorldSpeakerName"),
-      preWorldSpeechText: document.getElementById("preWorldSpeechText"),
-      preWorldProgress: document.getElementById("preWorldProgress"),
-      preWorldNextBtn: document.getElementById("preWorldNextBtn"),
-      preWorldBackBtn: document.getElementById("preWorldBackBtn"),
-
-      mapGrid: document.getElementById("mapGrid"),
-      worldGrid: document.getElementById("worldGrid"),
-      selectedMapInfo: document.getElementById("selectedMapInfo"),
-      worldTitle: document.getElementById("worldTitle"),
-      mapBackBtn: document.getElementById("mapBackBtn"),
-
-      hudMode: document.getElementById("hudMode"),
-      hudTime: document.getElementById("hudTime"),
-      hudScore: document.getElementById("hudScore"),
-      hudAcc: document.getElementById("hudAcc"),
-      jpWord: document.getElementById("jpWord"),
-      romaWord: document.getElementById("romaWord"),
-      message: document.getElementById("message"),
-      stage: document.getElementById("stage"),
-      startBtn: document.getElementById("startBtn"),
-      backBtn: document.getElementById("backBtn"),
+      accountPill: document.getElementById("accountPill"),
+      settingsButton: document.getElementById("settingsButton"),
+      logoutButton: document.getElementById("logoutButton"),
+      modeScreen: document.getElementById("modeScreen"),
+      gameScreen: document.getElementById("gameScreen"),
+      modeLabel: document.getElementById("modeLabel"),
+      timeLabel: document.getElementById("timeLabel"),
+      scoreLabel: document.getElementById("scoreLabel"),
+      accuracyLabel: document.getElementById("accuracyLabel"),
+      wordLabel: document.getElementById("wordLabel"),
+      kanaLabel: document.getElementById("kanaLabel"),
+      romaLabel: document.getElementById("romaLabel"),
+      messageLabel: document.getElementById("messageLabel"),
+      gaugeText: document.getElementById("gaugeText"),
+      progressText: document.getElementById("progressText"),
       timeGauge: document.getElementById("timeGauge"),
-      timeGaugeFill: document.getElementById("timeGaugeFill"),
-      timeGaugeLabel: document.getElementById("timeGaugeLabel"),
-      timeGaugeTitle: document.getElementById("timeGaugeTitle"),
+      timeGaugeBar: document.getElementById("timeGaugeBar"),
       keyboardGuide: document.getElementById("keyboardGuide"),
-      keyboardGuideNote: document.getElementById("keyboardGuideNote"),
-
-      sideLevel: document.getElementById("sideLevel"),
-      sideExp: document.getElementById("sideExp"),
-      expBar: document.getElementById("expBar"),
-      questList: document.getElementById("questList"),
-
-      resultTitle: document.getElementById("resultTitle"),
-      resultMessage: document.getElementById("resultMessage"),
+      startButton: document.getElementById("startButton"),
+      pauseButton: document.getElementById("pauseButton"),
+      backButton: document.getElementById("backButton"),
+      levelText: document.getElementById("levelText"),
+      bestText: document.getElementById("bestText"),
+      settingsSummary: document.getElementById("settingsSummary"),
+      settingsBackdrop: document.getElementById("settingsBackdrop"),
+      settingsCloseButton: document.getElementById("settingsCloseButton"),
+      langJaButton: document.getElementById("langJaButton"),
+      langEnButton: document.getElementById("langEnButton"),
+      keyboardOnButton: document.getElementById("keyboardOnButton"),
+      keyboardOffButton: document.getElementById("keyboardOffButton"),
+      kanaOnButton: document.getElementById("kanaOnButton"),
+      kanaOffButton: document.getElementById("kanaOffButton"),
+      saveSettingsButton: document.getElementById("saveSettingsButton"),
+      resetDataButton: document.getElementById("resetDataButton"),
+      resultBackdrop: document.getElementById("resultBackdrop"),
+      resultCloseButton: document.getElementById("resultCloseButton"),
       resultScore: document.getElementById("resultScore"),
-      resultAcc: document.getElementById("resultAcc"),
+      resultAccuracy: document.getElementById("resultAccuracy"),
       resultTyped: document.getElementById("resultTyped"),
       resultCombo: document.getElementById("resultCombo"),
-      retryBtn: document.getElementById("retryBtn"),
-      menuBtn: document.getElementById("menuBtn")
+      resultMessage: document.getElementById("resultMessage"),
+      retryButton: document.getElementById("retryButton"),
+      resultBackButton: document.getElementById("resultBackButton")
     };
-
-    const globalFuriganaDictionary = [
-      ["星降る", "ほしふる"], ["星", "ほし"], ["幻想", "げんそう"], ["教育", "きょういく"], ["使える", "つかえる"],
-      ["練習", "れんしゅう"], ["対応", "たいおう"], ["現在", "げんざい"], ["称号", "しょうごう"], ["見習い", "みならい"],
-      ["魔法", "まほう"], ["司書", "ししょ"], ["天空", "てんくう"], ["設定", "せってい"], ["保存", "ほぞん"],
-      ["終了", "しゅうりょう"], ["開始", "かいし"], ["戻る", "もどる"], ["進む", "すすむ"], ["開く", "ひらく"],
-      ["消す", "けす"], ["削除", "さくじょ"], ["入力", "にゅうりょく"], ["表示", "ひょうじ"], ["非表示", "ひひょうじ"],
-      ["編集", "へんしゅう"], ["名前", "なまえ"], ["絵文字", "えもじ"], ["作成", "さくせい"], ["方式", "ほうしき"],
-      ["日本語", "にほんご"], ["英語", "えいご"], ["漢字", "かんじ"], ["読み仮名", "よみがな"], ["仮名", "かな"],
-      ["単語", "たんご"], ["文章", "ぶんしょう"], ["短文", "たんぶん"], ["長文", "ちょうぶん"], ["記号", "きごう"],
-      ["大文字", "おおもじ"], ["小文字", "こもじ"], ["候補", "こうほ"], ["絞り込み", "しぼりこみ"], ["選択", "せんたく"],
-      ["全て", "すべて"], ["全体", "ぜんたい"], ["育成", "いくせい"], ["授業", "じゅぎょう"], ["普通", "ふつう"],
-      ["速さ", "はやさ"], ["重視", "じゅうし"], ["解放", "かいほう"], ["未解放", "みかいほう"], ["挑戦", "ちょうせん"],
-      ["飛び級", "とびきゅう"], ["合格", "ごうかく"], ["不合格", "ふごうかく"], ["条件", "じょうけん"], ["正解", "せいかい"],
-      ["正確率", "せいかくりつ"], ["打鍵数", "だけんすう"], ["最高", "さいこう"], ["結果", "けっか"], ["発表", "はっぴょう"],
-      ["時間", "じかん"], ["残り時間", "のこりじかん"], ["制限時間", "せいげんじかん"], ["基礎", "きそ"], ["上段", "じょうだん"],
-      ["下段", "げだん"], ["速度", "そくど"], ["正確性", "せいかくせい"], ["総仕上げ", "そうしあげ"], ["実用力", "じつようりょく"],
-      ["集中", "しゅうちゅう"], ["問題", "もんだい"], ["次", "つぎ"], ["押す", "おす"], ["光る", "ひかる"],
-      ["薄く", "うすく"], ["黄緑", "きみどり"], ["月", "つき"], ["夜空", "よぞら"], ["流れ星", "ながれぼし"],
-      ["星明かり", "ほしあかり"], ["妖精", "ようせい"], ["水晶", "すいしょう"], ["古城", "こじょう"], ["冒険", "ぼうけん"],
-      ["森", "もり"], ["湖", "みずうみ"], ["川", "かわ"], ["海", "うみ"], ["山", "やま"], ["空", "そら"],
-      ["本", "ほん"], ["手紙", "てがみ"], ["時計", "とけい"], ["地図", "ちず"], ["歩く", "あるく"],
-      ["走る", "はしる"], ["跳ぶ", "とぶ"], ["閉じる", "とじる"], ["確認", "かくにん"], ["説明", "せつめい"],
-      ["情報", "じょうほう"], ["見出し", "みだし"], ["画面", "がめん"], ["項目", "こうもく"], ["完了", "かんりょう"],
-      ["保存済み", "ほぞんずみ"], ["専用", "せんよう"], ["学習", "がくしゅう"], ["向け", "むけ"], ["高スコア", "こうすこあ"]
-    ];
-
-    const quests = [
-      { id: "q1", text: "5問正解する", check: s => s.correctWords >= 5 },
-      { id: "q2", text: "10コンボを達成する", check: s => s.maxCombo >= 10 },
-      { id: "q3", text: "正確率90%以上を保つ", check: s => accuracy(s) >= 90 && s.totalTyped >= 20 },
-      { id: "q4", text: "ワールドをクリアする", check: s => s.mode === "level" && !s.isSkipTest && s.correctWords >= modeConfig.level.targetWords }
-    ];
-
-    const tutorialLines = [
-      { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: "ここでは、FとJのホームポジションから少しずつ練習していくよ。" },
-      { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "タイピングって、最初はキーの場所を覚えるのが大事なんだね。" },
-      { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: "そうそう。だけど、もうある程度できる人は、途中のマップから始めても大丈夫。" },
-      { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "君はタイピング、どれくらいできる？それなりにできるなら、マップ5「言葉の図書館」から始められるよ。" }
-    ];
-
-    const mapAdviceMessages = [
-      "まずはFとJを見つけるところから。人差し指をホームポジションに置いて、焦らず正確に打とう。",
-      "上段キーは指が伸びやすい場所だよ。手全体を動かさず、指先だけで軽く届かせるのがコツ。",
-      "下段キーは打ち間違いが増えやすいよ。急がず、どの指で押すかを意識しよう。",
-      "大文字はShiftキーとの連携が大事。片手でShift、もう片方で文字を押す練習をしよう。",
-      "ここからは言葉の入力に入るよ。キーの場所を思い出しながら、リズムよく打ってみよう。",
-      "記号はタイピングの実用力に直結するよ。ピリオドやカンマも、文字と同じように慣れていこう。",
-      "速さを上げるマップだよ。ただし、ミスが増えすぎたら一度ゆっくりに戻すのが上達の近道。",
-      "長文は空白や句点まで含めて流れで打つ練習。目だけ先に進めすぎず、一文ずつ落ち着いて。",
-      "正確性を高めるマップだよ。速く打つより、ミスなく最後まで打ち切ることを優先しよう。",
-      "総仕上げだよ。これまでの練習を思い出して、正確さ・速さ・リズムを全部使ってみよう。"
-    ];
-
-    const englishFallback = {
-      "星": "star", "月": "moon", "夜空": "night sky", "流れ星": "shooting star", "星明かり": "starlight",
-      "魔法": "magic", "妖精": "fairy", "水晶": "crystal", "古城": "old castle", "冒険": "adventure",
-      "森": "forest", "湖": "lake", "川": "river", "海": "sea", "山": "mountain", "空": "sky",
-      "本": "book", "手紙": "letter", "時計": "clock", "地図": "map",
-      "歩く": "walk", "走る": "run", "跳ぶ": "jump", "開ける": "open", "閉じる": "close",
-      "集中": "focus", "リズム": "rhythm", "スピード": "speed", "正確さ": "accuracy",
-      "星が光る": "the star shines", "森を歩く": "walk through the forest", "本を読む": "read a book",
-      "正確に打つ": "type accurately", "リズムよく打つ": "type with rhythm"
-    };
-
-    let state = createInitialState("normal");
-    let timerId = null;
-    let lastWordIndex = -1;
-    let tutorialLineIndex = 0;
-
-    const account = loadAccount();
-
-    const gameSettings = {
-      genres: loadSelectedGenres(),
-      typingMode: localStorage.getItem("typingAcademiaTypingMode") || "jp",
-      keyboardGuide: localStorage.getItem("typingAcademiaKeyboardGuide") !== "off",
-      furigana: localStorage.getItem("typingAcademiaFurigana") !== "off"
-    };
-
-    const draftSettings = {
-      genres: [...gameSettings.genres],
-      typingMode: gameSettings.typingMode,
-      keyboardGuide: gameSettings.keyboardGuide,
-      furigana: gameSettings.furigana
-    };
-
-    function createInitialState(mode) {
-      return {
-        mode,
-        running: false,
-        remaining: modeConfig[mode].time,
-        score: 0,
-        exp: Number(localStorage.getItem("typingAcademiaExp") || 0),
-        level: Number(localStorage.getItem("typingAcademiaLevel") || 1),
-        currentWord: null,
-        typedInput: "",
-        candidates: [],
-        totalTyped: 0,
-        missTyped: 0,
-        correctWords: 0,
-        combo: 0,
-        maxCombo: 0,
-        selectedMap: 0,
-        selectedWorld: 0,
-        lessonWords: null,
-        isSkipTest: false,
-        skipTargetMap: null,
-        skipPassWords: 8,
-        skipMaxMiss: 2,
-        skipMinAccuracy: 92,
-        completedQuests: new Set(),
-        adviceIndex: 0,
-        adviceLines: [],
-        pendingStart: null
-      };
-    }
-
-    function showScreen(name) {
-      removeGlobalFurigana();
-
-      Object.values(screens).forEach(screen => screen.classList.remove("active"));
-      screens[name].classList.add("active");
-
-      refreshGlobalFurigana();
-    }
 
     function loadAccount() {
       try {
-        const saved = JSON.parse(localStorage.getItem(ACCOUNT_KEY) || "{}");
-
+        const raw = localStorage.getItem(ACCOUNT_KEY);
+        if (!raw) return { id: "guest", name: "ゲスト", emoji: "⌨️" };
+        const saved = JSON.parse(raw);
         return {
-          id: sanitizeAccountId(saved.id || ""),
-          name: String(saved.name || "ゲスト").slice(0, 20),
-          emoji: normalizeEmoji(saved.emoji || "🌟")
+          id: saved.id || "guest",
+          name: saved.name || "ゲスト",
+          emoji: saved.emoji || "⌨️"
         };
       } catch {
-        return { id: "guest", name: "ゲスト", emoji: "🌟" };
+        return { id: "guest", name: "ゲスト", emoji: "⌨️" };
       }
     }
 
-    function sanitizeAccountId(value) {
-      return String(value || "").toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 24) || "guest";
-    }
-
-    function normalizeEmoji(value) {
-      const text = String(value || "").trim();
-      return [...text][0] || "🌟";
-    }
-
-    function loadSelectedGenres() {
+    function loadSettings() {
       try {
-        const parsed = JSON.parse(localStorage.getItem("typingAcademiaGenres") || '["all"]');
-        return Array.isArray(parsed) && parsed.length > 0 ? parsed : ["all"];
+        return {
+          lang: "ja",
+          keyboard: true,
+          kana: true,
+          ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")
+        };
       } catch {
-        return ["all"];
+        return { lang: "ja", keyboard: true, kana: true };
       }
     }
 
-    function selectMode(mode) {
-      stopTimer();
-      state = createInitialState(mode);
-
-      if (mode === "level") {
-        if (!localStorage.getItem("typingAcademiaTutorialDone")) {
-          tutorialLineIndex = 0;
-          showScreen("tutorial");
-          renderTutorialLine();
-        } else {
-          showScreen("map");
-          renderMapSelect();
-        }
-        return;
+    function loadRecord() {
+      try {
+        return {
+          bestScore: 0,
+          exp: 0,
+          level: 1,
+          ...JSON.parse(localStorage.getItem(RECORD_KEY) || "{}")
+        };
+      } catch {
+        return { bestScore: 0, exp: 0, level: 1 };
       }
-
-      startSelectedMode(mode);
     }
 
-    function startSelectedMode(mode, mapIndex = 0, worldIndex = 0) {
-      stopTimer();
+    function saveRecord() {
+      localStorage.setItem(RECORD_KEY, JSON.stringify(state.record));
+    }
 
-      state = createInitialState(mode);
-      state.selectedMap = mapIndex;
-      state.selectedWorld = worldIndex;
+    function saveSettings() {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+    }
 
-      if (mode === "level") {
-        state.lessonWords = getLesson(mapIndex, worldIndex).words;
-        state.remaining = modeConfig.level.time;
+    function showScreen(name) {
+      el.modeScreen.classList.toggle("active", name === "mode");
+      el.gameScreen.classList.toggle("active", name === "game");
+    }
+
+    function shuffle(list) {
+      return [...list].sort(() => Math.random() - 0.5);
+    }
+
+    function pickWord() {
+      if (!state.words.length) {
+        state.words = getWordPool();
       }
+      const index = Math.floor(Math.random() * state.words.length);
+      return state.words.splice(index, 1)[0];
+    }
 
-      if (mode === "endless") {
-        state.remaining = modeConfig.endless.time;
-      }
+    function getWordPool() {
+      if (state.mode === "level") return shuffle(DATA.level);
+      return shuffle(DATA[state.settings.lang]);
+    }
+
+    function modeName(mode) {
+      return {
+        level: "レベル",
+        normal: "ノーマル",
+        endless: "エンドレス"
+      }[mode] || "-";
+    }
+
+    function startMode(mode) {
+      state.mode = mode;
+      state.running = false;
+      state.paused = false;
+      resetStats();
+      state.totalTime = mode === "normal" ? 60 : mode === "endless" ? 10 : 0;
+      state.timeLeft = state.totalTime;
+      state.words = getWordPool();
 
       showScreen("game");
-      el.jpWord.textContent = "準備OK";
-      el.romaWord.innerHTML = "";
-      el.message.textContent = makeStartMessage(mode, mapIndex, worldIndex);
-      renderAll();
+      el.modeLabel.textContent = modeName(mode);
+      el.messageLabel.textContent = "スペースキーまたは「スタート」で開始できます。";
+      el.wordLabel.textContent = mode === "level" ? "レベルアップ練習" : "準備完了";
+      el.kanaLabel.textContent = mode === "level" ? "10問正解でクリア" : "";
+      renderTarget("space");
+      updateHud();
+      updateMeta();
+      updateKeyboardGuide();
     }
 
-    function makeStartMessage(mode, mapIndex, worldIndex) {
-      if (mode === "normal") return "60秒で高スコアを目指そう。スペースキーで開始。";
-      if (mode === "endless") return "1問ごとに10秒。スペースキーで開始。";
-
-      const map = levelMaps[mapIndex];
-      const lesson = getLesson(mapIndex, worldIndex);
-      return `${map.icon} ${map.name} / World ${worldIndex + 1}「${lesson.title}」 スペースキーで開始。`;
+    function resetStats() {
+      clearTimer();
+      state.score = 0;
+      state.typedCount = 0;
+      state.mistakes = 0;
+      state.correctWords = 0;
+      state.combo = 0;
+      state.bestCombo = 0;
+      state.typed = "";
+      state.current = null;
+      state.targets = [];
     }
 
     function startGame() {
+      if (!state.mode) startMode("normal");
+      if (state.running && state.paused) {
+        state.paused = false;
+        el.messageLabel.textContent = "再開しました。";
+        startTimer();
+        return;
+      }
       if (state.running) return;
 
       state.running = true;
-
-      if (!state.currentWord) {
-        setNextWord();
-      }
-
-      stopTimer();
-      timerId = setInterval(tick, 1000);
-      el.message.textContent = "入力してください。Enterは不要です。";
-      renderAll();
+      state.paused = false;
+      state.timeLeft = state.mode === "normal" ? 60 : state.mode === "endless" ? 10 : 0;
+      nextWord();
+      startTimer();
     }
 
-    function tick() {
+    function pauseGame() {
       if (!state.running) return;
-
-      state.remaining -= 1;
-
-      if (state.remaining <= 0) {
-        state.remaining = 0;
-        finishGame(state.isSkipTest ? "マップ飛び級テスト不合格" : "時間切れ！");
-      }
-
-      renderHud();
-      renderKeyboardGuide();
-    }
-
-    function stopTimer() {
-      if (timerId) clearInterval(timerId);
-      timerId = null;
-    }
-
-    function getLesson(mapIndex, worldIndex) {
-      const map = levelMaps[mapIndex];
-      if (!map || !map.worlds || !map.worlds[worldIndex]) {
-        return { title: "練習", words: wordBank };
-      }
-
-      const raw = map.worlds[worldIndex];
-      return { title: raw[0], words: raw[1] };
-    }
-
-    function buildSkipTestWords(mapIndex) {
-      const map = levelMaps[mapIndex];
-      if (!map) return wordBank;
-
-      const targetWords = map.worlds.slice(0, 5).flatMap(world => world[1].slice(0, 3));
-      const reviewWords = mapIndex > 0 && levelMaps[mapIndex - 1]
-        ? levelMaps[mapIndex - 1].worlds.slice(-3).flatMap(world => world[1].slice(0, 2))
-        : [];
-
-      return [...new Set([...targetWords, ...reviewWords])];
-    }
-
-    function startSkipTest(mapIndex) {
-      stopTimer();
-
-      state = createInitialState("level");
-      state.selectedMap = mapIndex;
-      state.selectedWorld = 0;
-      state.skipTargetMap = mapIndex;
-      state.isSkipTest = true;
-      state.remaining = 60;
-      state.lessonWords = buildSkipTestWords(mapIndex);
-
-      showScreen("game");
-      el.jpWord.textContent = "マップ飛び級テスト";
-      el.romaWord.innerHTML = "";
-      el.message.textContent = `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} に飛び級挑戦。`;
-      renderAll();
-    }
-
-    function openPreWorldAdvice(mapIndex, worldIndex, type = "world") {
-      stopTimer();
-
-      state = createInitialState("level");
-      state.selectedMap = mapIndex;
-      state.selectedWorld = worldIndex;
-      state.pendingStart = { type, mapIndex, worldIndex };
-      state.adviceIndex = 0;
-      state.adviceLines = type === "skip"
-        ? buildSkipDialogue(mapIndex)
-        : buildWorldDialogue(mapIndex, worldIndex);
-
-      const map = levelMaps[mapIndex];
-
-      el.preWorldAdviceTitle.textContent = type === "skip"
-        ? "マップ飛び級テストの前に"
-        : `${map.icon} ${map.name} の前に`;
-
-      el.preWorldAdviceLead.textContent = type === "skip"
-        ? "飛び級テストの説明を読んでから、テストを開始します。"
-        : "ニコリヒトとつるつる君のアドバイスを読んでから、ワールドを開始します。";
-
-      showScreen("preWorldAdvice");
-      renderPreWorldAdviceLine();
-    }
-
-    function buildWorldDialogue(mapIndex, worldIndex) {
-      const map = levelMaps[mapIndex];
-      const lesson = getLesson(mapIndex, worldIndex);
-      const advice = mapAdviceMessages[mapIndex] || "落ち着いて正確に打とう。";
-
-      return [
-        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: `${map.icon} ${map.name}、World ${worldIndex + 1}「${lesson.title}」に入るよ。` },
-        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "このマップでは、どんなことを意識すればいい？" },
-        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: advice },
-        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "よし、アドバイスを読んだらスタートだね！" }
-      ];
-    }
-
-    function buildSkipDialogue(mapIndex) {
-      return [
-        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: `${levelMaps[mapIndex].icon} ${levelMaps[mapIndex].name} の飛び級テストだよ。` },
-        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "飛び級ってことは、ちょっとむずかしいのかな？" },
-        { speaker: "ニコリヒト", image: "./ニコリヒト.png", side: "left", text: "8問正解・正確率92%以上・ミス2回以内で合格。速さより正確さを優先しよう。" },
-        { speaker: "つるつる君", image: "./つるつる君.png", side: "right", text: "落ち着いて打てばいけそう！説明を読んだらスタートだね。" }
-      ];
-    }
-
-    function renderPreWorldAdviceLine() {
-      const line = state.adviceLines[state.adviceIndex];
-      if (!line) return;
-
-      el.preWorldSpeechRow.classList.toggle("reverse", line.side === "right");
-      el.preWorldSpeakerImage.src = line.image;
-      el.preWorldSpeakerImage.alt = line.speaker;
-      el.preWorldSpeakerName.textContent = line.speaker;
-      el.preWorldSpeechText.textContent = line.text;
-      el.preWorldProgress.textContent = `${state.adviceIndex + 1} / ${state.adviceLines.length}`;
-      el.preWorldNextBtn.textContent = state.adviceIndex >= state.adviceLines.length - 1 ? "はじめる" : "次へ";
-      refreshGlobalFurigana();
-    }
-
-    function advancePreWorldAdvice() {
-      if (state.adviceIndex < state.adviceLines.length - 1) {
-        state.adviceIndex += 1;
-        renderPreWorldAdviceLine();
-        return;
-      }
-
-      const pending = state.pendingStart;
-
-      if (!pending) {
-        showScreen("map");
-        renderMapSelect(state.selectedMap || 0);
-        return;
-      }
-
-      if (pending.type === "skip") {
-        startSkipTest(pending.mapIndex);
+      state.paused = !state.paused;
+      if (state.paused) {
+        clearTimer();
+        el.messageLabel.textContent = "一時停止中です。";
       } else {
-        startSelectedMode("level", pending.mapIndex, pending.worldIndex);
+        el.messageLabel.textContent = "再開しました。";
+        startTimer();
       }
     }
 
-    function renderTutorialLine() {
-      const line = tutorialLines[tutorialLineIndex];
-      if (!line) return;
+    function startTimer() {
+      clearTimer();
+      if (state.mode === "level") return;
 
-      el.tutorialSpeechRow.classList.toggle("reverse", line.side === "right");
-      el.tutorialSpeakerImage.src = line.image;
-      el.tutorialSpeakerImage.alt = line.speaker;
-      el.tutorialSpeakerName.textContent = line.speaker;
-      el.tutorialSpeechText.textContent = line.text;
-      el.tutorialProgress.textContent = `${tutorialLineIndex + 1} / ${tutorialLines.length}`;
-
-      const isLast = tutorialLineIndex >= tutorialLines.length - 1;
-      el.tutorialNextActions.classList.toggle("hidden", isLast);
-      el.tutorialChoiceActions.classList.toggle("hidden", !isLast);
-      refreshGlobalFurigana();
-    }
-
-    function setNextWord() {
-      const bank = getActiveWordBank();
-      if (!bank.length) return;
-
-      let idx = Math.floor(Math.random() * bank.length);
-
-      if (bank.length > 1) {
-        while (idx === lastWordIndex) {
-          idx = Math.floor(Math.random() * bank.length);
+      state.timerId = setInterval(() => {
+        if (!state.running || state.paused) return;
+        state.timeLeft -= 0.1;
+        if (state.timeLeft <= 0) {
+          state.timeLeft = 0;
+          updateHud();
+          finishGame();
+          return;
         }
+        updateHud();
+      }, 100);
+    }
+
+    function clearTimer() {
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
       }
+    }
 
-      lastWordIndex = idx;
-
-      const item = bank[idx];
-      state.currentWord = normalizeWordItem(item);
-      state.typedInput = "";
-      state.candidates = buildCandidatesForWord(state.currentWord);
-
+    function nextWord() {
+      state.current = pickWord();
+      state.targets = state.current.targets.map(t => t.toLowerCase());
+      state.typed = "";
+      if (state.mode === "endless") {
+        state.totalTime = 10;
+        state.timeLeft = 10;
+        startTimer();
+      }
       renderWord();
-      renderKeyboardGuide();
-    }
-
-    function getActiveWordBank() {
-      if (state.mode === "level" && state.lessonWords) return state.lessonWords;
-
-      const selectedGenres = gameSettings.genres.includes("all") ? ["all"] : gameSettings.genres;
-
-      const filtered = selectedGenres.includes("all")
-        ? wordBank
-        : wordBank.filter(word => selectedGenres.includes(word.subject));
-
-      return filtered.length > 0 ? filtered : wordBank;
-    }
-
-    function normalizeWordItem(item) {
-      if (typeof item === "string") {
-        return { jp: item, kana: null, roma: item, en: item, subject: getLessonSubject() };
-      }
-
-      const englishText = item.en || englishFallback[item.jp] || item.english || "";
-
-      if (state.mode !== "level" && gameSettings.typingMode === "en") {
-        const en = englishText || item.roma || item.kana || item.jp;
-
-        return {
-          jp: en,
-          kana: null,
-          roma: en.toLowerCase(),
-          en,
-          subject: item.subject || "練習"
-        };
-      }
-
-      return {
-        jp: item.jp,
-        kana: item.kana || item.jp,
-        roma: item.roma || "",
-        en: englishText,
-        subject: item.subject || "練習"
-      };
-    }
-
-    function getLessonSubject() {
-      if (state.mode !== "level") return "練習";
-      return levelMaps[state.selectedMap]?.category || "練習";
-    }
-
-    function buildCandidatesForWord(word) {
-      const candidates = new Set();
-
-      if (word.kana && canBuildFromKana(word.kana)) {
-        for (const candidate of buildCandidatesFromKana(word.kana)) {
-          candidates.add(candidate);
-        }
-      }
-
-      if (word.roma) {
-        candidates.add(word.roma);
-
-        for (const candidate of expandRomaSubstitutions(word.roma)) {
-          candidates.add(candidate);
-        }
-      }
-
-      return [...candidates].filter(Boolean).sort((a, b) => a.length - b.length || a.localeCompare(b));
-    }
-
-    function canBuildFromKana(text) {
-      return [...String(text)].some(char => /[ぁ-んー]/.test(char));
-    }
-
-    function buildCandidatesFromKana(text) {
-      const tokens = tokenizeKana(text);
-      let results = [""];
-
-      for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i];
-        let options;
-
-        if (token === "ん" && romajiRules.specialRules?.finalN?.enabled) {
-          const isFinalN = i === tokens.length - 1;
-          options = isFinalN
-            ? romajiRules.specialRules.finalN.finalOptions
-            : romajiRules.specialRules.finalN.middleOptions;
-        } else {
-          options = romajiRules.kanaRules[token] || [token];
-        }
-
-        const next = [];
-
-        for (const prefix of results) {
-          for (const option of options) {
-            next.push(prefix + option);
-          }
-        }
-
-        results = next.slice(0, 512);
-      }
-
-      return results;
-    }
-
-    function tokenizeKana(text) {
-      const chars = [...String(text)];
-      const tokens = [];
-
-      for (let i = 0; i < chars.length; i++) {
-        const pair = chars[i] + (chars[i + 1] || "");
-
-        if (romajiRules.kanaRules[pair]) {
-          tokens.push(pair);
-          i += 1;
-          continue;
-        }
-
-        if (chars[i] === "っ" && chars[i + 1]) {
-          const nextPair = chars[i + 1] + (chars[i + 2] || "");
-          const nextToken = romajiRules.kanaRules[nextPair] ? nextPair : chars[i + 1];
-          const nextOptions = romajiRules.kanaRules[nextToken] || [""];
-          const firstConsonant = getFirstConsonant(nextOptions[0]);
-          tokens.push(firstConsonant || "xtu");
-          continue;
-        }
-
-        tokens.push(chars[i]);
-      }
-
-      return tokens;
-    }
-
-    function getFirstConsonant(roma) {
-      if (!roma) return "";
-      if ("aiueon".includes(roma[0])) return "";
-      return roma[0];
-    }
-
-    function expandRomaSubstitutions(baseRoma) {
-      const substitutions = romajiRules.romaSubstitutions || [];
-      const results = new Set([String(baseRoma || "")]);
-      let changed = true;
-
-      while (changed && results.size < 512) {
-        changed = false;
-
-        for (const current of [...results]) {
-          for (const [from, to] of substitutions) {
-            let index = current.indexOf(from);
-
-            while (index !== -1) {
-              const next = current.slice(0, index) + to + current.slice(index + from.length);
-
-              if (!results.has(next)) {
-                results.add(next);
-                changed = true;
-
-                if (results.size >= 512) break;
-              }
-
-              index = current.indexOf(from, index + 1);
-            }
-
-            if (results.size >= 512) break;
-          }
-
-          if (results.size >= 512) break;
-        }
-      }
-
-      return [...results];
+      updateHud();
+      updateKeyboardGuide();
     }
 
     function renderWord() {
-      if (!state.currentWord) return;
+      el.wordLabel.textContent = state.current.jp;
+      el.kanaLabel.textContent = state.settings.kana ? state.current.kana : "";
+      renderTarget(bestDisplayTarget());
+    }
 
-      removeGlobalFurigana();
+    function bestDisplayTarget() {
+      const match = state.targets.find(target => target.startsWith(state.typed));
+      return match || state.targets[0] || "";
+    }
 
-      el.jpWord.innerHTML = buildWordHtml(state.currentWord);
-
-      const display = getDisplayCandidate();
-
-      el.romaWord.innerHTML = display.split("").map((ch, i) => {
-        const cls = i < state.typedInput.length
-          ? "typed"
-          : i === state.typedInput.length
-            ? "current"
-            : "remaining";
-
-        return `<span class="${cls}">${escapeHtml(ch)}</span>`;
+    function renderTarget(target) {
+      const chars = [...String(target)];
+      el.romaLabel.innerHTML = chars.map((char, index) => {
+        const safe = char === " " ? "&nbsp;" : escapeHtml(char);
+        if (index < state.typed.length) return `<span class="typed">${safe}</span>`;
+        if (index === state.typed.length) return `<span class="current">${safe}</span>`;
+        return `<span class="remaining">${safe}</span>`;
       }).join("");
-
-      applyGlobalFurigana();
+      highlightNextKey(target[state.typed.length] || "");
     }
 
-    function buildWordHtml(word) {
-      const badge = subjectBadge(word.subject);
-      const jp = String(word.jp || "");
-      const kana = String(word.kana || "");
-
-      if (
-        gameSettings.furigana &&
-        gameSettings.typingMode !== "en" &&
-        kana &&
-        kana !== jp &&
-        hasKanji(jp)
-      ) {
-        return `<ruby data-no-global-furigana="1">${escapeHtml(jp)}<rt>${escapeHtml(kana)}</rt></ruby>　${escapeHtml(badge)}`;
-      }
-
-      return `${escapeHtml(jp)}　${escapeHtml(badge)}`;
-    }
-
-    function hasKanji(text) {
-      return /[一-龯々〆ヵヶ]/.test(String(text || ""));
-    }
-
-    function subjectBadge(subject) {
-      const map = {
-        "幻想": "✨",
-        "自然": "🌿",
-        "日常": "📦",
-        "動作": "🏃",
-        "練習": "⌨️",
-        "短文": "📝",
-        "長文": "📜",
-        "基礎": "⌨️",
-        "上段": "🌙",
-        "下段": "💎",
-        "大文字": "☀️",
-        "短語": "📖",
-        "記号": "🎵",
-        "速度": "🌠",
-        "正確性": "🪽",
-        "総仕上げ": "👑"
-      };
-
-      return `${map[subject] || "✨"}${subject}`;
-    }
-
-    function getDisplayCandidate() {
-      return state.candidates.find(candidate => candidate.startsWith(state.typedInput)) || state.candidates[0] || "";
-    }
-
-    function handleKey(e) {
-      if (
-        screens.menu.classList.contains("active") ||
-        screens.map.classList.contains("active") ||
-        screens.tutorial.classList.contains("active") ||
-        screens.preWorldAdvice.classList.contains("active") ||
-        screens.result.classList.contains("active") ||
-        el.settingsPanel.classList.contains("open")
-      ) return;
-
-      if (e.key === " ") {
-        e.preventDefault();
-
-        if (!state.running) startGame();
-        else handleTypedKey(" ");
-
-        return;
-      }
-
-      if (!state.running || !state.currentWord || e.key.length !== 1) return;
-
-      handleTypedKey(e.key);
-    }
-
-    function handleTypedKey(rawKey) {
-      const key = normalizeTypedKey(rawKey);
-      const nextInput = state.typedInput + key;
-      const ok = state.candidates.some(candidate => candidate.startsWith(nextInput));
-
-      state.totalTyped += 1;
-
-      if (ok) {
-        state.typedInput = nextInput;
-        state.score += 10 + Math.min(state.combo, 20);
-        state.combo += 1;
-        state.maxCombo = Math.max(state.maxCombo, state.combo);
-
-        if (state.candidates.includes(state.typedInput)) {
-          completeWord();
-        } else {
-          renderWord();
-        }
-      } else {
-        state.missTyped += 1;
-        state.combo = 0;
-        state.score = Math.max(0, state.score - 5);
-
-        if (modeConfig[state.mode].mistakePenalty) {
-          state.remaining = Math.max(0, state.remaining - modeConfig[state.mode].mistakePenalty);
-          el.message.textContent = `ミス！ この問題の残り時間 -${modeConfig[state.mode].mistakePenalty}秒`;
-        } else {
-          el.message.textContent = "ミス！ 落ち着いてもう一度。";
-        }
-
-        el.stage.classList.remove("shake");
-        void el.stage.offsetWidth;
-        el.stage.classList.add("shake");
-
-        if (state.remaining <= 0) finishGame("時間切れ！");
-      }
-
-      renderAll();
-    }
-
-    function normalizeTypedKey(rawKey) {
-      const expected = getDisplayCandidate()[state.typedInput.length];
-      return rawKey === expected ? rawKey : rawKey.toLowerCase();
-    }
-
-    function completeWord() {
-      const completedLength = state.typedInput.length || getDisplayCandidate().length;
-
-      state.correctWords += 1;
-      state.score += 50 + completedLength * 4 + Math.min(100, state.combo * 2);
-
-      if (state.mode === "level") addExp(12 + Math.floor(completedLength / 2));
-      if (state.mode === "endless") state.remaining = 10;
-
-      el.message.textContent = state.mode === "endless"
-        ? "正解！ 次の問題も10秒以内に入力しよう。"
-        : "正解！";
-
-      el.stage.classList.remove("pop");
-      void el.stage.offsetWidth;
-      el.stage.classList.add("pop");
-
-      checkQuests();
-
-      if (state.isSkipTest && isSkipTestPassed()) {
-        unlockMapAndPrevious(state.skipTargetMap);
-        finishGame("マップ飛び級テスト合格！");
-        return;
-      }
-
-      if (state.mode === "level" && !state.isSkipTest && state.correctWords >= modeConfig.level.targetWords) {
-        markWorldCompleted(state.selectedMap, state.selectedWorld);
-        unlockNextWorld();
-        finishGame("ワールドクリア！");
-        return;
-      }
-
-      setNextWord();
-    }
-
-    function isSkipTestPassed() {
-      return state.isSkipTest &&
-        state.correctWords >= state.skipPassWords &&
-        accuracy() >= state.skipMinAccuracy &&
-        state.missTyped <= state.skipMaxMiss;
-    }
-
-    function addExp(amount) {
-      state.exp += amount;
-
-      while (state.exp >= expToNext(state.level)) {
-        state.exp -= expToNext(state.level);
-        state.level += 1;
-      }
-
-      localStorage.setItem("typingAcademiaExp", String(state.exp));
-      localStorage.setItem("typingAcademiaLevel", String(state.level));
-    }
-
-    function expToNext(level) {
-      return 80 + level * 20;
-    }
-
-    function accuracy(s = state) {
-      return s.totalTyped === 0
-        ? 100
-        : Math.max(0, Math.round(((s.totalTyped - s.missTyped) / s.totalTyped) * 100));
-    }
-
-    function checkQuests() {
-      for (const quest of quests) {
-        if (!state.completedQuests.has(quest.id) && quest.check(state)) {
-          state.completedQuests.add(quest.id);
-        }
-      }
-    }
-
-    function finishGame(title) {
-      stopTimer();
-      state.running = false;
-      showScreen("result");
-
-      el.resultTitle.textContent = title;
-      el.resultMessage.textContent = makeResultMessage();
-      el.resultScore.textContent = Math.round(state.score);
-      el.resultAcc.textContent = accuracy() + "%";
-      el.resultTyped.textContent = state.totalTyped;
-      el.resultCombo.textContent = state.maxCombo;
-
-      updateTitle();
-      renderKeyboardGuide();
-      refreshGlobalFurigana();
-    }
-
-    function makeResultMessage() {
-      if (state.isSkipTest) {
-        return isSkipTestPassed()
-          ? `${levelMaps[state.skipTargetMap].name} を解放しました。正確率${accuracy()}%、ミス${state.missTyped}回です。`
-          : `条件は8問正解・正確率92%以上・ミス2回以内です。今回：${state.correctWords}問正解、正確率${accuracy()}%、ミス${state.missTyped}回。`;
-      }
-
-      if (state.mode === "level") {
-        return `${levelMaps[state.selectedMap].name} / World ${state.selectedWorld + 1} を${state.correctWords}問進みました。`;
-      }
-
-      if (state.mode === "endless") {
-        return accuracy() >= 95 ? "10秒制限でも安定しています。" : "ミスを減らすと長く続けられます。";
-      }
-
-      return accuracy() >= 90 ? "安定したタイピングです。" : "正確性を意識するとさらに伸びます。";
-    }
-
-    function progressKey() {
-      return "typingAcademiaMapProgress";
-    }
-
-    function loadProgress() {
-      try {
-        return JSON.parse(localStorage.getItem(progressKey()) || "{}");
-      } catch {
-        return {};
-      }
-    }
-
-    function saveProgress(progress) {
-      localStorage.setItem(progressKey(), JSON.stringify(progress));
-    }
-
-    function isWorldUnlocked(mapIndex, worldIndex) {
-      if (mapIndex === 0 && worldIndex === 0) return true;
-      return !!loadProgress()[`${mapIndex}-${worldIndex}`];
-    }
-
-    function unlockWorld(mapIndex, worldIndex) {
-      const progress = loadProgress();
-      progress[`${mapIndex}-${worldIndex}`] = true;
-      saveProgress(progress);
-    }
-
-    function markWorldCompleted(mapIndex, worldIndex) {
-      const progress = loadProgress();
-      progress[`world-${mapIndex}-${worldIndex}-complete`] = true;
-      saveProgress(progress);
-    }
-
-    function isWorldCompleted(mapIndex, worldIndex) {
-      return !!loadProgress()[`world-${mapIndex}-${worldIndex}-complete`];
-    }
-
-    function markMapCompleted(mapIndex) {
-      const progress = loadProgress();
-      progress[`map-${mapIndex}-complete`] = true;
-      saveProgress(progress);
-    }
-
-    function isMapCompleted(mapIndex) {
-      return !!loadProgress()[`map-${mapIndex}-complete`];
-    }
-
-    function unlockMap(mapIndex) {
-      unlockWorld(mapIndex, 0);
-    }
-
-    function unlockMapAndPrevious(mapIndex) {
-      for (let i = 0; i <= mapIndex; i++) {
-        unlockMap(i);
-      }
-    }
-
-    function unlockNextWorld() {
-      let map = state.selectedMap;
-      let world = state.selectedWorld + 1;
-
-      if (world >= 10) {
-        markMapCompleted(state.selectedMap);
-        world = 0;
-        map += 1;
-      }
-
-      if (map < levelMaps.length) {
-        unlockWorld(map, world);
-      }
-    }
-
-    function renderMapSelect(selectedMap = 0) {
-      removeGlobalFurigana();
-
-      el.mapGrid.innerHTML = levelMaps.map((map, i) => {
-        const unlocked = i === 0 || isWorldUnlocked(i, 0);
-
-        return `
-          <div class="map-card ${unlocked ? "" : "locked"}" data-map="${i}">
-            <strong>${map.icon} ${i + 1}. ${escapeHtml(map.name)}${isMapCompleted(i) ? " 👑" : ""}</strong>
-            <span>${escapeHtml(map.theme)}</span>
-            <span>${unlocked ? "解放済み" : "未解放"}</span>
-            ${unlocked ? "" : '<div class="skip-rule">マップ飛び級条件：8問正解・正確率92%以上・ミス2回以内</div>'}
-            <div class="actions">
-              ${unlocked
-                ? '<button class="mini-button start-map">マップを見る</button>'
-                : '<button class="mini-button skip-map">飛び級する</button>'}
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      el.mapGrid.querySelectorAll(".start-map").forEach(btn => {
-        btn.addEventListener("click", () => renderWorldSelect(Number(btn.closest(".map-card").dataset.map)));
-      });
-
-      el.mapGrid.querySelectorAll(".skip-map").forEach(btn => {
-        btn.addEventListener("click", () => openPreWorldAdvice(Number(btn.closest(".map-card").dataset.map), 0, "skip"));
-      });
-
-      renderWorldSelect(selectedMap);
-      applyGlobalFurigana();
-    }
-
-    function renderWorldSelect(mapIndex) {
-      removeGlobalFurigana();
-
-      const map = levelMaps[mapIndex];
-
-      if (!map) {
-        el.selectedMapInfo.textContent = "マップ情報がありません";
-        el.worldTitle.textContent = "ワールド選択";
-        el.worldGrid.innerHTML = "";
-        applyGlobalFurigana();
-        return;
-      }
-
-      el.selectedMapInfo.textContent = `${map.icon} ${map.name}：${map.theme}`;
-      el.worldTitle.textContent = `${map.name} のワールド`;
-
-      el.worldGrid.innerHTML = map.worlds.map((raw, i) => {
-        const unlocked = isWorldUnlocked(mapIndex, i);
-        const sample = raw[1].slice(0, 3).map(word => typeof word === "string" ? word : word.jp).join(" / ");
-
-        return `
-          <div class="world-card ${unlocked ? "" : "locked"}" data-map="${mapIndex}" data-world="${i}">
-            <strong>World ${i + 1}：${escapeHtml(raw[0])}${isWorldCompleted(mapIndex, i) ? " ⭐" : ""}</strong>
-            <span>${escapeHtml(sample)}</span>
-            <span>${unlocked ? "解放済み" : "未解放"}</span>
-            <div class="actions">
-              ${unlocked
-                ? '<button class="mini-button start-world">挑戦する</button>'
-                : '<span class="small-note">前のワールドをクリアすると解放されます</span>'}
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      el.worldGrid.querySelectorAll(".start-world").forEach(btn => {
-        const card = btn.closest(".world-card");
-
-        btn.addEventListener("click", () => {
-          const mapIndex = Number(card.dataset.map);
-          const worldIndex = Number(card.dataset.world);
-
-          if (worldIndex === 0) {
-            openPreWorldAdvice(mapIndex, worldIndex, "world");
-          } else {
-            startSelectedMode("level", mapIndex, worldIndex);
-          }
-        });
-      });
-
-      applyGlobalFurigana();
-    }
-
-    function renderHud() {
-      el.hudMode.textContent = modeConfig[state.mode].label;
-      el.hudTime.textContent = Math.ceil(state.remaining);
-      el.hudScore.textContent = Math.round(state.score);
-      el.hudAcc.textContent = accuracy() + "%";
-      renderTimeGauge();
-    }
-
-    function timeLimitForGauge() {
-      if (state.mode === "endless") return 10;
-      if (state.isSkipTest) return 60;
-      if (state.mode === "level") return 75;
-      return 60;
-    }
-
-    function renderTimeGauge() {
-      const limit = timeLimitForGauge();
-      const percent = Math.max(0, Math.min(100, (state.remaining / limit) * 100));
-
-      el.timeGaugeFill.style.width = `${percent}%`;
-      el.timeGaugeLabel.textContent = `${Math.ceil(state.remaining)}秒 / ${limit}秒`;
-      el.timeGaugeTitle.textContent = state.mode === "endless" ? "この問題の残り時間" : "残り時間ゲージ";
-      el.timeGauge.classList.toggle("warning", percent <= 40 && percent > 20);
-      el.timeGauge.classList.toggle("danger", percent <= 20);
-    }
-
-    function shouldShowKeyboardGuide() {
-      return state.mode === "level" || gameSettings.keyboardGuide;
-    }
-
-    function renderKeyboardGuide() {
-      if (!el.keyboardGuide) return;
-
-      const show = shouldShowKeyboardGuide();
-
-      el.keyboardGuide.classList.toggle("hidden", !show);
-
-      document.querySelectorAll(".key").forEach(key => {
-        key.classList.remove("active", "alt-active", "next-shift");
-      });
-
-      if (!show) return;
-
-      if (!state.currentWord || !state.running) {
-        el.keyboardGuideNote.textContent = state.mode === "level"
-          ? "レベルアップモードではキーボードガイドが常に表示されます"
-          : "スタートすると次に押すキーが光ります";
-        return;
-      }
-
-      const possibleNextChars = getPossibleNextChars();
-
-      if (possibleNextChars.length === 0) {
-        el.keyboardGuideNote.textContent = "次の問題へ進みます";
-        return;
-      }
-
-      const allKeyInfos = possibleNextChars.map(char => normalizeGuideKey(char));
-      const uniqueInfos = [];
-      const usedKeys = new Set();
-
-      for (const info of allKeyInfos) {
-        const key = `${info.key}::${info.needShift}`;
-        if (!usedKeys.has(key)) {
-          usedKeys.add(key);
-          uniqueInfos.push(info);
-        }
-      }
-
-      uniqueInfos.forEach((info, index) => {
-        if (info.needShift) {
-          document.querySelectorAll('[data-key="shift"]').forEach(key => {
-            key.classList.add(index === 0 ? "next-shift" : "alt-active");
-          });
-        }
-
-        const target = document.querySelector(`.key[data-key="${cssEscape(info.key)}"]`);
-
-        if (target) {
-          target.classList.add(index === 0 ? "active" : "alt-active");
-        }
-      });
-
-      if (uniqueInfos.length >= 2) {
-        const labels = uniqueInfos.map(info => info.needShift ? `Shift + ${info.label}` : info.label);
-        el.keyboardGuideNote.textContent = `次は ${labels[0]}。他の候補：${labels.slice(1).join(" / ")}`;
-      } else {
-        const main = uniqueInfos[0];
-        el.keyboardGuideNote.textContent = main.needShift
-          ? `次は Shift + ${main.label} を押します`
-          : `次は ${main.label} を押します`;
-      }
-    }
-
-    function getPossibleNextChars() {
-      if (!state.currentWord) return [];
-
-      const chars = new Set();
-
-      for (const candidate of state.candidates) {
-        if (candidate.startsWith(state.typedInput)) {
-          const nextChar = candidate[state.typedInput.length];
-          if (nextChar) chars.add(nextChar);
-        }
-      }
-
-      return [...chars];
-    }
-
-    function normalizeGuideKey(char) {
-      const raw = String(char || "");
-      const lower = raw.toLowerCase();
-
-      const shiftMap = {
-        "A": "a", "B": "b", "C": "c", "D": "d", "E": "e",
-        "F": "f", "G": "g", "H": "h", "I": "i", "J": "j",
-        "K": "k", "L": "l", "M": "m", "N": "n", "O": "o",
-        "P": "p", "Q": "q", "R": "r", "S": "s", "T": "t",
-        "U": "u", "V": "v", "W": "w", "X": "x", "Y": "y", "Z": "z",
-        "!": "1", "\"": "2", "#": "3", "$": "4", "%": "5",
-        "&": "6", "'": "7", "(": "8", ")": "9",
-        "?": "/", "_": "-"
-      };
-
-      if (raw === " ") {
-        return { key: " ", label: "Space", needShift: false };
-      }
-
-      if (shiftMap[raw]) {
-        return { key: shiftMap[raw], label: raw, needShift: true };
-      }
-
-      return {
-        key: lower,
-        label: raw === " " ? "Space" : raw.toUpperCase(),
-        needShift: false
-      };
+    function highlightNextKey(next) {
+      document.querySelectorAll(".key").forEach(key => key.classList.remove("active"));
+      const normalized = next === " " ? " " : String(next || "").toLowerCase();
+      const target = document.querySelector(`.key[data-key="${cssEscape(normalized)}"]`);
+      if (target) target.classList.add("active");
     }
 
     function cssEscape(value) {
       if (window.CSS && CSS.escape) return CSS.escape(value);
-      return String(value).replace(/["\\]/g, "\\$&");
+      return String(value).replace(/"/g, '\\"');
     }
 
-    function renderSide() {
-      el.sideLevel.textContent = state.level;
-      el.sideExp.textContent = `${state.exp} / ${expToNext(state.level)}`;
-      el.expBar.style.width = `${Math.min(100, (state.exp / expToNext(state.level)) * 100)}%`;
-
-      el.questList.innerHTML = quests.map(q => {
-        const done = state.completedQuests.has(q.id) || q.check(state);
-        return `<div class="quest ${done ? "done" : ""}">${done ? "✅" : "⬜"} ${escapeHtml(q.text)}</div>`;
-      }).join("");
-    }
-
-    function updateTitle() {
-      const level = Number(localStorage.getItem("typingAcademiaLevel") || state.level || 1);
-
-      let title = "見習い魔法タイパー";
-      if (level >= 5) title = "星読みタイパー";
-      if (level >= 10) title = "幻想図書館の司書";
-      if (level >= 20) title = "天空タイピングマスター";
-
-      el.titleName.textContent = title;
-    }
-
-    function renderAccountUi() {
-      const latest = loadAccount();
-
-      account.id = latest.id;
-      account.name = latest.name;
-      account.emoji = latest.emoji;
-
-      el.accountIconDisplay.textContent = account.emoji;
-      el.accountNameDisplay.textContent = account.name;
-      el.accountIdDisplay.textContent = `ID: ${account.id}`;
-
-      el.settingsAccountIconDisplay.textContent = account.emoji;
-      el.settingsAccountNameDisplay.textContent = account.name;
-      el.settingsAccountIdDisplay.textContent = `ID: ${account.id}`;
-    }
-
-    function deleteAccount() {
-      const ok = confirm("この端末に保存されたアカウントID・名前・絵文字アイコンを削除してログイン画面に戻ります。よろしいですか？");
-      if (!ok) return;
-
-      localStorage.removeItem(ACCOUNT_KEY);
-      localStorage.removeItem(SESSION_KEY);
-
-      window.location.href = "./login.html";
-    }
-
-    function switchSettingsTab(tab) {
-      const isAccount = tab === "account";
-
-      el.accountTabBtn.classList.toggle("active", isAccount);
-      el.typingTabBtn.classList.toggle("active", !isAccount);
-      el.accountTabPanel.classList.toggle("active", isAccount);
-      el.typingTabPanel.classList.toggle("active", !isAccount);
-
-      refreshGlobalFurigana();
-    }
-
-    function renderSettingsUi() {
-      renderAccountUi();
-
-      if (!el.genreMenu.dataset.ready) setupGenreOptions();
-
-      renderGenreSelection();
-
-      el.jpModeBtn.classList.toggle("active", draftSettings.typingMode === "jp");
-      el.enModeBtn.classList.toggle("active", draftSettings.typingMode === "en");
-
-      el.keyboardGuideOnBtn.classList.toggle("active", draftSettings.keyboardGuide);
-      el.keyboardGuideOffBtn.classList.toggle("active", !draftSettings.keyboardGuide);
-
-      el.furiganaOnBtn.classList.toggle("active", draftSettings.furigana);
-      el.furiganaOffBtn.classList.toggle("active", !draftSettings.furigana);
-    }
-
-    function syncDraftSettingsFromSaved() {
-      draftSettings.genres = [...gameSettings.genres];
-      draftSettings.typingMode = gameSettings.typingMode;
-      draftSettings.keyboardGuide = gameSettings.keyboardGuide;
-      draftSettings.furigana = gameSettings.furigana;
-    }
-
-    function setupGenreOptions() {
-      const genres = ["all", ...new Set(wordBank.map(word => word.subject).filter(Boolean))];
-
-      el.genreMenu.innerHTML = genres.map(genre => `
-        <button type="button" class="genre-option" data-genre="${escapeHtml(genre)}">
-          <span>${genre === "all" ? "すべて" : escapeHtml(genre)}</span>
-          <span class="checkmark">✓</span>
-        </button>
-      `).join("");
-
-      el.genreMenu.querySelectorAll(".genre-option").forEach(button => {
-        button.addEventListener("click", event => {
-          event.stopPropagation();
-          toggleGenre(button.dataset.genre);
-        });
-      });
-
-      el.genreMenu.dataset.ready = "true";
-    }
-
-    function toggleGenre(genre) {
-      if (genre === "all") {
-        draftSettings.genres = ["all"];
-      } else {
-        const withoutAll = draftSettings.genres.filter(item => item !== "all");
-
-        if (withoutAll.includes(genre)) {
-          draftSettings.genres = withoutAll.filter(item => item !== genre);
-        } else {
-          draftSettings.genres = [...withoutAll, genre];
-        }
-
-        if (draftSettings.genres.length === 0) draftSettings.genres = ["all"];
-      }
-
-      renderGenreSelection();
-      refreshGlobalFurigana();
-    }
-
-    function renderGenreSelection() {
-      const selected = draftSettings.genres.includes("all") ? ["all"] : draftSettings.genres;
-
-      el.genreMenu.querySelectorAll(".genre-option").forEach(button => {
-        button.classList.toggle("active", selected.includes(button.dataset.genre));
-      });
-
-      if (selected.includes("all")) {
-        el.genreDropdownBtn.textContent = "すべて";
-        el.selectedGenreChips.innerHTML = '<span class="selected-genre-chip">すべて</span>';
+    function handleKey(event) {
+      if (event.key === " " && !state.running) {
+        event.preventDefault();
+        startGame();
         return;
       }
 
-      el.genreDropdownBtn.textContent = selected.length === 1 ? selected[0] : `${selected.length}ジャンル選択中`;
-      el.selectedGenreChips.innerHTML = selected.map(genre => `<span class="selected-genre-chip">${escapeHtml(genre)}</span>`).join("");
-    }
+      if (!state.running || state.paused) return;
 
-    function saveSettings() {
-      gameSettings.genres = [...draftSettings.genres];
-      gameSettings.typingMode = draftSettings.typingMode;
-      gameSettings.keyboardGuide = draftSettings.keyboardGuide;
-      gameSettings.furigana = draftSettings.furigana;
-
-      localStorage.setItem("typingAcademiaGenres", JSON.stringify(gameSettings.genres));
-      localStorage.setItem("typingAcademiaTypingMode", gameSettings.typingMode);
-      localStorage.setItem("typingAcademiaKeyboardGuide", gameSettings.keyboardGuide ? "on" : "off");
-      localStorage.setItem("typingAcademiaFurigana", gameSettings.furigana ? "on" : "off");
-
-      closeSettingsPanel();
-      el.message.textContent = "設定を保存しました。次に開始する問題から反映されます。";
-      renderAll();
-      refreshGlobalFurigana();
-    }
-
-    function cancelSettings() {
-      syncDraftSettingsFromSaved();
-      closeSettingsPanel();
-      renderAll();
-    }
-
-    function openSettingsPanel() {
-      syncDraftSettingsFromSaved();
-      el.settingsPanel.classList.add("open");
-      el.settingsBackdrop.classList.add("open");
-      renderSettingsUi();
-      refreshGlobalFurigana();
-    }
-
-    function closeSettingsPanel() {
-      el.settingsPanel.classList.remove("open");
-      el.settingsBackdrop.classList.remove("open");
-      el.genreDropdown.classList.remove("open");
-      refreshGlobalFurigana();
-    }
-
-    function renderAll() {
-      removeGlobalFurigana();
-
-      renderHud();
-      renderSide();
-      updateTitle();
-      renderAccountUi();
-      renderSettingsUi();
-
-      if (state.currentWord) renderWord();
-
-      renderKeyboardGuide();
-      applyGlobalFurigana();
-    }
-
-    function applyGlobalFurigana() {
-      removeGlobalFurigana();
-
-      if (!gameSettings.furigana) return;
-
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_TEXT,
-        {
-          acceptNode(node) {
-            if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-
-            const parent = node.parentElement;
-            if (!parent) return NodeFilter.FILTER_REJECT;
-
-            const excludedTags = ["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "SELECT", "OPTION", "RUBY", "RT", "RP", "CODE", "PRE"];
-            if (excludedTags.includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
-            if (parent.closest("[data-no-furigana]")) return NodeFilter.FILTER_REJECT;
-            if (parent.closest("[data-no-global-furigana]")) return NodeFilter.FILTER_REJECT;
-            if (!/[一-龯々〆ヵヶ]/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
-
-            return NodeFilter.FILTER_ACCEPT;
-          }
-        }
-      );
-
-      const textNodes = [];
-
-      while (walker.nextNode()) {
-        textNodes.push(walker.currentNode);
+      if (event.key === "Escape") {
+        pauseGame();
+        return;
       }
 
-      for (const textNode of textNodes) {
-        const fragment = buildFuriganaFragment(textNode.nodeValue);
-        if (fragment) {
-          textNode.parentNode.replaceChild(fragment, textNode);
+      if (event.key.length !== 1 && event.key !== " ") return;
+      event.preventDefault();
+
+      const key = event.key.toLowerCase();
+      const candidate = state.typed + key;
+
+      if (state.targets.some(target => target.startsWith(candidate))) {
+        state.typed = candidate;
+        state.typedCount++;
+        renderTarget(bestDisplayTarget());
+
+        if (state.targets.includes(state.typed)) {
+          handleCorrectWord();
         }
-      }
-    }
-
-    function removeGlobalFurigana() {
-      document.querySelectorAll("ruby[data-auto-furigana='1']").forEach(ruby => {
-        const text = ruby.getAttribute("data-original-text") || ruby.textContent.replace(/\s+/g, "");
-        ruby.replaceWith(document.createTextNode(text));
-      });
-    }
-
-    function buildFuriganaFragment(text) {
-      const sortedDictionary = [...globalFuriganaDictionary].sort((a, b) => b[0].length - a[0].length);
-      const fragment = document.createDocumentFragment();
-      let index = 0;
-      let changed = false;
-
-      while (index < text.length) {
-        let matched = null;
-
-        for (const [word, reading] of sortedDictionary) {
-          if (text.startsWith(word, index)) {
-            matched = { word, reading };
-            break;
-          }
+      } else {
+        state.mistakes++;
+        state.combo = 0;
+        if (state.mode === "endless") {
+          state.timeLeft = Math.max(0, state.timeLeft - 1.5);
         }
-
-        if (matched) {
-          const ruby = document.createElement("ruby");
-          ruby.dataset.autoFurigana = "1";
-          ruby.dataset.originalText = matched.word;
-          ruby.appendChild(document.createTextNode(matched.word));
-
-          const rt = document.createElement("rt");
-          rt.textContent = matched.reading;
-          ruby.appendChild(rt);
-
-          fragment.appendChild(ruby);
-          index += matched.word.length;
-          changed = true;
-        } else {
-          fragment.appendChild(document.createTextNode(text[index]));
-          index += 1;
-        }
+        el.messageLabel.textContent = "違うキーです。正しいキーを確認しましょう。";
       }
 
-      return changed ? fragment : null;
+      updateHud();
     }
 
-    function refreshGlobalFurigana() {
-      requestAnimationFrame(() => {
-        applyGlobalFurigana();
-      });
+    function handleCorrectWord() {
+      const base = state.mode === "level" ? 120 : state.mode === "endless" ? 150 : 100;
+      const comboBonus = Math.min(state.combo * 5, 100);
+      state.correctWords++;
+      state.combo++;
+      state.bestCombo = Math.max(state.bestCombo, state.combo);
+      state.score += base + comboBonus + Math.max(0, Math.floor(state.timeLeft));
+
+      if (state.mode === "level" && state.correctWords >= state.levelGoal) {
+        finishGame();
+        return;
+      }
+
+      el.messageLabel.textContent = state.combo >= 3 ? `いいリズムです。${state.combo}コンボ。` : "正解です。";
+      nextWord();
+    }
+
+    function finishGame() {
+      if (!state.running) return;
+      clearTimer();
+      state.running = false;
+      state.paused = false;
+
+      const accuracy = calcAccuracy();
+      const earnedExp = Math.max(5, Math.floor(state.score / 20) + state.correctWords * 2);
+      state.record.exp += earnedExp;
+      while (state.record.exp >= state.record.level * 100) {
+        state.record.exp -= state.record.level * 100;
+        state.record.level++;
+      }
+      state.record.bestScore = Math.max(state.record.bestScore, state.score);
+      saveRecord();
+
+      el.resultScore.textContent = state.score;
+      el.resultAccuracy.textContent = accuracy + "%";
+      el.resultTyped.textContent = state.typedCount;
+      el.resultCombo.textContent = state.bestCombo;
+      el.resultMessage.textContent = `EXP +${earnedExp}。${state.correctWords}問正解しました。`;
+      el.resultBackdrop.classList.add("open");
+
+      updateHud();
+      updateMeta();
+    }
+
+    function calcAccuracy() {
+      const total = state.typedCount + state.mistakes;
+      if (!total) return 100;
+      return Math.max(0, Math.round((state.typedCount / total) * 100));
+    }
+
+    function updateHud() {
+      el.scoreLabel.textContent = state.score;
+      el.accuracyLabel.textContent = `${calcAccuracy()}%`;
+
+      if (state.mode === "level") {
+        el.timeLabel.textContent = "-";
+        el.gaugeText.textContent = "進行状況";
+        const pct = Math.min(100, (state.correctWords / state.levelGoal) * 100);
+        el.timeGaugeBar.style.width = `${pct}%`;
+        el.progressText.textContent = `${state.correctWords} / ${state.levelGoal}`;
+        el.timeGauge.classList.remove("warning", "danger");
+        return;
+      }
+
+      el.timeLabel.textContent = `${Math.ceil(state.timeLeft)}秒`;
+      el.gaugeText.textContent = "残り時間ゲージ";
+      const pct = state.totalTime ? Math.max(0, Math.min(100, (state.timeLeft / state.totalTime) * 100)) : 0;
+      el.timeGaugeBar.style.width = `${pct}%`;
+      el.progressText.textContent = `${Math.ceil(state.timeLeft)}秒`;
+      el.timeGauge.classList.toggle("warning", pct <= 35 && pct > 18);
+      el.timeGauge.classList.toggle("danger", pct <= 18);
+    }
+
+    function updateMeta() {
+      const account = state.account;
+      el.accountPill.textContent = `${account.emoji || "⌨️"} ${account.name || "ゲスト"} / ID: ${account.id || "guest"}`;
+      el.levelText.textContent = `レベル ${state.record.level} / EXP ${state.record.exp}`;
+      el.bestText.textContent = `最高スコア ${state.record.bestScore}`;
+      el.settingsSummary.textContent = `${state.settings.lang === "ja" ? "日本語" : "英語"} / キーボード${state.settings.keyboard ? "ON" : "OFF"} / 読み仮名${state.settings.kana ? "ON" : "OFF"}`;
+      updateSettingButtons();
+      updateKeyboardGuide();
+    }
+
+    function updateKeyboardGuide() {
+      el.keyboardGuide.classList.toggle("hidden", !state.settings.keyboard);
+    }
+
+    function updateSettingButtons() {
+      el.langJaButton.classList.toggle("active", state.settings.lang === "ja");
+      el.langEnButton.classList.toggle("active", state.settings.lang === "en");
+      el.keyboardOnButton.classList.toggle("active", state.settings.keyboard);
+      el.keyboardOffButton.classList.toggle("active", !state.settings.keyboard);
+      el.kanaOnButton.classList.toggle("active", state.settings.kana);
+      el.kanaOffButton.classList.toggle("active", !state.settings.kana);
     }
 
     function escapeHtml(value) {
-      return String(value).replace(/[&<>'"]/g, ch => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "'": "&#39;",
-        '"': "&quot;"
-      }[ch]));
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function returnToMode() {
+      clearTimer();
+      state.running = false;
+      state.paused = false;
+      showScreen("mode");
+      el.resultBackdrop.classList.remove("open");
     }
 
     document.querySelectorAll(".mode-card").forEach(card => {
-      card.addEventListener("click", () => selectMode(card.dataset.mode));
+      card.addEventListener("click", () => startMode(card.dataset.mode));
     });
 
-    el.settingsBtn.addEventListener("click", event => {
-      event.stopPropagation();
-      openSettingsPanel();
+    el.startButton.addEventListener("click", startGame);
+    el.pauseButton.addEventListener("click", pauseGame);
+    el.backButton.addEventListener("click", returnToMode);
+    el.settingsButton.addEventListener("click", () => el.settingsBackdrop.classList.add("open"));
+    el.settingsCloseButton.addEventListener("click", () => el.settingsBackdrop.classList.remove("open"));
+
+    el.langJaButton.addEventListener("click", () => { state.settings.lang = "ja"; updateSettingButtons(); });
+    el.langEnButton.addEventListener("click", () => { state.settings.lang = "en"; updateSettingButtons(); });
+    el.keyboardOnButton.addEventListener("click", () => { state.settings.keyboard = true; updateSettingButtons(); updateKeyboardGuide(); });
+    el.keyboardOffButton.addEventListener("click", () => { state.settings.keyboard = false; updateSettingButtons(); updateKeyboardGuide(); });
+    el.kanaOnButton.addEventListener("click", () => { state.settings.kana = true; updateSettingButtons(); });
+    el.kanaOffButton.addEventListener("click", () => { state.settings.kana = false; updateSettingButtons(); });
+
+    el.saveSettingsButton.addEventListener("click", () => {
+      saveSettings();
+      updateMeta();
+      if (state.current) renderWord();
+      el.settingsBackdrop.classList.remove("open");
     });
 
-    el.settingsPanel.addEventListener("click", event => event.stopPropagation());
-    el.settingsBackdrop.addEventListener("click", cancelSettings);
-    el.settingsCloseBtn.addEventListener("click", cancelSettings);
-    el.settingsCancelBtn.addEventListener("click", cancelSettings);
-    el.settingsSaveBtn.addEventListener("click", saveSettings);
-
-    el.accountTabBtn.addEventListener("click", () => switchSettingsTab("account"));
-    el.typingTabBtn.addEventListener("click", () => switchSettingsTab("typing"));
-    el.deleteAccountBtn.addEventListener("click", deleteAccount);
-
-    el.genreDropdownBtn.addEventListener("click", event => {
-      event.stopPropagation();
-      el.genreDropdown.classList.toggle("open");
-      refreshGlobalFurigana();
+    el.resetDataButton.addEventListener("click", () => {
+      if (!confirm("最高スコア・EXP・レベルをリセットします。よろしいですか？")) return;
+      state.record = { bestScore: 0, exp: 0, level: 1 };
+      saveRecord();
+      updateMeta();
     });
 
-    document.addEventListener("click", () => {
-      if (el.genreDropdown.classList.contains("open")) {
-        el.genreDropdown.classList.remove("open");
-        refreshGlobalFurigana();
-      }
+    el.logoutButton.addEventListener("click", () => {
+      localStorage.removeItem(SESSION_KEY);
+      window.location.href = "./login.html";
     });
 
-    el.jpModeBtn.addEventListener("click", () => {
-      draftSettings.typingMode = "jp";
-      renderSettingsUi();
-      refreshGlobalFurigana();
+    el.resultCloseButton.addEventListener("click", () => el.resultBackdrop.classList.remove("open"));
+    el.retryButton.addEventListener("click", () => {
+      el.resultBackdrop.classList.remove("open");
+      startMode(state.mode || "normal");
+      startGame();
     });
+    el.resultBackButton.addEventListener("click", returnToMode);
 
-    el.enModeBtn.addEventListener("click", () => {
-      draftSettings.typingMode = "en";
-      renderSettingsUi();
-      refreshGlobalFurigana();
-    });
+    document.addEventListener("keydown", handleKey);
 
-    el.keyboardGuideOnBtn.addEventListener("click", () => {
-      draftSettings.keyboardGuide = true;
-      renderSettingsUi();
-      refreshGlobalFurigana();
-    });
-
-    el.keyboardGuideOffBtn.addEventListener("click", () => {
-      draftSettings.keyboardGuide = false;
-      renderSettingsUi();
-      refreshGlobalFurigana();
-    });
-
-    el.furiganaOnBtn.addEventListener("click", () => {
-      draftSettings.furigana = true;
-      renderSettingsUi();
-      refreshGlobalFurigana();
-    });
-
-    el.furiganaOffBtn.addEventListener("click", () => {
-      draftSettings.furigana = false;
-      renderSettingsUi();
-      refreshGlobalFurigana();
-    });
-
-    el.resetAllBtn.addEventListener("click", () => {
-      const ok = confirm("レベル、EXP、マップ進行、チュートリアル、タイピング設定をリセットします。アカウントとログイン状態は残ります。よろしいですか？");
-      if (!ok) return;
-
-      [
-        "typingAcademiaExp",
-        "typingAcademiaLevel",
-        "typingAcademiaMapProgress",
-        "typingAcademiaTutorialDone",
-        "typingAcademiaGenres",
-        "typingAcademiaTypingMode",
-        "typingAcademiaKeyboardGuide",
-        "typingAcademiaFurigana"
-      ].forEach(key => localStorage.removeItem(key));
-
-      gameSettings.genres = ["all"];
-      gameSettings.typingMode = "jp";
-      gameSettings.keyboardGuide = true;
-      gameSettings.furigana = true;
-
-      draftSettings.genres = ["all"];
-      draftSettings.typingMode = "jp";
-      draftSettings.keyboardGuide = true;
-      draftSettings.furigana = true;
-
-      stopTimer();
-      state = createInitialState("normal");
-      showScreen("menu");
-
-      el.jpWord.textContent = "スペースで開始";
-      el.romaWord.innerHTML = "";
-      el.message.textContent = "モードを選んだら、スペースキーで開始できます。";
-
-      renderAll();
-
-      alert("リセットしました。アカウントとログイン状態は残っています。");
-    });
-
-    el.tutorialNextBtn.addEventListener("click", () => {
-      tutorialLineIndex = Math.min(tutorialLines.length - 1, tutorialLineIndex + 1);
-      renderTutorialLine();
-    });
-
-    el.tutorialBeginnerBtn.addEventListener("click", () => {
-      localStorage.setItem("typingAcademiaTutorialDone", "1");
-      showScreen("map");
-      renderMapSelect(0);
-    });
-
-    el.tutorialIntermediateBtn.addEventListener("click", () => {
-      localStorage.setItem("typingAcademiaTutorialDone", "1");
-      unlockMapAndPrevious(4);
-      showScreen("map");
-      renderMapSelect(4);
-    });
-
-    el.tutorialSkipBtn.addEventListener("click", () => {
-      localStorage.setItem("typingAcademiaTutorialDone", "1");
-      showScreen("map");
-      renderMapSelect(0);
-    });
-
-    el.preWorldNextBtn.addEventListener("click", advancePreWorldAdvice);
-
-    el.preWorldBackBtn.addEventListener("click", () => {
-      showScreen("map");
-      renderMapSelect(state.selectedMap || 0);
-    });
-
-    el.startBtn.addEventListener("click", startGame);
-
-    el.backBtn.addEventListener("click", () => {
-      stopTimer();
-      state.running = false;
-
-      if (state.mode === "level") {
-        showScreen("map");
-        renderMapSelect(state.selectedMap);
-      } else {
-        showScreen("menu");
-      }
-    });
-
-    el.mapBackBtn.addEventListener("click", () => {
-      stopTimer();
-      showScreen("menu");
-    });
-
-    el.retryBtn.addEventListener("click", () => {
-      if (state.isSkipTest) openPreWorldAdvice(state.skipTargetMap, 0, "skip");
-      else if (state.mode === "level") startSelectedMode("level", state.selectedMap, state.selectedWorld);
-      else startSelectedMode(state.mode);
-    });
-
-    el.menuBtn.addEventListener("click", () => {
-      if (state.mode === "level") {
-        showScreen("map");
-        renderMapSelect(state.selectedMap);
-      } else {
-        showScreen("menu");
-      }
-    });
-
-    window.addEventListener("keydown", handleKey);
-
-    renderAll();
+    updateMeta();
   </script>
 </body>
 </html>
