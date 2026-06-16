@@ -288,12 +288,13 @@
       margin: 0 0 10px;
       font-size: 24px;
       letter-spacing: .03em;
+      line-height: 1.7;
     }
 
     .mode-card p {
       margin: 0;
       color: var(--muted);
-      line-height: 1.75;
+      line-height: 2.25;
       font-weight: 800;
     }
 
@@ -646,14 +647,16 @@
 
     ruby {
       ruby-align: center;
-      line-height: 1.7;
+      ruby-position: over;
+      white-space: nowrap;
+      line-height: 1.9;
     }
 
     rt {
-      color: var(--muted);
-      font-size: .52em;
+      color: #6b8797;
+      font-size: .48em;
       font-weight: 900;
-      letter-spacing: .02em;
+      letter-spacing: 0;
       line-height: 1;
       user-select: none;
     }
@@ -915,6 +918,26 @@
     }
 
     .hidden { display: none !important; }
+
+
+
+    /* ルビ対応：本文同士が重ならないように行間を広げる */
+    .lead,
+    .map-header p,
+    .speech-text,
+    .side-card p,
+    .side-card li,
+    .quest-list li,
+    .lesson-chip,
+    .tag,
+    .account-pill,
+    button,
+    .world-card span,
+    .map-card span,
+    .message,
+    .tutorial-choice {
+      line-height: 2;
+    }
 
     @media (max-width: 980px) {
       .mode-grid,
@@ -2404,7 +2427,7 @@
 
     const RUBY_DICTIONARY = {
       "ニコリタイピング":"にこりたいぴんぐ","ニコリヒト":"にこりひと","つるつる君":"つるつるくん",
-      "設定":"せってい","閉じる":"とじる","保存":"ほぞん","全て":"すべて","全":"ぜん","選択":"せんたく","開始":"かいし","再開":"さいかい","一時停止":"いちじていし","戻る":"もどる","ログアウト":"ろぐあうと","編集":"へんしゅう",
+      "設定":"せってい","閉じる":"とじる","保存":"ほぞん","全て":"すべて","選択":"せんたく","開始":"かいし","再開":"さいかい","一時停止":"いちじていし","戻る":"もどる","ログアウト":"ろぐあうと","編集":"へんしゅう",
       "日本語":"にほんご","英語":"えいご","読み仮名":"よみがな","入力":"にゅうりょく","画面":"がめん","確認":"かくにん","正しい":"ただしい","違う":"ちがう","文字":"もじ","漢字":"かんじ",
       "レベルアップ":"れべるあっぷ","モード":"もーど","マップ":"まっぷ","ワールド":"わーるど","クエスト":"くえすと","ステージ":"すてーじ","クリア":"くりあ","未解放":"みかいほう","解放":"かいほう","開放":"かいほう","飛び級":"とびきゅう","試験":"しけん","合格":"ごうかく","進行":"しんこう","開放中":"かいほうちゅう","専用":"せんよう","構成":"こうせい","導入":"どうにゅう",
       "現在":"げんざい","残り時間":"のこりじかん","時間":"じかん","正確率":"せいかくりつ","正確":"せいかく","正解":"せいかい","打鍵数":"だけんすう","最高":"さいこう","得点":"とくてん","情報":"じょうほう","結果":"けっか","発表":"はっぴょう","記録":"きろく","成功":"せいこう","目標":"もくひょう","練習":"れんしゅう","総仕上げ":"そうしあげ",
@@ -2421,8 +2444,13 @@
         NORMAL_WORDS.en.forEach(item => {
           if (item && item.kana && /[一-龯々]/.test(item.kana)) RUBY_DICTIONARY[item.kana] = item.kana;
         });
-        // LEVEL_MAPS には読み仮名データがないので、ここでは自動登録しません。
-        // 画面上の漢字は RUBY_DICTIONARY の語句単位でルビ化します。
+        LEVEL_MAPS.forEach(map => {
+          if (map.title && /[一-龯々]/.test(map.title)) RUBY_DICTIONARY[map.title] = RUBY_DICTIONARY[map.title] || map.title;
+          if (map.worlds) map.worlds.forEach(world => {
+            if (world.title && /[一-龯々]/.test(world.title)) RUBY_DICTIONARY[world.title] = RUBY_DICTIONARY[world.title] || world.title;
+            if (world.desc && /[一-龯々]/.test(world.desc)) RUBY_DICTIONARY[world.desc] = RUBY_DICTIONARY[world.desc] || world.desc;
+          });
+        });
       } catch {}
     }
 
