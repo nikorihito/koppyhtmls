@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>魔法学校スキンメーカー</title>
+<style>
+:root{--bg:#0d0f13;--p:#171a20;--p2:#101318;--line:#303640;--t:#f5f2ea;--m:#a8adb7;--r:#8f2430;--g:#caa13a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#3c171d 0,transparent 30rem),var(--bg);color:var(--t);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif}
+main{max-width:1100px;margin:auto;padding:34px 18px 70px}h1{margin:0;font-size:clamp(28px,5vw,46px)}p{color:var(--m);line-height:1.7}
+.panel,.card{background:rgba(23,26,32,.95);border:1px solid var(--line);border-radius:18px}.panel{padding:16px}
+.controls{display:grid;grid-template-columns:1.5fr 1fr;gap:12px;margin-bottom:12px}label{font-size:12px;color:var(--m)}input[type=text],select{width:100%;margin-top:6px;background:#0c0f13;color:var(--t);border:1px solid var(--line);border-radius:10px;padding:10px}
+.drop{display:block;text-align:center;padding:28px;border:1px dashed #56606e;border-radius:14px;background:var(--p2);cursor:pointer}.drop.drag{border-color:var(--g)}.drop input{display:none}.drop b{display:block;margin-bottom:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{border:1px solid var(--line);border-radius:10px;background:#242932;color:#fff;padding:9px 12px;font-weight:700;cursor:pointer}button.primary{background:#8d2733}button.gold{background:#917124}button.danger{color:#ffbbc4;background:transparent}button:disabled{opacity:.45}
+#summary{margin:18px 2px 10px;color:var(--m);font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}.card{padding:14px}
+.head{display:flex;justify-content:space-between;gap:8px;align-items:center}.name{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.meta{color:var(--m);font-size:12px;margin:3px 0 10px}
+.previews{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pv{background:#0b0e12;border:1px solid var(--line);border-radius:12px;padding:8px}.pv span{font-size:11px;color:var(--m)}
+canvas{display:block;width:100%;aspect-ratio:1/1;margin-top:6px;image-rendering:pixelated;background:#11151b;border-radius:8px}.empty{margin-top:16px;text-align:center;padding:30px;border:1px solid var(--line);border-radius:16px;color:var(--m)}
+.note{margin-top:18px;color:#c8cbd1;font-size:13px;line-height:1.7;border-left:3px solid var(--g);padding:10px 14px;background:#17160f}
+@media(max-width:650px){.controls,.previews{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<h1>魔法学校スキンメーカー</h1>
+<p>Minecraftの64×64 PNGを追加すると、顔・頭部・手を残したまま、男子用の制服＋黒ローブへ変換します。複数追加して、PNGまたは1つのスキンパック（.mcpack）として保存できます。</p>
+
+<section class="panel">
+  <div class="controls">
+    <label>スキンパック名<input id="packName" type="text" value="魔法学校 男子制服スキンパック"></label>
+    <label>制服カラー<select id="preset">
+      <option value="red">赤 × 金</option>
+      <option value="blue">青 × 銀</option>
+      <option value="green">緑 × 銀</option>
+    </select></label>
+  </div>
+  <label class="drop" id="drop"><input id="files" type="file" accept="image/png" multiple><b>PNGスキンをここへドロップ / クリックして選択</b><span>複数選択可・64×64 PNG</span></label>
+  <div class="actions">
+    <button class="primary" id="add">スキンを追加</button>
+    <button class="gold" id="mcpack" disabled>スキンパック (.mcpack)</button>
+    <button id="pngzip" disabled>変換済みPNGをZIP</button>
+    <button class="danger" id="clear" disabled>すべて削除</button>
+  </div>
+</section>
+
+<div id="summary">0件のスキン</div>
+<div id="cards" class="grid"></div>
+<div id="empty" class="empty">まだスキンがありません。</div>
+<div class="note">すべてブラウザ内で処理します。画像は外部に送信しません。頭部（顔・髪・帽子レイヤー）はそのまま保持し、腕の下4pxは手として元画像を残します。クラシック腕の64×64スキン向けです。</div>
+</main>
+
+<script>
+(()=>{"use strict";
+const $=s=>document.querySelector(s),F=$("#files"),D=$("#drop"),C=$("#cards"),E=$("#empty"),S=$("#summary"),M=$("#mcpack"),Z=$("#pngzip"),CL=$("#clear"),P=$("#preset");
+const items=[];let n=1;
+const pal={
+ red:{robe:[25,25,29,255],dark:[13,13,16,255],light:[45,45,52,255],vest:[65,66,72,255],shirt:[239,239,234,255],a:[125,29,36,255],ad:[78,17,23,255],trim:[205,163,54,255],tr:[34,34,39,255],shoe:[15,15,18,255]},
+ blue:{robe:[25,25,29,255],dark:[13,13,16,255],light:[45,45,52,255],vest:[65,66,72,255],shirt:[239,239,234,255],a:[35,63,120,255],ad:[20,38,75,255],trim:[185,193,205,255],tr:[34,34,39,255],shoe:[15,15,18,255]},
+ green:{robe:[25,25,29,255],dark:[13,13,16,255],light:[45,45,52,255],vest:[65,66,72,255],shirt:[239,239,234,255],a:[31,101,65,255],ad:[19,64,42,255],trim:[185,193,205,255],tr:[34,34,39,255],shoe:[15,15,18,255]}
+};
+function px(d,x,y,c){let i=(y*64+x)*4;d[i]=c[0];d[i+1]=c[1];d[i+2]=c[2];d[i+3]=c[3]}
+function fill(d,x,y,w,h,c){for(let Y=y;Y<y+h;Y++)for(let X=x;X<x+w;X++)px(d,X,Y,c)}
+function clear(d,x,y,w,h){for(let Y=y;Y<y+h;Y++)for(let X=x;X<x+w;X++){let i=(Y*64+X)*4;d[i]=d[i+1]=d[i+2]=d[i+3]=0}}
+function transform(src){
+ const o=document.createElement("canvas");o.width=o.height=64;let x=o.getContext("2d");x.drawImage(src,0,0);let im=x.getImageData(0,0,64,64),d=im.data,p=pal[P.value];
+ // body overlays only: preserve all head/base + head outer layer
+ clear(d,0,32,16,16);clear(d,16,32,24,16);clear(d,40,32,16,16);clear(d,0,48,16,16);clear(d,48,48,16,16);
+
+ // legs: trousers + shoes
+ for(const a of [[0,20],[4,20],[8,20],[12,20]]){fill(d,a[0],a[1],4,8,p.tr);fill(d,a[0],28,4,4,p.shoe)}
+ fill(d,4,16,4,4,p.tr);fill(d,8,16,4,4,p.shoe);
+ for(const a of [[16,52],[20,52],[24,52],[28,52]]){fill(d,a[0],a[1],4,8,p.tr);fill(d,a[0],60,4,4,p.shoe)}
+ fill(d,20,48,4,4,p.tr);fill(d,24,48,4,4,p.shoe);
+
+ // torso base
+ fill(d,20,16,8,4,p.robe);fill(d,28,16,8,4,p.dark);fill(d,16,20,4,12,p.robe);fill(d,28,20,4,12,p.robe);fill(d,32,20,8,12,p.robe);
+ fill(d,20,20,8,12,p.vest);fill(d,20,20,1,12,p.robe);fill(d,27,20,1,12,p.robe);
+ fill(d,21,20,6,3,p.shirt);px(d,21,23,p.shirt);px(d,26,23,p.shirt);
+ for(const y of [20,22,23,25]){px(d,23,y,p.a);px(d,24,y,p.a)}px(d,23,21,p.trim);px(d,24,21,p.trim);px(d,23,24,p.trim);px(d,24,24,p.trim);px(d,23,26,p.ad);px(d,24,26,p.ad);
+ for(let y=20;y<32;y++){px(d,21,y,p.ad);px(d,26,y,p.ad)}
+ for(let X=33;X<=38;X++)px(d,X,20,p.ad);for(let X=34;X<=37;X++)px(d,X,21,p.a);
+
+ // arm bases: only sleeve region, hand pixels remain unchanged
+ fill(d,44,16,4,4,p.robe);for(const X of [40,44,48,52]){fill(d,X,20,4,8,p.robe);fill(d,X,26,4,1,p.ad);fill(d,X,27,4,1,p.trim)}
+ fill(d,36,48,4,4,p.robe);for(const X of [32,36,40,44]){fill(d,X,52,4,8,p.robe);fill(d,X,58,4,1,p.ad);fill(d,X,59,4,1,p.trim)}
+
+ // torso outer robe, open front
+ fill(d,20,32,8,4,p.robe);fill(d,28,32,8,4,p.dark);fill(d,16,36,4,12,p.robe);fill(d,28,36,4,12,p.robe);fill(d,32,36,8,12,p.robe);
+ for(let y=36;y<48;y++){px(d,20,y,p.robe);px(d,21,y,p.ad);px(d,26,y,p.ad);px(d,27,y,p.robe)}
+ px(d,21,36,p.a);px(d,26,36,p.a);for(let X=33;X<=38;X++)px(d,X,36,p.ad);for(let X=34;X<=37;X++)px(d,X,37,p.a);
+
+ // arm outer robe; transparent over hands
+ for(const X of [40,44,48,52]){fill(d,X,36,4,8,p.robe);fill(d,X,42,4,1,p.ad);fill(d,X,43,4,1,p.trim);clear(d,X,44,4,4)}
+ for(const X of [48,52,56,60]){fill(d,X,52,4,8,p.robe);fill(d,X,58,4,1,p.ad);fill(d,X,59,4,1,p.trim);clear(d,X,60,4,4)}
+
+ // robe tails over upper legs
+ fill(d,4,32,4,4,p.robe);fill(d,8,32,4,4,p.dark);for(const X of [0,4,8,12])fill(d,X,36,4,6,p.robe);
+ fill(d,4,48,4,4,p.robe);fill(d,8,48,4,4,p.dark);for(const X of [0,4,8,12])fill(d,X,52,4,6,p.robe);
+
+ x.putImageData(im,0,0);return o
+}
+function load(f){return new Promise((ok,no)=>{let u=URL.createObjectURL(f),im=new Image;im.onload=()=>{URL.revokeObjectURL(u);if(im.width!=64||im.height!=64)return no(new Error(f.name+" は64×64ではありません"));let c=document.createElement("canvas");c.width=c.height=64;c.getContext("2d").drawImage(im,0,0);ok(c)};im.onerror=()=>no(new Error(f.name+" を読み込めません"));im.src=u})}
+async function add(fs){for(const f of [...fs])try{let o=await load(f);items.push({id:n++,name:f.name.replace(/\.png$/i,""),o,t:transform(o)})}catch(e){alert(e.message)}render()}
+function preview(c,s){c.width=128;c.height=180;let x=c.getContext("2d");x.imageSmoothingEnabled=false;x.clearRect(0,0,128,180);
+ x.drawImage(s,8,8,8,8,32,4,64,64);x.drawImage(s,40,8,8,8,32,4,64,64);
+ x.drawImage(s,20,20,8,12,32,68,64,72);x.drawImage(s,20,36,8,12,32,68,64,72);
+ x.drawImage(s,44,20,4,12,0,68,32,72);x.drawImage(s,44,36,4,12,0,68,32,72);
+ x.drawImage(s,36,52,4,12,96,68,32,72);x.drawImage(s,52,52,4,12,96,68,32,72);
+ x.drawImage(s,4,20,4,12,32,140,32,40);x.drawImage(s,4,36,4,12,32,140,32,40);
+ x.drawImage(s,20,52,4,12,64,140,32,40);x.drawImage(s,4,52,4,12,64,140,32,40)}
+function blob(c){return new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error("PNG生成失敗")),"image/png"))}
+function dl(b,n){let a=document.createElement("a"),u=URL.createObjectURL(b);a.href=u;a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+function safe(s){return (s||"skin").replace(/[\\/:*?"<>|]/g,"_")}
+function render(){C.innerHTML="";E.style.display=items.length?"none":"block";S.textContent=items.length+"件のスキン";M.disabled=Z.disabled=CL.disabled=!items.length;
+ for(const it of items){it.t=transform(it.o);let e=document.createElement("article");e.className="card";e.innerHTML=`<div class=head><div class=name></div><button class="danger rm">削除</button></div><div class=meta>64×64 / 顔・頭部・手を保持 / classic arms</div><div class=previews><div class=pv><span>元スキン</span><canvas class=b></canvas></div><div class=pv><span>変換後</span><canvas class=a></canvas></div></div><div class=actions><button class="primary one">PNGダウンロード</button></div>`;e.querySelector(".name").textContent=it.name;preview(e.querySelector(".b"),it.o);preview(e.querySelector(".a"),it.t);e.querySelector(".rm").onclick=()=>{items.splice(items.indexOf(it),1);render()};e.querySelector(".one").onclick=async()=>dl(await blob(it.t),safe(it.name)+"_魔法学校.png");C.appendChild(e)}}
+P.onchange=render;$("#add").onclick=()=>F.click();F.onchange=()=>{add(F.files);F.value=""};CL.onclick=()=>{items.length=0;render()};
+["dragenter","dragover"].forEach(v=>D.addEventListener(v,e=>{e.preventDefault();D.classList.add("drag")}));
+["dragleave","drop"].forEach(v=>D.addEventListener(v,e=>{e.preventDefault();D.classList.remove("drag")}));
+D.addEventListener("drop",e=>add(e.dataTransfer.files));
+
+const enc=new TextEncoder(),crcT=(()=>{let t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc(b){let c=0xffffffff;for(const v of b)c=crcT[(c^v)&255]^(c>>>8);return(c^0xffffffff)>>>0}
+const u16=v=>new Uint8Array([v&255,v>>>8&255]),u32=v=>new Uint8Array([v&255,v>>>8&255,v>>>16&255,v>>>24&255]);
+function cat(a){let l=a.reduce((s,x)=>s+x.length,0),o=new Uint8Array(l),p=0;for(const x of a){o.set(x,p);p+=x.length}return o}
+async function zip(es){let L=[],C=[],off=0,d=new Date(),tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),dt=((Math.max(1980,d.getFullYear())-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+ for(const e of es){let n=enc.encode(e.name),b=e.data instanceof Uint8Array?e.data:new Uint8Array(await e.data.arrayBuffer()),r=crc(b),l=cat([u32(0x04034b50),u16(20),u16(0x800),u16(0),u16(tm),u16(dt),u32(r),u32(b.length),u32(b.length),u16(n.length),u16(0),n,b]);L.push(l);C.push(cat([u32(0x02014b50),u16(20),u16(20),u16(0x800),u16(0),u16(tm),u16(dt),u32(r),u32(b.length),u32(b.length),u16(n.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off),n]));off+=l.length}
+ let ld=cat(L),cd=cat(C),end=cat([u32(0x06054b50),u16(0),u16(0),u16(es.length),u16(es.length),u32(cd.length),u32(ld.length),u16(0)]);return new Blob([ld,cd,end],{type:"application/zip"})}
+function uid(){return crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{let r=crypto.getRandomValues(new Uint8Array(1))[0]&15,v=c=="x"?r:(r&3|8);return v.toString(16)})}
+Z.onclick=async()=>{let es=[];for(const it of items)es.push({name:safe(it.name)+"_魔法学校.png",data:await blob(it.t)});dl(await zip(es),safe($("#packName").value)+".zip")};
+M.onclick=async()=>{let title=$("#packName").value.trim()||"魔法学校スキンパック",ser="WizardSchool_"+Date.now().toString(36),skins={serialize_name:ser,localization_name:ser,skins:[]},es=[],ja=`skinpack.${ser}=${title}\n`,en=`skinpack.${ser}=Wizard School Skin Pack\n`;
+ for(let i=0;i<items.length;i++){let id="skin_"+String(i+1).padStart(3,"0"),fn=id+".png";skins.skins.push({localization_name:id,geometry:"geometry.humanoid.custom",texture:fn,type:"free"});es.push({name:fn,data:await blob(items[i].t)});ja+=`skin.${ser}.${id}=${items[i].name}\n`;en+=`skin.${ser}.${id}=${items[i].name}\n`}
+ let man={format_version:1,header:{name:title,version:[1,0,0],uuid:uid()},modules:[{type:"skin_pack",uuid:uid(),version:[1,0,0]}]};es.push({name:"manifest.json",data:enc.encode(JSON.stringify(man,null,2))},{name:"skins.json",data:enc.encode(JSON.stringify(skins,null,2))},{name:"texts/languages.json",data:enc.encode(JSON.stringify(["ja_JP","en_US"]))},{name:"texts/ja_JP.lang",data:enc.encode(ja)},{name:"texts/en_US.lang",data:enc.encode(en)});dl(await zip(es),safe(title)+".mcpack")};
+render();
+})();
+</script>
+</body></html>
