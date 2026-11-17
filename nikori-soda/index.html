@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>nikori soda | POP ARCADE DX | LONG REVIVAL</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 10%,#214a60,#08141f 64%);font-family:system-ui,'Arial',sans-serif;color:#effcff;display:flex;justify-content:center;padding:14px 8px 28px} .shell{width:min(100%,670px)}header{text-align:center;margin-bottom:9px}h1{font-weight:1000;letter-spacing:.055em;margin:0;color:#b5fbff;font-size:clamp(22px,5vw,38px);text-shadow:0 3px #0e5772,0 0 18px #00c0e9}.sub{font-size:12px;letter-spacing:.34em;font-weight:850;color:#ffda6d}.status{display:flex;gap:6px;justify-content:space-between;margin:10px auto;max-width:520px}.stat{background:#0d2937;border:1px solid #467d8c;border-radius:8px;padding:7px;min-width:0;flex:1;text-align:center;font-size:10px;color:#91c5d0}.stat strong{display:block;font-size:18px;color:#ffe38a;font-variant-numeric:tabular-nums}.stage{position:relative;width:min(100%,480px);margin:auto;border:9px solid #163d4c;outline:2px solid #46abbc;border-radius:12px;overflow:hidden;box-shadow:0 14px 45px #0009, inset 0 0 15px #0006;aspect-ratio:480/690;background:#c99133}canvas{display:block;width:100%;height:100%;touch-action:none}.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#071b27b5;padding:20px;text-align:center;z-index:2}.overlay.hidden{display:none}.panel{background:#092735f2;border:2px solid #8deaf2;border-radius:17px;padding:24px 19px;width:100%;box-shadow:0 12px 36px #0008}.panel h2{font-size:24px;color:#ffdf7f;margin:0 0 12px}.panel p{line-height:1.8;font-size:14px;margin:9px 0;color:#e0f7fc}.panel .hint{font-size:12px;color:#add6df}.bigbtn{padding:13px 24px;color:#102b36;background:linear-gradient(#ffe991,#f8ad42);border:0;border-radius:8px;font-size:17px;font-weight:900;cursor:pointer;box-shadow:0 5px #91602f;margin-top:12px}.bigbtn:active{transform:translateY(3px);box-shadow:0 2px #91602f}.controls{display:flex;justify-content:space-between;gap:10px;max-width:480px;margin:12px auto 0}.control-side{background:#0d2b3a;border:1px solid #367888;border-radius:12px;padding:8px;flex:1;text-align:center}.control-side b{font-size:12px;display:block;margin-bottom:6px}.keys{display:flex;gap:7px}.key{flex:1;min-height:57px;border-radius:9px;border:2px solid #63b6c9;background:linear-gradient(#265a71,#143a52);font-size:23px;color:white;font-weight:900;touch-action:none;user-select:none;cursor:pointer}.key:active,.key.active{background:#5dced7;color:#052a38}.footer{text-align:center;max-width:480px;margin:10px auto 0;color:#adcbd3;font-size:12px;line-height:1.7}.utility{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}.utility button{background:#123745;color:#dbf9ff;border:1px solid #448a9d;border-radius:6px;padding:7px 12px;cursor:pointer}.utility button:focus-visible,.key:focus-visible,.bigbtn:focus-visible{outline:3px solid #ffde76}
+
+.revival-banner{display:none;position:absolute;top:43px;left:48px;right:48px;text-align:center;color:#fff5b8;font-size:18px;font-weight:1000;text-shadow:0 2px #a74b89,0 0 14px #ff75ca;z-index:1;pointer-events:none;letter-spacing:.06em;animation:revivalPulse .9s ease-in-out infinite alternate}.revival-banner.on{display:block}.stage.revival{outline-color:#ff75ce;border-color:#64285b;box-shadow:0 0 28px #ff75c666,0 14px 45px #0009}@keyframes revivalPulse{to{opacity:.72;transform:scale(1.04)}}.revival-label{display:inline-block;background:#ffb1db;color:#401739;font-size:12px;border-radius:20px;padding:3px 10px;font-weight:1000;margin-bottom:8px}.countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff8ae;font-size:clamp(65px,18vw,110px);font-weight:1000;letter-spacing:.08em;text-shadow:0 6px #24525b,0 0 30px #43edff;pointer-events:none;z-index:3;animation:pulseCount .42s ease-out}.countdown.hidden{display:none}@keyframes pulseCount{from{transform:scale(1.5);opacity:.25}to{transform:scale(1);opacity:1}}.fever{position:absolute;top:56px;left:0;right:0;text-align:center;opacity:0;pointer-events:none;font-size:24px;font-weight:1000;color:#fff49d;text-shadow:0 3px #137e96,0 0 15px #55edff;z-index:1}.fever.on{animation:feverflash .7s ease-out 3}@keyframes feverflash{0%,100%{opacity:0;transform:scale(.94)}35%{opacity:1;transform:scale(1.08)}}.bonusbar{display:flex;align-items:center;justify-content:space-between;gap:5px;width:min(100%,480px);margin:0 auto 7px;font-size:12px;font-weight:800;letter-spacing:.06em;color:#f6e3ab}.bonusbar span{padding:6px 9px;border-radius:7px;background:#0c3543;border:1px solid #4c8490}.bonusbar b{color:#ffdc77}.badgepop{position:absolute;top:13px;left:0;right:0;pointer-events:none;text-align:center;color:white;text-shadow:0 3px #185c70,0 0 14px #00f7ff;font-weight:950;font-size:27px;opacity:0;z-index:1}.badgepop.show{animation:popText 1.15s both}@keyframes popText{0%{transform:translateY(17px) scale(.7);opacity:0}20%{transform:translateY(0) scale(1.1);opacity:1}70%{opacity:1}100%{transform:translateY(-15px);opacity:0}}@media(max-width:450px){.bonusbar{font-size:10px}.bonusbar span{padding:5px}}
+
+.mascot-strip{max-width:520px;margin:9px auto 12px;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(110deg,#0c394b,#175879 55%,#103343);border:2px solid #6fe8ec;border-radius:16px;box-shadow:inset 0 0 15px #7cf4ff18,0 5px 20px #0004;padding:3px 12px;min-height:150px}
+#nikorihito{flex:0 0 auto;width:min(47%,230px);height:auto;aspect-ratio:300/260;image-rendering:auto}
+.mascot-copy{min-width:0;flex:1;text-align:left}.mascot-name{font-weight:1000;color:#ffec94;font-size:clamp(12px,3vw,18px);letter-spacing:.05em}.mascot-name span{color:#ff77cc}.mascot-speech{margin:8px 0;padding:10px 9px;background:#e5faff;color:#103549;border:2px solid #9ffff9;border-radius:12px;font-size:clamp(11px,2.6vw,14px);font-weight:800;line-height:1.5;min-height:60px;box-shadow:3px 3px #0004}.mascot-copy small{display:block;color:#93d0de;font-size:9px;letter-spacing:.07em}
+@media(max-width:420px){.mascot-strip{padding:3px 6px;gap:3px}.mascot-speech{padding:7px 6px;min-height:55px}}
+
+/* Compact HUD and fit-to-screen presentation. Revival playfield still scrolls inside the game canvas. */
+body{height:100dvh;min-height:0;overflow:hidden;padding:5px 6px;align-items:flex-start}
+.shell{transform-origin:top center;flex-shrink:0}
+header{margin-bottom:2px}h1{font-size:clamp(23px,4vw,31px);line-height:1.13}.sub{font-size:10px;line-height:1.22;letter-spacing:.16em}
+.mascot-strip{min-height:100px;max-width:480px;margin:4px auto 5px;padding:0 7px}
+#nikorihito{width:180px}.mascot-speech{min-height:40px;padding:5px 8px;margin:3px 0;font-size:12px}.mascot-name{font-size:15px}
+.status{margin:4px auto;max-width:480px}.stat{padding:3px}.stat strong{font-size:15px}
+.stage{width:min(100%,480px);border-width:6px}
+.controls{margin-top:5px}.control-side{padding:4px}.control-side b{margin-bottom:2px}.key{min-height:35px;font-size:17px}
+.utility{margin-top:5px}.utility button{padding:4px 9px}.footer{margin:4px auto 0;line-height:1.35;font-size:10px}
+@media(max-width:460px){#nikorihito{width:143px}.mascot-strip{min-height:83px}.mascot-copy small{font-size:8px}}
+
+/* v1.2: Use available desktop width instead of shrinking the entire game. */
+@media (min-width: 850px) and (min-height: 560px) {
+  body { padding: 10px 12px; align-items: center; overflow: hidden; }
+  .shell { width: min(100%, 1120px); max-width: 1120px; display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(305px, 405px);
+    grid-template-rows: auto auto auto auto auto auto 1fr;
+    column-gap: clamp(16px, 2.8vw, 40px); row-gap: 8px;
+    align-items: start; justify-items: stretch; }
+  .stage { grid-column: 1; grid-row: 1 / 8;
+    height: min(calc(100dvh - 24px), 760px); width: auto; max-width: 100%;
+    aspect-ratio: 480 / 690; justify-self: center; align-self: center; margin: 0; }
+  header {grid-column:2; grid-row:1; margin:0;}
+  .mascot-strip {grid-column:2; grid-row:2; width:100%; margin:0; padding:5px 6px;}
+  #nikorihito {width: min(46%,180px);}
+  .status {grid-column:2; grid-row:3; width:100%; margin:0;}
+  .bonusbar {grid-column:2; grid-row:4; width:100%; margin:0;}
+  .controls {grid-column:2; grid-row:5; width:100%; margin:0;}
+  .utility {grid-column:2; grid-row:6; margin:0; gap:5px;}
+  .footer {grid-column:2; grid-row:7; margin:0; max-width:none; align-self:start; font-size:10px;}
+  .key {min-height:46px;}
+  .stat strong {font-size:17px;}
+}
+
+/* Responsive mobile arcade controls: no global zoom, no document scrolling. */
+html {width:100%;height:100%;overscroll-behavior:none}
+button {-webkit-tap-highlight-color:transparent}
+@media (max-width:849px), (max-height:559px) {
+ body {width:100%;height:100dvh;min-height:0;margin:0;overflow:hidden;
+   padding: max(4px,env(safe-area-inset-top)) max(5px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left));
+   display:block;touch-action:manipulation}
+ .shell{width:100%;height:100%;max-width:630px;margin:auto;display:grid;min-height:0;
+   grid-template-columns:minmax(0,1fr) minmax(116px,35%);
+   grid-template-rows:55px auto auto minmax(0,1fr) auto auto;
+   column-gap:5px;row-gap:4px;align-items:center;justify-items:stretch;overflow:hidden}
+ header{grid-column:1;grid-row:1;min-width:0;text-align:left;margin:0;padding:2px 3px}
+ header h1{font-size:clamp(20px,5.7vw,29px);line-height:1.06;white-space:nowrap}
+ header .sub{font-size:8px;letter-spacing:.045em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ header .sub:last-child{display:none}
+ .mascot-strip{grid-column:2;grid-row:1;margin:0;padding:0 2px;min-height:0;height:55px;gap:2px;border-width:1px;border-radius:9px}
+ #nikorihito{width:61px;max-height:54px}
+ .mascot-copy{min-width:0}.mascot-name{font-size:10px;white-space:nowrap}
+ .mascot-name span{display:none}.mascot-copy small{display:none}
+ .mascot-speech{font-size:9px;line-height:1.2;margin:2px 0 0;padding:2px 3px;min-height:0;border-width:1px;max-height:26px;overflow:hidden}
+ .status{grid-column:1 / -1;grid-row:2;margin:0;width:100%;max-width:none;gap:4px}
+ .stat{font-size:9px;padding:3px 1px;border-radius:6px}.stat strong{font-size:clamp(13px,3.6vw,18px)}
+ .bonusbar{grid-column:1 / -1;grid-row:3;width:100%;max-width:none;margin:0;font-size:10px;gap:3px}
+ .bonusbar span{padding:4px 5px}
+ .stage{grid-column:1 / -1;grid-row:4;min-height:0;
+   width:auto;height:100%;max-height:100%;max-width:100%;aspect-ratio:480/690;
+   justify-self:center;align-self:center;margin:0;border-width:5px;border-radius:9px}
+ .stage canvas{height:100%;width:100%}
+ .controls{grid-column:1 / -1;grid-row:5;width:100%;max-width:none;margin:0;gap:7px}
+ .control-side{padding:4px 5px;border-radius:9px}.control-side b{font-size:11px;margin-bottom:3px}
+ .keys{gap:6px}.key{min-height:clamp(52px,8dvh,67px);font-size:27px;touch-action:none}
+ .utility{grid-column:1 / -1;grid-row:6;width:100%;margin:0;gap:5px}
+ .utility button{flex:1;min-height:32px;padding:5px 3px;font-size:11px}
+ .footer{display:none}
+ .panel{padding:13px 10px}.panel h2{font-size:clamp(17px,4vw,22px);margin-bottom:6px}
+ .panel p{font-size:clamp(11px,2.8vw,14px);line-height:1.55;margin:5px 0}
+ .bigbtn{font-size:15px;padding:11px 17px;min-height:43px;margin-top:6px}
+ .overlay{padding:10px}
+ .revival-banner{left:5px;right:5px;font-size:13px;top:25px}
+}
+@media (max-width:849px) and (orientation:landscape) and (max-height:560px) {
+ .shell{max-width:950px;grid-template-columns:minmax(0,1fr) minmax(185px,45%);
+   grid-template-rows:auto auto minmax(0,1fr) auto auto;column-gap:10px;row-gap:3px}
+ .stage{grid-column:1;grid-row:1 / 6}
+ header{grid-column:2;grid-row:1}.mascot-strip{display:none}
+ .status{grid-column:2;grid-row:2}.bonusbar{grid-column:2;grid-row:3;align-self:start}
+ .controls{grid-column:2;grid-row:4}.utility{grid-column:2;grid-row:5}
+ .key{min-height:46px;font-size:22px}.control-side b{font-size:9px}
+}
+@media(max-width:849px) and (orientation:portrait) and (max-height:730px){
+ .shell{row-gap:2px;grid-template-rows:46px auto auto minmax(0,1fr) auto auto}
+ .mascot-strip{height:46px}#nikorihito{width:51px;max-height:44px}.key{min-height:48px}.utility button{min-height:29px}
+ .status .stat{padding:2px 1px}.bonusbar span{padding:2px 4px}
+}
+
+/* Arcade DX Plus: modal hub and compact touch-friendly controls. */
+.utility button,.hub-btn {font-weight:850}
+.hub-backdrop{position:fixed;inset:0;z-index:100;background:rgba(2,14,27,.85);display:flex;justify-content:center;align-items:center;padding:12px;backdrop-filter:blur(5px)}
+.hub-backdrop.hidden{display:none}
+.hub-card{width:min(95vw,570px);max-height:min(91dvh,850px);overflow:auto;overscroll-behavior:contain;background:linear-gradient(155deg,#123c56,#0b2232);border:2px solid #83e8ed;box-shadow:0 22px 75px #000a;border-radius:19px;padding:16px;color:#edfcff}
+.hub-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}.hub-head h2{margin:0;font-size:clamp(19px,5vw,26px);color:#ffe88a}.hub-close{min-width:44px;min-height:44px;border:1px solid #65bfca;background:#144456;border-radius:9px;color:#fff;font-size:25px;cursor:pointer}
+.hub-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}.hub-tabs button{flex:1;min-width:88px;min-height:42px;border:1px solid #3c8ca0;background:#164356;color:#d4f7fa;border-radius:9px;font-weight:800;cursor:pointer}.hub-tabs button.active{color:#132f38;background:#ffda77;border-color:#fff1b0}
+.hub-section{display:none}.hub-section.active{display:block}.mode-card{display:flex;align-items:center;gap:10px;text-align:left;width:100%;margin:6px 0;padding:12px;min-height:62px;border:1px solid #428ca0;border-radius:12px;background:#143c50;color:#f0ffff;cursor:pointer}.mode-card strong{display:block;color:#ffe790;font-size:15px}.mode-card small{color:#a7dce5}.mode-card.selected{outline:2px solid #ffe07b;background:#1f5b68}.mode-symbol{font-size:28px;width:40px;text-align:center}
+.hub-label{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #295b70}.hub-label input[type=range]{width:44%;accent-color:#ffe18b}.hub-label input[type=checkbox]{width:22px;height:22px;accent-color:#72ecda}.hub-action{display:block;width:100%;min-height:45px;background:#ffda79;color:#153544;border:none;border-radius:10px;font-size:15px;font-weight:1000;cursor:pointer;margin:12px 0 3px}
+.hub-note{font-size:12px;color:#b6d9e1;line-height:1.65}.ranking-row{display:flex;justify-content:space-between;gap:12px;padding:8px 4px;border-bottom:1px solid #27546a;font-variant-numeric:tabular-nums}.achievement-row{display:flex;gap:12px;align-items:center;padding:9px 5px;border-bottom:1px solid #27546a}.achievement-row.locked{opacity:.55}.achievement-row b{color:#ffdf87}.achievement-row small{display:block;color:#b0d4dc}.achievement-row .medal{font-size:25px}
+.hub-card input[type=text]{background:#082431;color:#fff;border:1px solid #6bafc0;border-radius:8px;padding:11px;max-width:100%;font-size:16px}
+#modeChip{color:#e8fcb7}.guide-illustration{height:120px;position:relative;margin:12px 0;background:#b98142;border:5px solid #724727;border-radius:12px;overflow:hidden}.guide-illustration:before{content:'';position:absolute;inset:35% 9% auto;height:10px;background:#e3edf1;transform:rotate(-9deg);border-radius:9px;box-shadow:0 3px #436078}.guide-illustration:after{content:'';position:absolute;left:54%;top:31%;width:19px;height:19px;border-radius:100%;background:radial-gradient(circle at 30% 20%,white,#a5cbd5 40%,#3e6c84);box-shadow:0 0 12px white}.guide-holes{position:absolute;inset:12px;display:flex;justify-content:space-around;align-items:flex-start}.guide-holes i{width:28px;height:28px;border-radius:50%;background:#182027;border:4px solid #925922}.guide-holes i:last-child{box-shadow:0 0 9px 5px #d7f991;border-color:#e9f4b2}
+@media(max-width:849px){.utility button{min-height:38px;font-size:10px;padding:4px 2px}.hub-card{padding:11px}.hub-tabs button{font-size:12px;min-width:65px}}
+</style></head><body><main class="shell"><header><div class="sub">nikori arcade presents</div><h1>nikori soda</h1><div class="sub">RETRO ARCADE · DX PLUS · REVIVAL</div></header><section class="mascot-strip" aria-label="ニコリヒトの応援コーナー"><canvas id="nikorihito" width="300" height="260" aria-label="メロンソーダとアイスを持ったニコリヒトのコード描画アニメーション"></canvas><div class="mascot-copy"><div class="mascot-name">ニコリヒト <span>★</span></div><div id="mascotSpeech" class="mascot-speech" aria-live="polite">メロンソーダで応援するニコリ！<br>ひかる穴をねらうニコリ！</div><small>CANVAS DRAWING · NO IMAGE ASSETS</small></div></section><div class="status"><div class="stat">ターゲット<strong id="target">01 / 10</strong></div><div class="stat">のこり<strong id="lives">● ● ●</strong></div><div class="stat">スコア<strong id="score">000000</strong></div><div class="stat">ベスト<strong id="best">000000</strong></div></div><div class="bonusbar"><span id="lap">ROUND 1</span><span id="combo">COMBO ×1</span><span>ボーナス <b id="bonus">500</b></span></div><div class="stage" id="stage"><canvas id="game" width="480" height="690" aria-label="穴のあいた盤面。左右のバーを操作して光る穴までボールを運ぶ"></canvas><div class="badgepop" id="badgepop"></div><div class="revival-banner" id="revivalBanner">★ 復活チャレンジ：EXTREME ★</div><div class="countdown hidden" id="countdown" aria-live="polite"></div><div class="fever" id="fever">FIZZY FEVER!</div><div class="overlay" id="overlay"><div class="panel"><h2 id="overlayTitle">nikori soda</h2><p id="overlayBody">左右のバーを動かして、<br><strong>光っている番号の穴</strong>にボールを入れよう。<br>ほかの穴に落ちたらミス！</p><p class="hint" id="overlayHint">穴は最初から全部あります。10ターゲット×2周。時間切れでもゲームは続行！</p><button class="bigbtn" id="start">ゲームスタート</button></div></div></div><div class="controls"><div class="control-side"><b>左のバー　W / S</b><div class="keys"><button class="key" data-key="leftUp" aria-label="左側を上げる">▲</button><button class="key" data-key="leftDown" aria-label="左側を下げる">▼</button></div></div><div class="control-side"><b>右のバー　↑ / ↓</b><div class="keys"><button class="key" data-key="rightUp" aria-label="右側を上げる">▲</button><button class="key" data-key="rightDown" aria-label="右側を下げる">▼</button></div></div></div><div class="utility"><button id="pause">一時停止 P</button><button id="sound">音声 ON</button><button id="reset">最初から</button><button id="menuBtn">メニュー</button></div><p class="footer">左右を同時に上げれば上昇、傾ければボールが転がります。ボーナスが0になっても続行OK。3連続成功でフィーバー！ 残機0で1回だけ超ロング縦スクロール復活チャレンジ！<br>※『Ice Cold Beer』の基本的な操作・進行を参考にした独自ゲームです。盤面・グラフィック・音楽はオリジナルです。</p></main>
+<div id="hub" class="hub-backdrop hidden" role="dialog" aria-modal="true" aria-label="nikori soda メニュー">
+ <div class="hub-card"><div class="hub-head"><h2 id="hubTitle">nikori soda</h2><button id="hubClose" class="hub-close" aria-label="閉じる">×</button></div>
+ <nav class="hub-tabs" aria-label="メニュー項目"><button data-tab="modes" class="active">モード</button><button data-tab="settings">設定</button><button data-tab="guide">遊び方</button><button data-tab="achievements">実績</button><button data-tab="rankings">ランキング</button></nav>
+ <div id="tab-modes" class="hub-section active"><div id="modeList"></div><button id="modeGo" class="hub-action">このモードでスタート</button><div class="hub-note">ゲーム中にモードを変更すると、新しいプレイが始まります。</div></div>
+ <div id="tab-settings" class="hub-section"><label class="hub-label"><span>音量 <b id="volLabel">70%</b></span><input id="volumeSetting" type="range" min="0" max="100" value="70"/></label><label class="hub-label"><span>バーの操作感度 <b id="speedLabel">100%</b></span><input id="speedSetting" type="range" min="70" max="130" value="100"/></label><label class="hub-label"><span>ゲーム画面の揺れ</span><input id="shakeSetting" type="checkbox" checked /></label><label class="hub-label"><span>音声をミュート</span><input id="muteSetting" type="checkbox" /></label><div class="hub-note">設定はこのブラウザに保存されます。音声は初回の操作後に再生できます。</div></div>
+ <div id="tab-guide" class="hub-section"><div class="guide-illustration"><div class="guide-holes"><i></i><i></i><i></i><i></i></div></div><p><b>① バーを上げる</b><br>W / Sで左端、↑ / ↓で右端を動かすニコリ！ スマホは画面下の4つの大きなボタンを使うニコリ！</p><p><b>② 鉄球を光る穴へ</b><br>左右の高さをずらすと球が転がるニコリ。ほかの穴に入るとミスになるニコリ！</p><p><b>③ ボーナスと復活</b><br>早く入れるほど高得点。残機が0になったら1度だけ復活チャレンジに挑戦できるニコリ！</p><p><b>④ ニコリヒト</b><br>成功すると乾杯、ミスすると泡が出るニコリ！</p></div>
+ <div id="tab-achievements" class="hub-section"><div id="achievementList"></div></div>
+ <div id="tab-rankings" class="hub-section"><label class="hub-label">表示モード<select id="rankMode"><option value="classic">クラシック</option><option value="time">タイムアタック</option><option value="endless">エンドレス</option><option value="practice">復活練習</option></select></label><label class="hub-label">ランキング表示名 <input id="playerName" type="text" maxlength="12" placeholder="PLAYER" aria-label="ランキング表示名" /></label><div id="rankingList"></div><div class="hub-note">ランキングはこの端末に保存されます。オンライン共有はありません。</div></div>
+ </div>
+</div>
+<script>
+(()=>{'use strict';
+// CSS grid handles smartphone, tablet and desktop layouts without shrinking touch targets.
+function fitGameToViewport(){document.querySelector('.shell').style.zoom='1';}
+window.addEventListener('resize',fitGameToViewport);
+window.addEventListener('orientationchange',fitGameToViewport);
+fitGameToViewport();
+const canvas=document.getElementById('game'),c=canvas.getContext('2d');const W=480,H=690,LEFT=39,RIGHT=441,BOTTOM=637,TOP=64,R=9;
+const E=id=>document.getElementById(id);const mascotCanvas=E('nikorihito'),mc=mascotCanvas.getContext('2d'),mascotSpeech=E('mascotSpeech');
+let mascotMood='idle',mascotUntil=0,mascotMessage='メロンソーダで応援するニコリ！<br>ひかる穴をねらうニコリ！';
+function mascotSay(mood,message,seconds=3){mascotMood=mood;mascotUntil=performance.now()+seconds*1000;mascotSpeech.innerHTML=message;}
+// Every visible element of Nikorihito is drawn using vector paths in Canvas: no PNGs or sprites.
+function drawMascot(ts){
+ const t=ts/1000,active=ts<mascotUntil,mood=active?mascotMood:(state==='playing'&&Math.floor(t)%18>=15?'sip':'idle');
+ if(!active&&mascotMood!=='idle'){mascotMood='idle';mascotSpeech.innerHTML='メロンソーダで応援するニコリ！<br>光る穴をねらうニコリ！';}
+ mc.clearRect(0,0,300,260);mc.save();
+ const dance=mood==='revive'||mood==='win',hop=mood==='success'||dance,wave=mood==='wave';mc.translate(122,115+Math.sin(t*2.7)*1.6-(hop?Math.abs(Math.sin(t*8))*15:0));mc.scale(.88,.88);mc.rotate((mood==='over'?.12:0)+(dance?Math.sin(t*10)*.09:Math.sin(t*1.6)*.014));
+ const celebr=['success','revive','win','sip','wave'].includes(mood),fail=['fail','over'].includes(mood);
+ function ell(x,y,rx,ry,fill,stroke='#432b63',width=2.6){mc.beginPath();mc.ellipse(x,y,rx,ry,0,0,Math.PI*2);mc.fillStyle=fill;mc.fill();if(width){mc.lineWidth=width;mc.strokeStyle=stroke;mc.stroke()}}
+ function path(points,stroke,width){mc.beginPath();points.forEach(([x,y],i)=>i?mc.lineTo(x,y):mc.moveTo(x,y));mc.lineWidth=width;mc.strokeStyle=stroke;mc.lineCap='round';mc.lineJoin='round';mc.stroke()}
+ function roundBox(x,y,w,h,r,fill,outline='#326655',width=2){mc.beginPath();mc.roundRect(x,y,w,h,r);mc.fillStyle=fill;mc.fill();if(width){mc.strokeStyle=outline;mc.lineWidth=width;mc.stroke()}}
+ // Medium-length legs (between previous short and long variants).
+ ell(-17,74,18,34,'#fff000','#e6b400',2);ell(17,74,18,34,'#fff000','#e6b400',2);
+ ell(-17,105,18,11,'#ffe0a4','#d4a464',2);ell(17,105,18,11,'#ffe0a4','#d4a464',2);
+ // Solid oval sleeves, slightly shorter than before, with larger rounded hands.
+ ell(-61,-17,36,15,'#ffec00','#49317b',3);
+ const hx=mood==='sip'?65:celebr?95:93,hy=mood==='sip'?-80:celebr?-54:-18;
+ mc.save();mc.translate(62,-18);mc.rotate(Math.atan2(hy+18,hx-62));
+ ell(-1,0,35,15,'#ffec00','#49317b',3);mc.restore();
+ // Rounded violet body is wide enough to feel friendly, but not oversized.
+ ell(0,7,41,49,'#2424de','#321771',3);ell(-16,-6,11,27,'#3d40ee','transparent',0);
+ // Small cream-colored face, with short eyes and a cheerful red smile.
+ ell(0,-67,31,32,'#ffe1a1','#b48a57',2.4);
+ ell(-11,-73,2.7,3.1,'#402e24','transparent',0);ell(11,-73,2.7,3.1,'#402e24','transparent',0);
+ mc.beginPath();mc.moveTo(-20,-61);mc.bezierCurveTo(-21,-75,-8,-64,0,-60);mc.bezierCurveTo(9,-65,21,-75,21,-61);
+ mc.bezierCurveTo(20,-50,9,-45,0,-46);mc.bezierCurveTo(-9,-45,-20,-51,-20,-61);mc.closePath();mc.fillStyle='#eb1725';mc.fill();
+ ell(-94,wave?-39:-17,16.5,16,'#ffe0a4','#cba36c',2);
+ // Old-fashioned Japanese melon cream soda: tall clear glass, vivid green soda,
+ // a vanilla ice-cream scoop on top, and a bright red angled straw.
+ mc.save();mc.translate(hx+14,hy-23);mc.rotate(celebr?-.13:Math.sin(t*1.9)*.025);
+ // Draw straw behind ice-cream, visibly protruding from the drink.
+ path([[7,-12],[17,-48],[24,-48]],'#c32626',7);path([[7,-12],[17,-48],[24,-48]],'#ff353c',4);
+ // Clear, slightly flared glass with transparent green soda.
+ mc.beginPath();mc.moveTo(-19,-7);mc.lineTo(19,-7);mc.lineTo(13,43);mc.quadraticCurveTo(0,49,-13,43);mc.closePath();mc.fillStyle='rgba(220,255,247,.82)';mc.fill();mc.strokeStyle='#a9faf0';mc.lineWidth=3;mc.stroke();
+ mc.beginPath();mc.moveTo(-16,3);mc.lineTo(16,3);mc.lineTo(11,42);mc.quadraticCurveTo(0,46,-11,42);mc.closePath();mc.fillStyle='#20cf32';mc.fill();
+ mc.beginPath();mc.moveTo(-12,6);mc.lineTo(-9,36);mc.strokeStyle='#abff64';mc.lineWidth=4;mc.stroke();
+ mc.fillStyle='#f5ffcf';for(const [x,y,r] of [[4,14,2.7],[-3,26,2.1],[7,33,2.4],[-7,12,1.5]]){mc.beginPath();mc.arc(x,y,r,0,Math.PI*2);mc.fill()}
+ // Cream scoop and light whipped-cream edge: vanilla ice cream, not foam.
+ ell(0,-15,17,15,'#fff9e9','#e9d9b6',1.9);ell(-5,-21,7,4,'#ffffff','transparent',0);
+ path([[-19,-7],[19,-7]],'#c6fff0',3);
+ mc.textAlign='center';mc.textBaseline='middle';mc.fillStyle='#075a29';mc.font='bold 6px system-ui';mc.fillText('nikori soda',0,27);
+ mc.restore();
+ // Hand in foreground so that the character visibly holds the melon soda.
+ ell(hx,hy,16.5,16,'#ffe0a4','#cba36c',2);
+ for(let i=0;i<(celebr?15:fail?12:6);i++){
+   const phase=(t*1.2+i*.39)%2.5,x=hx+23+Math.sin(i*2.1)*19,y=hy-75-phase*25;
+   mc.globalAlpha=Math.max(0,.72-phase*.22);mc.beginPath();mc.arc(x,y,2+(i%3)*1.5,0,Math.PI*2);
+   mc.strokeStyle=i%3===0?'#fff4bb':'#a7ffee';mc.lineWidth=1.8;mc.stroke();
+ }mc.globalAlpha=1;
+ if(mood==='sip'){mc.fillStyle='#ffe8a4';mc.font='bold 13px system-ui';mc.fillText('ごくっ',48,-110)}if(celebr){mc.fillStyle='#ffed8c';mc.font='24px system-ui';mc.fillText('★',-95,-54);mc.fillText('★',56,-91)}
+ if(fail){mc.strokeStyle='#fff6b8';mc.lineWidth=2.7;mc.beginPath();mc.arc(-92,-49,9,0,Math.PI*1.6);mc.stroke()}
+ mc.restore();
+}
+const els={target:E('target'),lives:E('lives'),score:E('score'),best:E('best'),overlay:E('overlay'),title:E('overlayTitle'),body:E('overlayBody'),hint:E('overlayHint'),start:E('start'),pause:E('pause'),sound:E('sound'),lap:E('lap'),combo:E('combo'),bonus:E('bonus'),badgepop:E('badgepop'),countdown:E('countdown'),fever:E('fever'),stage:E('stage'),revivalBanner:E('revivalBanner')};
+const targets=[{x:236,y:582},{x:183,y:535},{x:310,y:488},{x:141,y:440},{x:254,y:391},{x:348,y:342},{x:175,y:289},{x:283,y:239},{x:211,y:185},{x:301,y:126}];
+const holes=[];function put(x,y,target=-1){if(x<57||x>423||y<82||y>608)return;if(holes.some(h=>Math.hypot(h.x-x,h.y-y)<35))return;holes.push({x,y,target});}
+// Fix 10 target holes first, followed by a permanent field of dangerous holes.
+targets.forEach((t,i)=>put(t.x,t.y,i));
+let seed=273861;function rnd(){seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;}
+for(let row=0;row<11;row++){let yy=106+row*47;for(let col=0;col<7;col++){let xx=76+col*54+(row%2?17:0)+(rnd()-.5)*15;put(xx,yy+(rnd()-.5)*13);}}
+// A standalone, fixed HARD revival board: many hazards, one luminous goal.
+// Coordinates are deliberate, not sampled, so the route remains deterministic.
+const REV_BOTTOM=2740, REV_TOP=65;
+const revivalGoal={x:344,y:145,target:777};
+const revivalHoles=[revivalGoal];
+// A long hand-authored deterministic obstacle field. 54 rows with 4-6 dangerous holes.
+// Gaps between columns leave a challenging but possible traversal.
+const revivalHazards=[];
+let hazardSeed=714255;function hazardRandom(){hazardSeed=(Math.imul(hazardSeed,1664525)+1013904223)>>>0;return hazardSeed/4294967296;}
+for(let row=0;row<54;row++){
+  const y=REV_BOTTOM-115-row*46;
+  const offset=(row%2)*20;
+  for(let col=0;col<7;col++){
+    if((row*13+col*7)%9===0 || (row+col*3)%11===0)continue;
+    const x=70+col*53+offset+(hazardRandom()-.5)*12;
+    const yy=y+(hazardRandom()-.5)*11;
+    if(x>420 || yy<195 || yy>REV_BOTTOM-70)continue;
+    if(Math.hypot(x-revivalGoal.x,yy-revivalGoal.y)<60)continue;
+    if(revivalHazards.some(h=>Math.hypot(h[0]-x,h[1]-yy)<33))continue;
+    revivalHazards.push([x,yy]);
+  }
+}
+// Reserve a winding, collision-free corridor all the way to the star.
+// Smooth horizontal centerline ensures a geometrically traversable route.
+function revivalPathX(y){const u=Math.max(0,Math.min(1,(REV_BOTTOM-y)/(REV_BOTTOM-revivalGoal.y)));
+ return 240+104*u+57*Math.sin(u*Math.PI*3)*Math.sin(u*Math.PI);}
+for(let i=revivalHazards.length-1;i>=0;i--){const h=revivalHazards[i];
+ if(Math.abs(h[0]-revivalPathX(h[1]))<43 || (h[1]>REV_BOTTOM-130&&Math.abs(h[0]-240)<65))revivalHazards.splice(i,1);
+}
+// Fill more hazards outside the route, preserving 300+ individually spaced obstacles.
+let tries=0;while(revivalHazards.length<300&&tries++<20000){
+ const yy=200+hazardRandom()*(REV_BOTTOM-330),x=65+hazardRandom()*350;
+ if(Math.abs(x-revivalPathX(yy))<46)continue;
+ if(revivalHazards.some(h=>Math.hypot(h[0]-x,h[1]-yy)<32))continue;
+ revivalHazards.push([x,yy]);
+}
+revivalHazards.forEach(([x,y])=>revivalHoles.push({x,y,target:-1}));
+// Additional fixed openings in empty regions (same board for every game).
+for(let i=0;i<55;i++)put(68+rnd()*340,102+rnd()*480);
+function readBest(){try{return Number(localStorage.getItem('nikori_soda_pop_best')||0)}catch(e){return 0}}
+const MODES={classic:{title:'クラシック',desc:'原作寄りの10穴×2周。復活チャレンジ付き',icon:'★'},time:{title:'タイムアタック',desc:'全10穴のクリア時間を競う。ボーナスは通常どおり',icon:'⏱'},endless:{title:'エンドレス',desc:'10穴を何周でも攻略。周回が増えるほど速くなる',icon:'∞'},practice:{title:'復活チャレンジ練習',desc:'EXTREMEのロングコースを何度でも練習',icon:'✦'}};
+const ACHIEVEMENTS={first:['はじめの一歩','ターゲットを1つ成功'],combo3:['ソーダフィーバー','3連続成功'],combo10:['コンボマスター','10連続成功'],clean:['ノーミスクリア','1周をミスなしでクリア'],revival:['奇跡の復活','復活チャレンジ成功'],revival1000:['長旅の途中','復活コースで1000m進む'],revival2000:['伝説の挑戦','復活コースで2000m進む'],master:['ソーダマスター','クラシックを2周クリア'],endless3:['無限のソーダ','エンドレスで3周クリア'],time:['スピードスター','タイムアタックを完走']};
+function loadJSON(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
+function saveJSON(key,v){try{localStorage.setItem(key,JSON.stringify(v))}catch{}}
+let achievements=loadJSON('nikori_dx_achievements',{}),records=loadJSON('nikori_dx_records',{}),prefs=Object.assign({volume:.7,sensitivity:1,shake:true,mute:false},loadJSON('nikori_dx_prefs',{}));
+let mode='classic',modePending='classic',runTime=0,runMisses=0,runMaxCombo=0,runTargets=0,revivalBest=loadJSON('nikori_dx_rev_best',0),practiceDistance=0,recorded=false;
+let gameWasPaused=false;
+function unlock(id){if(achievements[id])return;achievements[id]=new Date().toISOString().slice(0,10);saveJSON('nikori_dx_achievements',achievements);popLabel('実績！ '+ACHIEVEMENTS[id][0]);}
+function saveRecord(kind='finish'){
+ if(recorded)return;recorded=true;
+ const entry={at:Date.now(),name:(loadJSON('nikori_dx_name','PLAYER')||'PLAYER').slice(0,12),score,targets:mode==='practice'?practiceDistance:runTargets,misses:runMisses,seconds:Math.round(runTime*10)/10,round,kind};
+ const list=(records[mode]||[]).concat([entry]);list.sort((a,b)=>mode==='time'?(a.kind==='win'?0:1)-(b.kind==='win'?0:1)||(a.seconds-b.seconds):mode==='practice'?((Number(b.kind==='revival')-Number(a.kind==='revival'))||b.targets-a.targets):b.score-a.score);
+ records[mode]=list.slice(0,10);saveJSON('nikori_dx_records',records);
+}
+function elapsedString(t){const m=Math.floor(t/60),ss=Math.floor(t%60);return m+':'+String(ss).padStart(2,'0')}
+function addResult(header){saveRecord(state==='won'?'win':mode==='practice'&&fall?.target==='revive'?'revival':'over');
+ const details='<br><small>モード：'+MODES[mode].title+' / 経過時間：'+elapsedString(runTime)+' / 成功：'+runTargets+' / ミス：'+runMisses+' / 最大コンボ：'+runMaxCombo+'</small>';
+ els.body.innerHTML+=details;
+}
+let revivalCamera=0;
+let state='ready',level=0,round=1,streak=0,lives=3,score=0,best=readBest(),leftY=BOTTOM,rightY=BOTTOM,ball={x:240,vx:0,y:BOTTOM-R-4,vy:0},keys={leftUp:false,leftDown:false,rightUp:false,rightDown:false},flash=0,shake=0,fall=null,particles=[],last=0,time=0,hold=0,muted=prefs.mute,audio=null,musicNodes=[],countdownLeft=0,fallDuration=1.07,feverTime=0,tiltHold=0,tiltWarning=0,revivalUsed=false,revivalAttempt=false,revivalSaved=null;
+function audioReady(){if(muted)return;try{if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume()}catch(e){}}
+function tone(freq,dur=.15,start=0,type='triangle',gain=.07,music=false){if(!audio||muted)return;let t=audio.currentTime+start;const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(Math.max(freq,30),t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0001,gain*prefs.volume),t+.014);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+dur+.02);if(music){musicNodes.push({o,g});o.addEventListener('ended',()=>{musicNodes=musicNodes.filter(n=>n.o!==o)})}}
+// ミス用のオリジナル・ジングル。最後の余韻まで約4秒。
+function song(kind){
+  audioReady();if(!audio||muted)return;for(const n of musicNodes){try{n.o.stop()}catch(e){}}musicNodes=[];
+  if(kind==='fail'||kind==='over'){
+    // 4秒の完全オリジナル・ソーダポップジングル。明るい長調＋跳ねるリズム。
+    // ゲームオーバーでも暗い調にせず、華やかな終止形にする。
+    const melody=[
+      [659.25,0,.15],[783.99,.20,.15],[880,.40,.16],[783.99,.60,.16],
+      [659.25,.85,.18],[523.25,1.08,.18],[587.33,1.31,.19],[659.25,1.57,.27],
+      [783.99,1.95,.15],[880,2.15,.15],[987.77,2.35,.17],[880,2.57,.15],
+      [783.99,2.82,.2],[659.25,3.08,.19],
+      ...(kind==='over'?[[783.99,3.34,.16],[1046.50,3.57,.42]]:[[587.33,3.34,.15],[783.99,3.57,.42]])
+    ];
+    melody.forEach(([f,t,d],i)=>{tone(f,d,t,i%3===0?'sine':'triangle',.064,true);tone(f*2,.052,t,'sine',.013,true)});
+    // やわらかいメジャーコードの伴奏とポップなシンセベース
+    [[261.63,0],[220,.82],[174.61,1.6],[196,2.42],[261.63,3.27]].forEach(([f,t])=>{
+      tone(f,.28,t,'sine',.039,true);tone(f*1.5,.19,t+.09,'triangle',.016,true);
+    });
+    // 泡がはじけるような短い高音をアクセントに
+    [.12,.53,1.73,2.02,2.74,3.53].forEach((t,i)=>tone([1174.66,1318.51,1567.98][i%3],.045,t,'sine',.013,true));
+    return;
+  }
+  if(kind==='revive'){
+    // Original 4.0s C-major pop fanfare: syncopated melody, buoyant bass and sparkling bubbles.
+    const notes=[[523.25,0,.13],[659.25,.17,.12],[783.99,.35,.2],[1046.5,.61,.22],
+    [880,.94,.13],[987.77,1.12,.13],[1174.66,1.34,.24],[1046.5,1.69,.26],
+    [783.99,2.04,.13],[880,2.22,.13],[987.77,2.42,.19],[1318.51,2.67,.26],
+    [1174.66,3.06,.15],[1318.51,3.27,.16],[1567.98,3.51,.48]];
+    notes.forEach(([f,t,d],i)=>{tone(f,d,t,i%4===3?'sine':'triangle',.065,true);tone(f*2,.055,t,'sine',.015,true)});
+    [[261.63,0],[174.61,.77],[196,1.56],[261.63,2.31],[261.63,3.12]].forEach(([f,t])=>{tone(f,.29,t,'sine',.042,true);tone(f*2,.15,t+.15,'triangle',.019,true)});
+    [.08,.44,.73,1.45,1.97,2.56,2.95,3.47].forEach((t,i)=>tone(1400+i*64,.045,t,'sine',.015,true));
+    return;
+  }
+  let notes=kind==='success'?[[523.25,0,.08],[659.25,.1,.08],[783.99,.2,.11],[1046.5,.34,.2]]:[[523.25,0,.12],[659.25,.14,.12],[783.99,.29,.16]];
+  notes.forEach(([f,at,d])=>{tone(f,d,at,'triangle',.08,true);tone(f/2,d*.9,at,'sine',.023,true)});
+}
+
+function tiny(f){audioReady();tone(f,.06,0,'sine',.024)}
+function updateHud(){const rv=isRevival();els.target.textContent=rv?'復活 ★':String(level+1).padStart(2,'0')+' / 10';els.lap.textContent=rv?'REVIVAL · EXTREME':MODES[mode].title+' · '+(mode==='time'?elapsedString(runTime):'ROUND '+round);els.combo.textContent=rv?'のこり '+Math.max(0,Math.round(ball.y-revivalGoal.y))+'m':'COMBO ×'+Math.max(1,Math.min(5,streak));els.bonus.textContent=rv?'—':String(Math.max(0,500-Math.floor(time*7)));els.lives.textContent='● '.repeat(lives).trim()||'なし';els.score.textContent=String(score).padStart(6,'0');els.best.textContent=String(best).padStart(6,'0')}
+function remember(){if(score>best){best=score;try{localStorage.setItem('nikori_soda_pop_best',best)}catch(e){}}updateHud()}
+function isRevival(){return revivalAttempt}
+function syncRevivalVisuals(){els.stage.classList.toggle('revival',revivalAttempt);els.revivalBanner.classList.toggle('on',revivalAttempt)}
+function resetBall(){const base=revivalAttempt?REV_BOTTOM:BOTTOM;leftY=base;rightY=base;ball={x:240,vx:0,y:base-R-4,vy:0};revivalCamera=revivalAttempt?REV_BOTTOM-H+45:0;fall=null;hold=.42}
+function show(title,body,btn,hint=''){els.overlay.classList.remove('hidden');els.title.textContent=title;els.body.innerHTML=body;els.start.textContent=btn;els.hint.textContent=hint}
+function startCountdown(){state='countdown';countdownLeft=3.35;els.countdown.classList.remove('hidden');els.overlay.classList.add('hidden');updateHud();song('start')}
+function begin(nextMode=mode){mode=nextMode;recorded=false;runTime=0;runMisses=0;runTargets=0;runMaxCombo=0;practiceDistance=0;mascotSay('idle','メロンソーダの準備OKニコリ！<br>がんばるニコリ！',2);audioReady();revivalUsed=false;revivalAttempt=false;revivalSaved=null;syncRevivalVisuals();level=0;round=1;streak=0;lives=3;score=0;time=0;particles=[];feverTime=0;tiltHold=0;resetBall();if(mode==='practice'){lives=1;revivalUsed=true;revivalAttempt=true;revivalSaved={level:0,round:1};syncRevivalVisuals();resetBall();state='revival_intro';show('復活チャレンジ 練習','300個以上の穴をよけて、約2600m先の星を目指すニコリ！','練習スタート','練習は何度でも挑戦できるニコリ！');updateHud()}else startCountdown()}
+function showCount(text){els.countdown.textContent=text;els.countdown.style.animation='none';void els.countdown.offsetWidth;els.countdown.style.animation='pulseCount .42s ease-out'}
+function transition(){resetBall();tiltHold=0;state='playing';flash=.6;updateHud()}
+function popLabel(msg){els.badgepop.textContent=msg;els.badgepop.classList.remove('show');void els.badgepop.offsetWidth;els.badgepop.classList.add('show')}
+function bursts(x,y,color){for(let j=0;j<22;j++){let a=rnd()*Math.PI*2,v=35+rnd()*115;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.7+rnd()*.35,color})}}
+function hit(h){if(state!=='playing')return;
+ if(revivalAttempt){
+   const success=h===revivalGoal;
+   fall={x:ball.x,y:ball.y,t:0,target:success?'revive':-1};state='fall';shake=.32;
+   bursts(ball.x,ball.y,success?'#ffe999':'#ff9cdc');
+   if(success){unlock('revival');mascotSay('revive','やったー！ソーダ復活ニコリ！<br>続きからチャレンジするニコリ！',5);song('revive');popLabel('ソーダ復活！');flash=1;fallDuration=4.08;
+     for(let i=0;i<85;i++)particles.push({x:45+rnd()*390,y:90+rnd()*520,vx:(rnd()-.5)*140,vy:-35-rnd()*110,life:1+rnd()*2,color:i%3===0?'#fface8':i%3===1?'#eaffb0':'#90f8ff'});
+   }else{mascotSay('over','あわわっ！残念ニコリ！<br>また挑戦するニコリ！',5);song('over');popLabel('ぷしゅーっ！');flash=.7;fallDuration=4.08}
+   updateHud();return;
+ }
+ const success=h && h.target===level;
+ fall={x:ball.x,y:ball.y,t:0,target:success?level:-1};state='fall';shake=.20;
+ if(success){runTargets++;unlock('first');mascotSay('success',streak>=2?'フィーバーニコリ！<br>メロンソーダで乾杯ニコリ！':'ナイスニコリ！<br>メロンソーダで乾杯ニコリ！',3);streak++;runMaxCombo=Math.max(runMaxCombo,streak);if(streak>=3)unlock('combo3');if(streak>=10)unlock('combo10');const bonus=Math.max(0,500-Math.floor(time*7));const multiplier=Math.min(5,streak);score+=100*(level+1)*round+bonus+multiplier*30;remember();bursts(ball.x,ball.y,'#fff2a0');bursts(ball.x,ball.y,'#60efff');song('success');popLabel(streak>=3?'FIZZY COMBO ×'+multiplier:'POP! +'+bonus);flash=.75;fallDuration=1.08;if(streak>=3){feverTime=2.15;els.fever.classList.remove('on');void els.fever.offsetWidth;els.fever.classList.add('on');for(let i=0;i<40;i++)particles.push({x:48+rnd()*383,y:80+rnd()*525,vx:(rnd()-.5)*38,vy:-30-rnd()*75,life:1+rnd()*1.3,color:i%2?'#e2ffff':'#fff2a0'})}}
+ else{runMisses++;mascotSay('fail',lives>1?'ぷしゅーっ！ミスしたニコリ！<br>次こそ成功するニコリ！':'あわわっ！たいへんニコリ！<br>復活のチャンスニコリ！',4.5);streak=0;feverTime=0;els.fever.classList.remove('on');lives--;bursts(ball.x,ball.y,'#7be5f4');song(lives>0?'fail':'over');popLabel('ぷしゅっ！');flash=.44;fallDuration=4.05;updateHud()}
+}
+function beginRevival(){
+   mascotSay('revive','超ロング復活チャレンジニコリ！<br>ソーダパワーでいくニコリ！',5);
+   revivalUsed=true;revivalAttempt=true;revivalSaved={level,round};syncRevivalVisuals();resetBall();
+   state='revival_intro';updateHud();
+   show('★ 復活チャレンジ ★',
+     '<span class="revival-label">EXTREME · 1回限定</span><br>約2600mの縦スクロール超ロングコース！<br><strong>危険な穴を'+revivalHazards.length+'個突破して、<br>はるか上にある星の復活穴を目指せ！</strong>',
+     '復活チャレンジ開始！','持ち球1個・再挑戦なし。成功で残機1個、失敗した番号から再開。');
+ }
+ function finishRevival(){
+   if(fall.target==='revive'){
+     state='revival_success';remember();if(mode==='practice')saveRecord('revival');
+     show('ソーダ復活！',
+       '復活チャレンジ成功！<br><strong>残機1個で ROUND '+revivalSaved.round+'・ターゲット '+(revivalSaved.level+1)+' から再開！</strong>',
+       mode==='practice'?'もう一度練習':'復活して続行！','復活チャレンジはこのプレイで使用済みです。');
+   }else{
+     state='over';remember();saveRecord();revivalAttempt=false;syncRevivalVisuals();updateHud();
+     show('GAME OVER','復活チャレンジ失敗！<br>スコア：<b>'+score+'</b><br>到達：<b>ROUND '+round+' / '+String(level+1)+'</b>',
+       '最初からリトライ','復活チャレンジは1プレイにつき1回だけ。');addResult('復活失敗');
+   }
+ }
+ function resumeRevival(){
+   level=revivalSaved.level;round=revivalSaved.round;revivalSaved=null;
+   revivalAttempt=false;syncRevivalVisuals();lives=1;streak=0;time=0;feverTime=0;particles=[];
+   resetBall();state='playing';els.overlay.classList.add('hidden');flash=.7;updateHud();
+ }
+function finishFall(){
+ if(revivalAttempt){finishRevival();return}
+ if(fall.target===level){level++;time=0;
+   if(level>=10){if(runMisses===0)unlock('clean');if(mode==='time'){unlock('time');state='won';remember();show('タイムアタック成功！','クリアタイム：<b>'+elapsedString(runTime)+'</b><br>スコア：<b>'+score+'</b>','もう一度挑戦','全10ターゲットクリア！');saveRecord('win');addResult('time');song('start')}else if(mode==='endless'){round++;if(round>=4)unlock('endless3');level=0;streak=0;state='intermission';show('ROUND '+(round-1)+' クリア！','次は ROUND '+round+' ニコリ！<br><strong>さらにボールが速くなるニコリ！</strong>','次のラウンドへ','エンドレスモード。ゲームオーバーまで続くニコリ！');updateHud()}else if(round===1){round=2;level=0;streak=0;state='intermission';show('1周目クリア！','すべてのターゲットを制覇！<br><strong>2周目はバーが少し速く、ボールも転がりやすくなります。</strong>','2周目に挑戦','ソーダポップ・ボーナスは引き続き加算されます。');song('start');updateHud()}
+     else{unlock('master');mascotSay('win','全クリアおめでとうニコリ！<br>メロンソーダで乾杯ニコリ！',10);state='won';score+=3000;remember();show('2周完全クリア！','ニコリ・ソーダマスター！<br>スコア：<b>'+score+'</b>','もう一度プレイ','全20ターゲットを達成しました。');song('start');saveRecord('win');addResult('win')}
+   }else transition()
+ }else if(lives<=0){if(!revivalUsed){beginRevival();return}state='over';remember();show('GAME OVER','スコア：<b>'+score+'</b><br>到達：<b>ROUND '+round+' / '+String(level+1)+'</b>','リトライ','ミスとゲームオーバーは明るいオリジナル曲です。');addResult('over')}else transition()
+}
+function barAt(x){let t=(x-LEFT)/(RIGHT-LEFT);return leftY+(rightY-leftY)*t}
+function step(dt){
+ if(state==='countdown'){const prev=Math.ceil(countdownLeft);countdownLeft=Math.max(0,countdownLeft-dt);const now=Math.ceil(countdownLeft);if(prev!==now||!els.countdown.textContent)showCount(now===0?'GO!':String(now));if(countdownLeft===0){state='playing';hold=.5;setTimeout(()=>{if(state!=='countdown')els.countdown.classList.add('hidden')},450)}return}
+ feverTime=Math.max(0,feverTime-dt);
+ time+=state==='playing'?dt:0;if(state==='playing'){runTime+=dt;if(mode==='time'&&!revivalAttempt&&Math.floor(runTime*2)!==Math.floor((runTime-dt)*2))els.lap.textContent=MODES[mode].title+' · '+elapsedString(runTime)}if(state==='playing'&&!revivalAttempt)els.bonus.textContent=String(Math.max(0,500-Math.floor(time*7)));flash=Math.max(0,flash-dt);shake=Math.max(0,shake-dt);particles=particles.filter(p=>p.life>0);for(let p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=100*dt;p.life-=dt}
+if(state==='fall'){fall.t+=dt;if(fall.t>fallDuration)finishFall();return}if(state!=='playing')return;hold=Math.max(0,hold-dt);
+let oldL=leftY,oldR=rightY,speed=(revivalAttempt?158:(round===1?148:172+Math.min(55,(round-2)*12)))*prefs.sensitivity;leftY+=((keys.leftDown?1:0)-(keys.leftUp?1:0))*speed*dt;rightY+=((keys.rightDown?1:0)-(keys.rightUp?1:0))*speed*dt;leftY=Math.max(revivalAttempt?REV_TOP:TOP,Math.min(revivalAttempt?REV_BOTTOM:BOTTOM,leftY));rightY=Math.max(revivalAttempt?REV_TOP:TOP,Math.min(revivalAttempt?REV_BOTTOM:BOTTOM,rightY));
+// The physical cabinet has limited instantaneous rail tilt.
+const maxDiff=revivalAttempt?98:113;if(leftY-rightY>maxDiff){if(leftY!==oldL)leftY=rightY+maxDiff;else rightY=leftY-maxDiff}if(rightY-leftY>maxDiff){if(rightY!==oldR)rightY=leftY+maxDiff;else leftY=rightY-maxDiff}
+const slope=(rightY-leftY)/(RIGHT-LEFT);
+ // Gravity component and rolling friction. Each ball shares the same stable rail geometry.
+ const gravity=revivalAttempt?705:(round===1?580:710+Math.min(180,(round-2)*42));ball.vx+=gravity*slope*dt;ball.vx*=Math.exp(-1.4*dt);ball.vx=Math.max(-215,Math.min(215,ball.vx));ball.x+=ball.vx*dt;
+ // A steep rail angle is an intended control. Do not treat it as a TILT fault.
+
+if(ball.x<LEFT+R){ball.x=LEFT+R;ball.vx=Math.abs(ball.vx)*.18;tiny(215)}if(ball.x>RIGHT-R){ball.x=RIGHT-R;ball.vx=-Math.abs(ball.vx)*.18;tiny(215)}
+ball.y=barAt(ball.x)-R-4;
+if(revivalAttempt){const traveled=REV_BOTTOM-ball.y;if(traveled>practiceDistance)practiceDistance=Math.round(traveled);if(traveled>revivalBest){revivalBest=Math.round(traveled);saveJSON('nikori_dx_rev_best',revivalBest)}if(traveled>=1000)unlock('revival1000');if(traveled>=2000)unlock('revival2000');const goalCamera=Math.max(0,Math.min(REV_BOTTOM-H+45,((leftY+rightY)/2)-440));revivalCamera+=(goalCamera-revivalCamera)*Math.min(1,dt*6);els.combo.textContent='のこり '+Math.max(0,Math.round(ball.y-revivalGoal.y))+'m';}
+if(hold<=0)for(let h of (revivalAttempt?revivalHoles:holes)){let dx=ball.x-h.x,dy=ball.y-h.y;if(dx*dx+dy*dy<13.5*13.5){hit(h);break}}
+}
+function drawRevival(){
+ c.save();c.clearRect(0,0,W,H);
+ const camera=revivalCamera;
+ let bg=c.createLinearGradient(0,0,W,0);bg.addColorStop(0,'#61234e');bg.addColorStop(.11,'#ffc5e3');bg.addColorStop(.5,'#ee9ac9');bg.addColorStop(.9,'#ffc2df');bg.addColorStop(1,'#64214e');c.fillStyle=bg;c.fillRect(0,0,W,H);
+ // Scrolling enamel decoration and side rails.
+ c.save();c.beginPath();c.rect(0,0,W,H);c.clip();
+ for(let y=Math.floor(camera/90)*90;y<camera+H+100;y+=90){const yy=y-camera;c.fillStyle=(Math.floor(y/90)%2)?'#ffdef126':'#7e316218';c.fillRect(33,yy,414,45);c.strokeStyle='#fff8';c.lineWidth=1;c.beginPath();c.moveTo(34,yy);c.lineTo(446,yy);c.stroke();c.font='bold 12px system-ui';c.textAlign='left';c.fillStyle='#7c3768';c.fillText(String(Math.max(0,Math.round(REV_BOTTOM-y)))+'m',51,yy+14)}
+ c.fillStyle='#173b51';c.fillRect(0,0,31,H);c.fillRect(449,0,31,H);
+ c.strokeStyle='#a1faff';c.lineWidth=4;c.beginPath();c.moveTo(LEFT,0);c.lineTo(LEFT,H);c.moveTo(RIGHT,0);c.lineTo(RIGHT,H);c.stroke();
+ for(let i=0;i<revivalHoles.length;i++){
+  const h=revivalHoles[i],sy=h.y-camera;if(sy< -35||sy>H+35)continue;
+  const active=h===revivalGoal;
+  c.save();c.shadowBlur=active?22:0;c.shadowColor='#dbfff4';c.fillStyle=active?'#fcffae':'#983366';c.beginPath();c.arc(h.x,sy,17.5,0,Math.PI*2);c.fill();c.shadowBlur=0;c.fillStyle=active?'#188a75':'#33102e';c.beginPath();c.arc(h.x,sy,13.8,0,Math.PI*2);c.fill();c.fillStyle=active?'#12665f':'#160e1c';c.beginPath();c.arc(h.x+1,sy+2,10.4,0,Math.PI*2);c.fill();
+  if(active){c.strokeStyle='#fbffad';c.lineWidth=3;c.beginPath();c.arc(h.x,sy,21+2*Math.sin(performance.now()/200),0,Math.PI*2);c.stroke();c.textAlign='center';c.font='bold 20px system-ui';c.fillStyle='#fff';c.fillText('★ 復活',h.x,sy-29)}c.restore();
+ }
+ const ly=leftY-camera,ry=rightY-camera;
+ c.shadowColor='#250b25';c.shadowBlur=7;c.lineCap='round';c.strokeStyle='#38586a';c.lineWidth=14;c.beginPath();c.moveTo(LEFT,ly);c.lineTo(RIGHT,ry);c.stroke();c.shadowBlur=0;c.lineWidth=5;c.strokeStyle='#fcfcff';c.beginPath();c.moveTo(LEFT,ly-2);c.lineTo(RIGHT,ry-2);c.stroke();
+ for(const [x,y] of [[LEFT,ly],[RIGHT,ry]]){c.fillStyle='#effaff';c.beginPath();c.arc(x,y,8,0,Math.PI*2);c.fill()}
+ if(state!=='over'){
+ const by=(fall?fall.y+fall.t*fall.t*15:ball.y)-camera,bx=fall?fall.x:ball.x;
+ c.globalAlpha=fall?Math.max(0,1-fall.t):1;
+ let g=c.createRadialGradient(bx-4,by-5,1,bx,by,10);g.addColorStop(0,'#fff');g.addColorStop(.35,'#eaf4ff');g.addColorStop(.8,'#71899e');g.addColorStop(1,'#163344');c.fillStyle=g;c.beginPath();c.arc(bx,by,R,0,Math.PI*2);c.fill();c.globalAlpha=1;
+ }
+ c.restore();
+ // Fixed progress bar, not scrolling with the board.
+ c.fillStyle='#082b3cdd';c.fillRect(35,2,410,45);c.textAlign='center';c.font='bold 15px system-ui';c.fillStyle='#fff8b4';c.fillText('★ 復活まで '+Math.max(0,Math.round(ball.y-revivalGoal.y))+'m   /   穴 '+revivalHazards.length+'個',240,20);
+ c.fillStyle='#4f2a4f';c.fillRect(65,30,350,7);c.fillStyle='#7df8e2';c.fillRect(65,30,350*Math.max(0,Math.min(1,(REV_BOTTOM-ball.y)/(REV_BOTTOM-revivalGoal.y))),7);
+ c.fillStyle='#092c3f';c.fillRect(35,648,410,34);c.font='bold 13px system-ui';c.fillStyle='#ffeb97';c.fillText('REVIVAL · EXTREME · VERTICAL SCROLL',240,668);
+ if(flash>0){c.fillStyle='rgba(244,255,194,'+(.14*flash)+')';c.fillRect(30,0,420,H)}
+ c.restore();
+}
+function draw(){if(revivalAttempt){drawRevival();return}c.save();c.clearRect(0,0,W,H);if(shake&&prefs.shake)c.translate((rnd()-.5)*shake*9,(rnd()-.5)*shake*9);
+// warm enamel cabinet, soda themed custom panel
+let bg=c.createLinearGradient(0,0,W,0);bg.addColorStop(0,revivalAttempt?'#76305d':'#a86b2f');bg.addColorStop(.1,revivalAttempt?'#ffc1db':'#f9cc70');bg.addColorStop(.5,revivalAttempt?'#e78bbf':'#e8ad4b');bg.addColorStop(.91,revivalAttempt?'#ffc8e0':'#f9cd77');bg.addColorStop(1,revivalAttempt?'#76305d':'#a66b2b');c.fillStyle=bg;c.fillRect(0,0,W,H);
+for(let i=0;i<90;i++){const tx=44+((i*73.47)%390),ty=((i*137.29)%690);c.fillStyle=i%2?'#ffffff0b':'#75410d0b';c.fillRect(tx,ty,1+(i%3),1+(i%7))}
+c.fillStyle='#133747';c.fillRect(0,0,31,H);c.fillRect(449,0,31,H);c.strokeStyle='#9de8ed';c.lineWidth=3;c.strokeRect(32,2,415,686);
+// Deco lines: unlike original copyrighted cabinet illustration.
+c.strokeStyle='#6ddbe9';c.lineWidth=3;for(let s of [-1,1]){c.beginPath();let x=s===-1?16:464;c.moveTo(x,10);c.bezierCurveTo(x+s*16,160,x-s*16,290,x,410);c.bezierCurveTo(x+s*18,520,x-s*12,610,x,680);c.stroke()}
+c.save();c.translate(240,29);c.textAlign='center';c.font='bold 21px system-ui';c.lineWidth=4;c.strokeStyle='#845219';c.strokeText('nikori soda',0,0);c.fillStyle='#f9fcdb';c.fillText(revivalAttempt?'revival soda':'nikori soda',0,0);c.restore();
+// holes: always visible, including during ready state.
+for(const h of (revivalAttempt?revivalHoles:holes)){const active=revivalAttempt?h===revivalGoal:h.target===level && state!=='won';c.save();c.shadowColor=active?'#b9fff5':'transparent';c.shadowBlur=active?22:0;c.beginPath();c.arc(h.x,h.y,17.3,0,Math.PI*2);c.fillStyle=active?'#f3f7a2':revivalAttempt?'#b14e88':'#9d6427';c.fill();c.shadowBlur=0;c.beginPath();c.arc(h.x,h.y,14.2,0,Math.PI*2);c.fillStyle=active?'#14585b':revivalAttempt?'#561438':'#1c1b19';c.fill();c.beginPath();c.arc(h.x+1.2,h.y+1.8,11.1,0,Math.PI*2);c.fillStyle=active?'#156a65':revivalAttempt?'#260c25':'#080f13';c.fill();c.strokeStyle=active?'#b9ffff':'#493323';c.lineWidth=1.5;c.stroke();if(active){c.strokeStyle='#eeffb6';c.lineWidth=3;c.beginPath();c.arc(h.x,h.y,19+Math.sin(performance.now()/180)*2,0,Math.PI*2);c.stroke()}if(h.target>=0){c.font='bold 13px system-ui';c.textAlign='center';c.textBaseline='middle';c.fillStyle=active?'#fffed1':'#4d2b16';c.fillText(revivalAttempt?'★':String(h.target+1),h.x,h.y-23)}c.restore()}
+// Soda rim lights and understated original bubble motifs outside the active playfield.
+for(let j=0;j<11;j++){let yy=86+j*49;c.beginPath();c.arc(14,yy,4,0,Math.PI*2);c.fillStyle=(j+Math.floor(performance.now()/420))%3===0?'#fff4a4':'#4a97a4';c.fill();c.beginPath();c.arc(466,yy,4,0,Math.PI*2);c.fillStyle=(j+Math.floor(performance.now()/420)+1)%3===0?'#fff4a4':'#4a97a4';c.fill()}
+// stationary end rails
+c.strokeStyle='#44616c';c.lineWidth=7;c.beginPath();c.moveTo(LEFT,65);c.lineTo(LEFT,BOTTOM+11);c.moveTo(RIGHT,65);c.lineTo(RIGHT,BOTTOM+11);c.stroke();c.strokeStyle='#c6eeee';c.lineWidth=2;c.stroke();
+// moveable rod
+c.save();c.shadowColor='#222';c.shadowBlur=6;c.shadowOffsetY=4;c.strokeStyle='#5b7076';c.lineWidth=13;c.lineCap='round';c.beginPath();c.moveTo(LEFT,leftY);c.lineTo(RIGHT,rightY);c.stroke();c.shadowBlur=0;c.shadowOffsetY=0;c.strokeStyle='#f4faf9';c.lineWidth=5;c.beginPath();c.moveTo(LEFT,leftY-2);c.lineTo(RIGHT,rightY-2);c.stroke();for(const [x,y] of [[LEFT,leftY],[RIGHT,rightY]]){c.fillStyle='#daeaf0';c.beginPath();c.arc(x,y,8,0,Math.PI*2);c.fill();c.fillStyle='#54747a';c.beginPath();c.arc(x,y,3,0,Math.PI*2);c.fill()}c.restore();
+let bx=ball.x,by=ball.y;if(fall){bx=fall.x;by=fall.y+fall.t*fall.t*15}if(state!=='won'&&state!=='over'){c.save();c.globalAlpha=fall?Math.max(0,1-fall.t):1;let g=c.createRadialGradient(bx-4,by-5,1,bx,by,10);g.addColorStop(0,'#fff');g.addColorStop(.35,'#ddeaf0');g.addColorStop(.75,'#718c9d');g.addColorStop(1,'#253845');c.shadowBlur=7;c.shadowColor='#0009';c.fillStyle=g;c.beginPath();c.arc(bx,by,R,0,Math.PI*2);c.fill();c.restore()}
+for(let p of particles){c.globalAlpha=Math.min(1,p.life/.3);c.fillStyle=p.color;c.beginPath();c.arc(p.x,p.y,2.5,0,7);c.fill()}c.globalAlpha=1;
+c.fillStyle='#133a47';c.fillRect(40,652,400,30);c.strokeStyle='#77bdc9';c.lineWidth=2;c.strokeRect(40,652,400,30);c.font='bold 14px system-ui';c.textAlign='center';c.fillStyle='#ebf6d3';c.fillText(revivalAttempt?'★ REVIVAL CHALLENGE • HARD ★':('ROUND '+round+'  •  HOLE '+String(level+1).padStart(2,'0')+'  •  '+(state==='playing'?'PLAY':state==='countdown'?'READY':'NIKORI')),240,672);
+if(feverTime>0){for(let i=0;i<17;i++){let bx=50+(i*67)%380,by=110+((i*107+Math.floor(performance.now()/18))%490);c.strokeStyle='rgba(220,255,255,.4)';c.lineWidth=2;c.beginPath();c.arc(bx,by,2+i%5,0,Math.PI*2);c.stroke()}}if(flash>0){c.fillStyle='rgba(219,255,210,'+(.14*flash)+')';c.fillRect(33,0,414,690)}c.restore()}
+function frame(ts){if(!last)last=ts;const d=Math.min((ts-last)/1000,.04);last=ts;step(d);draw();drawMascot(ts);requestAnimationFrame(frame)}
+const keymap={KeyW:'leftUp',KeyS:'leftDown',ArrowUp:'rightUp',ArrowDown:'rightDown'};
+// Arcade menu, settings, achievements, and local high-score lists.
+const hub=E('hub');let previousState='ready';
+function openHub(tab='modes'){
+ if(!hub.classList.contains('hidden')){activateTab(tab);return}
+ previousState=state;
+ if(['playing','countdown'].includes(state))state='paused';
+ keys={leftUp:false,leftDown:false,rightUp:false,rightDown:false};document.querySelectorAll('.key.active').forEach(el=>el.classList.remove('active'));
+ hub.classList.remove('hidden');activateTab(tab);E('hubClose').focus();
+}
+function closeHub(){hub.classList.add('hidden');if(previousState==='playing'){state='playing'}else if(previousState==='countdown'){state='countdown'};updateHud()}
+function activateTab(tab){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.hub-section').forEach(b=>b.classList.toggle('active',b.id==='tab-'+tab));E('hubTitle').textContent=tab==='modes'?'モード選択':tab==='settings'?'設定':tab==='guide'?'遊び方':tab==='achievements'?'実績': 'ランキング';if(tab==='achievements')renderAchievements();if(tab==='rankings')renderRankings();if(tab==='modes')renderModes()}
+function renderModes(){E('modeList').innerHTML=Object.entries(MODES).map(([id,m])=>'<button type="button" class="mode-card '+(modePending===id?'selected':'')+'" data-mode="'+id+'"><span class="mode-symbol">'+m.icon+'</span><span><strong>'+m.title+'</strong><small>'+m.desc+'</small></span></button>').join('');E('modeList').querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{modePending=b.dataset.mode;renderModes()})}
+function renderAchievements(){E('achievementList').innerHTML=Object.entries(ACHIEVEMENTS).map(([id,a])=>'<div class="achievement-row '+(achievements[id]?'':'locked')+'"><div class="medal">'+(achievements[id]?'🏆':'🔒')+'</div><div><b>'+a[0]+'</b><small>'+a[1]+(achievements[id]?' · '+achievements[id]:' · 未解除')+'</small></div></div>').join('')}
+function renderRankings(){const m=E('rankMode').value;const rows=records[m]||[];E('rankingList').innerHTML=rows.length?rows.map((r,i)=>'<div class="ranking-row"><span>'+(i+1)+'位　'+(r.kind==='win'?'★ ':'')+(r.name||'PLAYER')+' · '+new Date(r.at).toLocaleDateString('ja-JP')+'</span><b>'+((m==='time'&&r.kind==='win')?elapsedString(r.seconds):m==='practice'?(r.kind==='revival'?'復活成功':'距離 '+(r.targets||0)):r.score+' pt')+'</b></div>').join(''):'<p class="hub-note">まだ記録がないニコリ！</p>'}
+E('playerName').value=loadJSON('nikori_dx_name','PLAYER');E('playerName').addEventListener('input',e=>saveJSON('nikori_dx_name',e.target.value.slice(0,12)||'PLAYER'));
+function applySettings(){E('volumeSetting').value=String(Math.round(prefs.volume*100));E('speedSetting').value=String(Math.round(prefs.sensitivity*100));E('volLabel').textContent=Math.round(prefs.volume*100)+'%';E('speedLabel').textContent=Math.round(prefs.sensitivity*100)+'%';E('shakeSetting').checked=prefs.shake;E('muteSetting').checked=prefs.mute;muted=prefs.mute;els.sound.textContent=muted?'音声 OFF':'音声 ON'}
+for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>activateTab(b.dataset.tab);
+E('menuBtn').onclick=()=>openHub();E('hubClose').onclick=closeHub;hub.addEventListener('click',e=>{if(e.target===hub)closeHub()});
+E('modeGo').onclick=()=>{closeHub();begin(modePending)};
+E('rankMode').onchange=renderRankings;
+E('volumeSetting').oninput=e=>{prefs.volume=e.target.value/100;E('volLabel').textContent=e.target.value+'%';saveJSON('nikori_dx_prefs',prefs)};
+E('speedSetting').oninput=e=>{prefs.sensitivity=e.target.value/100;E('speedLabel').textContent=e.target.value+'%';saveJSON('nikori_dx_prefs',prefs)};
+E('shakeSetting').onchange=e=>{prefs.shake=e.target.checked;saveJSON('nikori_dx_prefs',prefs)};
+E('muteSetting').onchange=e=>{prefs.mute=e.target.checked;muted=prefs.mute;els.sound.textContent=muted?'音声 OFF':'音声 ON';saveJSON('nikori_dx_prefs',prefs)};
+applySettings();
+// Keep normal start button compatible with the selected mode.
+window.addEventListener('keydown',e=>{if(keymap[e.code]){e.preventDefault();keys[keymap[e.code]]=true;document.querySelector('[data-key="'+keymap[e.code]+'"]').classList.add('active');audioReady()}if(e.code==='KeyP'&&!e.repeat)togglePause();if(e.code==='Space'&&!e.repeat&&(state==='ready'||state==='over'||state==='won'||state==='intermission'||state==='revival_intro'||state==='revival_success')){e.preventDefault();if(state==='intermission')startCountdown();else if(state==='revival_intro'){audioReady();resetBall();state='playing';els.overlay.classList.add('hidden');updateHud();song('start')}else if(state==='revival_success'){if(mode==='practice')begin('practice');else resumeRevival()}else begin()}});
+window.addEventListener('keyup',e=>{if(keymap[e.code]){keys[keymap[e.code]]=false;document.querySelector('[data-key="'+keymap[e.code]+'"]').classList.remove('active')}});
+window.addEventListener('blur',()=>{for(let k in keys)keys[k]=false;document.querySelectorAll('.key').forEach(el=>el.classList.remove('active'));if(state==='playing')togglePause()});
+for(let b of document.querySelectorAll('[data-key]')){let k=b.dataset.key;function up(e){e.preventDefault();keys[k]=false;b.classList.remove('active');try{b.releasePointerCapture(e.pointerId)}catch{}}b.addEventListener('pointerdown',e=>{e.preventDefault();audioReady();keys[k]=true;b.classList.add('active');b.setPointerCapture(e.pointerId)});b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',()=>{keys[k]=false;b.classList.remove('active')})}
+function togglePause(){if(state==='playing'){state='paused';show('一時停止','左右の操作を再開できます。','つづける');els.pause.textContent='再開 P'}else if(state==='paused'){state='playing';els.overlay.classList.add('hidden');els.pause.textContent='一時停止 P'}}
+els.start.addEventListener('click',()=>{if(state==='paused')togglePause();else if(state==='intermission'){audioReady();startCountdown()}else if(state==='revival_intro'){audioReady();resetBall();state='playing';els.overlay.classList.add('hidden');updateHud();song('start')}else if(state==='revival_success'){if(mode==='practice')begin('practice');else resumeRevival()}else begin()});els.pause.addEventListener('click',togglePause);els.sound.addEventListener('click',()=>{muted=!muted;prefs.mute=muted;saveJSON('nikori_dx_prefs',prefs);els.sound.textContent=muted?'音声 OFF':'音声 ON';if(!muted)audioReady();else{for(const n of musicNodes){try{n.o.stop()}catch(e){}}musicNodes=[]}});E('reset').addEventListener('click',begin);syncRevivalVisuals();updateHud();requestAnimationFrame(frame);
+})();
+</script></body></html>
