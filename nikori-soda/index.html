@@ -193,7 +193,8 @@ const holes=[];function put(x,y,target=-1){if(x<57||x>423||y<82||y>608)return;if
 // Fix 10 target holes first, followed by a permanent field of dangerous holes.
 targets.forEach((t,i)=>put(t.x,t.y,i));
 let seed=273861;function rnd(){seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;}
-for(let row=0;row<11;row++){let yy=106+row*47;for(let col=0;col<7;col++){let xx=76+col*54+(row%2?17:0)+(rnd()-.5)*15;put(xx,yy+(rnd()-.5)*13);}}
+// Balanced classic layout: 10 target holes + about 22 hazards.
+for(let row=0;row<7;row++){let yy=110+row*70;for(let col=0;col<4;col++){let xx=90+col*80+(row%2?22:0)+(rnd()-.5)*15;put(xx,yy+(rnd()-.5)*13);}}
 // A standalone, fixed HARD revival board: many hazards, one luminous goal.
 // Coordinates are deliberate, not sampled, so the route remains deterministic.
 const REV_BOTTOM=2740, REV_TOP=65;
