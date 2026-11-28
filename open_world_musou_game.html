@@ -249,6 +249,32 @@
       box-shadow: 0 14px 36px rgba(239,68,68,.38), 0 0 24px rgba(250,204,21,.25);
     }
     .hidden { display: none !important; }
+    .pauseCard { max-width: 1080px; width: min(95vw,1080px); max-height: 92vh; overflow: auto; text-align: left; padding: 24px; }
+    .pauseCard h1 { font-size: 32px; margin: 0; }
+    .pauseTop { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding-bottom: 15px; }
+    #coinLabel { font-size: 20px; font-weight: 900; color: #facc15; }
+    .pauseGrid { display: grid; grid-template-columns: 180px minmax(0,1fr); gap: 16px; }
+    .pauseNav { display: flex; flex-direction: column; gap: 7px; }
+    .pauseNav button, .pauseContent button, .pauseContent select, .pauseContent input { font: inherit; border-radius: 10px; }
+    .pauseNav button, .pauseContent button { cursor: pointer; border: 1px solid #64748b; color: white; background: #1e293b; padding: 11px; text-align: left; }
+    .pauseNav button.selected,.pauseContent button:hover { background: #1d4ed8; border-color: #67e8f9; }
+    .pauseContent { max-height: 66vh; min-height: 340px; overflow: auto; padding: 8px; }
+    .pauseContent h2 { margin: 4px 0 12px; font-size: 23px; }
+    .pauseContent h3 { margin: 12px 0 8px; }
+    .pauseContent p { margin: 7px 0 12px; }
+    .pauseItems { display: grid; grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap: 10px; }
+    .pauseItem { padding: 13px; border: 1px solid #475569; border-radius: 13px; background: #0f172a; }
+    .pauseItem strong { color: #fde68a; }
+    .pauseItem small { display:block; color:#cbd5e1; margin: 7px 0; line-height: 1.5; }
+    .pauseItem button { width: 100%; text-align: center; }
+    .pauseItem button:disabled { opacity: .5; cursor: default; }
+    .pauseTabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+    .pauseTabs button.active { border-color:#facc15; color:#fef08a; }
+    .pauseField { display:flex; align-items:center; justify-content:space-between; gap:15px; margin:12px 0; }
+    .pauseField input,.pauseField select { min-width: 100px; max-width: 55%; padding:7px; background:#0f172a; color:#fff; border:1px solid #64748b; }
+    #pauseMessage { min-height: 20px; padding-top: 10px; color: #facc15; }
+    #mobilePauseBtn { position:fixed; right:14px; top:198px; z-index:22; background:#0f172a; color:white; border:1px solid #facc15; border-radius:12px; padding:9px 12px; font-weight:700; }
+    @media(max-width:700px){.pauseGrid{grid-template-columns:1fr}.pauseNav{flex-direction:row;overflow-x:auto}.pauseNav button{white-space:nowrap;padding:8px}.pauseCard{padding:13px}.pauseContent{min-height:220px;max-height:53vh}#mobilePauseBtn{top:139px;}}
     @media (max-width: 700px) {
       .bar-wrap { width: 170px; }
       #minimap { width: 112px; height: 112px; }
@@ -278,8 +304,9 @@
   <canvas id="minimap" width="170" height="170"></canvas>
   <div class="crosshair" id="crosshair"></div>
   <div class="lockNotice hidden" id="lockNotice">この環境ではマウス固定が許可されていないため、クリック長押し/ドラッグで向きを変えます。</div>
-  <div class="help">WASD: 移動　クリック5秒以上長押し=竜巻準備 / 離す=竜巻発射　巨大化アイテム追加　素早く10回斬る=旋風攻撃　Space: ジャンプ/滑空　Z/X/C/V: 特殊攻撃　左クリック/J: 攻撃</div>
+  
 
+  <button id="mobilePauseBtn" class="hidden" type="button">Ⅱ メニュー</button>
   <div class="controls">
     <div class="stick-zone" id="stickZone"><div class="stick" id="stick"></div></div>
     <div class="buttons">
@@ -307,10 +334,16 @@
   </div>
 
   <div class="pauseScreen hidden" id="pauseScreen">
-    <div class="card">
-      <h1>ポーズ中</h1>
-      <p>Escキーまたは下のボタンで再開します。マウス固定が許可される環境では再開時に中央固定します。</p>
-      <button class="mainBtn" id="resumeBtn">ゲーム再開</button>
+    <div class="card pauseCard">
+      <div class="pauseTop"><h1 id="pauseTitle">ポーズ</h1><span id="coinLabel">0 G</span></div>
+      <div class="pauseGrid"><nav class="pauseNav" id="pauseNav">
+        <button data-page="main" class="selected">メイン</button>
+        <button data-page="shop">ショップ</button>
+        <button data-page="equip">装備</button>
+        <button data-page="settings">設定</button>
+        <button data-page="help">説明</button>
+      </nav><section id="pauseContent" class="pauseContent"></section></div>
+      <div id="pauseMessage" role="status"></div>
     </div>
   </div>
 
@@ -348,7 +381,7 @@
     let pointerLockDenied = false;
     let mouseDragging = false;
     let lastMouseX = 0;
-    const mouseSensitivity = 0.0026;
+    let mouseSensitivity = 0.0026;
     const pitchSensitivity = 0;
     let cameraPitch = 0.35;
     let wave = 1;
@@ -385,6 +418,205 @@
     let tornadoEffect = null;
     let tornadoProjectiles = [];
     const TORNADO_MIN_CHARGE = 5;
+
+
+    // Shop, loadout, and pause-menu state. Persist only safe, validated item IDs.
+    const WEAPON_TYPES = [
+      ['sword','剣',1,1,1],['greatsword','大剣',1.55,1.4,.61],
+      ['dagger','短剣',.65,.72,1.9],['dual','双剣',.78,.94,1.6],
+      ['axe','斧',1.34,.97,.78],['battleaxe','バトルアックス',1.48,1.32,.7],
+      ['scythe','サイス',1.13,1.7,.86],['hammer','ハンマー',1.8,1.12,.52]
+    ];
+    const ELEMENTS = [
+      ['normal','訓練',1,0],['iron','鉄',1.18,0x94a3b8],
+      ['flame','炎',1.32,0xf97316],['ice','氷',1.28,0x67e8f9],
+      ['thunder','雷',1.43,0xfacc15],['legend','伝説',1.75,0xc084fc]
+    ];
+    const WEAPONS = WEAPON_TYPES.flatMap(([type,name,atk,range,speed]) =>
+      ELEMENTS.map(([element,elementName,power,color],idx) => ({
+        id:type+'_'+element,kind:'weapon',name:elementName+'の'+name,
+        type,element,atk:atk*power,range,speed,color,
+        price:idx===0?0:Math.round((idx+1)*(idx+1)*130*(atk+.2)),
+        desc: ({sword:'万能型',greatsword:'高威力・広範囲、振りが遅い',dagger:'超高速・短射程',dual:'高速連続攻撃',axe:'高い単発火力',battleaxe:'広範囲の重撃',scythe:'長い攻撃範囲',hammer:'強力な衝撃攻撃'})[type]+
+          (element==='flame'?' / 炎の追撃':element==='ice'?' / 敵の動きを遅くする':element==='thunder'?' / 雷の追撃':element==='legend'?' / 高い総合性能':'')
+      })));
+    const ARMORS=[
+      {id:'armor_cloth',kind:'armor',name:'旅人の服',price:0,hp:0,speed:0,desc:'標準装備'},
+      {id:'armor_iron',kind:'armor',name:'鉄の鎧',price:600,hp:220,speed:-1.5,desc:'最大HP上昇 / 少し重い'},
+      {id:'armor_wind',kind:'armor',name:'風の軽装',price:1100,hp:75,speed:5,desc:'移動速度上昇'},
+      {id:'armor_guard',kind:'armor',name:'守護の鎧',price:2100,hp:550,speed:-3,desc:'最大HPを大幅強化'},
+      {id:'armor_hero',kind:'armor',name:'英雄の鎧',price:4400,hp:450,speed:3,desc:'耐久と機動力を両立'}];
+    const ORBS=[
+      {id:'orb_power',kind:'orb',name:'力のオーブ',price:700,atk:1.2,desc:'攻撃力+20%'},
+      {id:'orb_swift',kind:'orb',name:'疾風のオーブ',price:750,speed:1.18,desc:'移動速度+18%'},
+      {id:'orb_life',kind:'orb',name:'生命のオーブ',price:950,hp:300,desc:'最大HP+300'},
+      {id:'orb_reach',kind:'orb',name:'射程のオーブ',price:1200,range:1.25,desc:'攻撃範囲+25%'},
+      {id:'orb_fury',kind:'orb',name:'連撃のオーブ',price:1650,speed:1.3,desc:'攻撃速度+30%'},
+      {id:'orb_king',kind:'orb',name:'王者のオーブ',price:5000,atk:1.35,hp:350,desc:'攻撃力+35% / HP+350'}];
+    const SKILLS=[
+      {id:'spin',kind:'skill',name:'回転斬り',price:0,desc:'周囲の敵を斬る'},
+      {id:'wave',kind:'skill',name:'衝撃波',price:0,desc:'前方へ貫通斬撃を放つ'},
+      {id:'thunder',kind:'skill',name:'落雷',price:0,desc:'近い敵5体へ雷撃'},
+      {id:'drain',kind:'skill',name:'吸収陣',price:0,desc:'範囲攻撃とHP吸収'}];
+    const ALL_ITEMS=[...WEAPONS,...ARMORS,...ORBS,...SKILLS];
+    const BY_ID=new Map(ALL_ITEMS.map(item=>[item.id,item]));
+    const DEFAULT_KEYS={forward:'w',back:'s',left:'a',right:'d',jump:' ',attack:'j',ultimate:'k',
+      spin:'z',wave:'x',thunder:'c',drain:'v',finisher:'f',dash:'shift',pause:'shift+h'};
+    const STORAGE_KEY='nikori_musou_loadout_v2';
+    function loadProgress(){
+      let v={};try{v=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}}catch(_){}
+      const owned=Array.isArray(v.owned)?v.owned.filter(id=>BY_ID.has(id)):[];
+      const equipped={weapon:'sword_normal',armor:'armor_cloth',orb:null,skills:['spin','wave','thunder','drain']};
+      for(const type of ['weapon','armor','orb']) {
+        const id=v.equipped?.[type];if(id && BY_ID.get(id)?.kind===type && owned.includes(id))equipped[type]=id;
+      }
+      if(Array.isArray(v.equipped?.skills))equipped.skills=Array.from({length:4},(_,i)=>
+        SKILLS.some(x=>x.id===v.equipped.skills[i])?v.equipped.skills[i]:SKILLS[i].id);
+      return {gold:Number.isFinite(v.gold)?Math.max(0,Math.floor(v.gold)):0,
+        owned:new Set([...owned,'sword_normal','armor_cloth',...SKILLS.map(x=>x.id)]),
+        equipped,brightness:Number.isFinite(v.brightness)?Math.max(.5,Math.min(2,v.brightness)):1.05,
+        sensitivity:Number.isFinite(v.sensitivity)?Math.max(.0005,Math.min(.008,v.sensitivity)):.0026,
+        language:v.language==='en'?'en':'ja',keys:{...DEFAULT_KEYS,...(v.keys||{})}};
+    }
+    const progress=loadProgress();
+    mouseSensitivity=progress.sensitivity;
+    let pausePage='main',shopCategory='weapon',equipCategory='weapon',previousBonus={atk:0,hp:0,speed:0};
+    const pauseContent=document.getElementById('pauseContent');
+    const pauseMessage=document.getElementById('pauseMessage');
+    const mobilePauseBtn=document.getElementById('mobilePauseBtn');
+    const tr=(ja,en)=>progress.language==='en'?en:ja;
+    function saveProgress(){
+      try{localStorage.setItem(STORAGE_KEY,JSON.stringify({
+        gold:progress.gold,owned:[...progress.owned],equipped:progress.equipped,brightness:progress.brightness,
+        sensitivity:progress.sensitivity,language:progress.language,keys:progress.keys
+      }))}catch(e){console.warn('Save unavailable',e)}
+    }
+    function currentWeapon(){return BY_ID.get(progress.equipped.weapon)||WEAPONS[0]}
+    function currentArmor(){return BY_ID.get(progress.equipped.armor)||ARMORS[0]}
+    function currentOrb(){return BY_ID.get(progress.equipped.orb)||null}
+    function getBonuses(){
+      const w=currentWeapon(),a=currentArmor(),o=currentOrb();
+      return {atk:(w.atk-1)*32+(o?.atk?32*(o.atk-1):0),
+        hp:(a.hp||0)+(o?.hp||0),speed:(a.speed||0)+(o?.speed?28*(o.speed-1):0)};
+    }
+    function applyLoadout(){
+      const next=getBonuses(),hpRatio=player.maxHp?player.hp/player.maxHp:1;
+      player.atk+=next.atk-previousBonus.atk;
+      player.speed+=next.speed-previousBonus.speed;
+      player.maxHp+=next.hp-previousBonus.hp;
+      player.hp=Math.max(1,Math.min(player.maxHp,Math.round(player.maxHp*hpRatio)));
+      previousBonus=next;
+      const w=currentWeapon();
+      if(player.sword){player.sword.scale.set(w.type==='dual'?1.12:1,w.type==='greatsword'||w.type==='hammer'?1.35:1,w.range);
+        materials.blade.color.setHex(w.color||0xdff9ff);materials.blade.emissive.setHex(w.color||0x38bdf8);}
+      renderer.toneMappingExposure=progress.brightness;
+      mouseSensitivity=progress.sensitivity;
+      saveProgress();
+    }
+    function keyFor(action){return progress.keys[action]||DEFAULT_KEYS[action]}
+    function keyDown(action){return keys.has(keyFor(action))}
+    function coinAward(enemy){
+      progress.gold+=enemy.giant?750:enemy.boss?350:enemy.elite?60:enemy.kind==='tank'?18:10;
+      saveProgress();
+    }
+    function showPausePage(page){
+      pausePage=page;pauseMessage.textContent='';
+      document.querySelectorAll('#pauseNav [data-page]').forEach(b=>b.classList.toggle('selected',b.dataset.page===page));
+      renderPause();
+    }
+    function itemCard(item,mode){
+      const owned=progress.owned.has(item.id);
+      const equipId=progress.equipped[item.kind];
+      const equipped=item.kind==='skill'?progress.equipped.skills.includes(item.id):equipId===item.id;
+      const button=mode==='shop'?(owned?tr('所持済み','Owned'):tr('購入','Buy')+' · '+item.price+' G'):
+        equipped?tr('装備中','Equipped'):tr('装備する','Equip');
+      const detail=item.kind==='weapon'?('ATK ×'+item.atk.toFixed(2)+' / RANGE ×'+item.range.toFixed(2)+' / SPEED ×'+item.speed.toFixed(2)):
+        item.kind==='armor'?'HP +'+item.hp+' / SPEED '+item.speed:item.desc;
+      return '<article class="pauseItem"><strong>'+item.name+'</strong><small>'+item.desc+'<br>'+detail+
+        '</small><button data-item="'+item.id+'" data-mode="'+mode+'" '+((mode==='shop'&&owned)||(mode==='equip'&&equipped)?'disabled':'')+'>'+button+'</button></article>';
+    }
+    function categories(active,mode){
+      return '<div class="pauseTabs">'+[['weapon','武器'],['armor','防具'],['orb','オーブ'],['skill','特殊能力']].map(([id,label])=>
+        '<button data-category="'+id+'" data-category-mode="'+mode+'" class="'+(active===id?'active':'')+'">'+label+'</button>').join('')+'</div>';
+    }
+    function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function renderPause(){
+      document.getElementById('coinLabel').textContent=progress.gold.toLocaleString()+' G';
+      document.getElementById('pauseTitle').textContent=tr('ポーズ','Paused');
+      document.querySelectorAll('#pauseNav [data-page]').forEach(b=>{const lbl={main:['メイン','Main'],shop:['ショップ','Shop'],equip:['装備','Equipment'],settings:['設定','Settings'],help:['説明','Help']}[b.dataset.page];b.textContent=tr(...lbl)});
+      if(pausePage==='main')pauseContent.innerHTML='<h2>'+tr('ゲームメニュー','Game menu')+'</h2>'+
+        '<p>'+tr('戦闘は一時停止しています。','Combat is paused.')+'</p>'+
+        '<div class="pauseItems"><button data-action="resume">'+tr('ゲームを再開','Resume game')+'</button>'+
+        '<button data-action="title">'+tr('タイトルに戻る','Return to title')+'</button></div>';
+      else if(pausePage==='shop')pauseContent.innerHTML='<h2>'+tr('ショップ','Shop')+'</h2><p>'+
+        tr('敵の撃破で獲得したGを使って購入できます。','Earn G by defeating enemies.')+'</p>'+
+        categories(shopCategory,'shop')+'<div class="pauseItems">'+ALL_ITEMS.filter(i=>i.kind===shopCategory).map(i=>itemCard(i,'shop')).join('')+'</div>';
+      else if(pausePage==='equip')pauseContent.innerHTML='<h2>'+tr('装備変更','Equipment')+'</h2>'+
+        categories(equipCategory,'equip')+'<p>'+tr('購入したアイテムだけ装備できます。特殊能力はZ/X/C/Vの4枠へ割り当てられます。','Equip owned items. Skills can be assigned to four keys.')+'</p>'+
+        (equipCategory==='skill'?'<div class="pauseField">スロット <select id="skillSlot">'+[0,1,2,3].map(i=>'<option value="'+i+'">'+['Z','X','C','V'][i]+' : '+esc(SKILLS.find(x=>x.id===progress.equipped.skills[i])?.name||'')+'</option>').join('')+'</select></div>':'')+
+        '<div class="pauseItems">'+ALL_ITEMS.filter(i=>i.kind===equipCategory&&progress.owned.has(i.id)).map(i=>itemCard(i,'equip')).join('')+'</div>';
+      else if(pausePage==='settings')pauseContent.innerHTML='<h2>'+tr('設定','Settings')+'</h2>'+
+        '<label class="pauseField">'+tr('明るさ','Brightness')+' <input id="brightnessSetting" type="range" min=".5" max="2" step=".05" value="'+progress.brightness+'"></label>'+
+        '<label class="pauseField">'+tr('マウス感度','Mouse sensitivity')+' <input id="sensitivitySetting" type="range" min=".0005" max=".008" step=".0005" value="'+progress.sensitivity+'"></label>'+
+        '<label class="pauseField">'+tr('言語','Language')+' <select id="languageSetting"><option value="ja">日本語</option><option value="en">English</option></select></label>'+
+        '<h3>'+tr('操作キー（変更するキーを入力）','Key bindings')+'</h3>'+
+        Object.entries(DEFAULT_KEYS).filter(([k])=>k!=='pause').map(([k])=>'<label class="pauseField">'+esc(k)+' <input class="keySetting" data-keyaction="'+k+'" maxlength="14" value="'+esc(keyFor(k)===' '?'space':keyFor(k))+'"></label>').join('')+
+        '<p>'+tr('ポーズキー Shift+H は固定です。','Pause is always Shift+H.')+'</p>';
+      else pauseContent.innerHTML='<h2>'+tr('操作説明・ルール','Controls & Rules')+'</h2>'+
+        '<p><strong>Shift+H</strong> : '+tr('ポーズ / 再開','Pause / resume')+'</p>'+
+        '<p>WASD : '+tr('移動','Move')+' / Shift : '+tr('ダッシュ','Dash')+' / Space : '+tr('ジャンプ・滑空','Jump / glide')+'</p>'+
+        '<p>'+tr('左クリック / J : 攻撃、右クリック / K : 必殺技、F : 連撃フィニッシュ、Z/X/C/V : 特殊能力','Left click/J: Attack; right click/K: ultimate; F: finisher; Z/X/C/V: skills')+'</p>'+
+        '<p>'+tr('クリックを5秒長押しして離すと竜巻を発射。敵を倒して経験値とGを獲得し、レベルアップしてウェーブとボスを攻略します。','Hold click for 5 seconds to release a tornado. Defeat enemies for XP and G; survive waves and bosses.')+'</p>'+
+        '<p>'+tr('ショップで購入した装備やオーブは装備画面で変更できます。ゲームを再開すると戦闘が続きます。','Buy gear and orbs, then equip them. Resume to continue the same fight.')+'</p>';
+      const languageInput=document.getElementById('languageSetting');if(languageInput)languageInput.value=progress.language;
+    }
+    document.getElementById('pauseNav').addEventListener('click',e=>{
+      const btn=e.target.closest('[data-page]');if(btn)showPausePage(btn.dataset.page);
+    });
+    pauseContent.addEventListener('click',e=>{
+      const btn=e.target.closest('button');if(!btn)return;
+      if(btn.dataset.action==='resume'){togglePause();return}
+      if(btn.dataset.action==='title'){
+        running=false;paused=false;keys.clear();stopTornado();unlockPointer();
+        pauseScreen.classList.add('hidden');gameover.classList.add('hidden');startScreen.classList.remove('hidden');
+        mobilePauseBtn.classList.add('hidden');return;
+      }
+      if(btn.dataset.category){if(btn.dataset.categoryMode==='shop')shopCategory=btn.dataset.category;
+        else equipCategory=btn.dataset.category;renderPause();return}
+      const item=BY_ID.get(btn.dataset.item);if(!item)return;
+      if(btn.dataset.mode==='shop'){
+        if(progress.owned.has(item.id))return;
+        if(progress.gold<item.price){pauseMessage.textContent=tr('Gが不足しています。','Not enough G.');return}
+        progress.gold-=item.price;progress.owned.add(item.id);saveProgress();pauseMessage.textContent=item.name+' '+tr('購入完了','purchased');
+      }else if(btn.dataset.mode==='equip'&&progress.owned.has(item.id)){
+        if(item.kind==='skill'){
+          const slot=Number(document.getElementById('skillSlot')?.value||0);
+          const existing=progress.equipped.skills.indexOf(item.id);
+          if(existing>=0){[progress.equipped.skills[existing],progress.equipped.skills[slot]]=
+            [progress.equipped.skills[slot],progress.equipped.skills[existing]];}
+          else progress.equipped.skills[slot]=item.id;
+        }else progress.equipped[item.kind]=item.id;
+        applyLoadout();pauseMessage.textContent=item.name+' '+tr('装備完了','equipped');
+      }
+      renderPause();
+    });
+    pauseContent.addEventListener('input',e=>{
+      const el=e.target;
+      if(el.id==='brightnessSetting'){progress.brightness=Number(el.value);renderer.toneMappingExposure=progress.brightness}
+      if(el.id==='sensitivitySetting'){progress.sensitivity=Number(el.value);mouseSensitivity=progress.sensitivity}
+      saveProgress();
+    });
+    pauseContent.addEventListener('change',e=>{
+      const el=e.target;
+      if(el.id==='languageSetting'){progress.language=el.value;renderPause()}
+      if(el.classList.contains('keySetting')){
+        let value=el.value.trim().toLowerCase();if(value==='space')value=' ';
+        if(!value||value==='shift+h'||value==='escape') {renderPause();return}
+        progress.keys[el.dataset.keyaction]=value;renderPause();
+      }
+      saveProgress();
+    });
+    mobilePauseBtn.addEventListener('click',togglePause);
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
@@ -774,7 +1006,9 @@
           }
         }
       }
+      previousBonus={atk:0,hp:0,speed:0};
       Object.assign(player, { hp:1200, maxHp:1200, sp:40, maxSp:100, xp:0, nextXp:80, level:1, atk:32, speed:28, dir:0, attackCd:0, skillCd:0, inv:0, dash:0, dashSlash:0, vy:0, grounded:true, gliding:false, glideDive:0, kills:0 });
+      applyLoadout();
       wave = 1;
       nextSpawn = 0;
       bossAlive = false;
@@ -1059,13 +1293,13 @@
         comboFinisher();
         return;
       }
-      if ((keys.has('shift') || player.dash > 0) && player.dashSlash <= 0) {
+      if ((keyDown('dash') || player.dash > 0) && player.dashSlash <= 0) {
         dashSlash();
         return;
       }
-      player.attackCd = 0.24;
-      const range = (8 + player.level * 0.18) * (powerUps.range > 0 ? 1.55 : 1) * (powerUps.giant > 0 ? 1.55 : 1);
-      const arc = Math.PI * 0.85;
+      player.attackCd = 0.24 / (currentWeapon().speed * (currentOrb()?.speed && currentOrb().id==="orb_fury"?currentOrb().speed:1));
+      const range = (8 + player.level * 0.18) * currentWeapon().range * (currentOrb()?.range||1) * (powerUps.range > 0 ? 1.55 : 1) * (powerUps.giant > 0 ? 1.55 : 1);
+      const arc = Math.PI * (currentWeapon().type==="battleaxe"?1.4:currentWeapon().type==="scythe"?1.25:currentWeapon().type==="hammer"?1.1:.85);
       let hit = 0;
       player.sword.rotation.x = -1.25;
       makeAttackArc(0x67e8f9, range * 0.75, 0.18);
@@ -1075,6 +1309,9 @@
         if (d < range + e.radius && da < arc / 2) {
           const dmg = (player.atk + Math.floor(rand(0, 14))) * (powerUps.atk > 0 ? 1.75 : 1) * (powerUps.giant > 0 ? 1.65 : 1);
           e.hp -= dmg;
+          if(currentWeapon().element==='flame')e.hp-=player.atk*.15;
+          if(currentWeapon().element==='ice')e.speed=(e.speed||1)*.97;
+          if(currentWeapon().element==='thunder'&&Math.random()<.2)triggerAutoThunder(e);
           hit++;
           addComboHit(powerUps.combo > 0 ? 3 : 1);
           if (powerUps.thunder > 0) triggerAutoThunder(e);
@@ -1504,27 +1741,27 @@
       const rightX = Math.cos(player.dir);
       const rightZ = -Math.sin(player.dir);
 
-      if (keys.has('w') || keys.has('arrowup')) { mx += forwardX; mz += forwardZ; }
-      if (keys.has('s') || keys.has('arrowdown')) { mx -= forwardX * 0.72; mz -= forwardZ * 0.72; }
-      if (keys.has('a') || keys.has('arrowleft')) { mx += rightX * 0.82; mz += rightZ * 0.82; }
-      if (keys.has('d') || keys.has('arrowright')) { mx -= rightX * 0.82; mz -= rightZ * 0.82; }
+      if (keyDown('forward') || keys.has('arrowup')) { mx += forwardX; mz += forwardZ; }
+      if (keyDown('back') || keys.has('arrowdown')) { mx -= forwardX * 0.72; mz -= forwardZ * 0.72; }
+      if (keyDown('left') || keys.has('arrowleft')) { mx += rightX * 0.82; mz += rightZ * 0.82; }
+      if (keyDown('right') || keys.has('arrowright')) { mx -= rightX * 0.82; mz -= rightZ * 0.82; }
 
       mx += mobileMove.x;
       mz += mobileMove.z;
       const len = Math.hypot(mx, mz) || 1;
       mx /= len;
       mz /= len;
-      const dashing = keys.has('shift') || player.dash > 0;
+      const dashing = keyDown('dash') || player.dash > 0;
       const slashBoost = player.dashSlash > 0 ? 2.55 : 1;
       const airControl = player.grounded ? 1 : (player.gliding ? 0.92 : 0.55);
       const speed = player.speed * (dashing ? 1.75 : 1) * slashBoost * airControl;
       player.pos.x += mx * speed * dt;
       player.pos.z += mz * speed * dt;
       const groundY = terrainHeight(player.pos.x, player.pos.z);
-      if (!player.grounded && keys.has(' ') && player.vy < 0 && player.glideDive <= 0) {
+      if (!player.grounded && keyDown('jump') && player.vy < 0 && player.glideDive <= 0) {
         player.gliding = true;
         player.vy = Math.max(player.vy, -7);
-      } else if (!keys.has(' ') || player.grounded) {
+      } else if (!keyDown('jump') || player.grounded) {
         player.gliding = false;
       }
       player.vy += (player.gliding ? -4 : -38) * dt;
@@ -1684,6 +1921,7 @@
           gainXp(e.giant ? 650 : e.boss ? 190 : e.elite ? 42 : 18);
           player.sp = clamp(player.sp + (e.giant ? 100 : e.boss ? 45 : e.elite ? 14 : 6), 0, player.maxSp);
           player.kills++;
+          coinAward(e);
           if (e.giant) {
             giantBossAlive = false;
             bossAlive = false;
@@ -1896,6 +2134,7 @@
       gameover.classList.add('hidden');
       pauseScreen.classList.add('hidden');
       clock.getDelta();
+      mobilePauseBtn.classList.remove('hidden');
       lockPointer();
     }
 
@@ -1904,6 +2143,7 @@
       paused = false;
       unlockPointer();
       resultText.textContent = `撃破数 ${player.kills}、到達レベル ${player.level}、Wave ${wave} でした。`;
+      mobilePauseBtn.classList.add('hidden');
       gameover.classList.remove('hidden');
     }
 
@@ -1911,8 +2151,8 @@
       if (!running) return;
       paused = !paused;
       pauseScreen.classList.toggle('hidden', !paused);
-      if (paused) unlockPointer();
-      else { clock.getDelta(); lockPointer(); }
+      if (paused) {keys.clear();stopTornado();showPausePage('main');unlockPointer();}
+      else { keys.clear();clock.getDelta();lockPointer(); }
     }
 
     function rotateFromMouseMovement(movementX, movementY = 0) {
@@ -1928,24 +2168,27 @@
 
     addEventListener('keydown', e => {
       const key = e.key.toLowerCase();
-      if (key === 'escape') {
+      if ((key === 'h' && e.shiftKey) || (key === 'escape' && paused)) {
         e.preventDefault();
         togglePause();
         return;
       }
+      if(!running||paused||e.target.closest('input, select, textarea'))return;
       keys.add(key);
-      if (key === 'j') attack();
-      if (key === ' ' && player.grounded) {
+      if (key === keyFor('attack')) attack();
+      if (key === keyFor('jump') && player.grounded) {
         e.preventDefault();
         player.vy = 24;
         player.grounded = false;
       }
-      if (key === 'f') comboFinisher();
-      if (key === 'k') skill();
-      if (key === 'z') spinSlash();
-      if (key === 'x') shockWave();
-      if (key === 'c') thunderStrike();
-      if (key === 'v') drainCircle();
+      if (key === keyFor('finisher')) comboFinisher();
+      if (key === keyFor('ultimate')) skill();
+      for(let i=0;i<4;i++){
+        if(key===keyFor(['spin','wave','thunder','drain'][i])){
+          const equipped=progress.equipped.skills[i];
+          ({spin:spinSlash,wave:shockWave,thunder:thunderStrike,drain:drainCircle}[equipped])();
+        }
+      }
     });
     addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
 
