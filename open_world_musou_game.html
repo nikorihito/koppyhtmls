@@ -466,10 +466,11 @@
     function loadProgress(){
       let v={};try{v=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}}catch(_){}
       const owned=Array.isArray(v.owned)?v.owned.filter(id=>BY_ID.has(id)):[];
-      const equipped={weapon:'sword_normal',armor:'armor_cloth',orb:null,skills:['spin','wave','thunder','drain']};
-      for(const type of ['weapon','armor','orb']) {
+      const equipped={weapon:'sword_normal',armor:'armor_cloth',orbs:[],skills:['spin','wave','thunder','drain']};
+      for(const type of ['weapon','armor']) {
         const id=v.equipped?.[type];if(id && BY_ID.get(id)?.kind===type && owned.includes(id))equipped[type]=id;
       }
+      equipped.orbs=[...new Set(Array.isArray(v.equipped?.orbs)?v.equipped.orbs:[v.equipped?.orb])].filter(id=>owned.includes(id)&&BY_ID.get(id)?.kind==='orb');
       if(Array.isArray(v.equipped?.skills))equipped.skills=Array.from({length:4},(_,i)=>
         SKILLS.some(x=>x.id===v.equipped.skills[i])?v.equipped.skills[i]:SKILLS[i].id);
       return {gold:Number.isFinite(v.gold)?Math.max(0,Math.floor(v.gold)):0,
@@ -493,11 +494,14 @@
     }
     function currentWeapon(){return BY_ID.get(progress.equipped.weapon)||WEAPONS[0]}
     function currentArmor(){return BY_ID.get(progress.equipped.armor)||ARMORS[0]}
-    function currentOrb(){return BY_ID.get(progress.equipped.orb)||null}
+    function currentOrbs(){return progress.equipped.orbs.map(id=>BY_ID.get(id)).filter(Boolean)}
+    function orbMultiplier(prop){return currentOrbs().reduce((n,o)=>n*(prop==='attackSpeed'?(o.id==='orb_fury'?o.speed:1):prop==='speed'?(o.id==='orb_swift'?o.speed:1):(o[prop]||1)),1)}
+    const ORB_COLORS={orb_power:0xff3434,orb_swift:0x36e9ff,orb_life:0x36ed65,orb_reach:0xa45bff,orb_fury:0xffb52e,orb_king:0xffe35c};
+    function mixedOrbColor(){const orbs=currentOrbs();if(!orbs.length)return null;let r=0,g=0,b=0;for(const o of orbs){const c=ORB_COLORS[o.id];r+=(c>>16)&255;g+=(c>>8)&255;b+=c&255}return (Math.round(r/orbs.length)<<16)|(Math.round(g/orbs.length)<<8)|Math.round(b/orbs.length)}
     function getBonuses(){
-      const w=currentWeapon(),a=currentArmor(),o=currentOrb();
-      return {atk:(w.atk-1)*32+(o?.atk?32*(o.atk-1):0),
-        hp:(a.hp||0)+(o?.hp||0),speed:(a.speed||0)+(o?.speed?28*(o.speed-1):0)};
+      const w=currentWeapon(),a=currentArmor();
+      return {atk:(w.atk*orbMultiplier('atk')-1)*32,
+        hp:(a.hp||0)+currentOrbs().reduce((n,o)=>n+(o.hp||0),0),speed:(a.speed||0)+28*(orbMultiplier('speed')-1)};
     }
     function applyLoadout(){
       const next=getBonuses(),hpRatio=player.maxHp?player.hp/player.maxHp:1;
@@ -507,8 +511,7 @@
       player.hp=Math.max(1,Math.min(player.maxHp,Math.round(player.maxHp*hpRatio)));
       previousBonus=next;
       const w=currentWeapon();
-      if(player.sword){player.sword.scale.set(w.type==='dual'?1.12:1,w.type==='greatsword'||w.type==='hammer'?1.35:1,w.range);
-        materials.blade.color.setHex(w.color||0xdff9ff);materials.blade.emissive.setHex(w.color||0x38bdf8);}
+      updateEquipmentVisuals();
       renderer.toneMappingExposure=progress.brightness;
       mouseSensitivity=progress.sensitivity;
       saveProgress();
@@ -527,13 +530,13 @@
     function itemCard(item,mode){
       const owned=progress.owned.has(item.id);
       const equipId=progress.equipped[item.kind];
-      const equipped=item.kind==='skill'?progress.equipped.skills.includes(item.id):equipId===item.id;
+      const equipped=item.kind==='skill'?progress.equipped.skills.includes(item.id):item.kind==='orb'?progress.equipped.orbs.includes(item.id):equipId===item.id;
       const button=mode==='shop'?(owned?tr('所持済み','Owned'):tr('購入','Buy')+' · '+item.price+' G'):
-        equipped?tr('装備中','Equipped'):tr('装備する','Equip');
+        equipped?(item.kind==='orb'?tr('外す','Remove'):tr('装備中','Equipped')):tr('装備する','Equip');
       const detail=item.kind==='weapon'?('ATK ×'+item.atk.toFixed(2)+' / RANGE ×'+item.range.toFixed(2)+' / SPEED ×'+item.speed.toFixed(2)):
         item.kind==='armor'?'HP +'+item.hp+' / SPEED '+item.speed:item.desc;
       return '<article class="pauseItem"><strong>'+item.name+'</strong><small>'+item.desc+'<br>'+detail+
-        '</small><button data-item="'+item.id+'" data-mode="'+mode+'" '+((mode==='shop'&&owned)||(mode==='equip'&&equipped)?'disabled':'')+'>'+button+'</button></article>';
+        '</small><button data-item="'+item.id+'" data-mode="'+mode+'" '+((mode==='shop'&&owned)||(mode==='equip'&&equipped&&item.kind!=='orb'&&item.kind!=='skill')?'disabled':'')+'>'+button+'</button></article>';
     }
     function categories(active,mode){
       return '<div class="pauseTabs">'+[['weapon','武器'],['armor','防具'],['orb','オーブ'],['skill','特殊能力']].map(([id,label])=>
@@ -553,6 +556,7 @@
         categories(shopCategory,'shop')+'<div class="pauseItems">'+ALL_ITEMS.filter(i=>i.kind===shopCategory).map(i=>itemCard(i,'shop')).join('')+'</div>';
       else if(pausePage==='equip')pauseContent.innerHTML='<h2>'+tr('装備変更','Equipment')+'</h2>'+
         categories(equipCategory,'equip')+'<p>'+tr('購入したアイテムだけ装備できます。特殊能力はZ/X/C/Vの4枠へ割り当てられます。','Equip owned items. Skills can be assigned to four keys.')+'</p>'+
+        (equipCategory==='orb'?'<p>複数同時装備可能。装備中の色をRGB平均で合成します。 <span style="color:#'+(mixedOrbColor()??0xffffff).toString(16).padStart(6,'0')+'">● オーラ</span></p>':'')+
         (equipCategory==='skill'?'<div class="pauseField">スロット <select id="skillSlot">'+[0,1,2,3].map(i=>'<option value="'+i+'">'+['Z','X','C','V'][i]+' : '+esc(SKILLS.find(x=>x.id===progress.equipped.skills[i])?.name||'')+'</option>').join('')+'</select></div>':'')+
         '<div class="pauseItems">'+ALL_ITEMS.filter(i=>i.kind===equipCategory&&progress.owned.has(i.id)).map(i=>itemCard(i,'equip')).join('')+'</div>';
       else if(pausePage==='settings')pauseContent.innerHTML='<h2>'+tr('設定','Settings')+'</h2>'+
@@ -595,7 +599,7 @@
           if(existing>=0){[progress.equipped.skills[existing],progress.equipped.skills[slot]]=
             [progress.equipped.skills[slot],progress.equipped.skills[existing]];}
           else progress.equipped.skills[slot]=item.id;
-        }else progress.equipped[item.kind]=item.id;
+        }else if(item.kind==='orb'){const ids=progress.equipped.orbs;progress.equipped.orbs=ids.includes(item.id)?ids.filter(id=>id!==item.id):[...ids,item.id];}else progress.equipped[item.kind]=item.id;
         applyLoadout();pauseMessage.textContent=item.name+' '+tr('装備完了','equipped');
       }
       renderPause();
@@ -738,7 +742,7 @@
     function dist2D(a, b) { return Math.hypot(a.x - b.x, a.z - b.z); }
     function angleTo(a, b) { return Math.atan2(b.x - a.x, b.z - a.z); }
 
-    function createNikoriTexture() {
+    function createNikoriTexture(armor='armor_cloth') {
       const c = document.createElement('canvas');
       c.width = 512;
       c.height = 512;
@@ -774,6 +778,16 @@
       ellipse(288, 422, 42, 80, '#fff200');
       ellipse(216, 487, 36, 24, '#ffe8a3');
       ellipse(296, 487, 36, 24, '#ffe8a3');
+      if(armor!=='armor_cloth'){
+        const palette={armor_iron:['#abb8c8','#526478'],armor_wind:['#a8f4e2','#217c88'],armor_guard:['#65758c','#303b53'],armor_hero:['#ffe28b','#b16b23']}[armor];
+        if(palette){
+          x.shadowBlur=0; x.lineWidth=6; x.strokeStyle=palette[1]; x.fillStyle=palette[0];
+          x.beginPath();x.moveTo(185,200);x.lineTo(218,190);x.lineTo(256,218);x.lineTo(294,190);x.lineTo(327,200);x.lineTo(340,307);x.lineTo(310,365);x.lineTo(202,365);x.lineTo(172,307);x.closePath();x.fill();x.stroke();
+          ellipse(164,239,36,29,palette[1]);ellipse(348,239,36,29,palette[1]);
+          x.fillStyle=palette[1];x.fillRect(199,322,114,14);x.fillStyle='#fff1bd';x.fillRect(244,320,24,18);
+          ellipse(222,422,36,55,palette[0]);ellipse(290,422,36,55,palette[0]);
+        }
+      }
       const tex = new THREE.CanvasTexture(c);
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.needsUpdate = true;
@@ -823,6 +837,50 @@
       g.add(aura);
       player.aura = aura;
       scene.add(g);
+    }
+
+    function updateEquipmentVisuals(){
+      if(!player.sprite||!player.sword)return;
+      const armor=currentArmor().id;
+      if(player.visualArmor!==armor){
+        const old=player.sprite.material.map;player.sprite.material.map=createNikoriTexture(armor);
+        player.sprite.material.needsUpdate=true;if(old)old.dispose();player.visualArmor=armor;
+      }
+      const w=currentWeapon();
+      if(player.visualWeapon!==w.id){
+        for(const child of [...player.sword.children]){player.sword.remove(child);child.geometry?.dispose();if(child.material!==materials.playerGold&&child.material!==materials.blade)child.material?.dispose();}
+        const metal=new THREE.MeshStandardMaterial({color:w.color||0xdff9ff,metalness:.55,roughness:.28,emissive:w.color||0x38bdf8,emissiveIntensity:.25});
+        const grip=new THREE.MeshStandardMaterial({color:0x55402c,roughness:.8});
+        const add=(geo,mat,x,y,z,rz=0)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.rotation.z=rz;m.castShadow=true;player.sword.add(m);return m};
+        const box=(x,y,z,a,b,c,mat=metal,rz=0)=>add(new THREE.BoxGeometry(a,b,c),mat,x,y,z,rz);
+        const weapon=(side)=>{
+          const x=side*3.1,y=2.65;
+          if(['axe','battleaxe','scythe','hammer'].includes(w.type)){
+            const length=w.type==='scythe'?5.4:w.type==='battleaxe'?4.7:4;
+            box(x,y, -length*.3,.28,.28,length,grip);
+            const z=-length*.78;
+            if(w.type==='hammer'){box(x,y,z,1.8,1.15,1.05);box(x,y,z,2.15,.55,.7,materials.playerGold);}
+            else if(w.type==='scythe'){const shape=new THREE.Shape();shape.moveTo(0,0);shape.quadraticCurveTo(2.2,.9,3.3,-.5);shape.quadraticCurveTo(1.5,.1,.35,-.55);shape.closePath();const m=add(new THREE.ExtrudeGeometry(shape,{depth:.18,bevelEnabled:false}),metal,x,y,z);m.rotation.x=-Math.PI/2;m.scale.x=side;}
+            else {const head=(sign)=>{const shape=new THREE.Shape();shape.moveTo(0,-.45);shape.lineTo(sign*1.25,-.8);shape.lineTo(sign*1.6,.8);shape.lineTo(0,.4);shape.closePath();const m=add(new THREE.ExtrudeGeometry(shape,{depth:.2,bevelEnabled:false}),metal,x,y,z);m.rotation.x=-Math.PI/2;};head(side);if(w.type==='battleaxe')head(-side);}
+          }else{
+            const len=w.type==='greatsword'?5.8:w.type==='dagger'?1.9:w.type==='dual'?2.8:3.5;
+            const width=w.type==='greatsword'?.62:w.type==='dagger'?.22:.34;
+            box(x,y,.1,.24,.24,1,grip);box(x,y,-.4,width*2.8,.23,.23,materials.playerGold);
+            box(x,y,-.5-len/2,width,.22,len);
+            const tip=add(new THREE.ConeGeometry(width*.66,.65,4),metal,x,y,-len-.8);tip.rotation.x=-Math.PI/2;
+          }
+        };weapon(1);if(w.type==='dual')weapon(-1);player.sword.scale.set(1,1,1);player.visualWeapon=w.id;
+      }
+      if(!player.orbAura){
+        const group=new THREE.Group();player.group.add(group);player.orbAura=group;
+        const mat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.30,depthWrite:false,blending:THREE.AdditiveBlending});
+        for(let i=0;i<4;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(2.8+i*.12,.055+i*.01,8,64),mat.clone());ring.rotation.x=Math.PI/2+i*.25;ring.position.y=1+i*1.45;group.add(ring);}
+        const points=[];for(let i=0;i<60;i++){const a=i*2.399;const h=(i%20)/19*6.7;points.push(Math.cos(a)*3.2,h,Math.sin(a)*3.2)}
+        const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));
+        group.add(new THREE.Points(geo,new THREE.PointsMaterial({color:0xffffff,size:.16,transparent:true,opacity:.8,depthWrite:false,blending:THREE.AdditiveBlending})));
+      }
+      const color=mixedOrbColor();player.orbAura.visible=color!==null;
+      if(color!==null)player.orbAura.traverse(m=>{if(m.material)m.material.color.setHex(color)});
     }
 
     function makeEnemyMesh(kind) {
@@ -1297,8 +1355,8 @@
         dashSlash();
         return;
       }
-      player.attackCd = 0.24 / (currentWeapon().speed * (currentOrb()?.speed && currentOrb().id==="orb_fury"?currentOrb().speed:1));
-      const range = (8 + player.level * 0.18) * currentWeapon().range * (currentOrb()?.range||1) * (powerUps.range > 0 ? 1.55 : 1) * (powerUps.giant > 0 ? 1.55 : 1);
+      player.attackCd = 0.24 / (currentWeapon().speed * orbMultiplier('attackSpeed'));
+      const range = (8 + player.level * 0.18) * currentWeapon().range * orbMultiplier('range') * (powerUps.range > 0 ? 1.55 : 1) * (powerUps.giant > 0 ? 1.55 : 1);
       const arc = Math.PI * (currentWeapon().type==="battleaxe"?1.4:currentWeapon().type==="scythe"?1.25:currentWeapon().type==="hammer"?1.1:.85);
       let hit = 0;
       player.sword.rotation.x = -1.25;
@@ -1709,6 +1767,7 @@
     function update(dt) {
       if (!running || paused) return;
       player.attackCd -= dt;
+      if(player.orbAura?.visible){player.orbAura.rotation.y+=dt*.8;player.orbAura.children.forEach((m,i)=>{if(m.isMesh)m.rotation.z+=dt*(i%2?-.6:.6)});}
       updateTornado(dt);
       updateTornadoProjectiles(dt);
       rapidSlashTimer -= dt;
@@ -2151,7 +2210,7 @@
       if (!running) return;
       paused = !paused;
       pauseScreen.classList.toggle('hidden', !paused);
-      if (paused) {keys.clear();stopTornado();showPausePage('main');unlockPointer();}
+      if (paused) {keys.clear();mouseDragging=false;resetStick();tornadoHolding=false;stopTornado();showPausePage('main');unlockPointer();}
       else { keys.clear();clock.getDelta();lockPointer(); }
     }
 
@@ -2169,6 +2228,7 @@
     addEventListener('keydown', e => {
       const key = e.key.toLowerCase();
       if ((key === 'h' && e.shiftKey) || (key === 'escape' && paused)) {
+        if(e.repeat)return;
         e.preventDefault();
         togglePause();
         return;
@@ -2244,7 +2304,7 @@
     document.getElementById('dashBtn').addEventListener('pointerdown', e => { e.preventDefault(); player.dash = 0.35; });
     document.getElementById('startBtn').addEventListener('click', start);
     document.getElementById('restartBtn').addEventListener('click', start);
-    document.getElementById('resumeBtn').addEventListener('click', togglePause);
+    // Resume is handled by the delegated pauseContent click handler.
 
     const zone = document.getElementById('stickZone');
     const stick = document.getElementById('stick');
